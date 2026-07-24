@@ -1,2 +1,2 @@
-# dt-profischwei-naht-web
+# dt-profischweißnaht-web
 Schweißnahtberechnung
