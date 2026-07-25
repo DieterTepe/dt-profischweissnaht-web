@@ -9,13 +9,13 @@
 > Sie ist so geschrieben, dass ein **neuer Chat ohne Vorwissen** damit weiterarbeiten kann.
 
 ```
-Plan-Version : 2.6 · Stand 2026-07-25
+Plan-Version : 2.7 · Stand 2026-07-25
 Status       : N1 (Fundament) von Dieter am Handy geprüft und ABGENOMMEN.
                N2 (Nahtbild-Kern, naht.js) von Dieter am Handy geprüft und ABGENOMMEN.
-               N2b (Profileingabe, profil.js) gebaut, getestet und ausgeliefert —
-               WARTET AUF DIETERS ABNAHME AM HANDY.
-               → NÄCHSTER SCHRITT nach der Abnahme: Baustein N2c (Nahtbild-Grafik,
-                 svglib.js + schaubild.js) — Abschnitt 5, Schnittstellen 4.5 und 4.6.
+               N2b (Profileingabe, profil.js) von Dieter am Handy geprüft und ABGENOMMEN.
+               Alle Dateien liegen aktuell in /mnt/project/ UND auf GitHub Pages.
+               → NÄCHSTER SCHRITT: Baustein N2c (Nahtbild-Grafik, svglib.js + schaubild.js)
+                 — Auftrag in Abschnitt 5.1, Schnittstellen in 4.5 (naht.js) und 4.6 (profil.js).
 Basislinie   : 309 Assertions · DOM-Smokes 79 (voll) + 80 (test) · i18n-Parität 0 Abweichungen
                (Basislinie darf nur WACHSEN — nie schrumpfen, nie gelockert werden.)
 Dateistand   : siehe Abschnitt 8.1 — dort steht, was fertig ist und was noch fehlt.
@@ -75,10 +75,12 @@ Schritt. Danach Plan-Kopf (Version/Status/Basislinie) + Changelog pflegen.
 3. Abschnitt **4.5** lesen: die fertige Schnittstelle von `naht.js`.
 4. Abschnitt **4.6** lesen: die fertige Schnittstelle von `profil.js` — darauf setzen
    N2c (Grafik) und N7 (Presets) auf. Fachlicher Hintergrund steht in **2.2b**.
-5. Arbeitsordner herstellen (Befehl unter Punkt 6), dann
+5. Abschnitt **5.1** lesen: der ausformulierte Auftrag für den nächsten Baustein **N2c**.
+6. Arbeitsordner herstellen (Befehl unter Punkt 6 der Kickoff-Liste), dann
    `node test_naht.js`, `node dom_smoke_voll.js`, `node dom_smoke_test.js` laufen lassen
-   und die Basislinie aus dem Plan-Kopf bestätigen, **bevor** etwas gebaut wird.
-6. Erst dann den nächsten Baustein bauen — Fließband nach Punkt 5.
+   und die Basislinie aus dem Plan-Kopf bestätigen (**309 / 79 / 80 · 0 Fehler**),
+   **bevor** etwas gebaut wird.
+7. Erst dann N2c bauen — Fließband nach Punkt 5 der Kickoff-Liste.
 
 **6) TOKEN-PAUSEN:** Dieter stoppt bei ~90 % Verbrauch, Pause **4 Stunden**, dann weiter.
 Vor der Pause den genauen Stand nennen; Wiedereinstieg mit „weiter mit <Baustein>".
@@ -631,7 +633,7 @@ Hinweise `msg_endkrater_abzug` · `msg_endkrater_umlaufend` · `msg_endkrater_au
 |---|---|---|
 | **N1** ✅ | **Fundament** *(abgenommen 2026-07-25)* | `daten.js` (11 Werkstoffe, Beiwerte, ISO 5817, EXC) + `optionen.js` (einzige Auswahlquelle **inkl. Verträglichkeitsregeln**) + i18n-Gerüst DE/EN/PT + `validate.js`. Alle Codes sprachneutral. |
 | **N2** ✅ | **Nahtbild-Kern** *(abgenommen 2026-07-25)* | `naht.js`: Segmente → A_w, Schwerpunkt, I_y, I_z, I_yz, I_p, Hauptachsen, W_y/W_z/W_t, offen/geschlossen, Selbstprüfung. DOM-frei. Vier Hand-Anker geschlossen nachgerechnet. **Schnittstelle: Abschnitt 4.5.** |
-| **N2b** ✅ | **Profileingabe** *(gebaut 2026-07-25, Abnahme offen)* | `profil.js`: 7 parametrische Profile + Kantenauswahl → Segmente. Raupenmodell mit Endkraterabzug je freiem Ende, Eckradien, a je Segment. DOM-frei. **Schnittstelle: Abschnitt 4.6.** |
+| **N2b** ✅ | **Profileingabe** *(abgenommen 2026-07-25)* | `profil.js`: 7 parametrische Profile + Kantenauswahl → Segmente. Raupenmodell mit Endkraterabzug je freiem Ende, Eckradien, a je Segment. DOM-frei. **Schnittstelle: Abschnitt 4.6.** |
 | **N2c** ⬅ | **Nahtbild-Grafik — NÄCHSTER SCHRITT** *(von N6 vorgezogen)* | `svglib.js` + `schaubild.js`: SVG-Vorschau des Nahtbilds, Segmente farbig, Schwerpunkt. Dient zugleich als **Auswahl-Skizze** der Profileingabe. |
 | **N3** | **Spannungen + beide Welten** | `solver.js`: σ⊥, τ⊥, τ∥ aus N/Q/M/T · Welt A (EC3) · Welt B (klassisch) · **Nachweis UND Auslegung**. |
 | **N4** | **Rechenweg** | `rechenweg.js`: selbstprüfende Schritte für N2/N3, dreisprachig. |
@@ -648,6 +650,41 @@ Hinweise `msg_endkrater_abzug` · `msg_endkrater_umlaufend` · `msg_endkrater_au
 | **N14** | **Kerbfallkatalog** | `kerbfall.js` + SVG-Skizzen + Auswahl-UI mit Filter. Struktur vollständig, Füllung gestaffelt (Start 25–35 Details, je 2 Quellen), **ehrliche Lücken sichtbar**. Mehrere Etappen. |
 | **N15** | **Verzug & Schrumpfung** | `verzug.js` + Panel, klar als **Abschätzung** gekennzeichnet. |
 | **N16** | **Feinschliff + Build** | Presets ausbauen, Wissenstexte, Code-Audit, Bündelung + Obfuskierung (zwei Bündel, Unterschied nur `DT_EDITION`). **→ V1-Launch.** |
+
+### 5.1 Auftrag für den nächsten Baustein **N2c — Nahtbild-Grafik** *(hier ansetzen)*
+
+> Alles, was N2c braucht, ist fertig: `naht.js` (4.5) liefert Schwerpunkt und Randpunkte,
+> `profil.js` (4.6) liefert die Segmente **mit Herkunfts-Code und Segmentgruppe**.
+> N2c rechnet **nichts** — es zeichnet ausschließlich das, was gerechnet wird.
+
+**Zu bauen sind zwei Dateien:**
+
+**`svglib.js` (`DTNSvgLib`)** — die Bausteinbibliothek nach 4.3. Grundbausteine als kurze
+Datenzeilen: Linie, Nahtdreieck, Kreis/Kreisnaht, Kraftpfeil, Maßlinie, Schraffur,
+Beschriftungspunkt, Schwerpunktkreuz, Rahmen mit Auto-Skalierung. Reines SVG als String,
+**keine fremden Bilder**, **kein Text im SVG** (Zahlen und Beschriftungen stehen in der
+HTML-Legende — sonst sind sie nicht übersetzbar). DOM-frei und in Node prüfbar: die
+Funktionen geben Strings zurück, der Harness prüft sie mit regulären Ausdrücken.
+
+**`schaubild.js` (`DTNSchaubild`)** — zeichnet aus einer Segmentliste das Nahtbild:
+- **Auto-Skalierung** auf eine feste Zeichenfläche (Bounding-Box aus den Segmenten, Rand),
+  damit ein 20-mm-Bolzen und ein 1000-mm-Träger gleich gut aussehen.
+- **Segmente farbig nach `info[].gruppe`** (`flanke`, `stirn`, `flansch`, `steg`, `kante`,
+  `kreis`), Beschriftung über die vorhandenen Schlüssel `sg_<gruppe>` in der Legende.
+- **Schwerpunkt** aus `naht.js` einzeichnen, dazu die y-/z-Achsen durch den Schwerpunkt.
+- **Nicht geschweißte Kanten dünn und gestrichelt** mitzeichnen — der Anwender muss auf
+  einen Blick sehen, was er *nicht* gewählt hat. Dafür liefert `profil.js` die Kontur, indem
+  `baue()` mit `kanten:'rundum'` ein zweites Mal aufgerufen wird (keine neue Schnittstelle).
+- **Ecklücken bei Hohlprofilen sichtbar machen** — sie sind eine Rechenannahme (4.6).
+- Rückgabe: SVG-String + Legendendaten (Codes, keine fertigen Texte).
+
+**Damit ist die Auswahl-Skizze aus 2.2b erledigt:** dieselben Segmente, die gerechnet werden,
+werden gezeichnet. Ändert der Anwender die Kantenauswahl, verschwindet die Naht sofort.
+
+**Abzuliefern wie immer:** beide Module + `<script src>` an der richtigen Stelle in beiden
+HTMLs (nach `profil.js`), Grafik in der Zwischen-Statusseite sichtbar (entfällt mit N5),
+DOM-Smokes um die Grafikprüfungen erweitert, Harness um eine Sektion S24 (Auto-Skalierung,
+Determinismus, jede Segmentgruppe hat eine Farbe und eine Beschriftung, kein Text im SVG).
 
 **Später (nicht V1):** **Normprofil-Katalog** (IPE/HEA/HEB/UPE/UPN/RHS/Rohr, 2.2b Stufe 2),
 unterbrochene Nähte, Loch-/Schlitznähte, weitere Kerbfälle, FKM-Richtlinie, Kranbau-Regelwerke,
@@ -862,6 +899,12 @@ Melden müssen sie **309 / 79 / 80 · 0 Fehler**. Weicht etwas ab, erst das klä
 - **Neue bindende Vorgabe: die HTML startet immer im dunklen Design** (Schalter bleibt,
   nur der Startzustand ändert sich) → Umsetzung in N5, Prüfung im DOM-Smoke.
 
+**Aus der Rückmeldung 2026-07-25 (N2b abgenommen):**
+- N2b von Dieter am Handy geprüft: Profilkarte, Umfangs-Gegenüberstellung mit Eckbogen,
+  Hand-Anker und Hinweise laufen in allen drei Sprachen. **Abgenommen.**
+  Projektordner und GitHub sind auf diesem Stand.
+- Damit ist die **Basislinie 309 / 79 / 80** verbindlich — sie darf nur noch wachsen.
+
 **Aus der Rückmeldung 2026-07-25 (N2 abgenommen):**
 - N2 von Dieter am Handy geprüft: Nahtbild-Karte, Hand-Anker-Häkchen und Selbstprüfung laufen
   in allen drei Sprachen. **Abgenommen.** Projektordner und GitHub sind auf diesem Stand.
@@ -949,6 +992,12 @@ nachgerechnet: Blech 2·(b+t), Rechteckrohr 2·(b+h)−8·r, Rundrohr π·d, I- 
 2·h+4·b−2·tw, Winkel 2·(b+h), Endkrater 2·a je offener Raupe.
 **Basislinie 208 → 309 Assertions · Smokes 55/56 → 79/80.**
 **Nächster Schritt: N2c (Nahtbild-Grafik, `svglib.js` + `schaubild.js`).**
+**v2.7 (2026-07-25):** **N2b von Dieter am Handy geprüft und ABGENOMMEN**, Projektordner und
+GitHub auf diesem Stand. Neuer Abschnitt **5.1** (ausformulierter Auftrag für N2c: `svglib.js`
+und `schaubild.js`, Auto-Skalierung, Einfärbung nach Segmentgruppe, Schwerpunkt, gestrichelte
+nicht geschweißte Kanten, sichtbare Ecklücken, kein Text im SVG), Kickoff-Punkt 5b um den
+Verweis darauf ergänzt. Basislinie unverändert **309 / 79 / 80**.
+**Nächster Schritt: N2c (Nahtbild-Grafik).**
 ═══════════════════════════════════════════════════════════════════════════
 Ende Schweißnaht-1.md · DT-ProfiSchweissnaht
 ═══════════════════════════════════════════════════════════════════════════
