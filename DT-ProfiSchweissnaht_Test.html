@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="de" translate="no">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google" content="notranslate">
+<title>DT-ProfiSchweissnaht – Schweißnahtberechnung Stahlbau &amp; Maschinenbau</title>
+<meta name="description" content="Schweißnahtberechnung nach EN 1993-1-8, EN 1993-1-4, EN 1999-1-1 und klassischem Maschinenbau – statischer Nachweis, Ermüdung, Wärmeführung, Kosten, Verzug. Offline, dreisprachig.">
+<!-- ===================================================================== -->
+<!--  EDITION beim Build setzen:  'full' = Vollversion  ·  'test' = Testversion -->
+<script>window.DT_EDITION = 'test';</script>
+<!-- ===================================================================== -->
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="editionBar" class="edition-bar" hidden></div>
+
+<header class="app-header">
+  <div class="brand">
+    <span class="mark" id="brandMark">DT-ProfiSchweissnaht</span>
+    <span class="tag" id="brandTag">Schweißnahtberechnung – Stahlbau und Maschinenbau</span>
+    <span class="license-line" id="licenseLine" hidden></span>
+  </div>
+  <div class="header-spacer"></div>
+  <div class="header-controls">
+    <div class="lang-switch" id="langSwitch" role="group" aria-label="Sprache / Language / Idioma">
+      <button type="button" class="lang-btn active" data-lang="de" aria-label="Deutsch">
+        <svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#000"/><rect y="6.67" width="30" height="6.66" fill="#D00"/><rect y="13.33" width="30" height="6.67" fill="#FFCE00"/></svg>DE
+      </button>
+      <button type="button" class="lang-btn" data-lang="en" aria-label="English">
+        <svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#012169"/><path d="M0,0 30,20 M30,0 0,20" stroke="#fff" stroke-width="4"/><path d="M0,0 30,20 M30,0 0,20" stroke="#C8102E" stroke-width="2"/><path d="M15,0 V20 M0,10 H30" stroke="#fff" stroke-width="6"/><path d="M15,0 V20 M0,10 H30" stroke="#C8102E" stroke-width="3.4"/></svg>EN
+      </button>
+      <button type="button" class="lang-btn" data-lang="pt" aria-label="Português">
+        <svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#DA291C"/><rect width="12" height="20" fill="#046A38"/><circle cx="12" cy="10" r="3.6" fill="none" stroke="#FFCE00" stroke-width="1.4"/><circle cx="12" cy="10" r="1.5" fill="#fff" stroke="#FFCE00" stroke-width=".6"/></svg>PT
+      </button>
+    </div>
+    <button type="button" class="icon-btn" id="themeBtn" title="Hell / Dunkel" aria-label="Hell/Dunkel umschalten">◐</button>
+    <button type="button" class="icon-btn" id="infoBtn" title="Info" aria-label="Info">i</button>
+  </div>
+</header>
+
+<main class="app-main">
+
+  <section class="card">
+    <div class="card-head">
+      <span class="eyebrow">N1</span>
+      <h2 id="h_status">Fundament</h2>
+    </div>
+    <div class="card-body">
+      <div class="status-banner ok" id="statusBanner">–</div>
+      <dl class="kv" id="statusKV"></dl>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <span class="eyebrow">optionen.js</span>
+      <h2 id="h_optionen">Auswahlgruppen</h2>
+    </div>
+    <div class="card-body" id="optionenHost"></div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <span class="eyebrow">daten.js</span>
+      <h2 id="h_luecken">Ehrliche Lücken</h2>
+    </div>
+    <div class="card-body" id="lueckenHost"></div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <span class="eyebrow">2.4</span>
+      <h2 id="h_nichtgeprueft">Was NICHT geprüft wird</h2>
+    </div>
+    <div class="card-body" id="ngHost"></div>
+  </section>
+
+</main>
+
+<footer class="app-footer">
+  <span id="footNorm">EN 1993-1-8 · EN 1993-1-4 · EN 1999-1-1 · EN 1011-2 · EN 1090 · ISO 5817 · ISO 2553</span><br>
+  <span id="footNote">Berechnung ohne Gewähr, vor Produktivnutzung gegen die Originalnormen prüfen.</span><br>
+  <span>Dieter Tepe · Mühlenstraße 2 · 48477 Dreierwalde · Dieter.Tepe@live.de · www.dt-profidreieck.de</span>
+</footer>
+
+<!-- Module in Abhaengigkeitsreihenfolge (Schweissnaht-1.md 4.1).
+     Noch nicht vorhandene Module folgen in den Bausteinen N2 ff. -->
+<script src="i18n_kern.js"></script>
+<script src="i18n_hilfe.js"></script>
+<script src="i18n_kerbfall.js"></script>
+<script src="daten.js"></script>
+<script src="optionen.js"></script>
+<script src="validate.js"></script>
+
+<!-- ===================================================================== -->
+<!--  N1-ZWISCHENSTAND: kleine Statusanzeige, damit das Fundament am Handy
+      pruefbar ist. Entfaellt vollstaendig mit N5 (ui.js).                 -->
+<!-- ===================================================================== -->
+<script>
+(function () {
+  'use strict';
+  var LANG = 'de';
+
+  function id(x) { return document.getElementById(x); }
+  function K(k) { return window.DTNI18nKern ? window.DTNI18nKern.t(k, LANG) : k; }
+
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function edition() {
+    var ed = (window.DT_EDITION === 'test') ? 'test' : 'full';
+    var bar = id('editionBar');
+    if (ed === 'test') { bar.hidden = false; bar.textContent = K('editionTest'); }
+    else { bar.hidden = true; bar.textContent = ''; }
+    return ed;
+  }
+
+  function status() {
+    var mods = [
+      ['i18n_kern.js', window.DTNI18nKern],
+      ['i18n_hilfe.js', window.DTNI18nHilfe],
+      ['i18n_kerbfall.js', window.DTNI18nKerb],
+      ['daten.js', window.DTNData],
+      ['optionen.js', window.DTNOptions],
+      ['validate.js', window.DTNValidate]
+    ];
+    var fehlt = 0, rows = '';
+    for (var i = 0; i < mods.length; i++) {
+      var ok = !!mods[i][1];
+      if (!ok) fehlt++;
+      rows += '<dt>' + esc(mods[i][0]) + '</dt><dd>' + (ok ? '\u2713' : '\u2717') + '</dd>';
+    }
+    if (window.DTNData) {
+      rows += '<dt>Werkstoffe</dt><dd>' + window.DTNData.WERKSTOFFE.length + '</dd>';
+    }
+    if (window.DTNOptions) {
+      rows += '<dt>Auswahlgruppen</dt><dd>' + window.DTNOptions.GRUPPEN.length + '</dd>';
+    }
+    if (window.DTNValidate) {
+      rows += '<dt>Eingabefelder</dt><dd>' + window.DTNValidate.SCHEMA.length + '</dd>';
+    }
+    if (window.DTNI18nKern) {
+      rows += '<dt>i18n-Schl\u00fcssel</dt><dd>' + window.DTNI18nKern.keys().length + '</dd>';
+    }
+    rows += '<dt>Edition</dt><dd>' + esc(edition()) + '</dd>';
+    id('statusKV').innerHTML = rows;
+
+    var b = id('statusBanner');
+    b.textContent = (fehlt === 0)
+      ? 'Fundament vollst\u00e4ndig geladen \u2014 Baustein N1.'
+      : (fehlt + ' Modul(e) fehlen \u2014 bitte alle Dateien in denselben Ordner legen.');
+    b.className = 'status-banner ' + (fehlt === 0 ? 'ok' : 'bad');
+  }
+
+  function optionen() {
+    var host = id('optionenHost');
+    if (!window.DTNOptions || !window.DTNI18nKern) { host.textContent = '–'; return; }
+    var G = window.DTNOptions.GRUPPEN, out = '';
+    for (var i = 0; i < G.length; i++) {
+      var g = G[i];
+      out += '<div style="margin:0 0 10px 0"><strong>' + esc(K('grp_' + g.code)) + '</strong><br>';
+      var liste = [];
+      for (var j = 0; j < g.optionen.length; j++) {
+        liste.push(esc(K('opt_' + g.code + '_' + g.optionen[j].code)));
+      }
+      out += '<span style="font-size:13px;color:var(--muted)">' + liste.join(' · ') + '</span></div>';
+    }
+    host.innerHTML = out;
+  }
+
+  function luecken() {
+    var host = id('lueckenHost');
+    if (!window.DTNData) { host.textContent = '–'; return; }
+    var L = window.DTNData.luecken(), seen = {}, out = '';
+    for (var i = 0; i < L.length; i++) {
+      if (seen[L[i].code]) continue;
+      seen[L[i].code] = 1;
+      out += '<div class="gap-note">' + esc(K('lk_' + L[i].code)) + '</div>';
+    }
+    host.innerHTML = out || '<div class="status-banner ok">–</div>';
+  }
+
+  function nichtGeprueft() {
+    var host = id('ngHost');
+    if (!window.DTNData || !window.DTNI18nKern) { host.textContent = '–'; return; }
+    var N = window.DTNData.NICHT_GEPRUEFT, out = '<ul style="margin:0;padding-left:18px;font-size:13px">';
+    for (var i = 0; i < N.length; i++) out += '<li>' + esc(K('ng_' + N[i])) + '</li>';
+    host.innerHTML = out + '</ul>';
+  }
+
+  function texte() {
+    id('brandTag').textContent = K('tagline');
+    id('h_status').textContent = 'Fundament (N1)';
+    id('h_optionen').textContent = K('inputTitle');
+    id('h_luecken').textContent = K('gap');
+    id('h_nichtgeprueft').textContent = K('ng_titel');
+    id('footNote').textContent = K('disclaimer');
+  }
+
+  function zeichne() { texte(); status(); optionen(); luecken(); nichtGeprueft(); }
+
+  function sprache(l) {
+    LANG = l;
+    var btns = document.querySelectorAll('.lang-btn'), i;
+    for (i = 0; i < btns.length; i++) {
+      if (btns[i].getAttribute('data-lang') === l) btns[i].classList.add('active');
+      else btns[i].classList.remove('active');
+    }
+    document.documentElement.setAttribute('lang', l);
+    zeichne();
+  }
+
+  var btns = document.querySelectorAll('.lang-btn');
+  for (var i = 0; i < btns.length; i++) {
+    (function (b) {
+      b.addEventListener('click', function () { sprache(b.getAttribute('data-lang')); });
+    })(btns[i]);
+  }
+
+  var tb = id('themeBtn');
+  if (tb) tb.addEventListener('click', function () {
+    var d = document.documentElement;
+    d.setAttribute('data-theme', d.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  });
+
+  var ib = id('infoBtn');
+  if (ib) ib.addEventListener('click', function () {
+    window.alert('DT-ProfiSchweissnaht\nDieter Tepe · M\u00fchlenstra\u00dfe 2 · 48477 Dreierwalde\nDieter.Tepe@live.de · www.dt-profidreieck.de');
+  });
+
+  window.DTN_N1_zeichne = zeichne;
+  window.DTN_N1_sprache = sprache;
+  zeichne();
+})();
+</script>
+</body>
+</html>

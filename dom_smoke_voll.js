@@ -1,0 +1,214 @@
+/* ============================================================================
+ * DT-ProfiSchweissnaht · dom_smoke_voll.js   ***DEV-ONLY — NIE AUSLIEFERN***
+ * DOM-Smoke mit Mini-DOM-Shim in Node.
+ *  - laedt IMMER ALLE Module gemeinsam (echte Ladereihenfolge aus der HTML)
+ *  - fuehrt das in der HTML enthaltene Skript real aus
+ *  - klickt die Oberflaeche durch (Sprachumschalter, Theme, Info)
+ * Aufruf:  node dom_smoke_voll.js        (Vollversion)
+ *          node dom_smoke_test.js        (Testversion)
+ * ========================================================================== */
+'use strict';
+
+var fs = require('fs');
+var path = require('path');
+
+/* ---------------------------------------------------------------- Mini-DOM */
+function Element(tag) {
+  this.tagName = tag || 'div';
+  this.attributes = {};
+  this.children = [];
+  this._text = '';
+  this._html = '';
+  this.hidden = false;
+  this.listeners = {};
+  var self = this;
+  this.classList = {
+    _set: {},
+    add: function (c) { self.classList._set[c] = 1; },
+    remove: function (c) { delete self.classList._set[c]; },
+    contains: function (c) { return !!self.classList._set[c]; }
+  };
+  this.style = {};
+}
+Object.defineProperty(Element.prototype, 'textContent', {
+  get: function () { return this._text; },
+  set: function (v) { this._text = String(v); this._html = ''; }
+});
+Object.defineProperty(Element.prototype, 'innerHTML', {
+  get: function () { return this._html; },
+  set: function (v) { this._html = String(v); this._text = ''; }
+});
+Object.defineProperty(Element.prototype, 'className', {
+  get: function () { return Object.keys(this.classList._set).join(' '); },
+  set: function (v) {
+    this.classList._set = {};
+    String(v).split(/\s+/).forEach(function (c) { if (c) this.classList._set[c] = 1; }, this);
+  }
+});
+Element.prototype.getAttribute = function (n) {
+  return Object.prototype.hasOwnProperty.call(this.attributes, n) ? this.attributes[n] : null;
+};
+Element.prototype.setAttribute = function (n, v) { this.attributes[n] = String(v); };
+Element.prototype.addEventListener = function (ev, fn) {
+  (this.listeners[ev] = this.listeners[ev] || []).push(fn);
+};
+Element.prototype.click = function () {
+  var l = this.listeners.click || [];
+  for (var i = 0; i < l.length; i++) l[i].call(this, { type: 'click', target: this });
+};
+Element.prototype.inhalt = function () { return this._html + ' ' + this._text; };
+
+function baueDom(html) {
+  var byId = {}, langBtns = [];
+  var re = /id="([^"]+)"/g, m;
+  while ((m = re.exec(html)) !== null) byId[m[1]] = new Element('div');
+
+  var reBtn = /class="lang-btn[^"]*"[^>]*data-lang="([a-z]{2})"/g;
+  while ((m = reBtn.exec(html)) !== null) {
+    var b = new Element('button');
+    b.setAttribute('data-lang', m[1]);
+    b.classList.add('lang-btn');
+    if (m[1] === 'de') b.classList.add('active');
+    langBtns.push(b);
+  }
+
+  var docEl = new Element('html');
+  docEl.setAttribute('lang', 'de');
+
+  var document = {
+    documentElement: docEl,
+    getElementById: function (i) { return byId[i] || null; },
+    createElement: function (t) { return new Element(t); },
+    querySelectorAll: function (sel) {
+      if (sel === '.lang-btn') return langBtns;
+      return [];
+    }
+  };
+  return { document: document, byId: byId, langBtns: langBtns, docEl: docEl };
+}
+
+/* -------------------------------------------------------------- Smoke-Lauf */
+function lauf(edition) {
+  var N = 0, FAIL = [];
+  function ok(bed, txt) {
+    N++;
+    if (!bed) { FAIL.push(txt); console.log('  ✗ ' + txt); }
+  }
+
+  var datei = (edition === 'test') ? 'DT-ProfiSchweissnaht_Test.html' : 'DT-ProfiSchweissnaht.html';
+  var htmlPfad = path.join(__dirname, datei);
+  var html = fs.readFileSync(htmlPfad, 'utf8');
+
+  console.log('\n— DOM-Smoke ' + (edition === 'test' ? 'TESTVERSION' : 'VOLLVERSION') + ' (' + datei + ') —');
+
+  /* 1) Editionsweiche + Ladereihenfolge aus der HTML lesen */
+  var mEd = html.match(/window\.DT_EDITION\s*=\s*'(full|test)'/);
+  ok(!!mEd, 'Editionsweiche in der HTML gefunden');
+  ok(mEd && mEd[1] === edition, 'Editionsweiche steht auf "' + edition + '"');
+
+  var srcRe = /<script src="([^"]+)"><\/script>/g, srcs = [], mm;
+  while ((mm = srcRe.exec(html)) !== null) srcs.push(mm[1]);
+  var erwartet = ['i18n_kern.js', 'i18n_hilfe.js', 'i18n_kerbfall.js', 'daten.js', 'optionen.js', 'validate.js'];
+  ok(srcs.join(',') === erwartet.join(','), 'Ladereihenfolge stimmt: ' + srcs.join(' → '));
+
+  /* 2) ALLE Module gemeinsam laden — genau in dieser Reihenfolge */
+  var d = baueDom(html);
+  var win = { DT_EDITION: edition, alert: function (t) { win._letzterAlert = t; } };
+  for (var i = 0; i < srcs.length; i++) {
+    var mod = require('./' + srcs[i]);
+    var name = { 'i18n_kern.js': 'DTNI18nKern', 'i18n_hilfe.js': 'DTNI18nHilfe',
+                 'i18n_kerbfall.js': 'DTNI18nKerb', 'daten.js': 'DTNData',
+                 'optionen.js': 'DTNOptions', 'validate.js': 'DTNValidate' }[srcs[i]];
+    win[name] = mod;
+    ok(!!mod, 'Modul geladen: ' + srcs[i]);
+  }
+  win.document = d.document;
+  win.window = win;
+
+  /* 3) Das Skript aus der HTML real ausfuehren */
+  var inline = html.match(/<script>\n\(function \(\) \{[\s\S]*?\}\)\(\);\n<\/script>/);
+  ok(!!inline, 'Skriptblock in der HTML gefunden');
+  var code = inline[0].replace(/^<script>/, '').replace(/<\/script>$/, '');
+  var fehler = null;
+  try {
+    (new Function('window', 'document', 'with (window) { ' + code + ' }'))(win, d.document);
+  } catch (e) { fehler = e; }
+  ok(!fehler, 'Oberflaeche laeuft ohne Fehler an' + (fehler ? ' — ' + fehler.message : ''));
+  if (fehler) { return { N: N, FAIL: FAIL }; }
+
+  /* 4) Statusanzeige */
+  var kv = d.byId.statusKV.inhalt();
+  ok(/Werkstoffe/.test(kv) && />11</.test(kv), 'Status zeigt 11 Werkstoffe');
+  ok(/Auswahlgruppen/.test(kv), 'Status zeigt die Zahl der Auswahlgruppen');
+  ok(/Eingabefelder/.test(kv), 'Status zeigt die Zahl der Eingabefelder');
+  ok(/i18n/.test(kv), 'Status zeigt die Zahl der i18n-Schluessel');
+  ok(d.byId.statusBanner.classList.contains('ok'), 'Statusbanner meldet "vollstaendig geladen"');
+  ok(d.byId.statusKV.inhalt().indexOf('\u2717') < 0, 'kein Modul fehlt');
+
+  /* 5) Editionsverhalten */
+  if (edition === 'test') {
+    ok(d.byId.editionBar.hidden === false, 'Testbalken ist sichtbar');
+    ok(/Test/i.test(d.byId.editionBar.inhalt()), 'Testbalken traegt den Testversion-Text');
+  } else {
+    ok(d.byId.editionBar.hidden === true, 'Vollversion zeigt keinen Testbalken');
+  }
+
+  /* 6) Aufgebaute Bereiche */
+  ok(d.byId.optionenHost.inhalt().length > 200, 'Auswahlgruppen sind aufgebaut');
+  ok(/Bemessungswelt/.test(d.byId.optionenHost.inhalt()), 'Gruppe "Bemessungswelt" erscheint');
+  ok(/Kehlnaht, doppelseitig/.test(d.byId.optionenHost.inhalt()), 'Optionstexte erscheinen');
+  ok(/gap-note/.test(d.byId.lueckenHost.inhalt()), 'ehrliche Luecken werden angezeigt');
+  var li = (d.byId.ngHost.inhalt().match(/<li>/g) || []).length;
+  ok(li === 10, 'Liste "was NICHT geprueft wird" mit 10 Punkten (ist ' + li + ')');
+
+  /* 7) Sprachumschaltung real durchklicken — inkl. Platzhalter-Kontrolle */
+  function alleTexte() {
+    return d.byId.optionenHost.inhalt() + d.byId.lueckenHost.inhalt() +
+           d.byId.ngHost.inhalt() + d.byId.statusKV.inhalt() +
+           d.byId.h_luecken.inhalt() + d.byId.h_nichtgeprueft.inhalt() + d.byId.footNote.inhalt();
+  }
+  ok(!/\[[a-z0-9_.]+\]/.test(alleTexte()), 'DE: kein unuebersetzter Platzhalter');
+
+  function klick(l) {
+    for (var k = 0; k < d.langBtns.length; k++) {
+      if (d.langBtns[k].getAttribute('data-lang') === l) { d.langBtns[k].click(); return d.langBtns[k]; }
+    }
+    return null;
+  }
+
+  var bEn = klick('en');
+  ok(!!bEn && bEn.classList.contains('active'), 'EN-Schalter wird aktiv');
+  ok(d.docEl.getAttribute('lang') === 'en', 'Dokumentsprache auf EN gesetzt');
+  ok(/Design world/.test(d.byId.optionenHost.inhalt()), 'EN: Gruppentexte uebersetzt');
+  ok(/Fillet weld, double-sided/.test(d.byId.optionenHost.inhalt()), 'EN: Optionstexte uebersetzt');
+  ok(!/\[[a-z0-9_.]+\]/.test(alleTexte()), 'EN: kein unuebersetzter Platzhalter');
+
+  var bPt = klick('pt');
+  ok(!!bPt && bPt.classList.contains('active'), 'PT-Schalter wird aktiv');
+  ok(!bEn.classList.contains('active'), 'EN-Schalter ist wieder inaktiv');
+  ok(d.docEl.getAttribute('lang') === 'pt', 'Dokumentsprache auf PT gesetzt');
+  ok(/Método de dimensionamento/.test(d.byId.optionenHost.inhalt()), 'PT: Gruppentexte uebersetzt');
+  ok(/Solda de filete, bilateral/.test(d.byId.optionenHost.inhalt()), 'PT: Optionstexte uebersetzt');
+  ok(!/\[[a-z0-9_.]+\]/.test(alleTexte()), 'PT: kein unuebersetzter Platzhalter');
+
+  klick('de');
+  ok(/Bemessungswelt/.test(d.byId.optionenHost.inhalt()), 'Rueckschaltung auf DE funktioniert');
+
+  /* 8) Theme und Info */
+  d.byId.themeBtn.click();
+  ok(d.docEl.getAttribute('data-theme') === 'dark', 'Theme schaltet auf dunkel');
+  d.byId.themeBtn.click();
+  ok(d.docEl.getAttribute('data-theme') === 'light', 'Theme schaltet zurueck auf hell');
+  d.byId.infoBtn.click();
+  ok(/Dreierwalde/.test(win._letzterAlert || ''), 'Info zeigt das Impressum');
+
+  return { N: N, FAIL: FAIL };
+}
+
+module.exports = { lauf: lauf };
+
+if (require.main === module) {
+  var r = lauf('full');
+  console.log('\n  Smoke Vollversion: ' + r.N + ' Prüfungen · ' + r.FAIL.length + ' Fehler');
+  process.exit(r.FAIL.length ? 1 : 0);
+}

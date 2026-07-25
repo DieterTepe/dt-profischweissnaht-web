@@ -1,0 +1,118 @@
+/* ============================================================================
+   DT-ProfiSchweissnaht · style.css
+   Baustein N1 — Design-Tokens und Grundlayout. Waechst mit N5 (UI-Basis).
+   Handy zuerst: alles einspaltig, ab 900 px zweispaltig.
+   ========================================================================== */
+
+:root{
+  --bg:#f4f6f8; --fg:#16202b; --muted:#5b6a7a; --line:#d6dee6;
+  --card:#ffffff; --card2:#eef3f7;
+  --akzent:#0b6bb5; --akzent-fg:#ffffff;
+  --ok:#1c7a3e; --warn:#a86a00; --bad:#b3261e;
+  --r:12px; --pad:14px; --gap:14px;
+  --f0:13px; --f1:15px; --f2:18px; --f3:22px;
+}
+[data-theme="dark"]{
+  --bg:#111820; --fg:#e7edf3; --muted:#9db0c2; --line:#2a3644;
+  --card:#18212b; --card2:#131b23;
+  --akzent:#3d9ae0; --akzent-fg:#04121d;
+  --ok:#4cc07a; --warn:#e0a53a; --bad:#ef6b62;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--fg);
+  font:var(--f1)/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  -webkit-text-size-adjust:100%;
+}
+
+/* ---------- Kopf ---------- */
+.edition-bar{
+  background:var(--warn); color:#1a1200; text-align:center;
+  padding:6px 10px; font-size:var(--f0); font-weight:600;
+}
+.app-header{
+  display:flex; flex-wrap:wrap; align-items:center; gap:8px;
+  padding:10px var(--pad); background:var(--card);
+  border-bottom:1px solid var(--line);
+}
+.brand{display:flex; flex-direction:column; min-width:0}
+.brand .mark{font-size:var(--f2); font-weight:700; letter-spacing:.2px}
+.brand .tag{font-size:var(--f0); color:var(--muted)}
+.brand .license-line{font-size:var(--f0); color:var(--ok)}
+.header-spacer{flex:1 1 auto}
+.header-controls{display:flex; align-items:center; gap:6px}
+
+.lang-switch{display:flex; gap:4px}
+.lang-btn{
+  display:flex; align-items:center; gap:4px;
+  padding:5px 8px; font-size:var(--f0); cursor:pointer;
+  background:var(--card2); color:var(--fg);
+  border:1px solid var(--line); border-radius:8px;
+}
+.lang-btn svg{width:18px; height:12px; display:block; border-radius:2px}
+.lang-btn.active{background:var(--akzent); color:var(--akzent-fg); border-color:var(--akzent)}
+.icon-btn{
+  width:34px; height:34px; border-radius:8px; cursor:pointer;
+  background:var(--card2); color:var(--fg); border:1px solid var(--line);
+  font-size:var(--f1);
+}
+
+/* ---------- Leisten und Karten ---------- */
+.subbar{
+  display:flex; flex-wrap:wrap; gap:8px; align-items:center;
+  padding:8px var(--pad); background:var(--card2);
+  border-bottom:1px solid var(--line);
+}
+.app-main{
+  display:grid; gap:var(--gap); padding:var(--pad);
+  grid-template-columns:1fr;
+}
+@media (min-width:900px){ .app-main{grid-template-columns:1fr 1fr} }
+
+.card{background:var(--card); border:1px solid var(--line); border-radius:var(--r); overflow:hidden}
+.card-head{
+  display:flex; align-items:baseline; gap:8px;
+  padding:10px var(--pad); border-bottom:1px solid var(--line); background:var(--card2);
+}
+.card-head h2{margin:0; font-size:var(--f2)}
+.eyebrow{font-size:var(--f0); color:var(--muted); text-transform:uppercase; letter-spacing:.06em}
+.card-body{padding:var(--pad)}
+
+/* ---------- Bedienelemente ---------- */
+.btn{
+  padding:9px 14px; border-radius:9px; cursor:pointer; font-size:var(--f1);
+  border:1px solid var(--line); background:var(--card); color:var(--fg);
+}
+.btn-primary{background:var(--akzent); color:var(--akzent-fg); border-color:var(--akzent); font-weight:600}
+.btn-ghost{background:transparent}
+input[type=text],input[type=number],select{
+  padding:8px 10px; border-radius:9px; font-size:var(--f1);
+  border:1px solid var(--line); background:var(--card); color:var(--fg); max-width:100%;
+}
+label{font-size:var(--f0); color:var(--muted)}
+
+/* ---------- Status / Ampel / Luecken ---------- */
+.status-banner{padding:10px 12px; border-radius:9px; background:var(--card2); font-size:var(--f0)}
+.status-banner.ok{border-left:4px solid var(--ok)}
+.status-banner.warn{border-left:4px solid var(--warn)}
+.status-banner.bad{border-left:4px solid var(--bad)}
+.gap-note{
+  margin:8px 0; padding:9px 11px; border-radius:9px; font-size:var(--f0);
+  background:var(--card2); border-left:4px solid var(--warn);
+}
+.kv{display:grid; grid-template-columns:auto 1fr; gap:4px 12px; font-size:var(--f0)}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0; font-variant-numeric:tabular-nums}
+
+.app-footer{
+  padding:12px var(--pad); font-size:var(--f0); color:var(--muted);
+  border-top:1px solid var(--line); background:var(--card);
+}
+
+@media print{
+  .app-header,.subbar,.app-footer,.icon-btn,.lang-switch,.btn{display:none !important}
+  body{background:#fff; color:#000}
+  .card{border:1px solid #999; break-inside:avoid}
+}
