@@ -9,8 +9,8 @@
 > Sie ist so geschrieben, dass ein **neuer Chat ohne Vorwissen** damit weiterarbeiten kann.
 
 ```
-Plan-Version : 2.1 · Stand 2026-07-25
-Status       : N1 (Fundament) gebaut, getestet, ausgeliefert — alles grün.
+Plan-Version : 2.2 · Stand 2026-07-25
+Status       : N1 (Fundament) von Dieter geprüft und ABGENOMMEN.
                → NÄCHSTER SCHRITT: Baustein N2 (Nahtbild-Kern, naht.js).
 Basislinie   : 128 Assertions · DOM-Smokes 39 (voll) + 40 (test) · i18n-Parität 0 Abweichungen
                (Basislinie darf nur WACHSEN — nie schrumpfen, nie gelockert werden.)
@@ -268,6 +268,11 @@ ausgewiesen. Der Assistent nutzt bevorzugt den geometrischen Weg.
   Wert und drückt „Berechnen", wird **vollständig neu durchgerechnet**.
 - **„Leeren" leert wirklich ALLE Felder** — ohne Rest.
 
+**Startdarstellung (Dieters Hinweis 2026-07-25, BINDEND):** Die Oberfläche startet
+**immer im dunklen Design**. Der Hell/Dunkel-Schalter bleibt erhalten, aber der
+Ausgangszustand beim Öffnen der HTML ist dunkel — in **beiden** Editionen gleich.
+Umzusetzen in N5 (`ui.js` + `style.css`), im DOM-Smoke abzusichern.
+
 ### 3.2 Kontextbezogene Beispiele *(neue Anforderung)*
 
 Die Beispiele oben richten sich nach dem, was links ausgewählt/angehakt ist.
@@ -411,7 +416,7 @@ Zahlen stehen in der HTML-Legende, nicht im SVG (Übersetzbarkeit).
 | **N2** | **Nahtbild-Kern** | `naht.js`: Segmente → A_w, Schwerpunkt, I_y, I_z, I_p. DOM-frei. Hand-Anker: Rechteckbild + Kreisnaht geschlossen nachgerechnet. |
 | **N3** | **Spannungen + beide Welten** | `solver.js`: σ⊥, τ⊥, τ∥ aus N/Q/M/T · Welt A (EC3) · Welt B (klassisch) · **Nachweis UND Auslegung**. |
 | **N4** | **Rechenweg** | `rechenweg.js`: selbstprüfende Schritte für N2/N3, dreisprachig. |
-| **N5** | **UI-Basis** | 2 HTMLs, `style.css`, Formular mit aufklappbaren Bereichen und Freischalt-Haken, Ergebnis-Kacheln, Ampel, i18n, Theme, Laien-ⓘ, Block „Ausführung & Dokumentation" (ISO 5817 + EXC). **Erster Handy-Test.** |
+| **N5** | **UI-Basis** | 2 HTMLs, `style.css`, Formular mit aufklappbaren Bereichen und Freischalt-Haken, Ergebnis-Kacheln, Ampel, i18n, Theme (**Start immer dunkel**), Laien-ⓘ, Block „Ausführung & Dokumentation" (ISO 5817 + EXC). **Erster Handy-Test.** |
 | **N6** | **Nahtbild-Grafik** | `svglib.js` + `schaubild.js`: SVG-Vorschau des Nahtbilds, Segmente farbig, Schwerpunkt. |
 | **N6b** | **ISO-2553-Symbolgenerator** | `symbol.js`: Pfeil-/Gegenseite, a- bzw. z-Maß, Länge, Rundumnaht, Baustellennaht. Nutzt `svglib.js`. Bewusst **vor** dem Launch — Verkaufsargument. |
 | **N7** | **Presets** | Die 6 Starter als Segment-Daten + Vorbelegungen, **mit Merkmalen für die kontextbezogene Beispielliste** (3.2). |
@@ -549,6 +554,11 @@ verdrahtet, Sperr-Overlay in der Testversion, Registrierung + Long-Press-Reset.
   Angesetzt wird der **konservative untere** Wert, sichtbar als Lücke, per „eigener Wert"
   überschreibbar.
 
+**Aus der Rückmeldung 2026-07-25 (N1 abgenommen):**
+- N1 von Dieter am Handy geprüft: läuft, alle Sprachumstellungen sauber. **Abgenommen.**
+- **Neue bindende Vorgabe: die HTML startet immer im dunklen Design** (Schalter bleibt,
+  nur der Startzustand ändert sich) → Umsetzung in N5, Prüfung im DOM-Smoke.
+
 **Aus der Abstimmung 2026-07-24 (dieser Chat):**
 - Produktname **DT-ProfiSchweissnaht**, Repo `dt-profischweissnaht-web`, Projektdatei `.dts`.
 - **11 Werkstoffsorten** in V1 (5 Stahl, 3 Edelstahl, 3 Alu).
@@ -586,6 +596,9 @@ Verträglichkeitsregeln, EINE Filterfunktion, Wegeaufzählung), `i18n_kern.js` (
 (16 Felder, zweistufige Prüfung), `style.css`, beide HTMLs (Unterschied verifiziert: genau
 eine Zeile). Vier Korrekturen aus 6.1 im Code verankert und durch Assertions abgesichert.
 **Nächster Schritt: N2 (Nahtbild-Kern, `naht.js`).**
+**v2.2 (2026-07-25):** N1 von Dieter am Handy geprüft und **abgenommen** (Sprachumschaltung
+sauber). Neue bindende Vorgabe aufgenommen: **Startdarstellung immer dunkel** (Abschnitt 3.1,
+Umsetzung in N5). Sonst unverändert.
 ═══════════════════════════════════════════════════════════════════════════
 Ende Schweißnaht-1.md · DT-ProfiSchweissnaht
 ═══════════════════════════════════════════════════════════════════════════
