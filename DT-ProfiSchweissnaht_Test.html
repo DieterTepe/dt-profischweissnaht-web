@@ -79,6 +79,14 @@
 
   <section class="card">
     <div class="card-head">
+      <span class="eyebrow">N2c · svglib.js + schaubild.js</span>
+      <h2 id="h_grafik">Nahtbild-Grafik</h2>
+    </div>
+    <div class="card-body" id="grafikHost"></div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
       <span class="eyebrow">daten.js</span>
       <h2 id="h_luecken">Ehrliche Lücken</h2>
     </div>
@@ -111,10 +119,13 @@
 <script src="validate.js"></script>
 <script src="naht.js"></script>
 <script src="profil.js"></script>
+<script src="svglib.js"></script>
+<script src="schaubild.js"></script>
 
 <!-- ===================================================================== -->
-<!--  N1/N2-ZWISCHENSTAND: kleine Statusanzeige, damit Fundament und
-      Nahtbild-Kern am Handy pruefbar sind. Entfaellt vollstaendig mit N5. -->
+<!--  N1/N2/N2b/N2c-ZWISCHENSTAND: kleine Statusanzeige, damit Fundament,
+      Nahtbild-Kern, Profileingabe und Grafik am Handy pruefbar sind.
+      Entfaellt vollstaendig mit N5. -->
 <!-- ===================================================================== -->
 <script>
 (function () {
@@ -145,7 +156,9 @@
       ['optionen.js', window.DTNOptions],
       ['validate.js', window.DTNValidate],
       ['naht.js', window.DTNNaht],
-      ['profil.js', window.DTNProfil]
+      ['profil.js', window.DTNProfil],
+      ['svglib.js', window.DTNSvgLib],
+      ['schaubild.js', window.DTNSchaubild]
     ];
     var fehlt = 0, rows = '';
     for (var i = 0; i < mods.length; i++) {
@@ -345,6 +358,69 @@
     host.innerHTML = out;
   }
 
+  /* ---- N2c: Nahtbild-Grafik — gezeichnet wird, was gerechnet wird ---- */
+  function grafik() {
+    var host = id('grafikHost');
+    if (!window.DTNSchaubild || !window.DTNSvgLib || !window.DTNProfil || !window.DTNI18nKern) {
+      host.textContent = '\u2013'; return;
+    }
+    var SB = window.DTNSchaubild;
+
+    /* Dasselbe Profil zweimal: einmal rundum geschweisst, einmal nur die
+       Flanken. Gleicher Massstab — die Naht verschwindet, die Kontur bleibt. */
+    var basis = { profil: 'rohr_rechteck', b: 100, h: 60, t1: 4, r_ecke: 8, a: 4 };
+    function mit(kanten) {
+      var e = {}, k;
+      for (k in basis) if (Object.prototype.hasOwnProperty.call(basis, k)) e[k] = basis[k];
+      e.kanten = kanten;
+      return SB.ausProfil(e, { breite: 300, hoehe: 220 });
+    }
+    var g1 = mit('rundum'), g2 = mit('flanken');
+    if (!g1.ok || !g2.ok) { host.textContent = '\u2013'; return; }
+
+    var out = '<div style="margin:0 0 8px 0"><strong>' + esc(K('nb_beispiel')) + ':</strong> ' +
+              esc(K('opt_profil_rohr_rechteck')) + ' 100 \u00d7 60 mm, r = 8 mm, a = 4 mm \u2014 ' +
+              esc(K('opt_kanten_rundum')) + ' / ' + esc(K('opt_kanten_flanken')) + '</div>';
+
+    out += '<div class="svg-paar">' +
+           '<div class="svg-box">' + g1.svg + '</div>' +
+           '<div class="svg-box">' + g2.svg + '</div></div>';
+
+    /* Legende: Codes kommen aus schaubild.js, der Text aus dem Woerterbuch,
+       die Zahlen stehen hier in der HTML — im SVG steht kein Text (4.3). */
+    var alle = g1.legende.concat(g2.legende), gesehen = {}, liste = [], i, L;
+    for (i = 0; i < alle.length; i++) {
+      L = alle[i];
+      if (gesehen[L.code]) continue;
+      gesehen[L.code] = 1;
+      liste.push(L);
+    }
+    out += '<div style="margin:10px 0 4px 0"><strong>' + esc(K('sb_legende')) + '</strong></div>' +
+           '<div class="legende">';
+    for (i = 0; i < liste.length; i++) {
+      L = liste[i];
+      out += '<span class="li"><span class="sw ' + esc(L.stil) + '" style="border-top-color:' +
+             esc(L.farbe) + '"></span>' + esc(K(L.code)) +
+             (L.l ? ' <span class="n">' + zahl(L.l, 1) + ' ' + esc(K('unit_mm')) + '</span>' : '') +
+             '</span>';
+    }
+    out += '</div>';
+
+    out += '<dl class="kv" style="margin-top:10px">' +
+           '<dt>' + esc(K('sb_massstab')) + '</dt><dd>' + zahl(g1.mm_je_px, 3) + ' ' + esc(K('sb_mm_je_px')) + '</dd>' +
+           '<dt>' + esc(K('nb_segmente')) + '</dt><dd>' + zahl(g1.n_seg, 0) + ' / ' + zahl(g2.n_seg, 0) + '</dd>' +
+           '<dt>' + esc(K('sb_eckluecke')) + '</dt><dd>' + zahl(g1.n_luecken, 0) + '</dd>' +
+           '</dl>';
+
+    var hs = g1.hinweise.concat(g2.hinweise), hin = {};
+    for (i = 0; i < hs.length; i++) {
+      if (hin[hs[i].code]) continue;
+      hin[hs[i].code] = 1;
+      out += '<div class="gap-note">' + esc(K(hs[i].code)) + '</div>';
+    }
+    host.innerHTML = out;
+  }
+
   function luecken() {
     var host = id('lueckenHost');
     if (!window.DTNData) { host.textContent = '–'; return; }
@@ -371,12 +447,13 @@
     id('h_optionen').textContent = K('inputTitle');
     id('h_nahtbild').textContent = K('nb_titel');
     id('h_profil').textContent = K('pr_titel');
+    id('h_grafik').textContent = K('sb_titel');
     id('h_luecken').textContent = K('gap');
     id('h_nichtgeprueft').textContent = K('ng_titel');
     id('footNote').textContent = K('disclaimer');
   }
 
-  function zeichne() { texte(); status(); optionen(); nahtbild(); profil(); luecken(); nichtGeprueft(); }
+  function zeichne() { texte(); status(); optionen(); nahtbild(); profil(); grafik(); luecken(); nichtGeprueft(); }
 
   function sprache(l) {
     LANG = l;

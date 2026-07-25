@@ -9,14 +9,16 @@
 > Sie ist so geschrieben, dass ein **neuer Chat ohne Vorwissen** damit weiterarbeiten kann.
 
 ```
-Plan-Version : 2.7 · Stand 2026-07-25
-Status       : N1 (Fundament) von Dieter am Handy geprüft und ABGENOMMEN.
-               N2 (Nahtbild-Kern, naht.js) von Dieter am Handy geprüft und ABGENOMMEN.
-               N2b (Profileingabe, profil.js) von Dieter am Handy geprüft und ABGENOMMEN.
+Plan-Version : 2.8 · Stand 2026-07-25
+Status       : N1 (Fundament), N2 (Nahtbild-Kern) und N2b (Profileingabe) von Dieter am
+               Handy geprüft und ABGENOMMEN.
+               N2c (Nahtbild-Grafik, svglib.js + schaubild.js) gebaut und ausgeliefert —
+               **wartet auf Dieters Prüfung am Handy.**
                Alle Dateien liegen aktuell in /mnt/project/ UND auf GitHub Pages.
-               → NÄCHSTER SCHRITT: Baustein N2c (Nahtbild-Grafik, svglib.js + schaubild.js)
-                 — Auftrag in Abschnitt 5.1, Schnittstellen in 4.5 (naht.js) und 4.6 (profil.js).
-Basislinie   : 309 Assertions · DOM-Smokes 79 (voll) + 80 (test) · i18n-Parität 0 Abweichungen
+               → NÄCHSTER SCHRITT nach der Abnahme: Baustein N3 (Spannungen, solver.js)
+                 — Auftrag in Abschnitt 5.1, Schnittstellen in 4.5 (naht.js), 4.6 (profil.js)
+                   und 4.7 (svglib.js + schaubild.js).
+Basislinie   : 381 Assertions · DOM-Smokes 102 (voll) + 103 (test) · i18n-Parität 0 Abweichungen
                (Basislinie darf nur WACHSEN — nie schrumpfen, nie gelockert werden.)
 Dateistand   : siehe Abschnitt 8.1 — dort steht, was fertig ist und was noch fehlt.
 ```
@@ -74,13 +76,15 @@ Schritt. Danach Plan-Kopf (Version/Status/Basislinie) + Changelog pflegen.
 2. Abschnitt **8.1** lesen: was ist fertig, was fehlt.
 3. Abschnitt **4.5** lesen: die fertige Schnittstelle von `naht.js`.
 4. Abschnitt **4.6** lesen: die fertige Schnittstelle von `profil.js` — darauf setzen
-   N2c (Grafik) und N7 (Presets) auf. Fachlicher Hintergrund steht in **2.2b**.
-5. Abschnitt **5.1** lesen: der ausformulierte Auftrag für den nächsten Baustein **N2c**.
-6. Arbeitsordner herstellen (Befehl unter Punkt 6 der Kickoff-Liste), dann
+   die Grafik und N7 (Presets) auf. Fachlicher Hintergrund steht in **2.2b**.
+5. Abschnitt **4.7** lesen: die fertige Schnittstelle von `svglib.js` + `schaubild.js`
+   (N2c) — darauf setzen N5 (UI), N6b (ISO 2553) und N14 (Kerbfallskizzen) auf.
+6. Abschnitt **5.1** lesen: der ausformulierte Auftrag für den nächsten Baustein **N3**.
+7. Arbeitsordner herstellen (Befehl unter Punkt 6 der Kickoff-Liste), dann
    `node test_naht.js`, `node dom_smoke_voll.js`, `node dom_smoke_test.js` laufen lassen
-   und die Basislinie aus dem Plan-Kopf bestätigen (**309 / 79 / 80 · 0 Fehler**),
+   und die Basislinie aus dem Plan-Kopf bestätigen (**381 / 102 / 103 · 0 Fehler**),
    **bevor** etwas gebaut wird.
-7. Erst dann N2c bauen — Fließband nach Punkt 5 der Kickoff-Liste.
+8. Erst dann N3 bauen — Fließband nach Punkt 5 der Kickoff-Liste.
 
 **6) TOKEN-PAUSEN:** Dieter stoppt bei ~90 % Verbrauch, Pause **4 Stunden**, dann weiter.
 Vor der Pause den genauen Stand nennen; Wiedereinstieg mit „weiter mit <Baustein>".
@@ -429,10 +433,11 @@ dt-profischweissnaht-web/
 ├── thermik.js     (DTNThermal)    → CET/CEV, Streckenenergie, t8/5, Vorwärmtemperatur
 ├── kosten.js      (DTNCost)       → Nahtvolumen, Draht-/Gasbedarf, Zeit, Kosten
 ├── verzug.js      (DTNDistort)    → Quer-/Längs-/Winkelschrumpfung (Richtwerte)
-├── svglib.js      (DTNSvgLib)     → **SVG-Bausteinbibliothek** (siehe 4.3)
-│                                     ⬅ **NÄCHSTER BAUSTEIN (N2c)**
-├── schaubild.js   (DTNSchaubild)  → Nahtbild-Vorschau + Skizzen (nutzt svglib)
-│                                     ⬅ **NÄCHSTER BAUSTEIN (N2c)**
+├── svglib.js      (DTNSvgLib)     → **SVG-Bausteinbibliothek** (siehe 4.3); 13 Grund-
+│                                     bausteine, Auto-Skalierung, kein Text im SVG
+│                                     ✅ fertig (N2c) · Schnittstelle in 4.7
+├── schaubild.js   (DTNSchaubild)  → Nahtbild-Vorschau: Segmente → SVG + Legendendaten
+│                                     ✅ fertig (N2c) · Schnittstelle in 4.7
 ├── symbol.js      (DTNSymbol)     → ISO-2553-Symbolgenerator (nutzt svglib)
 ├── beratung.js    (DTNBeratung)   → Hinweise, Ampeln, Praxis-Tipps
 ├── assistent.js   (DTNAssistent)  → Dialoglogik (DOM-frei, Node-testbar)
@@ -450,9 +455,10 @@ i18n_kern → i18n_hilfe → i18n_kerbfall → daten → kerbfall → optionen �
 naht → profil → solver → rechenweg → ermuedung → thermik → kosten → verzug →
 svglib → schaubild → symbol → beratung → assistent → report → ui
 ```
-**Tatsächlich in den HTMLs eingetragen (Stand N2b, vom DOM-Smoke geprüft):**
+**Tatsächlich in den HTMLs eingetragen (Stand N2c, vom DOM-Smoke geprüft):**
 ```
-i18n_kern → i18n_hilfe → i18n_kerbfall → daten → optionen → validate → naht → profil
+i18n_kern → i18n_hilfe → i18n_kerbfall → daten → optionen → validate → naht → profil →
+svglib → schaubild
 ```
 Jeder neue Baustein trägt sein `<script src>` an der richtigen Stelle nach und erweitert
 im DOM-Smoke die Liste `erwartet` sowie die Namenszuordnung (`'profil.js': 'DTNProfil'`).
@@ -621,6 +627,70 @@ Hinweise `msg_endkrater_abzug` · `msg_endkrater_umlaufend` · `msg_endkrater_au
 - **kein Normprofil-Katalog** — Stufe 2 nach V1 (2.2b), Stufe 1 kann jede Abmessung,
 - keine Bögen: Eckradien verkürzen Segmente, sie werden nicht gezeichnet.
 
+### 4.7 Schnittstelle `svglib.js` + `schaubild.js` (fertig aus N2c)
+
+> **Nicht ändern, nur benutzen.** Beide Module sind DOM-frei, deterministisch und mutieren
+> ihre Eingaben nicht. Namensräume `DTNSvgLib` und `DTNSchaubild`. `schaubild.js` lädt
+> **nach** `svglib.js`, `naht.js` und `profil.js`.
+
+**`svglib.js` — 13 Grundbausteine, jeder gibt einen SVG-String zurück:**
+`linie` · `polylinie` (offen/geschlossen) · `kreis` · `rechteck` · `nahtdreieck` ·
+`kraftpfeil` · `masslinie` · `schraffur` · `punktmarke` · `schwerpunktkreuz` ·
+`achsenkreuz` · `rahmen` · `svg` (Hülle mit viewBox).
+Dazu `box(punkte)` · `boxVereinigen(a,b)` · `sicht(box, {breite,hoehe,rand,skala_max})` ·
+`zahl(x)` · `PALETTE`.
+
+- **`sicht()` ist die Auto-Skalierung**: sie liefert `skala`, `mm_je_px` und die Funktionen
+  `px(y)`, `pz(z)`, `pl(mm)`. **z zeigt nach oben**, die SVG-Y-Achse wird gedreht.
+  Entartete Fälle (Breite 0, Höhe 0, einzelner Punkt) sind abgefangen — nie NaN.
+- **Kein Text im SVG** (4.3): es wird kein `<text>`/`<tspan>` erzeugt. Statt Text trägt jeder
+  Baustein `data-code` mit einem **sprachneutralen Code**; beschriftet wird in der HTML.
+- Zahlen werden auf 3 Nachkommastellen formatiert, ohne Exponent und ohne „−0".
+- Kein fremdes Bild, keine externe Referenz, keine `<marker>`-IDs (Pfeilspitzen sind Polygone).
+
+**`schaubild.js` — `zeichne(eingabe)`:**
+```js
+{ segmente,            // Pflicht, naht.js-Format
+  info,                // optional, aus profil.js (gruppe, raupe, geschlossen)
+  ergebnis,            // optional, aus naht.js (ys, zs) → Schwerpunkt
+  kontur,              // optional, volle Profilkontur → gestrichelt
+  breite, hoehe, rand, strichbreite,
+  schwerpunkt, achsen, luecken, rahmen }   // Schalter, alle standardmäßig an
+```
+**Rückgabe:** `ok` · `svg` · `legende[]` · `gruppen[]` · `n_seg` · `n_kontur` · `n_luecken` ·
+`luecken[]` · `schwerpunkt` · `box` · `sicht` · `mm_je_px` · `gezeichnet` ·
+`fehler` · `warnungen` · `hinweise`. Bei einem Fehler ist `ok:false` und `svg:''` —
+**kein halbes Bild**.
+
+**`ausProfil(eingabe, opt)`** nimmt **exakt dieselbe Eingabe wie `DTNProfil.baue()`** und
+erledigt alles in einem Aufruf: Nahtbild bauen → Kontur holen → Schwerpunkt rechnen →
+zeichnen. Zusätzlich im Ergebnis: `profil` (Ergebnis von `profil.js`) und `ergebnis`
+(Ergebnis von `naht.js`). **Die Kontur entsteht durch einen zweiten `baue()`-Aufruf mit
+`kanten:'rundum'` und `endkrater:false`** — keine neue Schnittstelle; ohne Endkraterabzug,
+weil die Kontur die Bauteilkante zeigt und keine Naht ist.
+
+**Legendendaten** (`legende[]`) sind **Codes, keine Texte**: je Eintrag `code` (`sg_<gruppe>`
+bzw. `sb_*`), `farbe`, `art`, `stil`, `n_seg`, `l`. Die Summe der Längen aller Naht-Einträge
+ist **identisch mit `l_netto` aus `profil.js`** (durch Assertion abgesichert).
+
+**Farben:** eine Farbe je Segmentgruppe (`FARBEN`), alle sechs verschieden und auf hellem wie
+dunklem Grund lesbar. Hilfslinien (Kontur, Achsen, Ecklücken) nutzen `currentColor` und passen
+sich damit von selbst an Hell/Dunkel an.
+
+**Meldungscodes** (`DTNSchaubild.CODES`, dreisprachig): `msg_grafik_leer` ·
+`msg_grafik_keine_svglib` · `msg_grafik_symbolisch` · `msg_grafik_kontur_gestrichelt` ·
+`msg_grafik_eckluecke_sichtbar` · `msg_grafik_massstab_auto`.
+Legendenschlüssel: `sb_naht` · `sb_kontur` · `sb_eckluecke` · `sb_schwerpunkt` · `sb_achsen`
+(dazu `sb_titel`, `sb_legende`, `sb_massstab`, `sb_mm_je_px`).
+
+**WAS DIE GRAFIK BEWUSST NICHT TUT:**
+- **sie rechnet nichts** — Schwerpunkt und Werte kommen aus `naht.js`, Segmente aus `profil.js`,
+- **kein maßstäbliches a-Maß**: die Naht ist ein Strich fester Breite, Lage und Länge dagegen
+  sind maßstäblich (Hinweis `msg_grafik_symbolisch` steht im Ergebnis),
+- **keine erfundenen Ecklücken**: sie werden ausschließlich über `info[].raupe` erkannt —
+  ohne `info[]` gibt es keine Lückenmarkierung,
+- **kein Text**, keine Zahl, keine Einheit im SVG.
+
 ---
 
 ## 5. Bausteine — risikosortiert, mit Launch-Checkpoint
@@ -634,8 +704,8 @@ Hinweise `msg_endkrater_abzug` · `msg_endkrater_umlaufend` · `msg_endkrater_au
 | **N1** ✅ | **Fundament** *(abgenommen 2026-07-25)* | `daten.js` (11 Werkstoffe, Beiwerte, ISO 5817, EXC) + `optionen.js` (einzige Auswahlquelle **inkl. Verträglichkeitsregeln**) + i18n-Gerüst DE/EN/PT + `validate.js`. Alle Codes sprachneutral. |
 | **N2** ✅ | **Nahtbild-Kern** *(abgenommen 2026-07-25)* | `naht.js`: Segmente → A_w, Schwerpunkt, I_y, I_z, I_yz, I_p, Hauptachsen, W_y/W_z/W_t, offen/geschlossen, Selbstprüfung. DOM-frei. Vier Hand-Anker geschlossen nachgerechnet. **Schnittstelle: Abschnitt 4.5.** |
 | **N2b** ✅ | **Profileingabe** *(abgenommen 2026-07-25)* | `profil.js`: 7 parametrische Profile + Kantenauswahl → Segmente. Raupenmodell mit Endkraterabzug je freiem Ende, Eckradien, a je Segment. DOM-frei. **Schnittstelle: Abschnitt 4.6.** |
-| **N2c** ⬅ | **Nahtbild-Grafik — NÄCHSTER SCHRITT** *(von N6 vorgezogen)* | `svglib.js` + `schaubild.js`: SVG-Vorschau des Nahtbilds, Segmente farbig, Schwerpunkt. Dient zugleich als **Auswahl-Skizze** der Profileingabe. |
-| **N3** | **Spannungen + beide Welten** | `solver.js`: σ⊥, τ⊥, τ∥ aus N/Q/M/T · Welt A (EC3) · Welt B (klassisch) · **Nachweis UND Auslegung**. |
+| **N2c** ✅ | **Nahtbild-Grafik** *(gebaut 2026-07-25, wartet auf Abnahme)* | `svglib.js` + `schaubild.js`: SVG-Vorschau des Nahtbilds, Segmente farbig nach Gruppe, Schwerpunkt und Achsen, nicht geschweißte Kanten gestrichelt, Ecklücken sichtbar. Zugleich **Auswahl-Skizze** der Profileingabe. **Schnittstelle: Abschnitt 4.7.** |
+| **N3** ⬅ | **Spannungen + beide Welten — NÄCHSTER SCHRITT** | `solver.js`: σ⊥, τ⊥, τ∥ aus N/Q/M/T · Welt A (EC3) · Welt B (klassisch) · **Nachweis UND Auslegung**. |
 | **N4** | **Rechenweg** | `rechenweg.js`: selbstprüfende Schritte für N2/N3, dreisprachig. |
 | **N5** | **UI-Basis** | 2 HTMLs, `style.css`, Formular mit aufklappbaren Bereichen und Freischalt-Haken, Ergebnis-Kacheln, Ampel, i18n, Theme (**Start immer dunkel**), Laien-ⓘ, Block „Ausführung & Dokumentation" (ISO 5817 + EXC). **Erster Handy-Test.** |
 | **N6b** | **ISO-2553-Symbolgenerator** | `symbol.js`: Pfeil-/Gegenseite, a- bzw. z-Maß, Länge, Rundumnaht, Baustellennaht. Nutzt `svglib.js` aus N2c. Bewusst **vor** dem Launch — Verkaufsargument. |
@@ -651,40 +721,38 @@ Hinweise `msg_endkrater_abzug` · `msg_endkrater_umlaufend` · `msg_endkrater_au
 | **N15** | **Verzug & Schrumpfung** | `verzug.js` + Panel, klar als **Abschätzung** gekennzeichnet. |
 | **N16** | **Feinschliff + Build** | Presets ausbauen, Wissenstexte, Code-Audit, Bündelung + Obfuskierung (zwei Bündel, Unterschied nur `DT_EDITION`). **→ V1-Launch.** |
 
-### 5.1 Auftrag für den nächsten Baustein **N2c — Nahtbild-Grafik** *(hier ansetzen)*
+### 5.1 Auftrag für den nächsten Baustein **N3 — Spannungen + beide Welten** *(hier ansetzen)*
 
-> Alles, was N2c braucht, ist fertig: `naht.js` (4.5) liefert Schwerpunkt und Randpunkte,
-> `profil.js` (4.6) liefert die Segmente **mit Herkunfts-Code und Segmentgruppe**.
-> N2c rechnet **nichts** — es zeichnet ausschließlich das, was gerechnet wird.
+> Alles, was N3 braucht, ist fertig: `profil.js` (4.6) liefert die Segmente, `naht.js` (4.5)
+> daraus A_w, Schwerpunkt, I_y, I_z, I_p, W_y/W_z/W_t und die **Randpunkte** (`punkte[]`),
+> `daten.js` liefert f_u, R_e, β_w (beide Regelsätze), γ_M2 und die Nahtgütefaktoren.
+> N3 baut **`solver.js` (`DTNSolver`)** — DOM-frei, deterministisch, wie die Vorgänger.
 
-**Zu bauen sind zwei Dateien:**
+**Zu bauen:**
+- **Schnittgrößen → Spannungen:** N, Q_y, Q_z, M_y, M_z, T am Nahtbild; σ⊥, τ⊥, τ∥ an
+  **jedem Randpunkt** aus `punkte[]`, der maßgebende Punkt wird benannt.
+- **Welt A (EN 1993-1-8), richtungsbezogen:** √(σ⊥² + 3·(τ⊥² + τ∥²)) ≤ f_u/(β_w·γ_M2)
+  **und** σ⊥ ≤ 0,9·f_u/γ_M2. Dazu das **vereinfachte Verfahren** f_vw,d = (f_u/√3)/(β_w·γ_M2)
+  als wählbare Alternative (Abfragereihenfolge beachten: `nachweisverfahren` steht **nach**
+  `nahtart`, Entscheidungslog N1).
+- **Welt B (klassisch):** σ_zul = R_e/S · ν mit Lastfall ruhend/schwellend/wechselnd.
+  **Welt A und Welt B werden nie vermischt** (2.8) — der Code muss das strukturell
+  erzwingen, nicht nur durch Text.
+- **Beide Rechenrichtungen (2.3):** Nachweis (a gegeben → Ausnutzung) **und** Auslegung
+  (a gesucht). Auslegung direkt auflösen (σ ∝ 1/a), Ergebnis auf praxisübliche a-Maße
+  aufrunden, Grenzen aus `validate.js` prüfen. **Pflicht-Assertion: beide sind zueinander
+  invers** (a aus der Auslegung eingesetzt ⇒ Ausnutzung ≈ 1).
+- **Aluminium:** eigener Weg über f_w **mit WEZ-Entfestigung** (ρ_haz), kein β_w — die
+  Abminderung muss im Ergebnis ausdrücklich sichtbar sein (2.5, 6.1).
+- **Ampel und Ausnutzungsgrad**, Liste der nicht geprüften Punkte (2.4) im Ergebnis.
 
-**`svglib.js` (`DTNSvgLib`)** — die Bausteinbibliothek nach 4.3. Grundbausteine als kurze
-Datenzeilen: Linie, Nahtdreieck, Kreis/Kreisnaht, Kraftpfeil, Maßlinie, Schraffur,
-Beschriftungspunkt, Schwerpunktkreuz, Rahmen mit Auto-Skalierung. Reines SVG als String,
-**keine fremden Bilder**, **kein Text im SVG** (Zahlen und Beschriftungen stehen in der
-HTML-Legende — sonst sind sie nicht übersetzbar). DOM-frei und in Node prüfbar: die
-Funktionen geben Strings zurück, der Harness prüft sie mit regulären Ausdrücken.
-
-**`schaubild.js` (`DTNSchaubild`)** — zeichnet aus einer Segmentliste das Nahtbild:
-- **Auto-Skalierung** auf eine feste Zeichenfläche (Bounding-Box aus den Segmenten, Rand),
-  damit ein 20-mm-Bolzen und ein 1000-mm-Träger gleich gut aussehen.
-- **Segmente farbig nach `info[].gruppe`** (`flanke`, `stirn`, `flansch`, `steg`, `kante`,
-  `kreis`), Beschriftung über die vorhandenen Schlüssel `sg_<gruppe>` in der Legende.
-- **Schwerpunkt** aus `naht.js` einzeichnen, dazu die y-/z-Achsen durch den Schwerpunkt.
-- **Nicht geschweißte Kanten dünn und gestrichelt** mitzeichnen — der Anwender muss auf
-  einen Blick sehen, was er *nicht* gewählt hat. Dafür liefert `profil.js` die Kontur, indem
-  `baue()` mit `kanten:'rundum'` ein zweites Mal aufgerufen wird (keine neue Schnittstelle).
-- **Ecklücken bei Hohlprofilen sichtbar machen** — sie sind eine Rechenannahme (4.6).
-- Rückgabe: SVG-String + Legendendaten (Codes, keine fertigen Texte).
-
-**Damit ist die Auswahl-Skizze aus 2.2b erledigt:** dieselben Segmente, die gerechnet werden,
-werden gezeichnet. Ändert der Anwender die Kantenauswahl, verschwindet die Naht sofort.
-
-**Abzuliefern wie immer:** beide Module + `<script src>` an der richtigen Stelle in beiden
-HTMLs (nach `profil.js`), Grafik in der Zwischen-Statusseite sichtbar (entfällt mit N5),
-DOM-Smokes um die Grafikprüfungen erweitert, Harness um eine Sektion S24 (Auto-Skalierung,
-Determinismus, jede Segmentgruppe hat eine Farbe und eine Beschriftung, kein Text im SVG).
+**Abzuliefern wie immer:** Modul + `<script src>` an der richtigen Stelle in beiden HTMLs
+(nach `schaubild.js`), Ergebnis in der Zwischen-Statusseite sichtbar (entfällt mit N5),
+DOM-Smokes erweitert, Harness um eine Sektion **S26** (Hand-Anker gegen von Hand
+nachgerechnete Beispiele aus den Recherchedateien, Invarianten: a-Verdopplung halbiert die
+Spannung, Welten getrennt, Auslegung/Nachweis invers, Determinismus, Nichtmutation).
+**Recherche just-in-time:** Wird für die Hand-Anker ein zusätzlich belegtes Zahlenbeispiel
+gebraucht, rechtzeitig ansagen und von Dieter freischalten lassen.
 
 **Später (nicht V1):** **Normprofil-Katalog** (IPE/HEA/HEB/UPE/UPN/RHS/Rohr, 2.2b Stufe 2),
 unterbrochene Nähte, Loch-/Schlitznähte, weitere Kerbfälle, FKM-Richtlinie, Kranbau-Regelwerke,
@@ -769,32 +837,35 @@ verdrahtet, Sperr-Overlay in der Testversion, Registrierung + Long-Press-Reset.
 **Referenzdateien (read-only, nur Muster):** `DT-ProfiPassung_Testversion-Orginal.html` ·
 `DT-ProfiPassung.html` · `DT-ProfiPassung_Test.html`
 
-### 8.1 Dateistand nach N2b *(Stand 2026-07-25)*
+### 8.1 Dateistand nach N2c *(Stand 2026-07-25)*
 
 **Produktdateien:**
 | Datei | Stand |
 |---|---|
-| `DT-ProfiSchweissnaht.html` | Voll-Edition (`DT_EDITION='full'`), lädt **8 Module**, enthält die **Zwischen-Statusseite N1/N2/N2b** (entfällt mit N5) |
+| `DT-ProfiSchweissnaht.html` | Voll-Edition (`DT_EDITION='full'`), lädt **10 Module**, enthält die **Zwischen-Statusseite N1/N2/N2b/N2c** (entfällt mit N5) |
 | `DT-ProfiSchweissnaht_Test.html` | Test-Edition — **verifiziert: Unterschied genau eine Zeile** |
 | `daten.js` | N1, unverändert |
 | `naht.js` | N2, unverändert — Schnittstelle in 4.5 |
 | `optionen.js` | **N2b geändert** — 18 Gruppen, 82 Optionen (neu: `profil`, `kanten`) |
 | `validate.js` | **N2b geändert** — 24 Felder (neu: b, h, d, tw, tf, r_ecke, a_steg, a_flansch) |
-| `i18n_kern.js` (307 Schlüssel) · `i18n_hilfe.js` (50 Einträge) | **N2b erweitert** |
+| `i18n_hilfe.js` (50 Einträge) | N2b, unverändert (die Grafik hat keine Eingabefelder) |
 | `i18n_kerbfall.js` | Gerüst, unverändert (Füllung in N14) |
-| `profil.js` | **N2b, neu** — Schnittstelle in 4.6 |
-| `style.css` | N1, unverändert |
+| `profil.js` | N2b, unverändert — Schnittstelle in 4.6 |
+| `svglib.js` | **N2c, neu** — 13 Grundbausteine, Auto-Skalierung, Schnittstelle in 4.7 |
+| `schaubild.js` | **N2c, neu** — Nahtbild-Grafik + Legendendaten, Schnittstelle in 4.7 |
+| `i18n_kern.js` | **N2c erweitert** — 307 → **322 Schlüssel** (6 Meldungen + 9 Beschriftungen) |
+| `style.css` | **N2c erweitert** — Grafikrahmen und Legende (`.svg-box`, `.legende`) |
 
 **DEV-ONLY — nur in `/mnt/project/`, NIE ausliefern und nicht auf GitHub nötig:**
-`test_naht.js` (309 Assertions) · `dom_smoke_voll.js` (79 Prüfungen) ·
-`dom_smoke_test.js` (80 Prüfungen, ruft den Lauf aus `dom_smoke_voll.js` auf — unverändert).
+`test_naht.js` (381 Assertions) · `dom_smoke_voll.js` (102 Prüfungen) ·
+`dom_smoke_test.js` (103 Prüfungen, ruft den Lauf aus `dom_smoke_voll.js` auf — unverändert).
 
-**Noch nicht gebaut:** `svglib.js` + `schaubild.js` (N2c) · `solver.js` (N3) ·
+**Noch nicht gebaut:** `solver.js` (N3) ·
 `rechenweg.js` (N4) · `ui.js` (N5) · `symbol.js` (N6b) · `assistent.js` (N8) · `thermik.js` (N9) ·
 `kosten.js` (N10) · `report.js` (N11) · `ermuedung.js` (N13) · `kerbfall.js` (N14) · `verzug.js` (N15).
 
 **Erste Handlung im neuen Chat:** Arbeitsordner herstellen und die drei Testläufe starten.
-Melden müssen sie **309 / 79 / 80 · 0 Fehler**. Weicht etwas ab, erst das klären.
+Melden müssen sie **381 / 102 / 103 · 0 Fehler**. Weicht etwas ab, erst das klären.
 
 ---
 
@@ -893,6 +964,32 @@ Melden müssen sie **309 / 79 / 80 · 0 Fehler**. Weicht etwas ab, erst das klä
   der Kantenauswahl nur `rundum` übrig. Keine Sackgasse (55.104 Wege geprüft).
 - **Abdeckung:** 7 Profile × 19 Kantenkombinationen, jede einzeln gegen `naht.js`
   nachgerechnet (A_w = Σ a·l als zweiter Rechenpfad).
+
+**Aus N2c (2026-07-25) — Festlegungen, die beim Bauen entstanden sind:**
+- **Die Grafik rechnet nichts.** Sie zeichnet ausschließlich die Segmente, die auch gerechnet
+  werden, und holt den Schwerpunkt aus `naht.js`. Damit können Bild und Rechnung nie
+  auseinanderlaufen — das war der ganze Grund, die Grafik von N6 vorzuziehen.
+- **Der Maßstab hängt an der Kontur, nicht an der Naht.** Die Bounding-Box wird aus Naht
+  **und** Kontur gebildet. Wählt der Anwender weniger Kanten, springt das Bild nicht — die
+  Naht verschwindet nur. (Durch Assertion abgesichert: gleiche Skala bei rundum / Flansche /
+  Steg.)
+- **Die Kontur kommt aus einem zweiten `baue()`-Aufruf** mit `kanten:'rundum'` und
+  `endkrater:false` — keine neue Schnittstelle. Ohne Endkraterabzug, weil die Kontur die
+  **Bauteilkante** zeigt und keine Naht ist.
+- **Ecklücken werden nicht geraten.** Sie werden ausschließlich über `info[].raupe` /
+  `info[].geschlossen` erkannt: zwei aufeinanderfolgende Segmente **derselben Raupe**, die
+  sich nicht berühren. Ohne `info[]` gibt es keine Markierung. Zusätzlich begrenzt eine
+  Weite (halbe kleinste Bauteilseite), damit zwei getrennte Nahtstücke nie als Ecke
+  fehlgedeutet werden.
+- **Die Naht ist symbolisch strichbreit**, Lage und Länge dagegen maßstäblich. Das steht als
+  Hinweis `msg_grafik_symbolisch` im Ergebnis — kein stiller Eindruck von Maßstäblichkeit.
+- **Hilfslinien nutzen `currentColor`** (Kontur, Achsen, Ecklücken) und passen sich damit von
+  selbst an Hell/Dunkel an; nur die sechs Segmentgruppen haben feste, unterscheidbare Farben.
+- **Kein Text im SVG, auch keine Zahl** (4.3). Die Legende liefert nur Codes und Zahlen; der
+  Text kommt aus dem i18n-Wörterbuch, die Zahl wird in der HTML formatiert. Damit ist die
+  Grafik in allen drei Sprachen dieselbe Datei — wichtig für N6b und die 80–90 Kerbfälle.
+- **Zweiter Rechenpfad in der Legende:** die Summe der Legendenlängen ist identisch mit
+  `l_netto` aus `profil.js` — eine falsch gezeichnete Naht fiele sofort auf.
 
 **Aus der Rückmeldung 2026-07-25 (N1 abgenommen):**
 - N1 von Dieter am Handy geprüft: läuft, alle Sprachumstellungen sauber. **Abgenommen.**
@@ -998,6 +1095,21 @@ und `schaubild.js`, Auto-Skalierung, Einfärbung nach Segmentgruppe, Schwerpunkt
 nicht geschweißte Kanten, sichtbare Ecklücken, kein Text im SVG), Kickoff-Punkt 5b um den
 Verweis darauf ergänzt. Basislinie unverändert **309 / 79 / 80**.
 **Nächster Schritt: N2c (Nahtbild-Grafik).**
+
+**v2.8 (2026-07-25):** **Baustein N2c (Nahtbild-Grafik) gebaut und ausgeliefert:**
+`svglib.js` (13 Grundbausteine: Linie, Polylinie/Polygon, Kreis, Rechteck, Nahtdreieck,
+Kraftpfeil, Maßlinie, Schraffur, Beschriftungspunkt, Schwerpunktkreuz, Achsenkreuz, Rahmen,
+SVG-Hülle; Bounding-Box, Auto-Skalierung mit gedrehter z-Achse, striktes Zahlformat,
+**kein Text im SVG**) und `schaubild.js` (Segmente → SVG + Legendendaten: Einfärbung nach
+Segmentgruppe, Schwerpunkt und Achsen aus `naht.js`, nicht geschweißte Kanten gestrichelt,
+Ecklücken sichtbar, `ausProfil()` als Ein-Aufruf-Weg für die Oberfläche).
+`i18n_kern.js` auf **322 Schlüssel** erweitert (6 Meldungen + 9 Beschriftungen), `style.css`
+um Grafikrahmen und Legende ergänzt, beide HTMLs um die Karte „Nahtbild-Grafik" (zwei
+Zeichnungen: rundum und nur Flanken, gleicher Maßstab).
+Neuer Abschnitt **4.7** (vollständige Schnittstelle), Abschnitt **5.1** neu als Auftrag für
+**N3**. Alle 19 Kantenkombinationen der 7 Profile durchgezeichnet und geprüft.
+**Basislinie 309 → 381 Assertions · Smokes 79/80 → 102/103.**
+**Nächster Schritt: Abnahme durch Dieter, danach N3 (Spannungen, `solver.js`).**
 ═══════════════════════════════════════════════════════════════════════════
 Ende Schweißnaht-1.md · DT-ProfiSchweissnaht
 ═══════════════════════════════════════════════════════════════════════════

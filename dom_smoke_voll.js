@@ -109,7 +109,7 @@ function lauf(edition) {
   var srcRe = /<script src="([^"]+)"><\/script>/g, srcs = [], mm;
   while ((mm = srcRe.exec(html)) !== null) srcs.push(mm[1]);
   var erwartet = ['i18n_kern.js', 'i18n_hilfe.js', 'i18n_kerbfall.js', 'daten.js', 'optionen.js',
-                  'validate.js', 'naht.js', 'profil.js'];
+                  'validate.js', 'naht.js', 'profil.js', 'svglib.js', 'schaubild.js'];
   ok(srcs.join(',') === erwartet.join(','), 'Ladereihenfolge stimmt: ' + srcs.join(' → '));
 
   /* 2) ALLE Module gemeinsam laden — genau in dieser Reihenfolge */
@@ -120,7 +120,8 @@ function lauf(edition) {
     var name = { 'i18n_kern.js': 'DTNI18nKern', 'i18n_hilfe.js': 'DTNI18nHilfe',
                  'i18n_kerbfall.js': 'DTNI18nKerb', 'daten.js': 'DTNData',
                  'optionen.js': 'DTNOptions', 'validate.js': 'DTNValidate',
-                 'naht.js': 'DTNNaht', 'profil.js': 'DTNProfil' }[srcs[i]];
+                 'naht.js': 'DTNNaht', 'profil.js': 'DTNProfil',
+                 'svglib.js': 'DTNSvgLib', 'schaubild.js': 'DTNSchaubild' }[srcs[i]];
     win[name] = mod;
     ok(!!mod, 'Modul geladen: ' + srcs[i]);
   }
@@ -194,11 +195,33 @@ function lauf(edition) {
   ok(/Geschwei\u00dfte Kanten/.test(d.byId.optionenHost.inhalt()), 'Auswahlgruppe "Geschweisste Kanten" erscheint');
   ok(/Nur die Flansche|Nur der Steg/.test(d.byId.optionenHost.inhalt()), 'Kantenoptionen des I-Profils erscheinen');
 
+  /* 6d) Nahtbild-Grafik N2c — gezeichnet wird, was gerechnet wird */
+  var gf = d.byId.grafikHost.inhalt();
+  ok(gf.length > 300, 'Grafikkarte ist aufgebaut');
+  ok((gf.match(/<svg /g) || []).length === 2, 'zwei Nahtbilder gezeichnet (rundum und nur Flanken)');
+  ok(gf.indexOf('<text') < 0 && gf.indexOf('<tspan') < 0, 'KEIN Text im SVG (alles steht in der HTML-Legende)');
+  ok((gf.match(/data-code="eckluecke"/g) || []).length === 4, 'die vier Ecklueckenmarken der umlaufenden Naht sind gesetzt');
+  var gTeile = gf.split('<svg ');
+  ok(gTeile.length === 3 && gTeile[2].indexOf('data-code="eckluecke"') < 0,
+     'zweite Zeichnung (nur Flanken) zeigt KEINE Ecklueckenmarke - dort laeuft keine Naht um');
+  ok(/stroke-dasharray="5 4"/.test(gf), 'nicht geschweisste Kanten sind gestrichelt gezeichnet');
+  ok(/stroke="#3d9ae0"/.test(gf), 'Segmentgruppe Flanke ist eingefaerbt');
+  ok(/stroke="#e0a53a"/.test(gf), 'Segmentgruppe Stirnseite ist eingefaerbt');
+  ok(/data-code="schwerpunkt"/.test(gf), 'Schwerpunkt ist eingezeichnet');
+  ok(/data-code="achsen"/.test(gf), 'y- und z-Achse durch den Schwerpunkt sind eingezeichnet');
+  ok(/class="legende"/.test(gf), 'Legende ist aufgebaut');
+  ok(/Flanke/.test(gf) && /Stirnseite/.test(gf), 'DE: Segmentgruppen sind in der Legende beschriftet');
+  ok(/nicht geschwei\u00dfte Kante/.test(gf), 'DE: nicht geschweisste Kante ist in der Legende erklaert');
+  ok(/Schwerpunkt des Nahtbilds/.test(gf), 'DE: Schwerpunkt ist in der Legende erklaert');
+  ok(/mm je Bildpunkt/.test(gf), 'DE: Massstab wird ehrlich als mm je Bildpunkt angegeben');
+  ok(/nicht ma\u00dfst\u00e4blich/.test(gf), 'DE: symbolische Nahtdarstellung wird ehrlich benannt');
+
   /* 7) Sprachumschaltung real durchklicken — inkl. Platzhalter-Kontrolle */
   function alleTexte() {
     return d.byId.optionenHost.inhalt() + d.byId.lueckenHost.inhalt() +
            d.byId.ngHost.inhalt() + d.byId.statusKV.inhalt() + d.byId.nahtHost.inhalt() +
            d.byId.profilHost.inhalt() + d.byId.h_profil.inhalt() +
+           d.byId.grafikHost.inhalt() + d.byId.h_grafik.inhalt() +
            d.byId.h_luecken.inhalt() + d.byId.h_nichtgeprueft.inhalt() +
            d.byId.h_nahtbild.inhalt() + d.byId.footNote.inhalt();
   }
@@ -223,6 +246,9 @@ function lauf(edition) {
   ok(/Welded all round/.test(d.byId.profilHost.inhalt()), 'EN: Kantenauswahl uebersetzt');
   ok(/306.3 mm/.test(d.byId.profilHost.inhalt()), 'EN: Umfang mit Eckboegen im englischen Zahlformat');
   ok(/Corner radii shorten/.test(d.byId.profilHost.inhalt()), 'EN: Eckradius-Hinweis uebersetzt');
+  ok(/Side weld/.test(d.byId.grafikHost.inhalt()), 'EN: Segmentgruppen der Legende uebersetzt');
+  ok(/edge not welded/.test(d.byId.grafikHost.inhalt()), 'EN: nicht geschweisste Kante uebersetzt');
+  ok(d.byId.grafikHost.inhalt().indexOf('<text') < 0, 'EN: weiterhin kein Text im SVG');
   ok(!/\[[a-z0-9_.]+\]/.test(alleTexte()), 'EN: kein unuebersetzter Platzhalter');
 
   var bPt = klick('pt');
@@ -237,6 +263,8 @@ function lauf(edition) {
   ok(/Perfil tubular retangular/.test(d.byId.profilHost.inhalt()), 'PT: Profilname uebersetzt');
   ok(/Soldado em todo o contorno/.test(d.byId.profilHost.inhalt()), 'PT: Kantenauswahl uebersetzt');
   ok((d.byId.profilHost.inhalt().match(/\u2713/g) || []).length >= 4, 'PT: Profil-Hand-Anker bleiben gruen');
+  ok(/Cord\u00e3o lateral/.test(d.byId.grafikHost.inhalt()), 'PT: Segmentgruppen der Legende uebersetzt');
+  ok(/aresta n\u00e3o soldada/.test(d.byId.grafikHost.inhalt()), 'PT: nicht geschweisste Kante uebersetzt');
   ok(!/\[[a-z0-9_.]+\]/.test(alleTexte()), 'PT: kein unuebersetzter Platzhalter');
 
   klick('de');

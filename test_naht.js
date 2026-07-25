@@ -13,6 +13,8 @@ var Options = require('./optionen.js');
 var Valid   = require('./validate.js');
 var Naht    = require('./naht.js');
 var Profil  = require('./profil.js');
+var Svg     = require('./svglib.js');
+var Bild    = require('./schaubild.js');
 
 var N = 0, FAIL = [], SEKTION = '';
 function sek(s) { SEKTION = s; console.log('\n— ' + s + ' —'); }
@@ -783,6 +785,222 @@ var prKeys = ['pr_titel', 'pr_profil', 'pr_kanten', 'pr_raupen', 'pr_umlaufend',
 var prOhne = 0;
 for (ii = 0; ii < prKeys.length; ii++) if (!Kern.has(prKeys[ii])) { prOhne++; console.log('    ohne Text: ' + prKeys[ii]); }
 eq(prOhne, 0, 'alle Beschriftungen der Profilkarte sind vorhanden');
+
+/* ========================================================================= */
+sek('S24 · SVG-Bausteinbibliothek N2c — Auto-Skalierung und Formatdisziplin');
+ok(!!Svg && !!Bild, 'svglib.js und schaubild.js geladen');
+ok(typeof Svg.VERSION === 'string' && typeof Bild.VERSION === 'string', 'beide Module tragen eine Version');
+
+eq(Svg.zahl(-0.0001), '0', 'Zahlformat: kein "-0" im SVG');
+eq(Svg.zahl(12.3456), '12.346', 'Zahlformat: drei Nachkommastellen');
+eq(Svg.zahl(2), '2', 'Zahlformat: keine unnoetigen Nullen');
+eq(Svg.zahl(0.0000001), '0', 'Zahlformat: kein Exponent (1e-7 wird 0)');
+eq(Svg.zahl(NaN), '0', 'Zahlformat: NaN wird nie ausgegeben');
+
+var bx = Svg.box([{ y: -50, z: -30 }, { y: 50, z: 30 }]);
+eq(bx.breite, 100, 'Bounding-Box Breite'); eq(bx.hoehe, 60, 'Bounding-Box Hoehe');
+ok(Svg.box([]).leer === true, 'leere Punktliste ergibt eine leere Box');
+var bv = Svg.boxVereinigen(bx, Svg.box([{ y: 0, z: 100 }]));
+eq(bv.z_max, 100, 'Boxen lassen sich vereinigen (Naht + Kontur)');
+
+/* Auto-Skalierung: der 20-mm-Bolzen fuellt die Flaeche genauso wie der
+   1000-mm-Traeger — genau das ist der Sinn der Sicht. */
+var vKlein = Svg.sicht(Svg.box([{ y: -10, z: -10 }, { y: 10, z: 10 }]), { breite: 320, hoehe: 240, rand: 16 });
+var vGross = Svg.sicht(Svg.box([{ y: -150, z: -500 }, { y: 150, z: 500 }]), { breite: 320, hoehe: 240, rand: 16 });
+nahe(vKlein.pl(20), 208, 1e-9, 'kleines Bauteil fuellt die Hoehe der Zeichenflaeche');
+nahe(vGross.pl(1000), 208, 1e-9, 'grosses Bauteil fuellt dieselbe Hoehe');
+ok(vKlein.skala > vGross.skala, 'der Massstab passt sich an (klein wird groesser gezeichnet)');
+nahe(vKlein.px(0), 160, 1e-9, 'Bild ist waagerecht zentriert');
+nahe(vKlein.pz(0), 120, 1e-9, 'Bild ist senkrecht zentriert');
+ok(vKlein.pz(10) < vKlein.pz(-10), 'z zeigt nach OBEN (SVG-Y wird gedreht)');
+nahe(vKlein.mm_je_px, 1 / vKlein.skala, 1e-12, 'mm je Bildpunkt ist der Kehrwert des Massstabs');
+
+var vLinie = Svg.sicht(Svg.box([{ y: 0, z: -100 }, { y: 0, z: 100 }]), { breite: 320, hoehe: 240, rand: 16 });
+ok(isFinite(vLinie.skala) && vLinie.skala > 0, 'entartete Box (Breite 0) ergibt trotzdem einen endlichen Massstab');
+var vPunkt = Svg.sicht(Svg.box([{ y: 5, z: 5 }]), { breite: 320, hoehe: 240, rand: 16 });
+ok(isFinite(vPunkt.px(5)) && isFinite(vPunkt.pz(5)), 'einzelner Punkt ergibt keine Division durch 0');
+
+/* Jeder Baustein liefert ein wohlgeformtes Element — und niemals Text. */
+var v0 = Svg.sicht(bx, { breite: 320, hoehe: 240, rand: 16 });
+var bausteine = [
+  ['linie', Svg.linie(v0, -50, -30, 50, 30, { farbe: '#3d9ae0', breite: 3 }), /^<line /],
+  ['polylinie', Svg.polylinie(v0, [{ y: 0, z: 0 }, { y: 10, z: 10 }], {}), /^<polyline /],
+  ['polygon', Svg.polylinie(v0, [{ y: 0, z: 0 }, { y: 10, z: 0 }, { y: 0, z: 10 }], { geschlossen: true }), /^<polygon /],
+  ['kreis', Svg.kreis(v0, 0, 0, 40, {}), /^<circle /],
+  ['rechteck', Svg.rechteck(v0, 0, 0, 40, 20, {}), /^<rect /],
+  ['nahtdreieck', Svg.nahtdreieck(v0, 0, 0, 5, 45, {}), /^<polygon /],
+  ['kraftpfeil', Svg.kraftpfeil(v0, -20, 0, 20, 0, {}), /^<line /],
+  ['masslinie', Svg.masslinie(v0, -20, -20, 20, -20, {}), /^<line /],
+  ['schraffur', Svg.schraffur(v0, 0, 0, 40, 20, {}), /^<line /],
+  ['punktmarke', Svg.punktmarke(v0, 10, 10, { code: 'p1' }), /^<circle /],
+  ['schwerpunktkreuz', Svg.schwerpunktkreuz(v0, 0, 0, {}), /^<circle /],
+  ['achsenkreuz', Svg.achsenkreuz(v0, 0, 0, {}), /^<line /],
+  ['rahmen', Svg.rahmen(v0, {}), /^<rect /]
+];
+var bFehler = 0, bText = 0, bZahl = 0, bi;
+for (bi = 0; bi < bausteine.length; bi++) {
+  var st = bausteine[bi][1];
+  if (!bausteine[bi][2].test(st)) { bFehler++; console.log('    falsches Element: ' + bausteine[bi][0]); }
+  if (st.indexOf('<text') >= 0 || st.indexOf('<tspan') >= 0) bText++;
+  if (/NaN|Infinity|undefined|e[+-]\d/.test(st)) { bZahl++; console.log('    unsaubere Zahl: ' + bausteine[bi][0]); }
+}
+eq(bausteine.length, 13, '13 Grundbausteine stehen bereit');
+eq(bFehler, 0, 'jeder Baustein liefert das richtige SVG-Element');
+eq(bText, 0, 'KEIN Baustein erzeugt Text im SVG (Uebersetzbarkeit, 4.3)');
+eq(bZahl, 0, 'kein NaN, kein Exponent, kein undefined in den Koordinaten');
+ok(/data-code="p1"/.test(Svg.punktmarke(v0, 1, 1, { code: 'p1' })), 'Beschriftungspunkt traegt einen sprachneutralen Code');
+var mSan = Svg.punktmarke(v0, 1, 1, { code: 'a<b>"c' }).match(/data-code="([^"]*)"/);
+eq(mSan && mSan[1], 'abc', 'Codes werden gesaeubert (kein Einschleusen von Markup)');
+var huelle = Svg.svg(v0, Svg.linie(v0, 0, 0, 10, 10, {}), { klasse: 'x' });
+ok(/^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg" viewBox="0 0 320 240"/.test(huelle), 'Huelle traegt xmlns und viewBox');
+ok(huelle.indexOf('<image') < 0 && huelle.indexOf('href') < 0, 'kein fremdes Bild, keine externe Referenz');
+eq(Svg.linie(v0, 0, 0, 1, 1, { farbe: '#111' }), Svg.linie(v0, 0, 0, 1, 1, { farbe: '#111' }), 'svglib ist deterministisch');
+
+/* ========================================================================= */
+sek('S25 · Nahtbild-Grafik N2c — gezeichnet wird, was gerechnet wird');
+eq(Bild.GRUPPEN.join(','), Profil.SEGMENTGRUPPEN.join(','), 'Grafik und Profileingabe nutzen dieselben Segmentgruppen (eine Quelle)');
+var fOhne = 0, fDoppelt = 0, fSet = {}, gi;
+for (gi = 0; gi < Profil.SEGMENTGRUPPEN.length; gi++) {
+  var grp = Profil.SEGMENTGRUPPEN[gi];
+  if (!Bild.FARBEN[grp]) { fOhne++; console.log('    ohne Farbe: ' + grp); }
+  else { if (fSet[Bild.FARBEN[grp]]) fDoppelt++; fSet[Bild.FARBEN[grp]] = 1; }
+  if (!Kern.has('sg_' + grp)) fOhne++;
+}
+eq(fOhne, 0, 'jede Segmentgruppe hat eine Farbe UND eine dreisprachige Beschriftung');
+eq(fDoppelt, 0, 'keine zwei Segmentgruppen teilen sich eine Farbe');
+var cOhne4 = 0, ci;
+for (ci = 0; ci < Bild.CODES.length; ci++) if (!Kern.has(Bild.CODES[ci])) { cOhne4++; console.log('    ohne Text: ' + Bild.CODES[ci]); }
+for (ci = 0; ci < Bild.LEGENDE_CODES.length; ci++) if (!Kern.has(Bild.LEGENDE_CODES[ci])) { cOhne4++; console.log('    ohne Text: ' + Bild.LEGENDE_CODES[ci]); }
+eq(cOhne4, 0, 'jede Meldung und jeder Legendeneintrag ist dreisprachig hinterlegt');
+var sbKeys = ['sb_titel', 'sb_legende', 'sb_massstab', 'sb_mm_je_px'], sbOhne = 0;
+for (ci = 0; ci < sbKeys.length; ci++) if (!Kern.has(sbKeys[ci])) sbOhne++;
+eq(sbOhne, 0, 'alle Beschriftungen der Grafikkarte sind vorhanden');
+
+var gLeer = Bild.zeichne({ segmente: [] });
+ok(gLeer.ok === false, 'ohne Segmente wird nicht gezeichnet');
+eq(gLeer.svg, '', 'im Fehlerfall gibt es KEIN halbes Bild');
+eq(gLeer.fehler[0].code, 'msg_grafik_leer', 'der Fehler ist benannt');
+
+var gRohr = Bild.ausProfil({ profil: 'rohr_rechteck', kanten: 'rundum', b: 100, h: 60, t1: 4, r_ecke: 8, a: 4 });
+ok(gRohr.ok, 'Rechteckrohr rundum wird gezeichnet');
+eq(gRohr.n_seg, 4, 'vier gezeichnete Nahtsegmente');
+eq(gRohr.n_kontur, 4, 'die volle Profilkontur wird mitgeliefert');
+eq(gRohr.n_luecken, 4, 'die vier Ecklücken werden sichtbar gemacht');
+eq((gRohr.svg.match(/<line/g) || []).length, 16, '16 Linien: 4 Naht + 4 Kontur + 4 Lücken + 2 Achsen + 2 Kreuz');
+eq((gRohr.svg.match(/<circle/g) || []).length, 1, 'ein Schwerpunktkreis');
+ok(gRohr.svg.indexOf('<text') < 0, 'kein Text im fertigen Nahtbild');
+ok(/stroke-dasharray/.test(gRohr.svg), 'nicht geschweisste Kanten sind gestrichelt');
+ok(/data-code="schwerpunkt"/.test(gRohr.svg), 'Schwerpunkt ist markiert');
+nahe(gRohr.schwerpunkt.ys, 0, 1e-9, 'Schwerpunkt kommt aus naht.js (ys)');
+nahe(gRohr.schwerpunkt.zs, 0, 1e-9, 'Schwerpunkt kommt aus naht.js (zs)');
+
+var gOhneR = Bild.ausProfil({ profil: 'rohr_rechteck', kanten: 'rundum', b: 100, h: 60, t1: 4, r_ecke: 0, a: 4 });
+eq(gOhneR.n_luecken, 0, 'ohne Eckradius gibt es keine Lücke — es wird nichts erfunden');
+var gFlanken = Bild.ausProfil({ profil: 'blech', kanten: 'flanken', b: 200, t1: 12, a: 5 });
+eq(gFlanken.n_luecken, 0, 'zwei getrennte Raupen sind keine Ecklücke');
+eq(gFlanken.n_kontur, 4, 'beim Blech mit Flankennaht bleibt die ganze Kontur sichtbar');
+
+/* Der Massstab haengt an der KONTUR, nicht an der Naht: waehlt der Anwender
+   weniger Kanten, springt das Bild nicht — die Naht verschwindet nur. */
+var gA = Bild.ausProfil({ profil: 'i_profil', kanten: 'rundum', b: 100, h: 200, tw: 5.6, tf: 8.5, a: 4 });
+var gB = Bild.ausProfil({ profil: 'i_profil', kanten: 'flansche', b: 100, h: 200, tw: 5.6, tf: 8.5, a: 4 });
+var gC = Bild.ausProfil({ profil: 'i_profil', kanten: 'steg', b: 100, h: 200, tw: 5.6, tf: 8.5, a: 4 });
+nahe(gB.sicht.skala, gA.sicht.skala, 1e-12, 'Kantenauswahl aendert den Massstab nicht (Flansche)');
+nahe(gC.sicht.skala, gA.sicht.skala, 1e-12, 'Kantenauswahl aendert den Massstab nicht (Steg)');
+ok(gC.n_seg < gA.n_seg, 'weniger gewaehlte Kanten = weniger gezeichnete Naht');
+
+/* Zeichnung bleibt innerhalb der Zeichenflaeche (Rand eingehalten). */
+var vG = gA.sicht, bG = gA.box;
+var sichtG = Svg.sicht(Svg.box([{ y: bG.y_min, z: bG.z_min }, { y: bG.y_max, z: bG.z_max }]),
+                       { breite: vG.breite, hoehe: vG.hoehe, rand: vG.rand });
+ok(sichtG.px(bG.y_min) >= vG.rand - 1e-6 && sichtG.px(bG.y_max) <= vG.breite - vG.rand + 1e-6,
+   'das Bild haelt den Rand waagerecht ein');
+ok(sichtG.pz(bG.z_max) >= vG.rand - 1e-6 && sichtG.pz(bG.z_min) <= vG.hoehe - vG.rand + 1e-6,
+   'das Bild haelt den Rand senkrecht ein');
+
+/* Legende: Codes statt Texte, Laengen decken sich mit profil.js */
+var lSum = 0, lArt = 0, li2;
+for (li2 = 0; li2 < gRohr.legende.length; li2++) {
+  if (gRohr.legende[li2].art === 'naht') { lSum += gRohr.legende[li2].l; lArt++; }
+  if (/^\[/.test(Kern.t(gRohr.legende[li2].code, 'pt'))) lArt = -999;
+}
+nahe(lSum, gRohr.profil.l_netto, 1e-9, 'die Legendenlaengen ergeben genau die wirksame Nahtlaenge aus profil.js');
+ok(lArt === 2, 'zwei Segmentgruppen in der Legende, alle Codes dreisprachig aufloesbar');
+eq(gRohr.legende[0].code, 'sg_flanke', 'Legende ist deterministisch sortiert (Gruppenreihenfolge)');
+
+/* Determinismus und Nichtmutation */
+var d1 = Bild.ausProfil({ profil: 'u_profil', kanten: 'flansche_steg', b: 80, h: 160, tw: 6, tf: 10, a: 4 });
+var d2 = Bild.ausProfil({ profil: 'u_profil', kanten: 'flansche_steg', b: 80, h: 160, tw: 6, tf: 10, a: 4 });
+eq(d1.svg, d2.svg, 'gleiche Eingabe ergibt zeichengenau dasselbe SVG');
+var pSeg = Profil.baue({ profil: 'blech', kanten: 'rundum', b: 100, t1: 10, a: 4 });
+var vorher = JSON.stringify(pSeg.segmente) + JSON.stringify(pSeg.info);
+Bild.zeichne({ segmente: pSeg.segmente, info: pSeg.info });
+eq(JSON.stringify(pSeg.segmente) + JSON.stringify(pSeg.info), vorher, 'schaubild mutiert seine Eingabe nicht');
+var ohneErg = Bild.zeichne({ segmente: pSeg.segmente, info: pSeg.info });
+ok(ohneErg.schwerpunkt === null && ohneErg.svg.indexOf('data-code="schwerpunkt"') < 0,
+   'ohne Ergebnis aus naht.js wird kein Schwerpunkt erfunden');
+
+/* Vollstaendige Abdeckung: alle 7 Profile x alle Kantenkombinationen */
+var maszSet = { blech: { b: 200, t1: 12 }, rohr_rechteck: { b: 100, h: 60, t1: 4, r_ecke: 8 },
+                rohr_rund: { d: 114.3, t1: 6 }, i_profil: { b: 100, h: 200, tw: 5.6, tf: 8.5 },
+                u_profil: { b: 80, h: 160, tw: 6, tf: 10 }, winkel: { b: 80, h: 80, t1: 8 },
+                vollrund: { d: 20 } };
+var wege = 0, wFehler = 0, wText = 0, wLeer = 0, wGruppe = 0, wKontur = 0, wAussen = 0, pi2, ki2;
+
+/* Liegt wirklich alles innerhalb der Zeichenflaeche? Das ist die eigentliche
+   Probe auf die Auto-Skalierung — ein zu grosser Massstab wuerde hier auffallen. */
+function imBild(svgStr, B, H) {
+  var xs = [], ys = [], m, re;
+  re = /(?:x1|x2|cx)="(-?[\d.]+)"/g;  while ((m = re.exec(svgStr)) !== null) xs.push(parseFloat(m[1]));
+  re = /(?:y1|y2|cy)="(-?[\d.]+)"/g;  while ((m = re.exec(svgStr)) !== null) ys.push(parseFloat(m[1]));
+  re = /points="([^"]+)"/g;
+  while ((m = re.exec(svgStr)) !== null) {
+    var pp = m[1].split(' '), q;
+    for (q = 0; q < pp.length; q++) {
+      var xy = pp[q].split(',');
+      if (xy.length === 2) { xs.push(parseFloat(xy[0])); ys.push(parseFloat(xy[1])); }
+    }
+  }
+  var t = 12, q2;   /* Toleranz fuer Kreuz- und Markenradien */
+  for (q2 = 0; q2 < xs.length; q2++) if (!(xs[q2] >= -0.6 && xs[q2] <= B + 0.6)) return false;
+  for (q2 = 0; q2 < ys.length; q2++) if (!(ys[q2] >= -0.6 && ys[q2] <= H + 0.6)) return false;
+  return xs.length > 0 && ys.length > 0 && t > 0;
+}
+for (pi2 = 0; pi2 < Profil.PROFILE.length; pi2++) {
+  var prof = Profil.PROFILE[pi2], kk = Profil.kantenFuer(prof);
+  for (ki2 = 0; ki2 < kk.length; ki2++) {
+    var ein = { profil: prof, kanten: kk[ki2], a: 4 }, mk;
+    for (mk in maszSet[prof]) if (Object.prototype.hasOwnProperty.call(maszSet[prof], mk)) ein[mk] = maszSet[prof][mk];
+    var gg = Bild.ausProfil(ein);
+    wege++;
+    if (!gg.ok) { wFehler++; console.log('    nicht gezeichnet: ' + prof + '/' + kk[ki2]); continue; }
+    if (gg.svg.indexOf('<text') >= 0) wText++;
+    if (!gg.svg || gg.n_seg < 1) wLeer++;
+    if (!gg.n_kontur) wKontur++;
+    for (var gj = 0; gj < gg.gruppen.length; gj++) {
+      if (Profil.SEGMENTGRUPPEN.indexOf(gg.gruppen[gj]) < 0) wGruppe++;
+    }
+    if (/NaN|Infinity|undefined/.test(gg.svg)) wFehler++;
+    if (!imBild(gg.svg, gg.sicht.breite, gg.sicht.hoehe)) {
+      wAussen++; console.log('    zeichnet ausserhalb der Flaeche: ' + prof + '/' + kk[ki2]);
+    }
+  }
+}
+eq(wege, 19, 'alle 19 Kantenkombinationen der 7 Profile durchgezeichnet');
+eq(wFehler, 0, 'jede Kombination ergibt ein sauberes Bild (keine unsauberen Zahlen)');
+eq(wText, 0, 'in keiner der 19 Zeichnungen steht Text im SVG');
+eq(wLeer, 0, 'keine Kombination liefert ein leeres Bild');
+eq(wKontur, 0, 'jede Kombination zeigt zusaetzlich die volle Profilkontur');
+eq(wGruppe, 0, 'jede eingefaerbte Gruppe stammt aus der Segmentgruppenliste');
+eq(wAussen, 0, 'keine Zeichnung laeuft ueber die Zeichenflaeche hinaus (Probe auf die Auto-Skalierung)');
+
+var gFalsch = Bild.ausProfil({ profil: 'i_profil', kanten: 'flanken', b: 100, h: 200, tw: 5.6, tf: 8.5, a: 4 });
+ok(gFalsch.ok === false && gFalsch.svg === '', 'unpassende Kantenauswahl wird durchgereicht, nicht uebermalt');
+eq(gFalsch.fehler[0].code, 'msg_kanten_unpassend', 'der Fehler von profil.js bleibt erhalten');
+
+var gRund = Bild.ausProfil({ profil: 'rohr_rund', kanten: 'rundum', d: 114.3, t1: 6, a: 5 });
+ok(/<circle/.test(gRund.svg), 'die Kreisnaht wird als Kreis gezeichnet');
+eq(gRund.gruppen.join(','), 'kreis', 'die Kreisnaht traegt die Segmentgruppe kreis');
 
 /* ========================================================================= */
 console.log('\n════════════════════════════════════════════');

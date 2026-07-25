@@ -339,6 +339,25 @@
     sg_kante:   { de: 'Stirnkante', en: 'Edge face', pt: 'Face de topo' },
     sg_kreis:   { de: 'Kreisnaht', en: 'Circular weld', pt: 'Solda circular' },
 
+    /* ---------- Meldungen Nahtbild-Grafik (N2c, schaubild.js) ---------- */
+    msg_grafik_leer:        { de: 'Kein Nahtsegment vorhanden – es gibt nichts zu zeichnen.', en: 'No weld segment present – there is nothing to draw.', pt: 'Nenhum segmento de solda – não há nada para desenhar.' },
+    msg_grafik_keine_svglib:{ de: 'Die SVG-Bausteinbibliothek ist nicht geladen – bitte svglib.js in denselben Ordner legen.', en: 'The SVG building-block library is not loaded – please place svglib.js in the same folder.', pt: 'A biblioteca de blocos SVG não está carregada – coloque svglib.js na mesma pasta.' },
+    msg_grafik_symbolisch:  { de: 'Die Naht ist als Strich symbolisch dargestellt – das a-Maß ist nicht maßstäblich. Maßstäblich sind Lage und Länge der Segmente.', en: 'The weld is shown symbolically as a line – the throat thickness is not to scale. Position and length of the segments are to scale.', pt: 'A solda é representada simbolicamente por uma linha – a garganta não está à escala. A posição e o comprimento dos segmentos estão à escala.' },
+    msg_grafik_kontur_gestrichelt: { de: 'Gestrichelt gezeichnete Kanten sind NICHT geschweißt und gehen in keine Rechnung ein.', en: 'Edges drawn dashed are NOT welded and do not enter any calculation.', pt: 'As arestas a tracejado NÃO são soldadas e não entram em nenhum cálculo.' },
+    msg_grafik_eckluecke_sichtbar: { de: 'Die gepunkteten Stellen in den Ecken sind die nicht gerechneten Eckbögen – die Naht selbst läuft dort durch.', en: 'The dotted places at the corners are the corner arcs that are not counted – the weld itself runs through there.', pt: 'Os locais pontilhados nos cantos são os arcos não contabilizados – a solda em si passa por ali.' },
+    msg_grafik_massstab_auto: { de: 'Der Maßstab wird automatisch gewählt, damit das Nahtbild die Zeichenfläche ausfüllt.', en: 'The scale is chosen automatically so that the weld group fills the drawing area.', pt: 'A escala é escolhida automaticamente para que o grupo de soldas preencha a área de desenho.' },
+
+    /* ---------- Nahtbild-Grafik: Beschriftungen und Legende (N2c) ---------- */
+    sb_titel:      { de: 'Nahtbild-Grafik', en: 'Weld group drawing', pt: 'Desenho do grupo de soldas' },
+    sb_legende:    { de: 'Legende', en: 'Legend', pt: 'Legenda' },
+    sb_naht:       { de: 'Naht', en: 'Weld', pt: 'Cordão' },
+    sb_kontur:     { de: 'nicht geschweißte Kante (gestrichelt)', en: 'edge not welded (dashed)', pt: 'aresta não soldada (tracejada)' },
+    sb_eckluecke:  { de: 'Lücke in der Ecke (nicht gerechnet)', en: 'gap at the corner (not counted)', pt: 'folga no canto (não contabilizada)' },
+    sb_schwerpunkt:{ de: 'Schwerpunkt des Nahtbilds', en: 'Centroid of the weld group', pt: 'Centroide do grupo de soldas' },
+    sb_achsen:     { de: 'y- und z-Achse durch den Schwerpunkt', en: 'y and z axes through the centroid', pt: 'eixos y e z pelo centroide' },
+    sb_massstab:   { de: 'Maßstab', en: 'Scale', pt: 'Escala' },
+    sb_mm_je_px:   { de: 'mm je Bildpunkt', en: 'mm per pixel', pt: 'mm por pixel' },
+
     /* ---------- Rechenweg ---------- */
     rw_schritt:      { de: 'Schritt', en: 'Step', pt: 'Passo' },
     rw_formel:       { de: 'Formel', en: 'Formula', pt: 'Fórmula' },
