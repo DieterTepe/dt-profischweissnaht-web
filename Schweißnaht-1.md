@@ -9,12 +9,15 @@
 > Sie ist so geschrieben, dass ein **neuer Chat ohne Vorwissen** damit weiterarbeiten kann.
 
 ```
-Plan-Version : 2.4 · Stand 2026-07-25
-Status       : N1 (Fundament) von Dieter geprüft und ABGENOMMEN.
-               N2 (Nahtbild-Kern, naht.js) gebaut und ausgeliefert — Abnahme am Handy offen.
-               → NÄCHSTER SCHRITT: Baustein N2b (Profileingabe, profil.js).
+Plan-Version : 2.5 · Stand 2026-07-25
+Status       : N1 (Fundament) von Dieter am Handy geprüft und ABGENOMMEN.
+               N2 (Nahtbild-Kern, naht.js) von Dieter am Handy geprüft und ABGENOMMEN.
+               Alle Dateien liegen aktuell in /mnt/project/ UND auf GitHub Pages.
+               → NÄCHSTER SCHRITT: Baustein N2b (Profileingabe, profil.js) — Abschnitt 2.2b
+                 und die fertige naht.js-Schnittstelle in Abschnitt 4.5.
 Basislinie   : 208 Assertions · DOM-Smokes 55 (voll) + 56 (test) · i18n-Parität 0 Abweichungen
                (Basislinie darf nur WACHSEN — nie schrumpfen, nie gelockert werden.)
+Dateistand   : siehe Abschnitt 8.1 — dort steht, was fertig ist und was noch fehlt.
 ```
 
 ═══════════════════════════════════════════════════════════════════════════
@@ -64,6 +67,17 @@ bauen → `node --check` über alle JS → i18n-Parität → DOM-Smokes → Harn
 Dateien nach `/mnt/user-data/outputs/` → `present_files` → **knappe deutsche Zusammenfassung,
 welche Dateien zu überschreiben sind** → Dieter bestätigt am Handy → erst dann der nächste
 Schritt. Danach Plan-Kopf (Version/Status/Basislinie) + Changelog pflegen.
+
+**5b) WIEDEREINSTIEG IN EINEM NEUEN CHAT — genau diese Reihenfolge:**
+1. Diese Datei komplett lesen (`Schweißnaht-1.md`, sie ist die alleinige Grundlage).
+2. Abschnitt **8.1** lesen: was ist fertig, was fehlt.
+3. Abschnitt **4.5** lesen: die fertige Schnittstelle von `naht.js` — darauf setzt N2b auf.
+4. Abschnitt **2.2b** lesen: die abgestimmte Profileingabe (7 Profile, Kantenauswahl,
+   Endkraterabzug, Eckradien, Dicke je Segment).
+5. Arbeitsordner herstellen (Befehl unter Punkt 6), dann
+   `node test_naht.js`, `node dom_smoke_voll.js`, `node dom_smoke_test.js` laufen lassen
+   und die Basislinie aus dem Plan-Kopf bestätigen, **bevor** etwas gebaut wird.
+6. Erst dann N2b bauen — Fließband nach Punkt 5.
 
 **6) TOKEN-PAUSEN:** Dieter stoppt bei ~90 % Verbrauch, Pause **4 Stunden**, dann weiter.
 Vor der Pause den genauen Stand nennen; Wiedereinstieg mit „weiter mit <Baustein>".
@@ -385,18 +399,26 @@ dt-profischweissnaht-web/
 ├── DT-ProfiSchweissnaht_Test.html → Testedition (Unterschied: NUR window.DT_EDITION)
 ├── style.css                      → Design-Tokens/Look (aus der Passung portiert)
 ├── i18n_kern.js   (DTNI18nKern)   → Bedienung, Felder, Meldungen, Rechenweg-Beschriftungen
+│                                     ✅ fertig (N1/N2) · 242 Schlüssel
 ├── i18n_hilfe.js  (DTNI18nHilfe)  → Laien-ⓘ-Texte, Dialog-Erklärungen, Tipps
+│                                     ✅ fertig (N1/N2) · 40 Einträge
 ├── i18n_kerbfall.js (DTNI18nKerb) → Kerbfall-Bezeichnungen und Anwendungsbedingungen
+│                                     ⬜ Gerüst steht, Füllung in N14
 ├── daten.js       (DTNData)       → 11 Werkstoffe, β_w, f_u, R_e, Nahtgütefaktoren,
 │                                     Verfahrensdaten, Fugenformen, ISO 5817, EXC
+│                                     ✅ fertig (N1)
 ├── kerbfall.js    (DTNKerbfall)   → Kerbfallkatalog Stahl + Alu (Codes, Kategorien,
 │                                     Anwendungsbedingungen, Verweis auf Skizze)
 ├── optionen.js    (DTNOptions)    → **einzige Options-/Auswahlquelle** für Formular UND
 │                                     Assistent + **Verträglichkeitsregeln** (3.4)
+│                                     ✅ fertig (N1) · 16 Gruppen, 68 Optionen
 ├── validate.js    (DTNValidate)   → Feldschema (dreisprachig) + zweistufige Prüfung
+│                                     ✅ fertig (N1) · 16 Felder
 ├── naht.js        (DTNNaht)       → Nahtbild-Kern: Segmente → A_w, Schwerpunkt, I_y, I_z, I_p
+│                                     ✅ fertig (N2) · Schnittstelle in 4.5
 ├── profil.js      (DTNProfil)     → Profiltyp + Maße + Kantenauswahl → Segmente (2.2b);
 │                                     parametrisch in V1, Normprofil-Katalog später
+│                                     ⬅ **NÄCHSTER BAUSTEIN (N2b)**
 ├── solver.js      (DTNSolver)     → Spannungen aus N/Q/M/T · Welt A + Welt B ·
 │                                     Nachweis UND Auslegung
 ├── rechenweg.js   (DTNRechenweg)  → selbstprüfender Rechenweg für ALLE Module
@@ -417,12 +439,18 @@ dt-profischweissnaht-web/
 └── dom_smoke_*.js    (DEV-ONLY)   → DOM-Smokes Voll + Test — nie ausgeliefert
 ```
 
-**Ladereihenfolge in beiden HTMLs:**
+**Ladereihenfolge in beiden HTMLs (Zielbild):**
 ```
 i18n_kern → i18n_hilfe → i18n_kerbfall → daten → kerbfall → optionen → validate →
-naht → solver → rechenweg → ermuedung → thermik → kosten → verzug →
+naht → profil → solver → rechenweg → ermuedung → thermik → kosten → verzug →
 svglib → schaubild → symbol → beratung → assistent → report → ui
 ```
+**Tatsächlich in den HTMLs eingetragen (Stand N2, vom DOM-Smoke geprüft):**
+```
+i18n_kern → i18n_hilfe → i18n_kerbfall → daten → optionen → validate → naht
+```
+Jeder neue Baustein trägt sein `<script src>` an der richtigen Stelle nach und erweitert
+im DOM-Smoke die Liste `erwartet` sowie die Namenszuordnung (`'profil.js': 'DTNProfil'`).
 
 ### 4.2 i18n-Struktur *(Begründung dokumentiert, 2026-07-24)*
 
@@ -458,6 +486,62 @@ Zahlen stehen in der HTML-Legende, nicht im SVG (Übersetzbarkeit).
 - Einheiten konsequent mitführen und anzeigen (mm · N · N/mm² · Nm · °C · kJ/mm · s).
 - Am Ende **ein** gebündeltes, obfuskiertes Script, zweimal ausgeliefert.
 
+### 4.5 Schnittstelle `naht.js` (fertig aus N2 — darauf setzt N2b auf)
+
+> **Nicht ändern, nur benutzen.** `naht.js` ist DOM-frei, deterministisch, mutiert seine
+> Eingaben nicht und kennt **keine** Profile. Namensraum: `DTNNaht` bzw. `require('./naht.js')`.
+
+**Segmentformate** (das ist die ganze Sprache zwischen `profil.js` und `naht.js`):
+```js
+{ typ:'linie', y1, z1, y2, z2, a, code }   // gerade Naht, Punkte in mm
+{ typ:'kreis', y,  z,  d,      a, code }   // geschlossene Kreisnaht, d = AUSSENdurchmesser
+```
+`a` ist **je Segment** gesetzt (Steg/Flansch dürfen unterschiedliche a-Maße haben).
+`code` ist frei für die Herkunft (z. B. `'flansch_oben'`) und wird nur durchgereicht —
+`schaubild.js` (N2c) kann damit später Segmente benennen und einfärben.
+
+**Funktionen:**
+| Aufruf | Zweck |
+|---|---|
+| `linie(y1,z1,y2,z2,a,code)` · `kreis(y,z,d,a,code)` | Segment-Fabriken |
+| `laenge(seg)` | Länge in mm (Kreis: π·d) |
+| `pruefe(segmente)` | `{ok, fehler:[{code,index}], warnungen:[…]}` |
+| `rechne(segmente, {modell})` | Hauptrechnung, siehe unten |
+| `offeneEnden(segmente)` | Zahl der freien Segmentenden |
+| `verschiebe(segmente,dy,dz)` · `drehe(segmente,grad,y0,z0)` | neue Liste, Eingabe bleibt unberührt |
+
+**Ergebnis von `rechne()`** (alles in mm, mm², mm³, mm⁴; I-Werte auf den Schwerpunkt bezogen):
+`ok` · `version` · `modell` · `n_seg` · `l_ges` · `A` · `ys` · `zs` · `Iy` · `Iz` · `Iyz` · `Ip` ·
+`I1` · `I2` · `alpha` · `schiefe_biegung` · `ymin/ymax/zmin/zmax` · `y_rand` · `z_rand` ·
+`rmax` · `Wy` · `Wz` · `Wt` · `Wy_oben/Wy_unten/Wz_links/Wz_rechts` ·
+`geschlossen` · `offene_enden` · `teile[]` (je Segment A, l, ys, zs, Eigenanteile,
+Steiner-Anteile — das ist das Futter für die Segmenttabelle im Rechenweg N4) ·
+`punkte[]` (Randpunkte mit y, z, r, seg — für die Spannungspunkte in N3) ·
+`kontrolle` (Häkchen: `schwerpunkt_ok`, `polar_ok`, `hauptachsen_ok`, `ok`, dazu die
+Restwerte `rest_Sy`/`rest_Sz`) ·
+`fehler` · `warnungen` · `hinweise`.
+**Bei einem Fehler ist `ok:false` und es gibt KEINE Zahlen** — kein stiller Teilwert.
+
+**Zwei benannte Rechenmodelle** (`{modell:'exakt'}` ist Voreinstellung):
+`exakt` = Rechteckfläche a × l samt Eigenanteil in Dickenrichtung (deckt sich mit Voigt),
+`duennwandig` = klassisches Linienmodell (deckt sich mit Roloff/Matek). Unterschied < 0,1 %.
+Das gewählte Modell **muss** im Rechenweg genannt werden (Schlüssel `nb_modell_*`).
+
+**Meldungscodes** (`DTNNaht.CODES`, alle dreisprachig in `i18n_kern.js` vorhanden):
+`msg_naht_leer` · `msg_seg_typ` · `msg_seg_a` · `msg_seg_laenge` · `msg_seg_a_zu_gross` ·
+`msg_seg_duennwand` · `msg_torsion_offenes_nahtbild` · `msg_hauptachsen_gedreht` ·
+`msg_kreis_aussendurchmesser`.
+**Ergebnisgrößen** (`DTNNaht.GROESSEN`, 16 Stück) tragen je Code + Einheitsschlüssel;
+Beschriftung `gr_<code>`, Laien-ⓘ an den 8 Kerngrößen (`gr_A`, `gr_ys`, `gr_zs`, `gr_Iy`,
+`gr_Iz`, `gr_Ip`, `gr_Wy`, `gr_Wt`).
+
+**WAS `naht.js` BEWUSST NICHT TUT — das ist die Aufgabe von N2b:**
+- **kein Endkraterabzug 2·a** — `profil.js` liefert schon die *wirksamen* Längen,
+- **keine Eckradien**, keine Profilkenntnis, keine Kantenauswahl,
+- **keine Bögen** (Segmenttypen sind nur `linie` und `kreis`; die Eckradien der Hohlprofile
+  verkürzen die Segmente, sie werden nicht als Bögen modelliert),
+- keine Normprüfung (a_min, l_eff, β_Lw) — das sitzt in `validate.js` bzw. `solver.js`.
+
 ---
 
 ## 5. Bausteine — risikosortiert, mit Launch-Checkpoint
@@ -468,9 +552,9 @@ Zahlen stehen in der HTML-Legende, nicht im SVG (Übersetzbarkeit).
 
 | # | Baustein | Inhalt (Kurz) |
 |---|---|---|
-| **N1** | **Fundament** | `daten.js` (11 Werkstoffe, Beiwerte, ISO 5817, EXC) + `optionen.js` (einzige Auswahlquelle **inkl. Verträglichkeitsregeln**) + i18n-Gerüst DE/EN/PT + `validate.js`. Alle Codes sprachneutral. |
-| **N2** | **Nahtbild-Kern** | `naht.js`: Segmente → A_w, Schwerpunkt, I_y, I_z, I_p. DOM-frei. Hand-Anker: Rechteckbild + Kreisnaht geschlossen nachgerechnet. |
-| **N2b** | **Profileingabe** | `profil.js`: 7 parametrische Profile + Kantenauswahl → Segmente. Endkraterabzug, Eckradien, Dicke je Segment. DOM-frei. Hand-Anker: Umfang Rechteckrohr und Kreisnaht. |
+| **N1** ✅ | **Fundament** *(abgenommen 2026-07-25)* | `daten.js` (11 Werkstoffe, Beiwerte, ISO 5817, EXC) + `optionen.js` (einzige Auswahlquelle **inkl. Verträglichkeitsregeln**) + i18n-Gerüst DE/EN/PT + `validate.js`. Alle Codes sprachneutral. |
+| **N2** ✅ | **Nahtbild-Kern** *(abgenommen 2026-07-25)* | `naht.js`: Segmente → A_w, Schwerpunkt, I_y, I_z, I_yz, I_p, Hauptachsen, W_y/W_z/W_t, offen/geschlossen, Selbstprüfung. DOM-frei. Vier Hand-Anker geschlossen nachgerechnet. **Schnittstelle: Abschnitt 4.5.** |
+| **N2b** ⬅ | **Profileingabe — NÄCHSTER SCHRITT** | `profil.js`: 7 parametrische Profile + Kantenauswahl → Segmente. Endkraterabzug, Eckradien, Dicke je Segment. DOM-frei. Hand-Anker: Umfang Rechteckrohr und Kreisnaht. |
 | **N2c** | **Nahtbild-Grafik** *(von N6 vorgezogen)* | `svglib.js` + `schaubild.js`: SVG-Vorschau des Nahtbilds, Segmente farbig, Schwerpunkt. Dient zugleich als **Auswahl-Skizze** der Profileingabe. |
 | **N3** | **Spannungen + beide Welten** | `solver.js`: σ⊥, τ⊥, τ∥ aus N/Q/M/T · Welt A (EC3) · Welt B (klassisch) · **Nachweis UND Auslegung**. |
 | **N4** | **Rechenweg** | `rechenweg.js`: selbstprüfende Schritte für N2/N3, dreisprachig. |
@@ -571,6 +655,29 @@ verdrahtet, Sperr-Overlay in der Testversion, Registrierung + Long-Press-Reset.
 **Referenzdateien (read-only, nur Muster):** `DT-ProfiPassung_Testversion-Orginal.html` ·
 `DT-ProfiPassung.html` · `DT-ProfiPassung_Test.html`
 
+### 8.1 Dateistand nach N2 *(Stand 2026-07-25, in `/mnt/project/` und auf GitHub aktuell)*
+
+**Ausgeliefert und abgenommen — Produktdateien:**
+| Datei | Stand |
+|---|---|
+| `DT-ProfiSchweissnaht.html` | Voll-Edition (`DT_EDITION='full'`), lädt 7 Module, enthält die **Zwischen-Statusseite N1/N2** (entfällt mit N5) |
+| `DT-ProfiSchweissnaht_Test.html` | Test-Edition — **verifiziert: Unterschied genau eine Zeile** |
+| `daten.js` · `optionen.js` · `validate.js` | N1, unverändert seit N1 |
+| `i18n_kern.js` (242 Schlüssel) · `i18n_hilfe.js` (40 Einträge) · `i18n_kerbfall.js` (Gerüst) | in N2 um Nahtbild-Texte erweitert |
+| `naht.js` | **N2, neu** — Schnittstelle in 4.5 |
+| `style.css` | N1 |
+
+**DEV-ONLY — nur in `/mnt/project/`, NIE ausliefern und nicht auf GitHub nötig:**
+`test_naht.js` (208 Assertions) · `dom_smoke_voll.js` (55 Prüfungen) ·
+`dom_smoke_test.js` (56 Prüfungen).
+
+**Noch nicht gebaut:** `profil.js` (N2b) · `svglib.js` + `schaubild.js` (N2c) · `solver.js` (N3) ·
+`rechenweg.js` (N4) · `ui.js` (N5) · `symbol.js` (N6b) · `assistent.js` (N8) · `thermik.js` (N9) ·
+`kosten.js` (N10) · `report.js` (N11) · `ermuedung.js` (N13) · `kerbfall.js` (N14) · `verzug.js` (N15).
+
+**Erste Handlung im neuen Chat:** Arbeitsordner herstellen und die drei Testläufe starten.
+Melden müssen sie **208 / 55 / 56 · 0 Fehler**. Weicht etwas ab, erst das klären.
+
 ---
 
 ## 9. Entscheidungslog
@@ -650,6 +757,11 @@ verdrahtet, Sperr-Overlay in der Testversion, Registrierung + Long-Press-Reset.
 - **Neue bindende Vorgabe: die HTML startet immer im dunklen Design** (Schalter bleibt,
   nur der Startzustand ändert sich) → Umsetzung in N5, Prüfung im DOM-Smoke.
 
+**Aus der Rückmeldung 2026-07-25 (N2 abgenommen):**
+- N2 von Dieter am Handy geprüft: Nahtbild-Karte, Hand-Anker-Häkchen und Selbstprüfung laufen
+  in allen drei Sprachen. **Abgenommen.** Projektordner und GitHub sind auf diesem Stand.
+- Damit ist die **Basislinie 208 / 55 / 56** verbindlich — sie darf nur noch wachsen.
+
 **Aus der Abstimmung 2026-07-24 (dieser Chat):**
 - Produktname **DT-ProfiSchweissnaht**, Repo `dt-profischweissnaht-web`, Projektdatei `.dts`.
 - **11 Werkstoffsorten** in V1 (5 Stahl, 3 Edelstahl, 3 Alu).
@@ -675,10 +787,12 @@ verdrahtet, Sperr-Overlay in der Testversion, Registrierung + Long-Press-Reset.
 Changelog
 ═══════════════════════════════════════════════════════════════════════════
 **v1.0 (2026-07-23):** Erstfassung nach dem Konzeptgespräch (`Schweißnaht.md`).
+
 **v2.0 (2026-07-24):** Recherche R1–R6 eingearbeitet, **alle offenen Fragen aus Abschnitt 0
 geklärt**, Produkt umbenannt in DT-ProfiSchweissnaht, Bedienkonzept (Abschnitt 3) neu
 aufgenommen, i18n- und SVG-Architektur festgelegt, N6b ergänzt, Prüfstand gestrichen,
 Grenzen-Liste erweitert. **Diese Datei ersetzt `Schweißnaht.md`.**
+
 **v2.1 (2026-07-25):** **Baustein N1 (Fundament) gebaut und ausgeliefert:** `daten.js`
 (11 Werkstoffe, beide βw-Regelsätze, Welt-B-Tabellen, Geometriegrenzen, Verfahren, Fugenformen,
 ISO 5817, EXC, Quellen- und Lückenverzeichnis), `optionen.js` (16 Gruppen, 68 Optionen,
@@ -687,6 +801,11 @@ Verträglichkeitsregeln, EINE Filterfunktion, Wegeaufzählung), `i18n_kern.js` (
 (16 Felder, zweistufige Prüfung), `style.css`, beide HTMLs (Unterschied verifiziert: genau
 eine Zeile). Vier Korrekturen aus 6.1 im Code verankert und durch Assertions abgesichert.
 **Nächster Schritt: N2 (Nahtbild-Kern, `naht.js`).**
+
+**v2.2 (2026-07-25):** N1 von Dieter am Handy geprüft und **abgenommen** (Sprachumschaltung
+sauber). Neue bindende Vorgabe aufgenommen: **Startdarstellung immer dunkel** (Abschnitt 3.1,
+Umsetzung in N5). Sonst unverändert.
+
 **v2.3 (2026-07-25):** **Profileingabe abgestimmt und eingeplant.** Neuer Abschnitt 2.2b
 (7 parametrische Profile inkl. **U-Profil**, Kantenauswahl als Pflichtabfrage, Endkraterabzug/
 Eckradien/Dicke je Segment, Länge als überschreibbarer Vorschlag, Normprofil-Katalog als
@@ -705,9 +824,13 @@ Nichtmutation, Determinismus). 16 Ergebnisgrößen und 9 Meldungen dreisprachig,
 **Basislinie 128 → 208 Assertions · Smokes 39/40 → 55/56.**
 **Nächster Schritt: N2b (Profileingabe, `profil.js`).**
 
-**v2.2 (2026-07-25):** N1 von Dieter am Handy geprüft und **abgenommen** (Sprachumschaltung
-sauber). Neue bindende Vorgabe aufgenommen: **Startdarstellung immer dunkel** (Abschnitt 3.1,
-Umsetzung in N5). Sonst unverändert.
+**v2.5 (2026-07-25):** **N2 von Dieter am Handy geprüft und ABGENOMMEN**, Projektordner und
+GitHub auf diesem Stand. Plan für den Wiedereinstieg in einem neuen Chat geschärft: neuer
+Kickoff-Punkt **5b** (Reihenfolge beim Wiedereinstieg), neuer Abschnitt **4.5** (vollständige
+Schnittstelle von `naht.js` — Segmentformate, Funktionen, Ergebnisfelder, Meldungscodes und
+ausdrücklich das, was `naht.js` NICHT tut), neuer Abschnitt **8.1** (Dateistand: fertig /
+DEV-ONLY / noch nicht gebaut), Modulkarte und Bausteintabelle mit Fertigkennzeichen,
+Ladereihenfolge um Ist-Stand ergänzt. **Nächster Schritt unverändert: N2b (`profil.js`).**
 ═══════════════════════════════════════════════════════════════════════════
 Ende Schweißnaht-1.md · DT-ProfiSchweissnaht
 ═══════════════════════════════════════════════════════════════════════════
