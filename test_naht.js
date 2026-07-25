@@ -11,6 +11,7 @@ var Kerb    = require('./i18n_kerbfall.js');
 var Data    = require('./daten.js');
 var Options = require('./optionen.js');
 var Valid   = require('./validate.js');
+var Naht    = require('./naht.js');
 
 var N = 0, FAIL = [], SEKTION = '';
 function sek(s) { SEKTION = s; console.log('\n— ' + s + ' —'); }
@@ -324,6 +325,183 @@ var zVor = { welt: 'A', werkstoffgruppe: 'stahl', werkstoff: 'S235' };
 var zKopie = JSON.stringify(zVor);
 Options.filter('nahtart', zVor); Options.pruefe(zVor); Options.aktiveGruppen(zVor);
 eq(JSON.stringify(zVor), zKopie, 'Optionsfunktionen veraendern den Zustand nicht');
+
+/* ========================================================================= */
+sek('S15 · Nahtbild-Kern N2 — Hand-Anker gegen geschlossene Formeln');
+ok(!!Naht, 'naht.js geladen');
+eq(Naht.MODELL_STD, 'exakt', 'Voreinstellung ist das exakte Rechteckmodell');
+
+/* --- Anker 1: Rechteck-Nahtbild, Doppelkehlnaht (Roloff/Matek) --- */
+var h1 = 200, b1 = 100, a1 = 5;
+var nbRe = [ Naht.linie(-b1 / 2, -h1 / 2, -b1 / 2, h1 / 2, a1),
+             Naht.linie( b1 / 2, -h1 / 2,  b1 / 2, h1 / 2, a1) ];
+var rRe = Naht.rechne(nbRe);
+var rReD = Naht.rechne(nbRe, { modell: 'duennwandig' });
+ok(rRe.ok, 'Rechteck-Nahtbild rechnet durch');
+nahe(rRe.A, 2 * a1 * h1, 1e-9, 'Hand-Anker A_w = 2*a*h');
+nahe(rRe.l_ges, 2 * h1, 1e-9, 'Hand-Anker Nahtlaenge = 2*h');
+nahe(rRe.Iy, a1 * h1 * h1 * h1 / 6, 1e-6, 'Hand-Anker I_y = a*h^3/6');
+nahe(rReD.Iy, a1 * h1 * h1 * h1 / 6, 1e-6, 'I_y ist in beiden Modellen gleich (senkrechte Naehte)');
+nahe(rReD.Iz, 0.5 * a1 * h1 * b1 * b1, 1e-6, 'Hand-Anker I_z = 0,5*a*h*b^2 (Roloff/Matek, duennwandig)');
+nahe(rRe.Iz, 0.5 * a1 * h1 * b1 * b1 + 2 * (h1 * a1 * a1 * a1 / 12), 1e-6,
+     'exaktes Modell = Roloff/Matek + Eigenanteil in Dickenrichtung');
+nahe(rRe.Ip, rRe.Iy + rRe.Iz, 1e-6, 'Hand-Anker I_p = I_y + I_z');
+nahe(rRe.ys, 0, 1e-12, 'Schwerpunkt y liegt in der Mitte');
+nahe(rRe.zs, 0, 1e-12, 'Schwerpunkt z liegt in der Mitte');
+nahe(rRe.Iyz, 0, 1e-9, 'symmetrisches Nahtbild: I_yz = 0');
+nahe(rRe.Wy, rRe.Iy / (h1 / 2), 1e-6, 'W_y = I_y / z_rand');
+ok(rRe.kontrolle.ok, 'Selbstpruefung des Rechteck-Nahtbilds ist gruen');
+var unterschied = Math.abs(rRe.Iz - rReD.Iz) / rRe.Iz;
+ok(unterschied < 0.001, 'Unterschied beider Modelle unter 0,1 % (ist ' + (unterschied * 100).toFixed(4) + ' %)');
+
+/* --- Anker 2: umlaufende Kehlnaht am Flachstahl (Voigt, HS Anhalt) --- */
+var tF = 40, lF = 200, aF = 4;
+var nbUm = [ Naht.linie(-tF / 2, -lF / 2, -tF / 2,  lF / 2, aF),
+             Naht.linie( tF / 2, -lF / 2,  tF / 2,  lF / 2, aF),
+             Naht.linie(-tF / 2,  lF / 2,  tF / 2,  lF / 2, aF),
+             Naht.linie(-tF / 2, -lF / 2,  tF / 2, -lF / 2, aF) ];
+var rUm = Naht.rechne(nbUm);
+var sollUmIy = 2 * (aF * lF * lF * lF / 12) + 2 * (tF * aF * aF * aF / 12) + 2 * (tF * aF * (lF / 2) * (lF / 2));
+var sollUmIz = 2 * (aF * tF * tF * tF / 12) + 2 * (lF * aF * aF * aF / 12) + 2 * (lF * aF * (tF / 2) * (tF / 2));
+nahe(rUm.Iy, sollUmIy, 1e-6, 'Hand-Anker Voigt: I_w = 2*(a*l^3/12) + 2*(t*a^3/12) + 2*(t*a*(l/2)^2)');
+nahe(rUm.Iz, sollUmIz, 1e-6, 'Hand-Anker Voigt, um 90 Grad gedacht: I_z');
+nahe(rUm.A, 2 * aF * lF + 2 * aF * tF, 1e-9, 'A_w der umlaufenden Naht');
+ok(rUm.geschlossen, 'umlaufende Naht wird als geschlossenes Nahtbild erkannt');
+eq(rUm.offene_enden, 0, 'umlaufende Naht hat keine offenen Enden');
+
+/* --- Anker 3: Kreisnaht am Rohr (Voigt, HS Anhalt) --- */
+var dK = 100, aK = 5;
+var nbKr = [ Naht.kreis(0, 0, dK, aK) ];
+var rKr = Naht.rechne(nbKr);
+var rKrD = Naht.rechne(nbKr, { modell: 'duennwandig' });
+var DIFF4 = Math.pow(dK + aK, 4) - Math.pow(dK - aK, 4);
+nahe(rKr.A, Math.PI / 4 * (Math.pow(dK + aK, 2) - Math.pow(dK - aK, 2)), 1e-6,
+     'Hand-Anker A_w = (pi/4)*[(d+a)^2-(d-a)^2]');
+nahe(rKr.A, Math.PI * dK * aK, 1e-6, 'gleichwertig: A_w = pi*d*a');
+nahe(rKr.l_ges, Math.PI * dK, 1e-9, 'Nahtlaenge l = pi*d (Aussendurchmesser, Festlegung 2.2b)');
+nahe(rKr.Iy, Math.PI / 64 * DIFF4, 1e-6, 'Hand-Anker I_w = (pi/64)*[(d+a)^4-(d-a)^4]');
+nahe(rKr.Wy, Math.PI * DIFF4 / (32 * (dK + aK)), 1e-6, 'Hand-Anker W_w = pi*[(d+a)^4-(d-a)^4]/[32*(d+a)]');
+nahe(rKr.Wt, Math.PI / 16 * DIFF4 / (dK + aK), 1e-6, 'Hand-Anker W_wt = (pi/16)*[(d+a)^4-(d-a)^4]/(d+a)');
+nahe(rKrD.Iy, Math.PI * dK * dK * dK * aK / 8, 1e-6, 'duennwandiger Ring: I = pi*d^3*a/8');
+nahe(rKr.Ip, 2 * rKr.Iy, 1e-6, 'Kreisnaht: I_p = 2*I_y');
+ok(rKr.geschlossen, 'Kreisnaht ist ein geschlossenes Nahtbild');
+
+/* --- Anker 4: reiner Steiner-Anteil (zwei waagerechte Naehte) --- */
+var lS = 120, aS = 4, cS = 80;
+var nbSt = [ Naht.linie(-lS / 2, -cS, lS / 2, -cS, aS), Naht.linie(-lS / 2, cS, lS / 2, cS, aS) ];
+var rSt = Naht.rechne(nbSt);
+nahe(rSt.Iy, 2 * (lS * aS * aS * aS / 12) + 2 * (aS * lS * cS * cS), 1e-6,
+     'Hand-Anker Steiner: I_y = 2*(l*a^3/12) + 2*(a*l*c^2)');
+nahe(rSt.Iz, 2 * (aS * lS * lS * lS / 12), 1e-6, 'Hand-Anker I_z = 2*(a*l^3/12)');
+
+/* ========================================================================= */
+sek('S16 · Nahtbild-Kern — Invarianten (zweiter Rechenpfad)');
+var rVer = Naht.rechne(Naht.verschiebe(nbRe, 250, -75));
+nahe(rVer.Iy, rRe.Iy, 1e-6, 'Verschieben aendert I_y nicht (Schwerpunktbezug)');
+nahe(rVer.Iz, rRe.Iz, 1e-6, 'Verschieben aendert I_z nicht');
+nahe(rVer.Ip, rRe.Ip, 1e-6, 'Verschieben aendert I_p nicht');
+nahe(rVer.ys, 250, 1e-9, 'Schwerpunkt wandert korrekt mit');
+nahe(rVer.zs, -75, 1e-9, 'Schwerpunkt wandert korrekt mit (z)');
+
+var rDreh90 = Naht.rechne(Naht.drehe(nbRe, 90, 0, 0));
+nahe(rDreh90.Iy, rRe.Iz, 1e-6, 'Drehung um 90 Grad: I_y wird zu I_z');
+nahe(rDreh90.Iz, rRe.Iy, 1e-6, 'Drehung um 90 Grad: I_z wird zu I_y');
+nahe(rDreh90.Ip, rRe.Ip, 1e-6, 'I_p ist drehinvariant');
+var rDreh37 = Naht.rechne(Naht.drehe(nbRe, 37, 12, -8));
+nahe(rDreh37.Ip, rRe.Ip, 1e-6, 'I_p bleibt auch bei beliebigem Winkel gleich');
+nahe(rDreh37.A, rRe.A, 1e-9, 'A_w ist drehinvariant');
+
+/* Unterteilung: dieselbe Naht in zwei Haelften muss identisch rechnen */
+var ganz = [ Naht.linie(0, 0, 0, 200, 5) ];
+var geteilt = [ Naht.linie(0, 0, 0, 100, 5), Naht.linie(0, 100, 0, 200, 5) ];
+var rG = Naht.rechne(ganz), rT = Naht.rechne(geteilt);
+nahe(rT.Iy, rG.Iy, 1e-6, 'Unterteilen eines Segments aendert I_y nicht');
+nahe(rT.Iz, rG.Iz, 1e-6, 'Unterteilen eines Segments aendert I_z nicht');
+nahe(rT.A, rG.A, 1e-9, 'Unterteilen eines Segments aendert A_w nicht');
+
+/* a-Verdopplung */
+var nbRe2a = [ Naht.linie(-b1 / 2, -h1 / 2, -b1 / 2, h1 / 2, 2 * a1),
+               Naht.linie( b1 / 2, -h1 / 2,  b1 / 2, h1 / 2, 2 * a1) ];
+nahe(Naht.rechne(nbRe2a).A, 2 * rRe.A, 1e-9, 'doppeltes a-Mass verdoppelt A_w exakt');
+nahe(Naht.rechne(nbRe2a, { modell: 'duennwandig' }).Iy, 2 * rReD.Iy, 1e-6,
+     'doppeltes a-Mass verdoppelt I_y im Linienmodell exakt');
+
+/* Hauptachsen */
+var schraeg = [ Naht.linie(0, 0, 100, 100, 4) ];
+var rSch = Naht.rechne(schraeg);
+ok(rSch.schiefe_biegung, 'schraege Einzelnaht: schiefe Biegung wird erkannt');
+nahe(rSch.alpha, -45, 1e-6, 'Hauptachsenwinkel der 45-Grad-Naht ist -45 Grad');
+var rZurueck = Naht.rechne(Naht.drehe(schraeg, -rSch.alpha, rSch.ys, rSch.zs));
+nahe(rZurueck.Iyz, 0, 1e-6, 'nach Rueckdrehung um alpha verschwindet I_yz');
+nahe(rZurueck.Iy, rSch.I1, 1e-6, 'nach Rueckdrehung ist I_y das Hauptflaechenmoment I1');
+nahe(rSch.I1 + rSch.I2, rSch.Iy + rSch.Iz, 1e-6, 'I1 + I2 = I_y + I_z');
+ok(rSch.I1 >= rSch.I2, 'I1 ist das groessere Hauptflaechenmoment');
+
+/* Unsymmetrisches Nahtbild (Winkelprofil) gegen Handrechnung */
+var nbL = [ Naht.linie(0, 0, 100, 0, 5), Naht.linie(0, 0, 0, 60, 5) ];
+var rL = Naht.rechne(nbL);
+nahe(rL.A, 5 * 100 + 5 * 60, 1e-9, 'Winkel-Nahtbild A_w = 500 + 300');
+nahe(rL.ys, (500 * 50 + 300 * 0) / 800, 1e-9, 'Hand-Anker Schwerpunkt ys = 31,25 mm');
+nahe(rL.zs, (500 * 0 + 300 * 30) / 800, 1e-9, 'Hand-Anker Schwerpunkt zs = 11,25 mm');
+ok(Math.abs(rL.Iyz) > 1, 'unsymmetrisches Nahtbild hat ein Zentrifugalmoment');
+ok(rL.kontrolle.ok, 'Selbstpruefung auch beim unsymmetrischen Nahtbild gruen');
+
+/* Determinismus und Unveraenderlichkeit */
+eq(JSON.stringify(Naht.rechne(nbUm).Iy), JSON.stringify(Naht.rechne(nbUm).Iy), 'rechne() ist deterministisch');
+var kopieVor = JSON.stringify(nbRe);
+Naht.rechne(nbRe); Naht.verschiebe(nbRe, 10, 10); Naht.drehe(nbRe, 30, 0, 0); Naht.pruefe(nbRe);
+eq(JSON.stringify(nbRe), kopieVor, 'naht.js mutiert die uebergebenen Segmente nicht');
+
+/* ========================================================================= */
+sek('S17 · Nahtbild-Kern — Pruefung und ehrliche Hinweise');
+function nCodes(liste) { var c = [], q; for (q = 0; q < liste.length; q++) c.push(liste[q].code); return c; }
+
+var pLeer = Naht.rechne([]);
+ok(!pLeer.ok, 'leeres Nahtbild wird abgelehnt');
+ok(nCodes(pLeer.fehler).indexOf('msg_naht_leer') >= 0, 'Meldung msg_naht_leer erscheint');
+ok(pLeer.A === undefined, 'bei Fehler werden keine stillen Teilwerte geliefert');
+ok(nCodes(Naht.pruefe([ Naht.linie(0, 0, 0, 100, 0) ]).fehler).indexOf('msg_seg_a') >= 0, 'a = 0 wird erkannt');
+ok(nCodes(Naht.pruefe([ Naht.linie(0, 0, 0, 0, 5) ]).fehler).indexOf('msg_seg_laenge') >= 0, 'Segment ohne Laenge wird erkannt');
+ok(nCodes(Naht.pruefe([ { typ: 'spirale', a: 4 } ]).fehler).indexOf('msg_seg_typ') >= 0, 'unbekannte Segmentart wird erkannt');
+ok(nCodes(Naht.pruefe([ Naht.kreis(0, 0, 20, 20) ]).fehler).indexOf('msg_seg_a_zu_gross') >= 0,
+   'Kreisnaht mit a >= d wird abgelehnt');
+ok(nCodes(Naht.pruefe([ Naht.linie(0, 0, 0, 12, 5) ]).warnungen).indexOf('msg_seg_duennwand') >= 0,
+   'Verletzung der Duennwand-Annahme wird als Warnung gemeldet');
+
+ok(nCodes(rRe.hinweise).indexOf('msg_torsion_offenes_nahtbild') >= 0,
+   'offenes Nahtbild: Naeherungscharakter der Torsion wird ausgewiesen');
+ok(nCodes(rUm.hinweise).indexOf('msg_torsion_offenes_nahtbild') < 0,
+   'geschlossenes Nahtbild bekommt diesen Hinweis nicht');
+ok(nCodes(rKr.hinweise).indexOf('msg_kreis_aussendurchmesser') >= 0,
+   'Kreisnaht weist den Aussendurchmesser ausdruecklich aus');
+ok(nCodes(rL.hinweise).indexOf('msg_hauptachsen_gedreht') >= 0,
+   'unsymmetrisches Nahtbild weist auf schiefe Biegung hin');
+eq(rRe.offene_enden, 4, 'Doppelkehlnaht hat 4 offene Enden');
+eq(rL.offene_enden, 2, 'Winkel-Nahtbild hat 2 offene Enden');
+ok(!rRe.geschlossen && rUm.geschlossen && rKr.geschlossen, 'offen/geschlossen wird richtig unterschieden');
+
+/* ========================================================================= */
+sek('S18 · Nahtbild-Kern — jede Groesse und jeder Code hat seinen Text');
+var grOhne = 0, einhOhne = 0, gk;
+for (gk = 0; gk < Naht.GROESSEN.length; gk++) {
+  if (!Kern.has('gr_' + Naht.GROESSEN[gk].code)) { grOhne++; console.log('    ohne Text: gr_' + Naht.GROESSEN[gk].code); }
+  if (!Kern.has(Naht.GROESSEN[gk].einheit)) { einhOhne++; console.log('    ohne Einheit: ' + Naht.GROESSEN[gk].einheit); }
+}
+eq(grOhne, 0, 'jede Ergebnisgroesse des Nahtbilds ist beschriftet');
+eq(einhOhne, 0, 'jede Ergebnisgroesse traegt eine uebersetzte Einheit');
+
+var cOhne = 0, ck;
+for (ck = 0; ck < Naht.CODES.length; ck++) {
+  if (!Kern.has(Naht.CODES[ck])) { cOhne++; console.log('    ohne Text: ' + Naht.CODES[ck]); }
+}
+eq(cOhne, 0, 'jede Meldung des Nahtbild-Kerns ist dreisprachig hinterlegt');
+
+var kernGroessen = ['A', 'ys', 'zs', 'Iy', 'Iz', 'Ip', 'Wy', 'Wt'], hOhne2 = 0, hk2;
+for (hk2 = 0; hk2 < kernGroessen.length; hk2++) {
+  if (!Hilfe.has('gr_' + kernGroessen[hk2])) { hOhne2++; console.log('    ohne Laien-Hilfe: gr_' + kernGroessen[hk2]); }
+}
+eq(hOhne2, 0, 'Laien-ⓘ an allen Kerngroessen des Nahtbilds');
+ok(Kern.has('nb_modell_exakt') && Kern.has('nb_modell_duennwandig'), 'beide Rechenmodelle sind benannt');
 
 /* ========================================================================= */
 console.log('\n════════════════════════════════════════════');

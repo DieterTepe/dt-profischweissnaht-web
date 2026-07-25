@@ -63,6 +63,14 @@
 
   <section class="card">
     <div class="card-head">
+      <span class="eyebrow">N2 · naht.js</span>
+      <h2 id="h_nahtbild">Nahtbild</h2>
+    </div>
+    <div class="card-body" id="nahtHost"></div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
       <span class="eyebrow">daten.js</span>
       <h2 id="h_luecken">Ehrliche Lücken</h2>
     </div>
@@ -86,17 +94,18 @@
 </footer>
 
 <!-- Module in Abhaengigkeitsreihenfolge (Schweissnaht-1.md 4.1).
-     Noch nicht vorhandene Module folgen in den Bausteinen N2 ff. -->
+     Noch nicht vorhandene Module folgen in den Bausteinen N2b ff. -->
 <script src="i18n_kern.js"></script>
 <script src="i18n_hilfe.js"></script>
 <script src="i18n_kerbfall.js"></script>
 <script src="daten.js"></script>
 <script src="optionen.js"></script>
 <script src="validate.js"></script>
+<script src="naht.js"></script>
 
 <!-- ===================================================================== -->
-<!--  N1-ZWISCHENSTAND: kleine Statusanzeige, damit das Fundament am Handy
-      pruefbar ist. Entfaellt vollstaendig mit N5 (ui.js).                 -->
+<!--  N1/N2-ZWISCHENSTAND: kleine Statusanzeige, damit Fundament und
+      Nahtbild-Kern am Handy pruefbar sind. Entfaellt vollstaendig mit N5. -->
 <!-- ===================================================================== -->
 <script>
 (function () {
@@ -125,7 +134,8 @@
       ['i18n_kerbfall.js', window.DTNI18nKerb],
       ['daten.js', window.DTNData],
       ['optionen.js', window.DTNOptions],
-      ['validate.js', window.DTNValidate]
+      ['validate.js', window.DTNValidate],
+      ['naht.js', window.DTNNaht]
     ];
     var fehlt = 0, rows = '';
     for (var i = 0; i < mods.length; i++) {
@@ -171,6 +181,101 @@
     host.innerHTML = out;
   }
 
+  /* ---- N2: Nahtbild-Kern live vorrechnen (Hand-Anker + Selbstpruefung) ---- */
+  function zahl(x, dec) {
+    if (typeof x !== 'number' || !isFinite(x)) return '\u2013';
+    if (dec === undefined) dec = 2;
+    var neg = x < 0, s = Math.abs(x).toFixed(dec).split('.');
+    var g = s[0], out = '', c = 0, k;
+    for (k = g.length - 1; k >= 0; k--) {
+      out = g.charAt(k) + out; c++;
+      if (c % 3 === 0 && k > 0) out = (LANG === 'en' ? ',' : '.') + out;
+    }
+    if (s[1]) out += (LANG === 'en' ? '.' : ',') + s[1];
+    return (neg ? '\u2212' : '') + out;
+  }
+
+  function haken(b) { return b ? '\u2713' : '\u2717'; }
+
+  function nahtbild() {
+    var host = id('nahtHost');
+    if (!window.DTNNaht || !window.DTNI18nKern) { host.textContent = '\u2013'; return; }
+    var NA = window.DTNNaht;
+
+    /* Beispiel: Doppelkehlnaht, Hoehe 200 mm, Abstand 100 mm, a = 5 mm */
+    var h = 200, b = 100, a = 5;
+    var segs = [ NA.linie(-b / 2, -h / 2, -b / 2, h / 2, a),
+                 NA.linie(b / 2, -h / 2, b / 2, h / 2, a) ];
+    var r = NA.rechne(segs);
+    if (!r.ok) { host.textContent = '\u2013'; return; }
+
+    var out = '<div style="margin:0 0 8px 0"><strong>' + esc(K('nb_beispiel')) + ':</strong> ' +
+              '2 \u00d7 ' + zahl(h, 0) + ' mm, ' + esc(K('nb_segmente')).toLowerCase() +
+              ' ' + zahl(b, 0) + ' mm, a = ' + zahl(a, 0) + ' mm</div>';
+
+    var zeilen = [
+      ['gr_A',     r.A,     'unit_mm2', 1],
+      ['gr_l_ges', r.l_ges, 'unit_mm',  1],
+      ['gr_ys',    r.ys,    'unit_mm',  2],
+      ['gr_zs',    r.zs,    'unit_mm',  2],
+      ['gr_Iy',    r.Iy,    'unit_mm4', 0],
+      ['gr_Iz',    r.Iz,    'unit_mm4', 0],
+      ['gr_Ip',    r.Ip,    'unit_mm4', 0],
+      ['gr_Wy',    r.Wy,    'unit_mm3', 0],
+      ['gr_Wt',    r.Wt,    'unit_mm3', 0],
+      ['gr_rmax',  r.rmax,  'unit_mm',  2]
+    ];
+    out += '<dl class="kv">';
+    for (var i = 0; i < zeilen.length; i++) {
+      out += '<dt>' + esc(K(zeilen[i][0])) + '</dt><dd>' +
+             zahl(zeilen[i][1], zeilen[i][3]) + ' ' + esc(K(zeilen[i][2])) + '</dd>';
+    }
+    out += '<dt>' + esc(K('nb_modell')) + '</dt><dd>' +
+           esc(K(r.modell === 'exakt' ? 'nb_modell_exakt' : 'nb_modell_duennwandig')) + '</dd>';
+    out += '<dt>' + esc(K('nb_titel')) + '</dt><dd>' +
+           esc(K(r.geschlossen ? 'nb_geschlossen' : 'nb_offen')) + '</dd>';
+    out += '</dl>';
+
+    /* Hand-Anker: gegen geschlossene Formeln nachgerechnet */
+    function nahe(x, y) { return Math.abs(x - y) <= 1e-6 * Math.max(1, Math.abs(y)); }
+    var rD = NA.rechne(segs, { modell: 'duennwandig' });
+
+    var tF = 40, lF = 200, aF = 4;
+    var um = [ NA.linie(-tF / 2, -lF / 2, -tF / 2, lF / 2, aF),
+               NA.linie(tF / 2, -lF / 2, tF / 2, lF / 2, aF),
+               NA.linie(-tF / 2, lF / 2, tF / 2, lF / 2, aF),
+               NA.linie(-tF / 2, -lF / 2, tF / 2, -lF / 2, aF) ];
+    var rUm = NA.rechne(um);
+    var sollUm = 2 * (aF * lF * lF * lF / 12) + 2 * (tF * aF * aF * aF / 12) + 2 * (tF * aF * (lF / 2) * (lF / 2));
+
+    var dK = 100, aK = 5, rKr = NA.rechne([ NA.kreis(0, 0, dK, aK) ]);
+    var D4 = Math.pow(dK + aK, 4) - Math.pow(dK - aK, 4);
+
+    var anker = [
+      ['nb_anker_rechteck', nahe(r.Iy, a * h * h * h / 6) && nahe(rD.Iz, 0.5 * a * h * b * b),
+       'I_y = a\u00b7h\u00b3/6 \u00b7 I_z = \u00bd\u00b7a\u00b7h\u00b7b\u00b2'],
+      ['nb_anker_umlauf', nahe(rUm.Iy, sollUm),
+       'I = 2\u00b7(a\u00b7l\u00b3/12) + 2\u00b7(t\u00b7a\u00b3/12) + 2\u00b7(t\u00b7a\u00b7(l/2)\u00b2)'],
+      ['nb_anker_kreis', nahe(rKr.A, Math.PI * dK * aK) && nahe(rKr.Wt, Math.PI / 16 * D4 / (dK + aK)),
+       'A = \u03c0\u00b7d\u00b7a \u00b7 W_t = (\u03c0/16)\u00b7[(d+a)\u2074\u2212(d\u2212a)\u2074]/(d+a)']
+    ];
+    out += '<div style="margin:10px 0 4px 0"><strong>' + esc(K('nb_handanker')) + '</strong></div>';
+    for (i = 0; i < anker.length; i++) {
+      out += '<div style="font-size:13px">' + haken(anker[i][1]) + ' ' + esc(K(anker[i][0])) +
+             '<br><span style="color:var(--muted)">' + anker[i][2] + '</span></div>';
+    }
+
+    out += '<div style="margin:10px 0 4px 0"><strong>' + esc(K('nb_selbstpruefung')) + '</strong></div>' +
+           '<div style="font-size:13px">' + haken(r.kontrolle.schwerpunkt_ok) + ' ' + esc(K('nb_kontrolle_schwerpunkt')) + '<br>' +
+           haken(r.kontrolle.polar_ok) + ' ' + esc(K('nb_kontrolle_polar')) + '<br>' +
+           haken(r.kontrolle.hauptachsen_ok) + ' ' + esc(K('nb_kontrolle_haupt')) + '</div>';
+
+    for (i = 0; i < r.hinweise.length; i++) {
+      out += '<div class="gap-note">' + esc(K(r.hinweise[i].code)) + '</div>';
+    }
+    host.innerHTML = out;
+  }
+
   function luecken() {
     var host = id('lueckenHost');
     if (!window.DTNData) { host.textContent = '–'; return; }
@@ -195,12 +300,13 @@
     id('brandTag').textContent = K('tagline');
     id('h_status').textContent = 'Fundament (N1)';
     id('h_optionen').textContent = K('inputTitle');
+    id('h_nahtbild').textContent = K('nb_titel');
     id('h_luecken').textContent = K('gap');
     id('h_nichtgeprueft').textContent = K('ng_titel');
     id('footNote').textContent = K('disclaimer');
   }
 
-  function zeichne() { texte(); status(); optionen(); luecken(); nichtGeprueft(); }
+  function zeichne() { texte(); status(); optionen(); nahtbild(); luecken(); nichtGeprueft(); }
 
   function sprache(l) {
     LANG = l;

@@ -9,11 +9,11 @@
 > Sie ist so geschrieben, dass ein **neuer Chat ohne Vorwissen** damit weiterarbeiten kann.
 
 ```
-Plan-Version : 2.3 · Stand 2026-07-25
+Plan-Version : 2.4 · Stand 2026-07-25
 Status       : N1 (Fundament) von Dieter geprüft und ABGENOMMEN.
-               Profileingabe abgestimmt und als N2b/N2c eingeplant (Abschnitt 2.2b).
-               → NÄCHSTER SCHRITT: Baustein N2 (Nahtbild-Kern, naht.js).
-Basislinie   : 128 Assertions · DOM-Smokes 39 (voll) + 40 (test) · i18n-Parität 0 Abweichungen
+               N2 (Nahtbild-Kern, naht.js) gebaut und ausgeliefert — Abnahme am Handy offen.
+               → NÄCHSTER SCHRITT: Baustein N2b (Profileingabe, profil.js).
+Basislinie   : 208 Assertions · DOM-Smokes 55 (voll) + 56 (test) · i18n-Parität 0 Abweichungen
                (Basislinie darf nur WACHSEN — nie schrumpfen, nie gelockert werden.)
 ```
 
@@ -623,6 +623,28 @@ verdrahtet, Sperr-Overlay in der Testversion, Registrierung + Long-Press-Reset.
 - **Abdeckung 75–80 % ist Erfahrungseinschätzung, keine belegte Statistik** — so im Plan
   gekennzeichnet, steuert nur den Bauumfang.
 
+**Aus N2 (2026-07-25) — Festlegungen, die beim Bauen entstanden sind:**
+- **Zwei benannte Rechenmodelle statt eines stillen Kompromisses.** `exakt` rechnet die
+  Nahtfläche als Rechteck a × l einschließlich des Eigenanteils in Dickenrichtung (a³-Glieder)
+  und deckt sich exakt mit Voigt (HS Anhalt); `duennwandig` ist das klassische Linienmodell und
+  deckt sich exakt mit Roloff/Matek. Voreinstellung ist `exakt`; das gewählte Modell wird im
+  Ergebnis benannt und gehört in den Rechenweg. Der Unterschied liegt unter 0,1 % (durch
+  Assertion abgesichert).
+- **Torsion bei offenen Nahtbildern:** `naht.js` erkennt offene Enden selbst und meldet
+  `msg_torsion_offenes_nahtbild` — die Ip-Methode ist dort eine Näherung ohne
+  Wölbkrafttorsion (Recherchehinweis Voigt). Ehrlicher Hinweis statt stiller Rechnung.
+- **Kreisnaht:** l = π·d mit dem **Außendurchmesser**; das wird als Hinweis
+  `msg_kreis_aussendurchmesser` mitgeliefert und erscheint damit im Rechenweg.
+- **Unsymmetrische Nahtbilder:** I_yz, Hauptachsen (I1, I2, α) werden mitgerechnet;
+  α ist der Winkel, um den die Achsen zu drehen sind, damit I_yz verschwindet. Bei
+  I_yz ≠ 0 erscheint `msg_hauptachsen_gedreht` (schiefe Biegung).
+- **Segmenttypen in V1: `linie` und `kreis`.** Ein Kreisbogen wird nicht gebraucht — die
+  Eckradien der Hohlprofile verkürzen die Segmente, sie werden nicht als Bögen gezeichnet.
+- **`naht.js` bleibt dumm, wie geplant:** kein Endkraterabzug, keine Eckradien, keine
+  Profilkenntnis. Das kommt vollständig aus `profil.js` (N2b).
+- **Selbstprüfung im Ergebnis:** statische Momente um den Schwerpunkt = 0, Ip = Iy + Iz,
+  I1 + I2 = Iy + Iz. Diese Häkchen speist N4 direkt in den Rechenweg ein.
+
 **Aus der Rückmeldung 2026-07-25 (N1 abgenommen):**
 - N1 von Dieter am Handy geprüft: läuft, alle Sprachumstellungen sauber. **Abgenommen.**
 - **Neue bindende Vorgabe: die HTML startet immer im dunklen Design** (Schalter bleibt,
@@ -671,6 +693,17 @@ Eckradien/Dicke je Segment, Länge als überschreibbarer Vorschlag, Normprofil-K
 Stufe 2 nach V1). Neue Bausteine **N2b** (`profil.js`) und **N2c** (Grafik, von N6 vorgezogen);
 N6 entfällt, N6b nutzt `svglib.js` aus N2c; N7-Presets setzen auf `profil.js` auf.
 Modulkarte um `profil.js` ergänzt.
+
+**v2.4 (2026-07-25):** **Baustein N2 (Nahtbild-Kern) gebaut und ausgeliefert:** `naht.js`
+(Segmente → A_w, Schwerpunkt, I_y, I_z, I_yz, I_p, Hauptachsen, W_y/W_z/W_t, Randpunkte,
+offen/geschlossen, Selbstprüfung; Segmentbausteine, Verschieben, Drehen; zwei benannte
+Rechenmodelle). Vier Hand-Anker geschlossen nachgerechnet (Rechteck-Nahtbild nach
+Roloff/Matek, umlaufende Kehlnaht und Kreisnaht nach Voigt, reiner Steiner-Anteil), dazu
+Invarianten (Verschieben, Drehen, Unterteilen, a-Verdopplung, Hauptachsen-Rückdrehung,
+Nichtmutation, Determinismus). 16 Ergebnisgrößen und 9 Meldungen dreisprachig, Laien-ⓘ an den
+8 Kerngrößen. Beide HTMLs zeigen den Kern live mit Häkchen (entfällt mit N5).
+**Basislinie 128 → 208 Assertions · Smokes 39/40 → 55/56.**
+**Nächster Schritt: N2b (Profileingabe, `profil.js`).**
 
 **v2.2 (2026-07-25):** N1 von Dieter am Handy geprüft und **abgenommen** (Sprachumschaltung
 sauber). Neue bindende Vorgabe aufgenommen: **Startdarstellung immer dunkel** (Abschnitt 3.1,

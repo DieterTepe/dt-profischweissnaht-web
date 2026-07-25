@@ -405,6 +405,104 @@
       pt: { was: 'O fator de qualidade reduz a tensão admissível conforme o tipo de solda e o ensaio.',
             bereich: '0,5 a 1,0.',
             tipp: 'Penetração total e ensaiada 1,0; total sem ensaio 0,95 (0,80 em S355); filetes bastante abaixo. Havendo valores tabelados, estes prevalecem.' }
+    },
+
+    /* =============== Ergebnisgrößen des Nahtbilds (N2) =============== */
+
+    gr_A: {
+      de: { was: 'Die tragende Fläche aller Nähte zusammen: für jede Naht a-Maß mal Länge, alles addiert. Eine Zugkraft verteilt sich auf genau diese Fläche.',
+            bereich: 'Je nach Bauteil einige hundert bis einige tausend mm².',
+            tipp: 'Doppelt so viel Fläche heißt halb so viel Spannung. Wird die Naht zu knapp, ist mehr Länge meist billiger als mehr a-Maß.' },
+      en: { was: 'The load-bearing area of all welds together: throat thickness times length for each weld, summed up. A tensile force is carried by exactly this area.',
+            bereich: 'A few hundred to a few thousand mm², depending on the part.',
+            tipp: 'Twice the area means half the stress. If the weld is tight, more length is usually cheaper than a larger throat.' },
+      pt: { was: 'A área resistente de todos os cordões: garganta vezes comprimento de cada cordão, somado. Uma força de tração distribui-se exatamente por esta área.',
+            bereich: 'De algumas centenas a alguns milhares de mm², conforme a peça.',
+            tipp: 'O dobro da área significa metade da tensão. Se o cordão ficar justo, mais comprimento costuma ser mais barato que mais garganta.' }
+    },
+
+    gr_ys: {
+      de: { was: 'Die waagerechte Lage des Schwerpunkts der Nahtfläche. Um diesen Punkt dreht sich alles: Biegung und Torsion werden immer auf ihn bezogen.',
+            bereich: 'Liegt bei symmetrischen Nahtbildern in der Mitte, sonst zur nahtreicheren Seite verschoben.',
+            tipp: 'Sitzt der Schwerpunkt weit außerhalb der Lastachse, entsteht ein zusätzliches Moment – das Nahtbild besser symmetrisch anlegen.' },
+      en: { was: 'The horizontal position of the centroid of the weld area. Everything refers to this point: bending and torsion are always related to it.',
+            bereich: 'At mid-width for symmetric weld groups, otherwise shifted towards the side with more weld.',
+            tipp: 'If the centroid sits far off the load axis an additional moment appears – better arrange the weld group symmetrically.' },
+      pt: { was: 'A posição horizontal do centroide da área de solda. Tudo se refere a este ponto: flexão e torção são sempre relacionadas com ele.',
+            bereich: 'A meio nos grupos simétricos, caso contrário deslocado para o lado com mais solda.',
+            tipp: 'Se o centroide ficar longe do eixo da carga surge um momento adicional – é melhor dispor o grupo de forma simétrica.' }
+    },
+
+    gr_zs: {
+      de: { was: 'Die senkrechte Lage des Schwerpunkts der Nahtfläche – dieselbe Bedeutung wie ys, nur in Hochrichtung.',
+            bereich: 'Bei symmetrischen Nahtbildern in halber Höhe.',
+            tipp: 'Bei einseitig angeordneten Nähten wandert der Schwerpunkt – die Randabstände oben und unten werden dann ungleich.' },
+      en: { was: 'The vertical position of the centroid of the weld area – same meaning as ys, but in the height direction.',
+            bereich: 'At mid-height for symmetric weld groups.',
+            tipp: 'With welds on one side only the centroid moves – the edge distances top and bottom then differ.' },
+      pt: { was: 'A posição vertical do centroide da área de solda – o mesmo significado que ys, mas na direção da altura.',
+            bereich: 'A meia altura nos grupos simétricos.',
+            tipp: 'Com cordões só de um lado o centroide desloca-se – as distâncias ao bordo em cima e em baixo passam a ser diferentes.' }
+    },
+
+    gr_Iy: {
+      de: { was: 'Das Flächenmoment um die waagerechte Achse. Es sagt, wie gut das Nahtbild ein Biegemoment um diese Achse aufnimmt.',
+            bereich: 'Wächst mit der dritten Potenz der Höhe – hohe Nahtbilder sind sehr viel biegesteifer.',
+            tipp: 'Nähte weit oben und weit unten bringen für die Biegung viel mehr als Nähte in der Mitte.' },
+      en: { was: 'The second moment of area about the horizontal axis. It tells how well the weld group carries a bending moment about that axis.',
+            bereich: 'Grows with the third power of the height – tall weld groups are far stiffer in bending.',
+            tipp: 'Welds far top and bottom contribute much more to bending than welds near the middle.' },
+      pt: { was: 'O momento de inércia em torno do eixo horizontal. Indica quão bem o grupo resiste a um momento fletor nesse eixo.',
+            bereich: 'Cresce com a terceira potência da altura – grupos altos são muito mais rígidos à flexão.',
+            tipp: 'Cordões bem acima e bem abaixo contribuem muito mais para a flexão do que cordões a meio.' }
+    },
+
+    gr_Iz: {
+      de: { was: 'Das Flächenmoment um die senkrechte Achse – dieselbe Bedeutung wie Iy, nur für Biegung um die Hochachse.',
+            bereich: 'Wächst mit der dritten Potenz der Breite bzw. mit dem Quadrat des Nahtabstands.',
+            tipp: 'Zwei weit auseinanderliegende Nähte ergeben ein großes Iz, auch wenn jede einzelne Naht schmal ist.' },
+      en: { was: 'The second moment of area about the vertical axis – same meaning as Iy, but for bending about the vertical axis.',
+            bereich: 'Grows with the third power of the width, or with the square of the weld spacing.',
+            tipp: 'Two widely spaced welds give a large Iz even if each single weld is narrow.' },
+      pt: { was: 'O momento de inércia em torno do eixo vertical – o mesmo significado que Iy, mas para flexão nesse eixo.',
+            bereich: 'Cresce com a terceira potência da largura ou com o quadrado do afastamento entre cordões.',
+            tipp: 'Dois cordões muito afastados dão um Iz grande, mesmo que cada cordão seja estreito.' }
+    },
+
+    gr_Ip: {
+      de: { was: 'Das polare Flächenmoment, die Summe aus Iy und Iz. Damit wird die Torsion gerechnet: das Drehmoment erzeugt Schub, der mit dem Abstand vom Schwerpunkt wächst.',
+            bereich: 'Immer größer als Iy und Iz einzeln.',
+            tipp: 'Bei offenen Nahtbildern ist dieser Weg nur eine Näherung – das Programm weist ausdrücklich darauf hin.' },
+      en: { was: 'The polar second moment, the sum of Iy and Iz. Torsion is calculated with it: the torque produces shear that grows with the distance from the centroid.',
+            bereich: 'Always larger than Iy or Iz alone.',
+            tipp: 'For open weld groups this route is only an approximation – the program says so explicitly.' },
+      pt: { was: 'O momento polar de inércia, a soma de Iy e Iz. Com ele calcula-se a torção: o momento torsor gera corte que cresce com a distância ao centroide.',
+            bereich: 'Sempre maior do que Iy ou Iz isoladamente.',
+            tipp: 'Em grupos abertos esta via é apenas uma aproximação – o programa avisa expressamente.' }
+    },
+
+    gr_Wy: {
+      de: { was: 'Das Widerstandsmoment: Flächenmoment geteilt durch den größten Randabstand. Biegemoment durch Widerstandsmoment ergibt direkt die Randspannung.',
+            bereich: 'Je größer, desto tragfähiger gegen Biegung.',
+            tipp: 'Maßgebend ist immer der Rand mit dem größten Abstand – dort tritt die höchste Spannung auf.' },
+      en: { was: 'The section modulus: second moment divided by the largest edge distance. Bending moment divided by section modulus gives the edge stress directly.',
+            bereich: 'The larger the value, the higher the bending capacity.',
+            tipp: 'The governing edge is always the one furthest away – that is where the highest stress occurs.' },
+      pt: { was: 'O módulo de flexão: momento de inércia a dividir pela maior distância ao bordo. Momento fletor a dividir pelo módulo dá diretamente a tensão no bordo.',
+            bereich: 'Quanto maior, maior a capacidade à flexão.',
+            tipp: 'Determinante é sempre o bordo mais afastado – é aí que ocorre a tensão máxima.' }
+    },
+
+    gr_Wt: {
+      de: { was: 'Das Torsionswiderstandsmoment: polares Flächenmoment geteilt durch den größten Abstand vom Schwerpunkt. Torsionsmoment geteilt durch diesen Wert ergibt den Schub am ungünstigsten Punkt.',
+            bereich: 'Bei Rohren und geschlossenen Nahtbildern zuverlässig, bei offenen nur näherungsweise.',
+            tipp: 'Runde, geschlossene Nahtbilder nehmen Torsion am besten auf – zwei parallele Flankennähte am schlechtesten.' },
+      en: { was: 'The torsional section modulus: polar second moment divided by the largest distance from the centroid. Torque divided by this value gives the shear at the worst point.',
+            bereich: 'Reliable for tubes and closed weld groups, approximate only for open ones.',
+            tipp: 'Round, closed weld groups carry torsion best – two parallel side welds are the worst case.' },
+      pt: { was: 'O módulo de torção: momento polar a dividir pela maior distância ao centroide. O momento torsor a dividir por este valor dá o corte no ponto mais desfavorável.',
+            bereich: 'Fiável em tubos e grupos fechados, apenas aproximado em grupos abertos.',
+            tipp: 'Grupos redondos e fechados resistem melhor à torção – dois cordões laterais paralelos são o pior caso.' }
     }
   };
 

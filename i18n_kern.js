@@ -191,6 +191,9 @@
     unit_Nm:    { de: 'Nm', en: 'Nm', pt: 'Nm' },
     unit_grad:  { de: '°', en: '°', pt: '°' },
     unit_dimensionslos: { de: '–', en: '–', pt: '–' },
+    unit_mm2:   { de: 'mm²', en: 'mm²', pt: 'mm²' },
+    unit_mm3:   { de: 'mm³', en: 'mm³', pt: 'mm³' },
+    unit_mm4:   { de: 'mm⁴', en: 'mm⁴', pt: 'mm⁴' },
 
     /* ---------- Meldungen (Stufe 1: formal) ---------- */
     msg_pflicht:      { de: 'Pflichtfeld – bitte ausfüllen.', en: 'Required field – please complete.', pt: 'Campo obrigatório – por favor preencha.' },
@@ -212,6 +215,53 @@
     msg_alu_wez:      { de: 'Aluminium: WEZ-Entfestigung ist im Ergebnis zwingend zu berücksichtigen.', en: 'Aluminium: HAZ softening must be taken into account in the result.', pt: 'Alumínio: o amaciamento da ZTA tem de ser considerado no resultado.' },
     msg_welt_getrennt:{ de: 'Welt A und Welt B werden nie vermischt – es gilt ausschließlich die gewählte Welt.', en: 'World A and world B are never mixed – only the selected world applies.', pt: 'Os métodos A e B nunca se misturam – aplica-se apenas o selecionado.' },
     msg_lastfall_ermuedung: { de: 'Lastfall-Faktor und Ermüdungsnachweis sind zwei getrennte Nachweise – sie werden nie multipliziert.', en: 'Load-case factor and fatigue check are two separate verifications – they are never multiplied.', pt: 'O fator de caso de carga e a verificação à fadiga são independentes – nunca são multiplicados.' },
+
+    /* ---------- Meldungen Nahtbild-Kern (N2, naht.js) ---------- */
+    msg_naht_leer:        { de: 'Kein Nahtsegment vorhanden – das Nahtbild ist leer.', en: 'No weld segment present – the weld group is empty.', pt: 'Nenhum segmento de solda – o grupo de soldas está vazio.' },
+    msg_seg_typ:          { de: 'Unbekannte Segmentart – zulässig sind gerade Naht und Kreisnaht.', en: 'Unknown segment type – straight welds and circular welds are permitted.', pt: 'Tipo de segmento desconhecido – só são admitidos cordões retos e soldas circulares.' },
+    msg_seg_a:            { de: 'a-Maß des Segments fehlt oder ist nicht größer als 0.', en: 'Segment throat thickness is missing or not greater than 0.', pt: 'Falta a garganta do segmento ou não é maior que 0.' },
+    msg_seg_laenge:       { de: 'Segment hat keine Länge – Anfangs- und Endpunkt prüfen.', en: 'Segment has no length – check start and end point.', pt: 'O segmento não tem comprimento – verifique o início e o fim.' },
+    msg_seg_a_zu_gross:   { de: 'a-Maß erreicht den Durchmesser – die Kreisnaht würde sich selbst durchdringen.', en: 'Throat reaches the diameter – the circular weld would intersect itself.', pt: 'A garganta atinge o diâmetro – a solda circular sobrepor-se-ia a si mesma.' },
+    msg_seg_duennwand:    { de: 'a-Maß größer als ein Drittel der Nahtlänge – das Linienmodell setzt schlanke Nähte voraus.', en: 'Throat larger than one third of the weld length – the line model assumes slender welds.', pt: 'Garganta maior que um terço do comprimento – o modelo de linha pressupõe cordões esbeltos.' },
+    msg_torsion_offenes_nahtbild: { de: 'Offenes Nahtbild: die Torsion über Ip ist eine Näherung – die Wölbkrafttorsion bleibt unberücksichtigt. Ergebnis konservativ bewerten.', en: 'Open weld group: torsion via Ip is an approximation – warping torsion is not covered. Assess the result conservatively.', pt: 'Grupo aberto: a torção através de Ip é uma aproximação – a torção com empenamento não é considerada. Avalie o resultado de forma conservativa.' },
+    msg_hauptachsen_gedreht: { de: 'Unsymmetrisches Nahtbild: die Hauptachsen sind gegenüber y und z gedreht – schiefe Biegung beachten.', en: 'Unsymmetric weld group: the principal axes are rotated relative to y and z – consider biaxial bending.', pt: 'Grupo assimétrico: os eixos principais estão rodados face a y e z – considerar flexão desviada.' },
+    msg_kreis_aussendurchmesser: { de: 'Kreisnaht: gerechnet wird mit l = π·d, dabei ist d der Außendurchmesser.', en: 'Circular weld: calculated with l = π·d, where d is the outside diameter.', pt: 'Solda circular: calculada com l = π·d, sendo d o diâmetro exterior.' },
+
+    /* ---------- Nahtbild-Kern: Beschriftungen (N2) ---------- */
+    nb_titel:             { de: 'Nahtbild', en: 'Weld group', pt: 'Grupo de soldas' },
+    nb_beispiel:          { de: 'Beispiel', en: 'Example', pt: 'Exemplo' },
+    nb_modell:            { de: 'Rechenmodell', en: 'Calculation model', pt: 'Modelo de cálculo' },
+    nb_modell_exakt:      { de: 'exakte Rechteckfläche (mit Eigenanteil in Dickenrichtung)', en: 'exact rectangular throat area (including through-thickness term)', pt: 'área retangular exata (incluindo o termo na direção da espessura)' },
+    nb_modell_duennwandig:{ de: 'dünnwandiges Linienmodell (klassisch)', en: 'thin-walled line model (classic)', pt: 'modelo de linha de parede fina (clássico)' },
+    nb_geschlossen:       { de: 'geschlossenes Nahtbild', en: 'closed weld group', pt: 'grupo de soldas fechado' },
+    nb_offen:             { de: 'offenes Nahtbild', en: 'open weld group', pt: 'grupo de soldas aberto' },
+    nb_segmente:          { de: 'Segmente', en: 'Segments', pt: 'Segmentos' },
+    nb_handanker:         { de: 'Hand-Anker – gegen geschlossene Formeln nachgerechnet', en: 'Hand anchors – recalculated against closed-form formulas', pt: 'Âncoras manuais – recalculadas contra fórmulas fechadas' },
+    nb_anker_rechteck:    { de: 'Rechteck-Nahtbild, Doppelkehlnaht (Roloff/Matek)', en: 'Rectangular weld group, double fillet weld (Roloff/Matek)', pt: 'Grupo retangular, filete bilateral (Roloff/Matek)' },
+    nb_anker_umlauf:      { de: 'Umlaufende Kehlnaht am Flachstahl (Voigt)', en: 'All-round fillet weld on a flat bar (Voigt)', pt: 'Filete em todo o contorno de barra chata (Voigt)' },
+    nb_anker_kreis:       { de: 'Kreisnaht am Rohr (Voigt)', en: 'Circular weld on a tube (Voigt)', pt: 'Solda circular em tubo (Voigt)' },
+    nb_selbstpruefung:    { de: 'Selbstprüfung', en: 'Self-check', pt: 'Autoverificação' },
+    nb_kontrolle_schwerpunkt: { de: 'statische Momente um den Schwerpunkt sind null', en: 'first moments about the centroid vanish', pt: 'os momentos estáticos em torno do centroide são nulos' },
+    nb_kontrolle_polar:   { de: 'Ip = Iy + Iz', en: 'Ip = Iy + Iz', pt: 'Ip = Iy + Iz' },
+    nb_kontrolle_haupt:   { de: 'I1 + I2 = Iy + Iz', en: 'I1 + I2 = Iy + Iz', pt: 'I1 + I2 = Iy + Iz' },
+
+    /* ---------- Ergebnisgrößen des Nahtbilds (N2) ---------- */
+    gr_n_seg:  { de: 'Anzahl Segmente', en: 'Number of segments', pt: 'Número de segmentos' },
+    gr_l_ges:  { de: 'gesamte Nahtlänge', en: 'total weld length', pt: 'comprimento total do cordão' },
+    gr_A:      { de: 'Nahtfläche Aw', en: 'Weld area Aw', pt: 'Área de solda Aw' },
+    gr_ys:     { de: 'Schwerpunkt ys', en: 'Centroid ys', pt: 'Centroide ys' },
+    gr_zs:     { de: 'Schwerpunkt zs', en: 'Centroid zs', pt: 'Centroide zs' },
+    gr_Iy:     { de: 'Flächenmoment Iy', en: 'Second moment of area Iy', pt: 'Momento de inércia Iy' },
+    gr_Iz:     { de: 'Flächenmoment Iz', en: 'Second moment of area Iz', pt: 'Momento de inércia Iz' },
+    gr_Iyz:    { de: 'Zentrifugalmoment Iyz', en: 'Product of inertia Iyz', pt: 'Produto de inércia Iyz' },
+    gr_Ip:     { de: 'polares Flächenmoment Ip', en: 'Polar second moment Ip', pt: 'Momento polar de inércia Ip' },
+    gr_I1:     { de: 'Hauptflächenmoment I1', en: 'Principal second moment I1', pt: 'Momento principal de inércia I1' },
+    gr_I2:     { de: 'Hauptflächenmoment I2', en: 'Principal second moment I2', pt: 'Momento principal de inércia I2' },
+    gr_alpha:  { de: 'Hauptachsenwinkel α', en: 'Principal axis angle α', pt: 'Ângulo dos eixos principais α' },
+    gr_Wy:     { de: 'Widerstandsmoment Wy', en: 'Section modulus Wy', pt: 'Módulo de flexão Wy' },
+    gr_Wz:     { de: 'Widerstandsmoment Wz', en: 'Section modulus Wz', pt: 'Módulo de flexão Wz' },
+    gr_Wt:     { de: 'Torsionswiderstandsmoment Wt', en: 'Torsional section modulus Wt', pt: 'Módulo de torção Wt' },
+    gr_rmax:   { de: 'größter Randabstand rmax', en: 'largest edge distance rmax', pt: 'maior distância ao bordo rmax' },
 
     /* ---------- Rechenweg ---------- */
     rw_schritt:      { de: 'Schritt', en: 'Step', pt: 'Passo' },

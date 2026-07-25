@@ -108,7 +108,8 @@ function lauf(edition) {
 
   var srcRe = /<script src="([^"]+)"><\/script>/g, srcs = [], mm;
   while ((mm = srcRe.exec(html)) !== null) srcs.push(mm[1]);
-  var erwartet = ['i18n_kern.js', 'i18n_hilfe.js', 'i18n_kerbfall.js', 'daten.js', 'optionen.js', 'validate.js'];
+  var erwartet = ['i18n_kern.js', 'i18n_hilfe.js', 'i18n_kerbfall.js', 'daten.js', 'optionen.js',
+                  'validate.js', 'naht.js'];
   ok(srcs.join(',') === erwartet.join(','), 'Ladereihenfolge stimmt: ' + srcs.join(' → '));
 
   /* 2) ALLE Module gemeinsam laden — genau in dieser Reihenfolge */
@@ -118,7 +119,8 @@ function lauf(edition) {
     var mod = require('./' + srcs[i]);
     var name = { 'i18n_kern.js': 'DTNI18nKern', 'i18n_hilfe.js': 'DTNI18nHilfe',
                  'i18n_kerbfall.js': 'DTNI18nKerb', 'daten.js': 'DTNData',
-                 'optionen.js': 'DTNOptions', 'validate.js': 'DTNValidate' }[srcs[i]];
+                 'optionen.js': 'DTNOptions', 'validate.js': 'DTNValidate',
+                 'naht.js': 'DTNNaht' }[srcs[i]];
     win[name] = mod;
     ok(!!mod, 'Modul geladen: ' + srcs[i]);
   }
@@ -161,11 +163,24 @@ function lauf(edition) {
   var li = (d.byId.ngHost.inhalt().match(/<li>/g) || []).length;
   ok(li === 10, 'Liste "was NICHT geprueft wird" mit 10 Punkten (ist ' + li + ')');
 
+  /* 6b) Nahtbild-Kern N2 — live vorgerechnet und selbst geprueft */
+  var nb = d.byId.nahtHost.inhalt();
+  ok(nb.length > 300, 'Nahtbild-Karte ist aufgebaut');
+  ok(/Nahtfl\u00e4che Aw/.test(nb), 'DE: Nahtflaeche Aw erscheint');
+  ok(/2\.000,0 mm\u00b2/.test(nb), 'A_w des Beispiels wird richtig angezeigt (2.000,0 mm²)');
+  ok(/6\.666\.667 mm\u2074/.test(nb), 'I_y des Beispiels wird richtig angezeigt (a·h³/6)');
+  ok(/polares Fl\u00e4chenmoment/.test(nb), 'polares Flaechenmoment wird ausgewiesen');
+  ok((nb.match(/\u2713/g) || []).length >= 6, 'alle Hand-Anker und Selbstpruefungen zeigen ein Haekchen');
+  ok(nb.indexOf('\u2717') < 0, 'kein Hand-Anker und keine Selbstpruefung schlaegt fehl');
+  ok(/Offenes Nahtbild/.test(nb), 'offenes Nahtbild: ehrlicher Torsionshinweis erscheint');
+  ok(/exakte Rechteckfl\u00e4che/.test(nb), 'gewaehltes Rechenmodell wird benannt');
+
   /* 7) Sprachumschaltung real durchklicken — inkl. Platzhalter-Kontrolle */
   function alleTexte() {
     return d.byId.optionenHost.inhalt() + d.byId.lueckenHost.inhalt() +
-           d.byId.ngHost.inhalt() + d.byId.statusKV.inhalt() +
-           d.byId.h_luecken.inhalt() + d.byId.h_nichtgeprueft.inhalt() + d.byId.footNote.inhalt();
+           d.byId.ngHost.inhalt() + d.byId.statusKV.inhalt() + d.byId.nahtHost.inhalt() +
+           d.byId.h_luecken.inhalt() + d.byId.h_nichtgeprueft.inhalt() +
+           d.byId.h_nahtbild.inhalt() + d.byId.footNote.inhalt();
   }
   ok(!/\[[a-z0-9_.]+\]/.test(alleTexte()), 'DE: kein unuebersetzter Platzhalter');
 
@@ -181,6 +196,9 @@ function lauf(edition) {
   ok(d.docEl.getAttribute('lang') === 'en', 'Dokumentsprache auf EN gesetzt');
   ok(/Design world/.test(d.byId.optionenHost.inhalt()), 'EN: Gruppentexte uebersetzt');
   ok(/Fillet weld, double-sided/.test(d.byId.optionenHost.inhalt()), 'EN: Optionstexte uebersetzt');
+  ok(/Weld area Aw/.test(d.byId.nahtHost.inhalt()), 'EN: Nahtbild-Groessen uebersetzt');
+  ok(/Open weld group/.test(d.byId.nahtHost.inhalt()), 'EN: Torsionshinweis uebersetzt');
+  ok(/2,000.0 mm\u00b2/.test(d.byId.nahtHost.inhalt()), 'EN: Zahlformat mit Punkt als Dezimaltrenner');
   ok(!/\[[a-z0-9_.]+\]/.test(alleTexte()), 'EN: kein unuebersetzter Platzhalter');
 
   var bPt = klick('pt');
@@ -189,6 +207,9 @@ function lauf(edition) {
   ok(d.docEl.getAttribute('lang') === 'pt', 'Dokumentsprache auf PT gesetzt');
   ok(/Método de dimensionamento/.test(d.byId.optionenHost.inhalt()), 'PT: Gruppentexte uebersetzt');
   ok(/Solda de filete, bilateral/.test(d.byId.optionenHost.inhalt()), 'PT: Optionstexte uebersetzt');
+  ok(/\u00c1rea de solda Aw/.test(d.byId.nahtHost.inhalt()), 'PT: Nahtbild-Groessen uebersetzt');
+  ok(/Grupo aberto/.test(d.byId.nahtHost.inhalt()), 'PT: Torsionshinweis uebersetzt');
+  ok((d.byId.nahtHost.inhalt().match(/\u2713/g) || []).length >= 6, 'PT: Hand-Anker bleiben gruen');
   ok(!/\[[a-z0-9_.]+\]/.test(alleTexte()), 'PT: kein unuebersetzter Platzhalter');
 
   klick('de');
