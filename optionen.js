@@ -138,6 +138,37 @@
       { code: 'wechselnd' }
     ]},
 
+    /* ---- N2b: Profileingabe (2.2b) ------------------------------------- */
+    /* Das Profil erzeugt das Nahtbild (profil.js), nicht nur eine Laenge.  */
+    { code: 'profil', pflicht: true, verzweigt: true, optionen: [
+      { code: 'blech' },
+      { code: 'rohr_rechteck' },
+      { code: 'rohr_rund' },
+      { code: 'i_profil' },
+      { code: 'u_profil' },
+      { code: 'winkel' },
+      { code: 'vollrund' }
+    ]},
+
+    /* Die Kantenauswahl ist die eigentlich wichtige Frage: ohne sie rechnet
+       das Programm Naehte mit, die es gar nicht gibt. Sie haengt am Profil —
+       und eine ausdruecklich umlaufende Kehlnaht laesst nur "rundum" zu. */
+    { code: 'kanten', pflicht: true, verzweigt: true, optionen: [
+      { code: 'rundum' },
+      { code: 'flanken',      gilt_wenn: { profil: ['blech', 'rohr_rechteck', 'winkel'] },
+                              gilt_nicht_wenn: { nahtart: ['kehl_umlaufend'] } },
+      { code: 'stirn',        gilt_wenn: { profil: ['blech', 'rohr_rechteck'] },
+                              gilt_nicht_wenn: { nahtart: ['kehl_umlaufend'] } },
+      { code: 'eine_flanke',  gilt_wenn: { profil: ['blech'] },
+                              gilt_nicht_wenn: { nahtart: ['kehl_umlaufend', 'kehl_doppel'] } },
+      { code: 'flansche',     gilt_wenn: { profil: ['i_profil', 'u_profil'] },
+                              gilt_nicht_wenn: { nahtart: ['kehl_umlaufend'] } },
+      { code: 'steg',         gilt_wenn: { profil: ['i_profil', 'u_profil'] },
+                              gilt_nicht_wenn: { nahtart: ['kehl_umlaufend'] } },
+      { code: 'flansche_steg', gilt_wenn: { profil: ['i_profil', 'u_profil'] },
+                              gilt_nicht_wenn: { nahtart: ['kehl_umlaufend'] } }
+    ]},
+
     { code: 'lasteingabe', pflicht: true, verzweigt: true, optionen: [
       { code: 'direkt' },
       { code: 'geometrisch' }

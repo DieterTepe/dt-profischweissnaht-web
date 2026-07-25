@@ -109,7 +109,7 @@ function lauf(edition) {
   var srcRe = /<script src="([^"]+)"><\/script>/g, srcs = [], mm;
   while ((mm = srcRe.exec(html)) !== null) srcs.push(mm[1]);
   var erwartet = ['i18n_kern.js', 'i18n_hilfe.js', 'i18n_kerbfall.js', 'daten.js', 'optionen.js',
-                  'validate.js', 'naht.js'];
+                  'validate.js', 'naht.js', 'profil.js'];
   ok(srcs.join(',') === erwartet.join(','), 'Ladereihenfolge stimmt: ' + srcs.join(' → '));
 
   /* 2) ALLE Module gemeinsam laden — genau in dieser Reihenfolge */
@@ -120,7 +120,7 @@ function lauf(edition) {
     var name = { 'i18n_kern.js': 'DTNI18nKern', 'i18n_hilfe.js': 'DTNI18nHilfe',
                  'i18n_kerbfall.js': 'DTNI18nKerb', 'daten.js': 'DTNData',
                  'optionen.js': 'DTNOptions', 'validate.js': 'DTNValidate',
-                 'naht.js': 'DTNNaht' }[srcs[i]];
+                 'naht.js': 'DTNNaht', 'profil.js': 'DTNProfil' }[srcs[i]];
     win[name] = mod;
     ok(!!mod, 'Modul geladen: ' + srcs[i]);
   }
@@ -175,10 +175,30 @@ function lauf(edition) {
   ok(/Offenes Nahtbild/.test(nb), 'offenes Nahtbild: ehrlicher Torsionshinweis erscheint');
   ok(/exakte Rechteckfl\u00e4che/.test(nb), 'gewaehltes Rechenmodell wird benannt');
 
+  /* 6c) Profileingabe N2b — Profil + Kantenauswahl ergeben das Nahtbild */
+  var pf = d.byId.profilHost.inhalt();
+  ok(pf.length > 300, 'Profilkarte ist aufgebaut');
+  ok(/Rechteck-\/Quadrat-Hohlprofil/.test(pf), 'DE: gewaehltes Profil wird benannt');
+  ok(/Rundum geschwei\u00dft/.test(pf), 'DE: gewaehlte Kantenauswahl wird benannt');
+  ok(/256,0 mm/.test(pf), 'Bruttoumfang 2*(b+h)-8r wird richtig angezeigt (256,0 mm)');
+  ok(/306,3 mm/.test(pf), 'geometrischer Umfang mit Eckboegen wird gegenuebergestellt (306,3 mm)');
+  ok(/50,3 mm/.test(pf), 'nicht gerechneter Eckbogen wird ausgewiesen (50,3 mm)');
+  ok(/1\.024,0 mm\u00b2/.test(pf), 'A_w des Profilbeispiels stimmt (1.024,0 mm²)');
+  ok((pf.match(/\u2713/g) || []).length >= 4, 'alle vier Profil-Hand-Anker zeigen ein Haekchen');
+  ok(pf.indexOf('\u2717') < 0, 'kein Profil-Hand-Anker schlaegt fehl');
+  ok(/Eckradien verk\u00fcrzen/.test(pf), 'DE: Eckradius wird ehrlich erklaert');
+  ok(/L\u00fccken in den Ecken/.test(pf), 'DE: Ecklueckenhinweis grenzt sich vom offenen Nahtbild ab');
+  ok(/Au\u00dfenma\u00dfe/.test(pf), 'DE: Hinweis auf Aussenmasse erscheint');
+  ok(/entf\u00e4llt/.test(pf), 'DE: umlaufende Naht ohne Endkraterabzug wird begruendet');
+  ok(/Profil/.test(d.byId.optionenHost.inhalt()), 'Auswahlgruppe "Profil" erscheint in der Optionsliste');
+  ok(/Geschwei\u00dfte Kanten/.test(d.byId.optionenHost.inhalt()), 'Auswahlgruppe "Geschweisste Kanten" erscheint');
+  ok(/Nur die Flansche|Nur der Steg/.test(d.byId.optionenHost.inhalt()), 'Kantenoptionen des I-Profils erscheinen');
+
   /* 7) Sprachumschaltung real durchklicken — inkl. Platzhalter-Kontrolle */
   function alleTexte() {
     return d.byId.optionenHost.inhalt() + d.byId.lueckenHost.inhalt() +
            d.byId.ngHost.inhalt() + d.byId.statusKV.inhalt() + d.byId.nahtHost.inhalt() +
+           d.byId.profilHost.inhalt() + d.byId.h_profil.inhalt() +
            d.byId.h_luecken.inhalt() + d.byId.h_nichtgeprueft.inhalt() +
            d.byId.h_nahtbild.inhalt() + d.byId.footNote.inhalt();
   }
@@ -199,6 +219,10 @@ function lauf(edition) {
   ok(/Weld area Aw/.test(d.byId.nahtHost.inhalt()), 'EN: Nahtbild-Groessen uebersetzt');
   ok(/Open weld group/.test(d.byId.nahtHost.inhalt()), 'EN: Torsionshinweis uebersetzt');
   ok(/2,000.0 mm\u00b2/.test(d.byId.nahtHost.inhalt()), 'EN: Zahlformat mit Punkt als Dezimaltrenner');
+  ok(/Rectangular \/ square hollow section/.test(d.byId.profilHost.inhalt()), 'EN: Profilname uebersetzt');
+  ok(/Welded all round/.test(d.byId.profilHost.inhalt()), 'EN: Kantenauswahl uebersetzt');
+  ok(/306.3 mm/.test(d.byId.profilHost.inhalt()), 'EN: Umfang mit Eckboegen im englischen Zahlformat');
+  ok(/Corner radii shorten/.test(d.byId.profilHost.inhalt()), 'EN: Eckradius-Hinweis uebersetzt');
   ok(!/\[[a-z0-9_.]+\]/.test(alleTexte()), 'EN: kein unuebersetzter Platzhalter');
 
   var bPt = klick('pt');
@@ -210,6 +234,9 @@ function lauf(edition) {
   ok(/\u00c1rea de solda Aw/.test(d.byId.nahtHost.inhalt()), 'PT: Nahtbild-Groessen uebersetzt');
   ok(/Grupo aberto/.test(d.byId.nahtHost.inhalt()), 'PT: Torsionshinweis uebersetzt');
   ok((d.byId.nahtHost.inhalt().match(/\u2713/g) || []).length >= 6, 'PT: Hand-Anker bleiben gruen');
+  ok(/Perfil tubular retangular/.test(d.byId.profilHost.inhalt()), 'PT: Profilname uebersetzt');
+  ok(/Soldado em todo o contorno/.test(d.byId.profilHost.inhalt()), 'PT: Kantenauswahl uebersetzt');
+  ok((d.byId.profilHost.inhalt().match(/\u2713/g) || []).length >= 4, 'PT: Profil-Hand-Anker bleiben gruen');
   ok(!/\[[a-z0-9_.]+\]/.test(alleTexte()), 'PT: kein unuebersetzter Platzhalter');
 
   klick('de');

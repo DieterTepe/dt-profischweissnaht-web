@@ -40,6 +40,29 @@
     { code: 't2', typ: 'zahl', einheit: 'unit_mm',   min: 0.5,  max: 200,  dez: 1,
       label: 'fld_t2', hilfe: 'fld_t2', pflicht: true },
 
+    /* ---- Profilmasse (N2b, 2.2b) — Pflicht genau dort, wo das gewaehlte
+           Profil den Wert braucht. t1 dient zugleich als Blech-, Wand- bzw.
+           Schenkeldicke, damit kein Mass doppelt abgefragt wird. ---------- */
+    { code: 'b',  typ: 'zahl', einheit: 'unit_mm',   min: 2,    max: 5000, dez: 1,
+      label: 'fld_b',  hilfe: 'fld_b',
+      pflicht_wenn: { profil: ['blech', 'rohr_rechteck', 'i_profil', 'u_profil', 'winkel'] } },
+    { code: 'h',  typ: 'zahl', einheit: 'unit_mm',   min: 2,    max: 5000, dez: 1,
+      label: 'fld_h',  hilfe: 'fld_h',
+      pflicht_wenn: { profil: ['rohr_rechteck', 'i_profil', 'u_profil', 'winkel'] } },
+    { code: 'd',  typ: 'zahl', einheit: 'unit_mm',   min: 2,    max: 5000, dez: 1,
+      label: 'fld_d',  hilfe: 'fld_d',
+      pflicht_wenn: { profil: ['rohr_rund', 'vollrund'] } },
+    { code: 'tw', typ: 'zahl', einheit: 'unit_mm',   min: 0.5,  max: 200,  dez: 1,
+      label: 'fld_tw', hilfe: 'fld_tw', pflicht_wenn: { profil: ['i_profil', 'u_profil'] } },
+    { code: 'tf', typ: 'zahl', einheit: 'unit_mm',   min: 0.5,  max: 200,  dez: 1,
+      label: 'fld_tf', hilfe: 'fld_tf', pflicht_wenn: { profil: ['i_profil', 'u_profil'] } },
+    { code: 'r_ecke', typ: 'zahl', einheit: 'unit_mm', min: 0,  max: 200,  dez: 1,
+      standard: 0, label: 'fld_r_ecke', hilfe: 'fld_r_ecke', pflicht: false, ueberschreibbar: true },
+    { code: 'a_steg',    typ: 'zahl', einheit: 'unit_mm', min: 0.5, max: 50, dez: 1,
+      label: 'fld_a_steg',    hilfe: 'fld_a_steg',    pflicht: false, ueberschreibbar: true },
+    { code: 'a_flansch', typ: 'zahl', einheit: 'unit_mm', min: 0.5, max: 50, dez: 1,
+      label: 'fld_a_flansch', hilfe: 'fld_a_flansch', pflicht: false, ueberschreibbar: true },
+
     { code: 'N',  typ: 'zahl', einheit: 'unit_N',    min: -1e9, max: 1e9,  dez: 0,
       label: 'fld_N',  hilfe: 'fld_N',  pflicht_wenn: { lasteingabe: ['direkt'] } },
     { code: 'Q',  typ: 'zahl', einheit: 'unit_N',    min: -1e9, max: 1e9,  dez: 0,

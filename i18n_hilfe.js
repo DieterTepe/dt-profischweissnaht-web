@@ -165,6 +165,30 @@
             tipp: 'Carga constante → estático. Liga/desliga → pulsante. Tração e compressão alternadas → alternado. Não substitui a verificação à fadiga nem se multiplica com ela.' }
     },
 
+    grp_profil: {
+      de: { was: 'Die Form des angeschweißten Teils. Aus ihr entsteht nicht nur die Nahtlänge, sondern das ganze Nahtbild – also auch die Lage der Nähte. Für Zug genügt die Länge, für Biegung und Torsion entscheidet die Lage.',
+            bereich: 'Blech, Rechteckrohr, Rundrohr, I-/H-Profil, U-Profil, Winkel, Vollrund.',
+            tipp: 'Im Zweifel Blech: Lasche, Knotenblech und Stirnplatte sind der häufigste Fall. Maße sind immer Außenmaße; ein Normprofil-Katalog (IPE, HEA, RHS) kommt später – mit den Maßen von Hand geht heute schon jede Abmessung.' },
+      en: { was: 'The shape of the welded-on part. It generates not only the weld length but the whole weld group – including where the welds sit. Tension needs the length only; bending and torsion depend on the position.',
+            bereich: 'Plate, rectangular tube, round tube, I/H section, channel, angle, solid round.',
+            tipp: 'If unsure choose plate: lug, gusset and end plate are the most common case. Dimensions are always outside dimensions; a catalogue of standard sections follows later – typing the dimensions already covers any size.' },
+      pt: { was: 'A forma da peça soldada. Dela resulta não só o comprimento do cordão, mas todo o grupo de soldas – incluindo a posição. Para tração basta o comprimento; para flexão e torção decide a posição.',
+            bereich: 'Chapa, tubo retangular, tubo circular, perfil I/H, perfil U, cantoneira, barra maciça.',
+            tipp: 'Na dúvida escolha chapa: talas, gussets e chapas de topo são o caso mais frequente. As dimensões são sempre exteriores; um catálogo de perfis normalizados virá depois – introduzir as medidas já cobre qualquer dimensão.' }
+    },
+
+    grp_kanten: {
+      de: { was: 'Welche Kanten des Profils tatsächlich geschweißt sind. Diese Frage ist wichtiger als das Profil selbst: ohne sie rechnet das Programm Nähte mit, die es in Wirklichkeit gar nicht gibt.',
+            bereich: 'Rundum, nur Flanken, nur Stirnseiten, nur eine Flanke, nur Flansche, nur Steg, Flansche und Steg.',
+            tipp: 'Auf der Zeichnung nachsehen und im Zweifel die kleinere Auswahl nehmen – das liegt auf der sicheren Seite. Rundum ist die einzige Auswahl ohne Endkraterabzug, weil es dort kein freies Nahtende gibt.' },
+      en: { was: 'Which edges of the section are actually welded. This question matters more than the section itself: without it the program counts welds that do not exist.',
+            bereich: 'All round, sides only, ends only, one side only, flanges only, web only, flanges and web.',
+            tipp: 'Check the drawing and, if in doubt, take the smaller selection – that is on the safe side. All round is the only choice without an end crater deduction, because there is no free weld end.' },
+      pt: { was: 'Quais arestas do perfil estão realmente soldadas. Esta pergunta é mais importante que o próprio perfil: sem ela o programa conta cordões que não existem.',
+            bereich: 'Todo o contorno, apenas laterais, apenas extremidades, apenas um lado, apenas banzos, apenas alma, banzos e alma.',
+            tipp: 'Confirme no desenho e, na dúvida, escolha a opção menor – fica do lado seguro. Todo o contorno é a única escolha sem dedução de cratera, por não haver extremidade livre.' }
+    },
+
     grp_lasteingabe: {
       de: { was: 'Ob Sie die Schnittgrößen an der Naht schon kennen oder ob das Programm sie aus Kraft und Hebelarm ermitteln soll.',
             bereich: 'Direkt (N, Q, M, T) oder geometrisch (Kraft + Hebelarm).',
@@ -273,6 +297,102 @@
       pt: { was: 'Espessura da segunda peça ligada. A peça mais fraca é sempre determinante.',
             bereich: '4 a 80 mm.',
             tipp: 'Se as chapas forem iguais, introduza o mesmo valor.' }
+    },
+
+    fld_b: {
+      de: { was: 'Die Breite des Profils quer zur Höhe – beim Blech die Blechbreite, beim I- und U-Profil die Flanschbreite, beim Winkel der waagerechte Schenkel.',
+            bereich: 'im Maschinenbau meist 20 bis 300 mm, im Stahlbau bis etwa 500 mm.',
+            tipp: 'Immer das Außenmaß eintragen. Die Breite liegt in der waagerechten Achse (y) des Nahtbilds – die Skizze zeigt sofort, ob es passt.' },
+      en: { was: 'The width of the section across the height – plate width for a plate, flange width for I and channel sections, horizontal leg for an angle.',
+            bereich: 'usually 20 to 300 mm in machinery, up to about 500 mm in steelwork.',
+            tipp: 'Always enter the outside dimension. The width lies along the horizontal axis (y) of the weld group – the sketch shows immediately whether it fits.' },
+      pt: { was: 'A largura do perfil na direção transversal à altura – largura da chapa, largura do banzo em perfis I e U, aba horizontal na cantoneira.',
+            bereich: 'normalmente 20 a 300 mm em mecânica, até cerca de 500 mm em construção metálica.',
+            tipp: 'Introduza sempre a medida exterior. A largura segue o eixo horizontal (y) do grupo de soldas – o esboço mostra logo se está correto.' }
+    },
+
+    fld_h: {
+      de: { was: 'Die Höhe des Profils – beim Hohlprofil das zweite Außenmaß, beim I- und U-Profil die Profilhöhe, beim Winkel der senkrechte Schenkel.',
+            bereich: 'im Maschinenbau meist 20 bis 300 mm, im Stahlbau bis etwa 1000 mm.',
+            tipp: 'Die Höhe liegt in der senkrechten Achse (z). Sie bestimmt das Widerstandsmoment Wy und damit fast immer die Tragfähigkeit gegen Biegung.' },
+      en: { was: 'The height of the section – the second outside dimension of a hollow section, the section depth for I and channel sections, the vertical leg for an angle.',
+            bereich: 'usually 20 to 300 mm in machinery, up to about 1000 mm in steelwork.',
+            tipp: 'The height lies along the vertical axis (z). It governs the section modulus Wy and therefore nearly always the bending capacity.' },
+      pt: { was: 'A altura do perfil – a segunda medida exterior do perfil tubular, a altura em perfis I e U, a aba vertical na cantoneira.',
+            bereich: 'normalmente 20 a 300 mm em mecânica, até cerca de 1000 mm em construção metálica.',
+            tipp: 'A altura segue o eixo vertical (z). Determina o módulo de flexão Wy e, por isso, quase sempre a capacidade à flexão.' }
+    },
+
+    fld_d: {
+      de: { was: 'Der Außendurchmesser von Rundrohr oder Vollrund. Die Naht liegt außen, deshalb wird mit l = π·d und dem Außendurchmesser gerechnet.',
+            bereich: 'gängig 10 bis 500 mm.',
+            tipp: 'Nicht den Innendurchmesser und nicht den mittleren Durchmesser eintragen – das ergäbe eine zu kurze Naht und damit ein unsicheres Ergebnis.' },
+      en: { was: 'The outside diameter of a round tube or solid bar. The weld sits on the outside, so l = π·d is calculated with the outside diameter.',
+            bereich: 'commonly 10 to 500 mm.',
+            tipp: 'Do not enter the inside or the mean diameter – that would give too short a weld and therefore an unsafe result.' },
+      pt: { was: 'O diâmetro exterior do tubo ou da barra maciça. A solda fica no exterior, por isso calcula-se l = π·d com o diâmetro exterior.',
+            bereich: 'habitualmente 10 a 500 mm.',
+            tipp: 'Não introduza o diâmetro interior nem o médio – daria um cordão curto demais e um resultado inseguro.' }
+    },
+
+    fld_tw: {
+      de: { was: 'Die Dicke des Stegs beim I-, H- oder U-Profil. Sie begrenzt das a-Maß der Stegnaht.',
+            bereich: 'meist 3 bis 20 mm.',
+            tipp: 'Bei Walzprofilen steht der Wert in der Profiltabelle (z. B. IPE 200: tw = 5,6 mm). Das a-Maß am Steg sollte 0,7 · tw nicht überschreiten.' },
+      en: { was: 'The web thickness of an I, H or channel section. It limits the throat thickness of the web weld.',
+            bereich: 'usually 3 to 20 mm.',
+            tipp: 'For rolled sections the value is in the section tables (e.g. IPE 200: tw = 5.6 mm). The throat at the web should not exceed 0.7 · tw.' },
+      pt: { was: 'A espessura da alma em perfis I, H ou U. Limita a garganta do cordão na alma.',
+            bereich: 'normalmente 3 a 20 mm.',
+            tipp: 'Em perfis laminados o valor consta das tabelas (p. ex. IPE 200: tw = 5,6 mm). A garganta na alma não deve exceder 0,7 · tw.' }
+    },
+
+    fld_tf: {
+      de: { was: 'Die Dicke des Flansches beim I-, H- oder U-Profil. Sie begrenzt das a-Maß der Flanschnaht und bestimmt die freie Steghöhe h − 2·tf.',
+            bereich: 'meist 4 bis 30 mm.',
+            tipp: 'Der Flansch ist fast immer dicker als der Steg – deshalb sind am Flansch größere a-Maße möglich als am Steg.' },
+      en: { was: 'The flange thickness of an I, H or channel section. It limits the throat of the flange weld and defines the clear web height h − 2·tf.',
+            bereich: 'usually 4 to 30 mm.',
+            tipp: 'The flange is almost always thicker than the web – so larger throats are possible at the flange than at the web.' },
+      pt: { was: 'A espessura do banzo em perfis I, H ou U. Limita a garganta do cordão no banzo e define a altura livre da alma h − 2·tf.',
+            bereich: 'normalmente 4 a 30 mm.',
+            tipp: 'O banzo é quase sempre mais espesso que a alma – por isso admite gargantas maiores.' }
+    },
+
+    fld_r_ecke: {
+      de: { was: 'Der Eckradius eines Rechteck-Hohlprofils. Er verkürzt die gerechnete Naht: der Bogen in der Ecke wird nicht mitgerechnet, weil dort keine saubere Kehlnaht mit dem angegebenen a-Maß entsteht.',
+            bereich: '0 bei geschweißten Kästen, sonst etwa das 1,5- bis 2,5-fache der Wanddicke.',
+            tipp: 'Im Zweifel den Wert aus der Profiltabelle nehmen. 0 einzutragen rechnet die Naht länger, als sie tragfähig ist – das ist die unsichere Seite.' },
+      en: { was: 'The corner radius of a rectangular hollow section. It shortens the calculated weld: the corner arc is not counted, because no sound fillet weld with the stated throat forms there.',
+            bereich: '0 for welded boxes, otherwise about 1.5 to 2.5 times the wall thickness.',
+            tipp: 'If in doubt take the value from the section table. Entering 0 makes the weld longer than it is loadbearing – that is the unsafe side.' },
+      pt: { was: 'O raio de canto de um perfil tubular retangular. Encurta o cordão calculado: o arco do canto não é contabilizado, pois aí não se forma um filete correto.',
+            bereich: '0 em caixões soldados, caso contrário cerca de 1,5 a 2,5 vezes a espessura da parede.',
+            tipp: 'Na dúvida use o valor da tabela do perfil. Introduzir 0 torna o cordão mais longo do que é resistente – é o lado inseguro.' }
+    },
+
+    fld_a_steg: {
+      de: { was: 'Ein eigenes a-Maß für die Nähte am Steg. Bleibt das Feld leer, gilt das allgemeine a-Maß für alle Segmente.',
+            bereich: 'meist 3 bis 6 mm, höchstens 0,7 · Stegdicke.',
+            tipp: 'Der Steg ist dünner als der Flansch – deshalb wird dort in der Praxis oft ein kleineres a-Maß geschweißt. Nur dann dieses Feld nutzen.' },
+      en: { was: 'A separate throat thickness for the web welds. If left empty the general throat applies to all segments.',
+            bereich: 'usually 3 to 6 mm, at most 0.7 · web thickness.',
+            tipp: 'The web is thinner than the flange – in practice a smaller throat is often welded there. Use this field only in that case.' },
+      pt: { was: 'Uma garganta própria para os cordões na alma. Se ficar vazio aplica-se a garganta geral a todos os segmentos.',
+            bereich: 'normalmente 3 a 6 mm, no máximo 0,7 · espessura da alma.',
+            tipp: 'A alma é mais fina que o banzo – na prática solda-se aí muitas vezes uma garganta menor. Use este campo só nesse caso.' }
+    },
+
+    fld_a_flansch: {
+      de: { was: 'Ein eigenes a-Maß für die Nähte am Flansch. Bleibt das Feld leer, gilt das allgemeine a-Maß für alle Segmente.',
+            bereich: 'meist 4 bis 10 mm, höchstens 0,7 · Flanschdicke.',
+            tipp: 'Am Flansch wird die Biegung abgetragen – dort lohnt sich ein größeres a-Maß mehr als am Steg.' },
+      en: { was: 'A separate throat thickness for the flange welds. If left empty the general throat applies to all segments.',
+            bereich: 'usually 4 to 10 mm, at most 0.7 · flange thickness.',
+            tipp: 'The flange carries the bending – a larger throat pays off there more than at the web.' },
+      pt: { was: 'Uma garganta própria para os cordões no banzo. Se ficar vazio aplica-se a garganta geral a todos os segmentos.',
+            bereich: 'normalmente 4 a 10 mm, no máximo 0,7 · espessura do banzo.',
+            tipp: 'O banzo absorve a flexão – aí uma garganta maior compensa mais do que na alma.' }
     },
 
     fld_N: {

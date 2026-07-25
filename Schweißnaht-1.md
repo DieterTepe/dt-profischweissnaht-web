@@ -9,13 +9,14 @@
 > Sie ist so geschrieben, dass ein **neuer Chat ohne Vorwissen** damit weiterarbeiten kann.
 
 ```
-Plan-Version : 2.5 · Stand 2026-07-25
+Plan-Version : 2.6 · Stand 2026-07-25
 Status       : N1 (Fundament) von Dieter am Handy geprüft und ABGENOMMEN.
                N2 (Nahtbild-Kern, naht.js) von Dieter am Handy geprüft und ABGENOMMEN.
-               Alle Dateien liegen aktuell in /mnt/project/ UND auf GitHub Pages.
-               → NÄCHSTER SCHRITT: Baustein N2b (Profileingabe, profil.js) — Abschnitt 2.2b
-                 und die fertige naht.js-Schnittstelle in Abschnitt 4.5.
-Basislinie   : 208 Assertions · DOM-Smokes 55 (voll) + 56 (test) · i18n-Parität 0 Abweichungen
+               N2b (Profileingabe, profil.js) gebaut, getestet und ausgeliefert —
+               WARTET AUF DIETERS ABNAHME AM HANDY.
+               → NÄCHSTER SCHRITT nach der Abnahme: Baustein N2c (Nahtbild-Grafik,
+                 svglib.js + schaubild.js) — Abschnitt 5, Schnittstellen 4.5 und 4.6.
+Basislinie   : 309 Assertions · DOM-Smokes 79 (voll) + 80 (test) · i18n-Parität 0 Abweichungen
                (Basislinie darf nur WACHSEN — nie schrumpfen, nie gelockert werden.)
 Dateistand   : siehe Abschnitt 8.1 — dort steht, was fertig ist und was noch fehlt.
 ```
@@ -71,13 +72,13 @@ Schritt. Danach Plan-Kopf (Version/Status/Basislinie) + Changelog pflegen.
 **5b) WIEDEREINSTIEG IN EINEM NEUEN CHAT — genau diese Reihenfolge:**
 1. Diese Datei komplett lesen (`Schweißnaht-1.md`, sie ist die alleinige Grundlage).
 2. Abschnitt **8.1** lesen: was ist fertig, was fehlt.
-3. Abschnitt **4.5** lesen: die fertige Schnittstelle von `naht.js` — darauf setzt N2b auf.
-4. Abschnitt **2.2b** lesen: die abgestimmte Profileingabe (7 Profile, Kantenauswahl,
-   Endkraterabzug, Eckradien, Dicke je Segment).
+3. Abschnitt **4.5** lesen: die fertige Schnittstelle von `naht.js`.
+4. Abschnitt **4.6** lesen: die fertige Schnittstelle von `profil.js` — darauf setzen
+   N2c (Grafik) und N7 (Presets) auf. Fachlicher Hintergrund steht in **2.2b**.
 5. Arbeitsordner herstellen (Befehl unter Punkt 6), dann
    `node test_naht.js`, `node dom_smoke_voll.js`, `node dom_smoke_test.js` laufen lassen
    und die Basislinie aus dem Plan-Kopf bestätigen, **bevor** etwas gebaut wird.
-6. Erst dann N2b bauen — Fließband nach Punkt 5.
+6. Erst dann den nächsten Baustein bauen — Fließband nach Punkt 5.
 
 **6) TOKEN-PAUSEN:** Dieter stoppt bei ~90 % Verbrauch, Pause **4 Stunden**, dann weiter.
 Vor der Pause den genauen Stand nennen; Wiedereinstieg mit „weiter mit <Baustein>".
@@ -399,9 +400,9 @@ dt-profischweissnaht-web/
 ├── DT-ProfiSchweissnaht_Test.html → Testedition (Unterschied: NUR window.DT_EDITION)
 ├── style.css                      → Design-Tokens/Look (aus der Passung portiert)
 ├── i18n_kern.js   (DTNI18nKern)   → Bedienung, Felder, Meldungen, Rechenweg-Beschriftungen
-│                                     ✅ fertig (N1/N2) · 242 Schlüssel
+│                                     ✅ fertig (N1/N2/N2b) · 307 Schlüssel
 ├── i18n_hilfe.js  (DTNI18nHilfe)  → Laien-ⓘ-Texte, Dialog-Erklärungen, Tipps
-│                                     ✅ fertig (N1/N2) · 40 Einträge
+│                                     ✅ fertig (N1/N2/N2b) · 50 Einträge
 ├── i18n_kerbfall.js (DTNI18nKerb) → Kerbfall-Bezeichnungen und Anwendungsbedingungen
 │                                     ⬜ Gerüst steht, Füllung in N14
 ├── daten.js       (DTNData)       → 11 Werkstoffe, β_w, f_u, R_e, Nahtgütefaktoren,
@@ -411,14 +412,14 @@ dt-profischweissnaht-web/
 │                                     Anwendungsbedingungen, Verweis auf Skizze)
 ├── optionen.js    (DTNOptions)    → **einzige Options-/Auswahlquelle** für Formular UND
 │                                     Assistent + **Verträglichkeitsregeln** (3.4)
-│                                     ✅ fertig (N1) · 16 Gruppen, 68 Optionen
+│                                     ✅ fertig (N1/N2b) · 18 Gruppen, 82 Optionen
 ├── validate.js    (DTNValidate)   → Feldschema (dreisprachig) + zweistufige Prüfung
-│                                     ✅ fertig (N1) · 16 Felder
+│                                     ✅ fertig (N1/N2b) · 24 Felder
 ├── naht.js        (DTNNaht)       → Nahtbild-Kern: Segmente → A_w, Schwerpunkt, I_y, I_z, I_p
 │                                     ✅ fertig (N2) · Schnittstelle in 4.5
 ├── profil.js      (DTNProfil)     → Profiltyp + Maße + Kantenauswahl → Segmente (2.2b);
-│                                     parametrisch in V1, Normprofil-Katalog später
-│                                     ⬅ **NÄCHSTER BAUSTEIN (N2b)**
+│                                     7 Profile, Raupenmodell, Endkraterabzug, Eckradien,
+│                                     a je Segment  ✅ fertig (N2b) · Schnittstelle in 4.6
 ├── solver.js      (DTNSolver)     → Spannungen aus N/Q/M/T · Welt A + Welt B ·
 │                                     Nachweis UND Auslegung
 ├── rechenweg.js   (DTNRechenweg)  → selbstprüfender Rechenweg für ALLE Module
@@ -427,7 +428,9 @@ dt-profischweissnaht-web/
 ├── kosten.js      (DTNCost)       → Nahtvolumen, Draht-/Gasbedarf, Zeit, Kosten
 ├── verzug.js      (DTNDistort)    → Quer-/Längs-/Winkelschrumpfung (Richtwerte)
 ├── svglib.js      (DTNSvgLib)     → **SVG-Bausteinbibliothek** (siehe 4.3)
+│                                     ⬅ **NÄCHSTER BAUSTEIN (N2c)**
 ├── schaubild.js   (DTNSchaubild)  → Nahtbild-Vorschau + Skizzen (nutzt svglib)
+│                                     ⬅ **NÄCHSTER BAUSTEIN (N2c)**
 ├── symbol.js      (DTNSymbol)     → ISO-2553-Symbolgenerator (nutzt svglib)
 ├── beratung.js    (DTNBeratung)   → Hinweise, Ampeln, Praxis-Tipps
 ├── assistent.js   (DTNAssistent)  → Dialoglogik (DOM-frei, Node-testbar)
@@ -445,9 +448,9 @@ i18n_kern → i18n_hilfe → i18n_kerbfall → daten → kerbfall → optionen �
 naht → profil → solver → rechenweg → ermuedung → thermik → kosten → verzug →
 svglib → schaubild → symbol → beratung → assistent → report → ui
 ```
-**Tatsächlich in den HTMLs eingetragen (Stand N2, vom DOM-Smoke geprüft):**
+**Tatsächlich in den HTMLs eingetragen (Stand N2b, vom DOM-Smoke geprüft):**
 ```
-i18n_kern → i18n_hilfe → i18n_kerbfall → daten → optionen → validate → naht
+i18n_kern → i18n_hilfe → i18n_kerbfall → daten → optionen → validate → naht → profil
 ```
 Jeder neue Baustein trägt sein `<script src>` an der richtigen Stelle nach und erweitert
 im DOM-Smoke die Liste `erwartet` sowie die Namenszuordnung (`'profil.js': 'DTNProfil'`).
@@ -542,6 +545,80 @@ Beschriftung `gr_<code>`, Laien-ⓘ an den 8 Kerngrößen (`gr_A`, `gr_ys`, `gr_
   verkürzen die Segmente, sie werden nicht als Bögen modelliert),
 - keine Normprüfung (a_min, l_eff, β_Lw) — das sitzt in `validate.js` bzw. `solver.js`.
 
+### 4.6 Schnittstelle `profil.js` (fertig aus N2b — darauf setzen N2c und N7 auf)
+
+> **Nicht ändern, nur benutzen.** `profil.js` ist DOM-frei, deterministisch, mutiert seine
+> Eingaben nicht und rechnet **keine Querschnittswerte** — das bleibt `naht.js`.
+> Namensraum: `DTNProfil` bzw. `require('./profil.js')`. Lädt **nach** `naht.js`.
+
+**Aufruf:** `DTNProfil.baue({ profil, kanten, b, h, d, tw, tf, t1, r_ecke, a, a_steg, a_flansch, endkrater })`
+Die Feldnamen sind **exakt die Feldcodes aus `validate.js`** — das Formular kann seine Werte
+unverändert durchreichen. `endkrater` ist standardmäßig `true`.
+
+**7 Profile · 19 Kantenkombinationen** (`PROFILE`, `KANTEN_JE_PROFIL`, `kantenFuer(profil)`):
+
+| Profil | Maße | Kantenauswahl |
+|---|---|---|
+| `blech` | b, t1 | rundum · flanken · stirn · eine_flanke |
+| `rohr_rechteck` | b, h, t1, r_ecke | rundum · flanken · stirn |
+| `rohr_rund` | d, t1 | rundum |
+| `i_profil` | b, h, tw, tf | rundum · flansche · steg · flansche_steg |
+| `u_profil` | b, h, tw, tf | rundum · flansche · steg · flansche_steg |
+| `winkel` | b, h, t1 | rundum · flanken |
+| `vollrund` | d | rundum |
+
+`t1` ist bewusst **Doppelnutzung**: Blechdicke, Wanddicke bzw. Schenkeldicke — so wird kein
+Maß zweimal abgefragt. Alle Maße sind **Außenmaße**, b liegt in y, h in z, das Profil liegt
+mittig um den Ursprung.
+
+**RAUPENMODELL — das ist der fachliche Kern des Moduls:**
+Eine Kantenauswahl erzeugt **Schweißraupen**, nicht lose Segmente. Jede Raupe ist umlaufend
+oder offen. Der **Endkraterabzug greift je FREIEM ENDE** (a am Anfang, a am Ende = 2·a je
+offener Raupe) — **nicht je Segment**: innere Stoßstellen einer Raupe sind keine Endkrater.
+Abgezogen wird **geometrisch** (der Endpunkt wandert um a nach innen), notfalls über
+Segmentgrenzen hinweg; damit stimmt nicht nur die Länge, sondern auch die **Lage**.
+Beispiele: I-Profil `flansche` = 2 Raupen (2×2·a), `flansche_steg` = 4 Raupen (4×2·a) bei
+**identischer Geometrie** wie `rundum` (0·a) · Winkel `flanken` = **eine** Raupe um die Ecke.
+
+**Rückgabe bei `ok:true`:**
+`profil` · `kanten` · `segmente[]` (fertiges naht.js-Format) · `info[]` (je Segment: `code`,
+`gruppe`, `a`, `l`, `t`, `raupe`, `geschlossen`) · `n_seg` · `raupen` · `offene_raupen` ·
+`umlaufend` · `endkrater` · `endkrater_abzug` · `l_brutto` · `l_netto` · **`l_vorschlag`**
+(= l_netto, der überschreibbare Längenvorschlag nach Regel 3.1) · `l_kontur` ·
+`bogen_nicht_gerechnet` · `a`/`a_steg`/`a_flansch` · `fehler` · `warnungen` · `hinweise`.
+**Bei einem Fehler ist `ok:false` und es gibt KEINE Zahlen und KEINE Segmente.**
+
+**Weitere Funktionen:** `kantenFuer(profil)` · `masseFuer(profil)` · `pruefeMasse(profil, masse)` ·
+`umfang(profil, kanten, masse)` (Bruttoumfang, dient im Harness als zweiter Rechenpfad).
+
+**Segmentgruppen** (`SEGMENTGRUPPEN`, Beschriftung `sg_<gruppe>`): `flanke` · `stirn` ·
+`flansch` · `steg` · `kante` · `kreis`. Jedes Segment trägt zusätzlich einen sprechenden
+`code` (z. B. `flansch_oben_aussen`) — **das ist das Futter für die Einfärbung in N2c** und
+für die Segmenttabelle im Rechenweg N4.
+
+**Eckradien (sicherheitsrelevant):** sie verkürzen die geraden Segmente; der **Bogen wird
+bewusst NICHT mitgerechnet**, weil dort keine saubere Kehlnaht mit dem angegebenen a-Maß
+entsteht. Der nicht gerechnete Anteil steht als `bogen_nicht_gerechnet` im Ergebnis, der
+geometrische Umfang als `l_kontur`. Die Raupe bleibt **umlaufend** (kein Endkraterabzug) —
+und weil `naht.js` die Ecklücken als offene Enden sieht, liefert `profil.js` den Hinweis
+`msg_eckluecke_keine_offene_naht`. **N3/N4 müssen `umlaufend` auswerten**, nicht
+`geschlossen` aus `naht.js`.
+
+**Meldungscodes** (`DTNProfil.CODES`, alle dreisprachig in `i18n_kern.js`):
+Fehler `msg_profil_fehlt` · `msg_profil_unbekannt` · `msg_kanten_fehlt` ·
+`msg_kanten_unpassend` · `msg_mass_fehlt` · `msg_mass_tf_zu_gross` · `msg_mass_tw_zu_gross` ·
+`msg_mass_r_zu_gross` · `msg_mass_t_zu_gross` · `msg_profil_a_fehlt` ·
+`msg_endkrater_zu_lang` (jeder Fehler nennt das betroffene **Feld**).
+Hinweise `msg_endkrater_abzug` · `msg_endkrater_umlaufend` · `msg_endkrater_aus` ·
+`msg_eckradius_verkuerzt` · `msg_eckluecke_keine_offene_naht` · `msg_a_je_segment` ·
+`msg_nur_gewaehlte_kanten` · `msg_masse_sind_aussenmasse`.
+
+**WAS `profil.js` BEWUSST NICHT TUT:**
+- keine Querschnittswerte (das ist `naht.js`), keine Spannungen (N3),
+- keine Normprüfung von a und l (`validate.js` / `solver.js`),
+- **kein Normprofil-Katalog** — Stufe 2 nach V1 (2.2b), Stufe 1 kann jede Abmessung,
+- keine Bögen: Eckradien verkürzen Segmente, sie werden nicht gezeichnet.
+
 ---
 
 ## 5. Bausteine — risikosortiert, mit Launch-Checkpoint
@@ -554,8 +631,8 @@ Beschriftung `gr_<code>`, Laien-ⓘ an den 8 Kerngrößen (`gr_A`, `gr_ys`, `gr_
 |---|---|---|
 | **N1** ✅ | **Fundament** *(abgenommen 2026-07-25)* | `daten.js` (11 Werkstoffe, Beiwerte, ISO 5817, EXC) + `optionen.js` (einzige Auswahlquelle **inkl. Verträglichkeitsregeln**) + i18n-Gerüst DE/EN/PT + `validate.js`. Alle Codes sprachneutral. |
 | **N2** ✅ | **Nahtbild-Kern** *(abgenommen 2026-07-25)* | `naht.js`: Segmente → A_w, Schwerpunkt, I_y, I_z, I_yz, I_p, Hauptachsen, W_y/W_z/W_t, offen/geschlossen, Selbstprüfung. DOM-frei. Vier Hand-Anker geschlossen nachgerechnet. **Schnittstelle: Abschnitt 4.5.** |
-| **N2b** ⬅ | **Profileingabe — NÄCHSTER SCHRITT** | `profil.js`: 7 parametrische Profile + Kantenauswahl → Segmente. Endkraterabzug, Eckradien, Dicke je Segment. DOM-frei. Hand-Anker: Umfang Rechteckrohr und Kreisnaht. |
-| **N2c** | **Nahtbild-Grafik** *(von N6 vorgezogen)* | `svglib.js` + `schaubild.js`: SVG-Vorschau des Nahtbilds, Segmente farbig, Schwerpunkt. Dient zugleich als **Auswahl-Skizze** der Profileingabe. |
+| **N2b** ✅ | **Profileingabe** *(gebaut 2026-07-25, Abnahme offen)* | `profil.js`: 7 parametrische Profile + Kantenauswahl → Segmente. Raupenmodell mit Endkraterabzug je freiem Ende, Eckradien, a je Segment. DOM-frei. **Schnittstelle: Abschnitt 4.6.** |
+| **N2c** ⬅ | **Nahtbild-Grafik — NÄCHSTER SCHRITT** *(von N6 vorgezogen)* | `svglib.js` + `schaubild.js`: SVG-Vorschau des Nahtbilds, Segmente farbig, Schwerpunkt. Dient zugleich als **Auswahl-Skizze** der Profileingabe. |
 | **N3** | **Spannungen + beide Welten** | `solver.js`: σ⊥, τ⊥, τ∥ aus N/Q/M/T · Welt A (EC3) · Welt B (klassisch) · **Nachweis UND Auslegung**. |
 | **N4** | **Rechenweg** | `rechenweg.js`: selbstprüfende Schritte für N2/N3, dreisprachig. |
 | **N5** | **UI-Basis** | 2 HTMLs, `style.css`, Formular mit aufklappbaren Bereichen und Freischalt-Haken, Ergebnis-Kacheln, Ampel, i18n, Theme (**Start immer dunkel**), Laien-ⓘ, Block „Ausführung & Dokumentation" (ISO 5817 + EXC). **Erster Handy-Test.** |
@@ -655,28 +732,32 @@ verdrahtet, Sperr-Overlay in der Testversion, Registrierung + Long-Press-Reset.
 **Referenzdateien (read-only, nur Muster):** `DT-ProfiPassung_Testversion-Orginal.html` ·
 `DT-ProfiPassung.html` · `DT-ProfiPassung_Test.html`
 
-### 8.1 Dateistand nach N2 *(Stand 2026-07-25, in `/mnt/project/` und auf GitHub aktuell)*
+### 8.1 Dateistand nach N2b *(Stand 2026-07-25)*
 
-**Ausgeliefert und abgenommen — Produktdateien:**
+**Produktdateien:**
 | Datei | Stand |
 |---|---|
-| `DT-ProfiSchweissnaht.html` | Voll-Edition (`DT_EDITION='full'`), lädt 7 Module, enthält die **Zwischen-Statusseite N1/N2** (entfällt mit N5) |
+| `DT-ProfiSchweissnaht.html` | Voll-Edition (`DT_EDITION='full'`), lädt **8 Module**, enthält die **Zwischen-Statusseite N1/N2/N2b** (entfällt mit N5) |
 | `DT-ProfiSchweissnaht_Test.html` | Test-Edition — **verifiziert: Unterschied genau eine Zeile** |
-| `daten.js` · `optionen.js` · `validate.js` | N1, unverändert seit N1 |
-| `i18n_kern.js` (242 Schlüssel) · `i18n_hilfe.js` (40 Einträge) · `i18n_kerbfall.js` (Gerüst) | in N2 um Nahtbild-Texte erweitert |
-| `naht.js` | **N2, neu** — Schnittstelle in 4.5 |
-| `style.css` | N1 |
+| `daten.js` | N1, unverändert |
+| `naht.js` | N2, unverändert — Schnittstelle in 4.5 |
+| `optionen.js` | **N2b geändert** — 18 Gruppen, 82 Optionen (neu: `profil`, `kanten`) |
+| `validate.js` | **N2b geändert** — 24 Felder (neu: b, h, d, tw, tf, r_ecke, a_steg, a_flansch) |
+| `i18n_kern.js` (307 Schlüssel) · `i18n_hilfe.js` (50 Einträge) | **N2b erweitert** |
+| `i18n_kerbfall.js` | Gerüst, unverändert (Füllung in N14) |
+| `profil.js` | **N2b, neu** — Schnittstelle in 4.6 |
+| `style.css` | N1, unverändert |
 
 **DEV-ONLY — nur in `/mnt/project/`, NIE ausliefern und nicht auf GitHub nötig:**
-`test_naht.js` (208 Assertions) · `dom_smoke_voll.js` (55 Prüfungen) ·
-`dom_smoke_test.js` (56 Prüfungen).
+`test_naht.js` (309 Assertions) · `dom_smoke_voll.js` (79 Prüfungen) ·
+`dom_smoke_test.js` (80 Prüfungen, ruft den Lauf aus `dom_smoke_voll.js` auf — unverändert).
 
-**Noch nicht gebaut:** `profil.js` (N2b) · `svglib.js` + `schaubild.js` (N2c) · `solver.js` (N3) ·
+**Noch nicht gebaut:** `svglib.js` + `schaubild.js` (N2c) · `solver.js` (N3) ·
 `rechenweg.js` (N4) · `ui.js` (N5) · `symbol.js` (N6b) · `assistent.js` (N8) · `thermik.js` (N9) ·
 `kosten.js` (N10) · `report.js` (N11) · `ermuedung.js` (N13) · `kerbfall.js` (N14) · `verzug.js` (N15).
 
 **Erste Handlung im neuen Chat:** Arbeitsordner herstellen und die drei Testläufe starten.
-Melden müssen sie **208 / 55 / 56 · 0 Fehler**. Weicht etwas ab, erst das klären.
+Melden müssen sie **309 / 79 / 80 · 0 Fehler**. Weicht etwas ab, erst das klären.
 
 ---
 
@@ -751,6 +832,30 @@ Melden müssen sie **208 / 55 / 56 · 0 Fehler**. Weicht etwas ab, erst das klä
   Profilkenntnis. Das kommt vollständig aus `profil.js` (N2b).
 - **Selbstprüfung im Ergebnis:** statische Momente um den Schwerpunkt = 0, Ip = Iy + Iz,
   I1 + I2 = Iy + Iz. Diese Häkchen speist N4 direkt in den Rechenweg ein.
+
+**Aus N2b (2026-07-25) — Festlegungen, die beim Bauen entstanden sind:**
+- **Raupenmodell statt Segmentliste.** Eine Kantenauswahl erzeugt Schweißraupen. Der
+  Endkraterabzug greift **je freiem Ende einer Raupe**, nicht je Segment — innere
+  Stoßstellen sind keine Endkrater. Abgezogen wird geometrisch (der Endpunkt wandert um a
+  nach innen), damit stimmt auch die Lage. Umlaufende Raupen: kein Abzug.
+- **Die Raupe wird erklärt, nicht erraten.** Ob eine Naht umläuft, sagt die Kantenauswahl —
+  nicht die Geometrie. Nur so bleibt ein Rechteckrohr **mit Eckradien** korrekt „umlaufend",
+  obwohl die Segmente sich rechnerisch nicht berühren.
+- **Eckradien:** verkürzen die Segmente, der Bogen wird **nicht** mitgerechnet (dort entsteht
+  keine saubere Kehlnaht mit dem angegebenen a-Maß). Ausgewiesen werden beide Zahlen:
+  gerechneter Umfang und geometrischer Umfang mit Bögen. Weil `naht.js` die Ecklücken als
+  offene Enden sieht, liefert `profil.js` `msg_eckluecke_keine_offene_naht` — **N3/N4 werten
+  `umlaufend` aus, nicht `geschlossen`.**
+- **`t1` wird doppelt genutzt** (Blechdicke / Wanddicke / Schenkeldicke), damit kein Maß
+  zweimal abgefragt wird. Für I- und U-Profil kommen `tw` und `tf` dazu.
+- **`flansche_steg` ist eine eigene Auswahl**, obwohl die Geometrie mit `rundum` identisch
+  ist: vier einzeln geschweißte Raupen kosten 4 × 2·a. Genau dieser Unterschied wird von
+  Hand am häufigsten übersehen — er ist jetzt sichtbar und durch Assertion abgesichert.
+- **Winkel `flanken` ist EINE Raupe** um die Ecke herum (zwei freie Enden), keine zwei.
+- **Verträglichkeitsregel:** ist ausdrücklich eine umlaufende Kehlnaht gewählt, bleibt bei
+  der Kantenauswahl nur `rundum` übrig. Keine Sackgasse (55.104 Wege geprüft).
+- **Abdeckung:** 7 Profile × 19 Kantenkombinationen, jede einzeln gegen `naht.js`
+  nachgerechnet (A_w = Σ a·l als zweiter Rechenpfad).
 
 **Aus der Rückmeldung 2026-07-25 (N1 abgenommen):**
 - N1 von Dieter am Handy geprüft: läuft, alle Sprachumstellungen sauber. **Abgenommen.**
@@ -831,6 +936,19 @@ Schnittstelle von `naht.js` — Segmentformate, Funktionen, Ergebnisfelder, Meld
 ausdrücklich das, was `naht.js` NICHT tut), neuer Abschnitt **8.1** (Dateistand: fertig /
 DEV-ONLY / noch nicht gebaut), Modulkarte und Bausteintabelle mit Fertigkennzeichen,
 Ladereihenfolge um Ist-Stand ergänzt. **Nächster Schritt unverändert: N2b (`profil.js`).**
+**v2.6 (2026-07-25):** **Baustein N2b (Profileingabe) gebaut und ausgeliefert:** `profil.js`
+(7 parametrische Profile, 19 Kantenkombinationen, Raupenmodell mit Endkraterabzug je freiem
+Ende, Eckradien mit ehrlicher Gegenüberstellung von gerechnetem und geometrischem Umfang,
+a-Maß je Segment für Steg und Flansch, Bauteildicke je Segment, Herkunfts-Code je Segment
+als Futter für N2c/N4). `optionen.js` um die Gruppen `profil` und `kanten` erweitert
+(18 Gruppen, 82 Optionen, Verträglichkeitsregel „umlaufende Kehlnaht ⇒ nur rundum",
+55.104 Wege ohne Sackgasse), `validate.js` um 8 Profilmaß-Felder (24 Felder),
+`i18n_kern.js` auf 307 Schlüssel und `i18n_hilfe.js` auf 50 Laien-ⓘ-Einträge erweitert.
+Neuer Abschnitt **4.6** (vollständige Schnittstelle von `profil.js`). Hand-Anker geschlossen
+nachgerechnet: Blech 2·(b+t), Rechteckrohr 2·(b+h)−8·r, Rundrohr π·d, I- und U-Profil
+2·h+4·b−2·tw, Winkel 2·(b+h), Endkrater 2·a je offener Raupe.
+**Basislinie 208 → 309 Assertions · Smokes 55/56 → 79/80.**
+**Nächster Schritt: N2c (Nahtbild-Grafik, `svglib.js` + `schaubild.js`).**
 ═══════════════════════════════════════════════════════════════════════════
 Ende Schweißnaht-1.md · DT-ProfiSchweissnaht
 ═══════════════════════════════════════════════════════════════════════════

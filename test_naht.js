@@ -12,6 +12,7 @@ var Data    = require('./daten.js');
 var Options = require('./optionen.js');
 var Valid   = require('./validate.js');
 var Naht    = require('./naht.js');
+var Profil  = require('./profil.js');
 
 var N = 0, FAIL = [], SEKTION = '';
 function sek(s) { SEKTION = s; console.log('\n— ' + s + ' —'); }
@@ -175,37 +176,38 @@ eq(verwaist, 0, 'kein verwaistes Pflichtfeld auf irgendeinem Weg');
 sek('S9 · Validierung Stufe 1 (formal)');
 var z1 = { welt: 'A', rechenrichtung: 'nachweis', werkstoffgruppe: 'stahl', werkstoff: 'S235',
            stossart: 't_stoss', nahtart: 'kehl_doppel', nachweisverfahren: 'richtungsbezogen',
+           profil: 'blech', kanten: 'flanken',
            lasteingabe: 'direkt', iso5817: 'B', exc: 'EXC2' };
-var gut = { a: 5, l: 200, t1: 10, t2: 10, N: 50000, Q: 0, gammaM2: 1.25 };
+var gut = { a: 5, l: 200, t1: 10, t2: 10, b: 120, N: 50000, Q: 0, gammaM2: 1.25 };
 var r = Valid.pruefe(gut, z1);
 ok(r.ok, 'sauberer Datensatz besteht die Pruefung');
 eq(Valid.zahl('4,5'), 4.5, 'Komma wird als Dezimaltrennzeichen akzeptiert');
 ok(isNaN(Valid.zahl('4,5x')), 'Buchstaben werden nicht stillschweigend verschluckt');
 ok(isNaN(Valid.zahl('')), 'leere Eingabe ist keine Zahl');
-var rFehlt = Valid.pruefe({ l: 200, t1: 10, t2: 10, N: 1, Q: 0, gammaM2: 1.25 }, z1);
+var rFehlt = Valid.pruefe({ l: 200, t1: 10, t2: 10, b: 120, N: 1, Q: 0, gammaM2: 1.25 }, z1);
 ok(!rFehlt.ok, 'fehlendes Pflichtfeld a wird erkannt');
 eq(rFehlt.fehler[0].code, 'msg_pflicht', 'Meldungscode ist sprachneutral');
-var rBereich = Valid.pruefe({ a: 500, l: 200, t1: 10, t2: 10, N: 1, Q: 0, gammaM2: 1.25 }, z1);
+var rBereich = Valid.pruefe({ a: 500, l: 200, t1: 10, t2: 10, b: 120, N: 1, Q: 0, gammaM2: 1.25 }, z1);
 ok(!rBereich.ok, 'a ausserhalb des Feldbereichs wird erkannt');
 
 /* ========================================================================= */
 sek('S10 · Validierung Stufe 2 (fachlich)');
 function codes(liste) { var c = []; for (var k = 0; k < liste.length; k++) c.push(liste[k].code); return c; }
-var rMin = Valid.pruefe({ a: 2, l: 200, t1: 10, t2: 10, N: 1, Q: 0, gammaM2: 1.25 }, z1);
+var rMin = Valid.pruefe({ a: 2, l: 200, t1: 10, t2: 10, b: 120, N: 1, Q: 0, gammaM2: 1.25 }, z1);
 ok(codes(rMin.fehler).indexOf('msg_a_min_ec3') >= 0, 'a = 2 mm verletzt das Mindest-a-Mass nach EN 1993-1-8');
-var rMax = Valid.pruefe({ a: 9, l: 400, t1: 10, t2: 10, N: 1, Q: 0, gammaM2: 1.25 }, z1);
+var rMax = Valid.pruefe({ a: 9, l: 400, t1: 10, t2: 10, b: 120, N: 1, Q: 0, gammaM2: 1.25 }, z1);
 ok(codes(rMax.warnungen).indexOf('msg_a_max') >= 0, 'a > 0,7*t_min wird als Warnung gemeldet');
-var rKurz = Valid.pruefe({ a: 5, l: 35, t1: 10, t2: 10, N: 1, Q: 0, gammaM2: 1.25 }, z1);
+var rKurz = Valid.pruefe({ a: 5, l: 35, t1: 10, t2: 10, b: 120, N: 1, Q: 0, gammaM2: 1.25 }, z1);
 ok(codes(rKurz.fehler).indexOf('msg_leff_min') >= 0, 'zu kurze Naht: l_eff < max(6a;30) wird erkannt');
-var rLang = Valid.pruefe({ a: 4, l: 1000, t1: 10, t2: 10, N: 1, Q: 0, gammaM2: 1.25 }, z1);
+var rLang = Valid.pruefe({ a: 4, l: 1000, t1: 10, t2: 10, b: 120, N: 1, Q: 0, gammaM2: 1.25 }, z1);
 ok(codes(rLang.warnungen).indexOf('msg_l_lang') >= 0, 'Naht laenger als 150*a: Abminderung wird angemahnt');
-var rGrenze = Valid.pruefe({ a: 4, l: 600, t1: 10, t2: 10, N: 1, Q: 0, gammaM2: 1.25 }, z1);
+var rGrenze = Valid.pruefe({ a: 4, l: 600, t1: 10, t2: 10, b: 120, N: 1, Q: 0, gammaM2: 1.25 }, z1);
 ok(codes(rGrenze.warnungen).indexOf('msg_l_lang') < 0, 'genau 150*a ist noch nicht abzumindern (Grenzfall)');
 
 var zAlu = { welt: 'A', rechenrichtung: 'nachweis', werkstoffgruppe: 'alu', werkstoff: 'AW6082',
              zustand: 'T6', zusatzwerkstoff: '5356', stossart: 't_stoss', nahtart: 'kehl_doppel',
              nachweisverfahren: 'richtungsbezogen', lasteingabe: 'direkt', iso5817: 'B', exc: 'EXC2' };
-var rAlu = Valid.pruefe({ a: 5, l: 200, t1: 10, t2: 10, N: 1, Q: 0, gammaM2: 1.25, gammaMw: 1.25 }, zAlu);
+var rAlu = Valid.pruefe({ a: 5, l: 200, t1: 10, t2: 10, b: 120, N: 1, Q: 0, gammaM2: 1.25, gammaMw: 1.25 }, zAlu);
 ok(codes(rAlu.hinweise).indexOf('msg_alu_wez') >= 0, 'Aluminium: WEZ-Hinweis erscheint zwingend');
 ok(codes(rAlu.hinweise).indexOf('lk_rho_haz_nur_band') >= 0, 'Aluminium: rho_haz-Luecke wird sichtbar gemacht');
 var rWelt = Valid.pruefe(gut, z1);
@@ -214,7 +216,7 @@ var zB = { welt: 'B', rechenrichtung: 'nachweis', werkstoffgruppe: 'stahl', werk
            stossart: 't_stoss', nahtart: 'kehl_doppel', nahtguete: 'kehlnaht_allgemein',
            lastfall: 'schwellend', lasteingabe: 'direkt', iso5817: 'B', exc: 'EXC2',
            ermuedung_aktiv: true };
-var rB = Valid.pruefe({ a: 5, l: 200, t1: 10, t2: 10, N: 1, Q: 0, S: 1.5 }, zB);
+var rB = Valid.pruefe({ a: 5, l: 200, t1: 10, t2: 10, b: 120, N: 1, Q: 0, S: 1.5 }, zB);
 ok(codes(rB.hinweise).indexOf('msg_lastfall_ermuedung') >= 0,
    'Lastfall + Ermuedung gleichzeitig: Klartext-Hinweis auf zwei getrennte Nachweise');
 
@@ -225,7 +227,7 @@ ok(alleLeer, '"Leeren" liefert wirklich einen komplett leeren Datensatz');
 eq(Object.keys(leer).length, Valid.SCHEMA.length, '"Leeren" erfasst JEDES Feld des Schemas');
 
 /* Eingaben duerfen nicht mutiert werden */
-var einObj = { a: 5, l: 200, t1: 10, t2: 10, N: 1, Q: 0, gammaM2: 1.25 };
+var einObj = { a: 5, l: 200, t1: 10, t2: 10, b: 120, N: 1, Q: 0, gammaM2: 1.25 };
 Valid.pruefe(einObj, z1);
 eq(einObj.a, 5, 'pruefe() mutiert die uebergebenen Werte nicht');
 
@@ -502,6 +504,285 @@ for (hk2 = 0; hk2 < kernGroessen.length; hk2++) {
 }
 eq(hOhne2, 0, 'Laien-ⓘ an allen Kerngroessen des Nahtbilds');
 ok(Kern.has('nb_modell_exakt') && Kern.has('nb_modell_duennwandig'), 'beide Rechenmodelle sind benannt');
+
+/* ========================================================================= */
+sek('S19 · Profileingabe N2b — Umfaenge gegen geschlossene Formeln (Hand-Anker)');
+
+/* Muster-Abmessungen je Profil — Grundlage der Vollstaendigkeitslaeufe. */
+function mustermasse(profil, kanten) {
+  var m = { profil: profil, kanten: kanten };
+  if (profil === 'blech')         { m.b = 200; m.t1 = 20; m.a = 5; }
+  if (profil === 'rohr_rechteck') { m.b = 100; m.h = 60; m.t1 = 4; m.r_ecke = 8; m.a = 4; }
+  if (profil === 'rohr_rund')     { m.d = 114.3; m.t1 = 6; m.a = 5; }
+  if (profil === 'i_profil')      { m.b = 100; m.h = 200; m.tw = 5.6; m.tf = 8.5; m.a = 4; }
+  if (profil === 'u_profil')      { m.b = 50; m.h = 100; m.tw = 6; m.tf = 8.5; m.a = 4; }
+  if (profil === 'winkel')        { m.b = 80; m.h = 80; m.t1 = 8; m.a = 4; }
+  if (profil === 'vollrund')      { m.d = 50; m.a = 5; }
+  return m;
+}
+function hatCode(liste, code) {
+  for (var q = 0; q < (liste || []).length; q++) if (liste[q].code === code) return true;
+  return false;
+}
+function bau(o) { return Profil.baue(o); }
+
+/* Anker 1: Blech rundum  U = 2*(b + t) */
+var pB = bau({ profil: 'blech', kanten: 'rundum', b: 200, t1: 12, a: 5 });
+ok(pB.ok, 'Blech rundum wird gebaut');
+nahe(pB.l_brutto, 2 * (200 + 12), 1e-9, 'Blech rundum: U = 2*(b+t)');
+nahe(pB.l_netto, pB.l_brutto, 1e-9, 'umlaufende Naht: kein Endkraterabzug');
+eq(pB.raupen, 1, 'Blech rundum ist EINE umlaufende Raupe');
+ok(pB.umlaufend, 'Blech rundum wird als umlaufend gemeldet');
+
+/* Anker 2: Blech, nur Flanken  l = 2*(b - 2a) */
+var pF = bau({ profil: 'blech', kanten: 'flanken', b: 200, t1: 12, a: 5 });
+nahe(pF.l_brutto, 400, 1e-9, 'Blech Flanken: Bruttolaenge 2*b');
+nahe(pF.l_netto, 2 * (200 - 2 * 5), 1e-9, 'Blech Flanken: l = 2*(b - 2a) — Endkraterabzug');
+eq(pF.raupen, 2, 'zwei getrennte Raupen');
+eq(pF.offene_raupen, 2, 'beide Raupen sind offen');
+
+/* Anker 3: Rechteck-Hohlprofil mit Eckradius  U = 2*(b+h) - 8*r */
+var pR = bau({ profil: 'rohr_rechteck', kanten: 'rundum', b: 100, h: 60, t1: 4, r_ecke: 8, a: 4 });
+nahe(pR.l_brutto, 2 * (100 + 60) - 8 * 8, 1e-9, 'Rechteckrohr: U = 2*(b+h) - 8*r');
+nahe(pR.l_kontur, pR.l_brutto + 2 * Math.PI * 8, 1e-9, 'geometrischer Umfang mit den vier Viertelboegen');
+nahe(pR.bogen_nicht_gerechnet, 2 * Math.PI * 8, 1e-9, 'nicht gerechneter Bogenanteil wird ausgewiesen');
+ok(pR.umlaufend, 'Rechteckrohr rundum bleibt trotz Ecklücken umlaufend');
+nahe(pR.l_netto, pR.l_brutto, 1e-9, 'kein Endkraterabzug an der umlaufenden Rohrnaht');
+
+/* Anker 3b: ohne Eckradius schliesst sich das Nahtbild geometrisch wirklich */
+var pR0 = bau({ profil: 'rohr_rechteck', kanten: 'rundum', b: 100, h: 60, t1: 4, r_ecke: 0, a: 4 });
+nahe(pR0.l_brutto, 2 * (100 + 60), 1e-9, 'Rechteckrohr ohne Radius: U = 2*(b+h)');
+eq(Naht.offeneEnden(pR0.segmente), 0, 'ohne Eckradius meldet der Nahtbild-Kern ein geschlossenes Nahtbild');
+ok(Naht.offeneEnden(pR.segmente) > 0, 'mit Eckradius sieht der Kern Luecken — deshalb der ehrliche Zusatzhinweis');
+
+/* Anker 4: Rundrohr  l = pi*d (Aussendurchmesser) */
+var pD = bau({ profil: 'rohr_rund', kanten: 'rundum', d: 114.3, t1: 6, a: 5 });
+nahe(pD.l_brutto, Math.PI * 114.3, 1e-9, 'Rundrohr: l = pi*d mit dem Aussendurchmesser');
+eq(pD.n_seg, 1, 'Rundrohr ergibt genau ein Kreissegment');
+var rD2 = Naht.rechne(pD.segmente);
+nahe(rD2.A, Math.PI * 114.3 * 5, 1e-9, 'Rundrohr: A = pi*d*a');
+
+/* Anker 5: I-Profil rundum  U = 2*h + 4*b - 2*tw (unabhaengig von tf) */
+var pI = bau({ profil: 'i_profil', kanten: 'rundum', b: 100, h: 200, tw: 5.6, tf: 8.5, a: 4 });
+nahe(pI.l_brutto, 2 * 200 + 4 * 100 - 2 * 5.6, 1e-9, 'I-Profil rundum: U = 2h + 4b - 2tw');
+eq(pI.n_seg, 12, 'I-Profil rundum besteht aus 12 Segmenten');
+var pI2 = bau({ profil: 'i_profil', kanten: 'rundum', b: 100, h: 200, tw: 5.6, tf: 14, a: 4 });
+nahe(pI2.l_brutto, pI.l_brutto, 1e-9, 'Flanschdicke aendert den Umfang nicht (zweiter Rechenpfad)');
+
+/* Anker 6: U-Profil rundum  U = 2*h + 4*b - 2*tw */
+var pU = bau({ profil: 'u_profil', kanten: 'rundum', b: 50, h: 100, tw: 6, tf: 8.5, a: 4 });
+nahe(pU.l_brutto, 2 * 100 + 4 * 50 - 2 * 6, 1e-9, 'U-Profil rundum: U = 2h + 4b - 2tw');
+eq(pU.n_seg, 8, 'U-Profil rundum besteht aus 8 Segmenten');
+
+/* Anker 7: Winkel rundum  U = 2*(b + h), unabhaengig von der Dicke */
+var pW = bau({ profil: 'winkel', kanten: 'rundum', b: 80, h: 80, t1: 8, a: 4 });
+nahe(pW.l_brutto, 2 * (80 + 80), 1e-9, 'Winkel rundum: U = 2*(b+h)');
+var pW2 = bau({ profil: 'winkel', kanten: 'rundum', b: 80, h: 80, t1: 12, a: 4 });
+nahe(pW2.l_brutto, pW.l_brutto, 1e-9, 'Winkeldicke aendert den Umfang nicht');
+var pWF = bau({ profil: 'winkel', kanten: 'flanken', b: 80, h: 80, t1: 8, a: 4 });
+eq(pWF.raupen, 1, 'die beiden Aussenschenkel sind EINE Raupe um die Ecke');
+nahe(pWF.l_netto, 80 + 80 - 2 * 4, 1e-9, 'Winkel Flanken: l = b + h - 2a (nur zwei freie Enden)');
+
+/* Anker 8: Vollrund  l = pi*d */
+var pV = bau({ profil: 'vollrund', kanten: 'rundum', d: 50, a: 5 });
+nahe(pV.l_brutto, Math.PI * 50, 1e-9, 'Vollrund: l = pi*d');
+
+/* Zweiter Rechenpfad: umfang() gegen die Summe der Segmentlaengen */
+var zpFehler = 0, pk, kk, kl, pr2;
+for (pk = 0; pk < Profil.PROFILE.length; pk++) {
+  kl = Profil.kantenFuer(Profil.PROFILE[pk]);
+  for (kk = 0; kk < kl.length; kk++) {
+    pr2 = bau(mustermasse(Profil.PROFILE[pk], kl[kk]));
+    if (!pr2.ok) { zpFehler++; continue; }
+    if (Math.abs(Profil.umfang(Profil.PROFILE[pk], kl[kk], mustermasse(Profil.PROFILE[pk], kl[kk])) - pr2.l_brutto) > 1e-9) zpFehler++;
+  }
+}
+eq(zpFehler, 0, 'umfang() und die gebauten Segmente stimmen bei jeder Kombination ueberein');
+
+/* ========================================================================= */
+sek('S20 · Profileingabe — Endkrater, Eckradien, a je Segment');
+
+/* Endkraterabzug nur an FREIEN ENDEN, nicht an inneren Stossstellen */
+var eI = bau({ profil: 'i_profil', kanten: 'flansche', b: 100, h: 200, tw: 5.6, tf: 8.5, a: 4 });
+eq(eI.raupen, 2, 'Flanschnaht laeuft je Flansch in EINEM Zug um den Flansch');
+nahe(eI.l_netto, eI.l_brutto - 2 * 2 * 4, 1e-9, 'nur zwei freie Enden je Flansch — nicht je Segment');
+eq(eI.n_seg, 10, 'die Flanschraupen bestehen aus 5 Segmenten je Flansch');
+
+/* Gleiche Geometrie, aber einzeln geschweisst: vier Raupen = vier Mal 2a */
+var eIrund = bau({ profil: 'i_profil', kanten: 'rundum', b: 100, h: 200, tw: 5.6, tf: 8.5, a: 4 });
+var eIein  = bau({ profil: 'i_profil', kanten: 'flansche_steg', b: 100, h: 200, tw: 5.6, tf: 8.5, a: 4 });
+nahe(eIein.l_brutto, eIrund.l_brutto, 1e-9, 'rundum und einzeln geschweisst haben dieselbe Geometrie');
+nahe(eIrund.l_netto - eIein.l_netto, 4 * 2 * 4, 1e-9, 'einzeln geschweisst kostet 4 x 2a — genau hier wird von Hand falsch gerechnet');
+
+/* Abzug laeuft ueber Segmentgrenzen hinweg (kurzes Anfangssegment) */
+var eL = bau({ profil: 'i_profil', kanten: 'flansche', b: 60, h: 120, tw: 5, tf: 8, a: 30 });
+ok(eL.ok, 'grosser Abzug bleibt rechenbar, solange die Raupe lang genug ist');
+nahe(eL.l_brutto, 2 * (2 * 60 - 5 + 2 * 8), 1e-9, 'Bruttolaenge der beiden Flanschraupen');
+nahe(eL.l_netto, eL.l_brutto - 4 * 30, 1e-9, 'Abzug wird ueber Segmentgrenzen hinweg verrechnet');
+eq(eL.n_seg, 6, 'vollstaendig aufgezehrte Segmente verschwinden aus dem Nahtbild');
+
+/* Zu kurze Naht: ehrlicher Fehler statt einer Zahl */
+var eK = bau({ profil: 'blech', kanten: 'flanken', b: 15, t1: 10, a: 8 });
+ok(!eK.ok, 'zu kurze Naht wird nicht gerechnet');
+eq(eK.fehler[0].code, 'msg_endkrater_zu_lang', 'ehrlicher Fehlercode statt eines stillen Teilwerts');
+eq(eK.segmente.length, 0, 'im Fehlerfall gibt es KEINE Segmente');
+
+/* Abschaltbarer Abzug (nur mit Auslaufblechen) */
+var eA = bau({ profil: 'blech', kanten: 'flanken', b: 200, t1: 12, a: 5, endkrater: false });
+nahe(eA.l_netto, eA.l_brutto, 1e-9, 'ohne Endkraterabzug bleibt die Bruttolaenge stehen');
+ok(hatCode(eA.warnungen, 'msg_endkrater_aus'), 'das Abschalten wird ausdruecklich gewarnt');
+
+/* Eckradius: Umfang wird kuerzer, Hinweise erscheinen */
+var e0 = bau({ profil: 'rohr_rechteck', kanten: 'rundum', b: 120, h: 80, t1: 5, r_ecke: 0, a: 4 });
+var e8 = bau({ profil: 'rohr_rechteck', kanten: 'rundum', b: 120, h: 80, t1: 5, r_ecke: 10, a: 4 });
+nahe(e0.l_brutto - e8.l_brutto, 8 * 10, 1e-9, 'jeder Eckradius kostet 8*r an gerechneter Nahtlaenge');
+ok(hatCode(e8.hinweise, 'msg_eckradius_verkuerzt'), 'Eckradius wird ehrlich erklaert');
+ok(hatCode(e8.hinweise, 'msg_eckluecke_keine_offene_naht'), 'die Ecklücken werden vom offenen Nahtbild abgegrenzt');
+ok(!hatCode(e0.hinweise, 'msg_eckradius_verkuerzt'), 'ohne Radius kein Eckradius-Hinweis');
+var eR = bau({ profil: 'rohr_rechteck', kanten: 'rundum', b: 60, h: 40, t1: 4, r_ecke: 25, a: 4 });
+ok(!eR.ok && eR.fehler[0].code === 'msg_mass_r_zu_gross', 'zu grosser Eckradius wird abgefangen');
+
+/* a-Mass je Segment: Steg und Flansch getrennt */
+var aS = bau({ profil: 'i_profil', kanten: 'flansche_steg', b: 100, h: 200, tw: 5.6, tf: 8.5,
+               a: 4, a_steg: 3, a_flansch: 5 });
+var aSteg = 0, aFl = 0, ii;
+for (ii = 0; ii < aS.info.length; ii++) {
+  if (aS.info[ii].gruppe === 'steg' && aS.info[ii].a === 3) aSteg++;
+  if ((aS.info[ii].gruppe === 'flansch' || aS.info[ii].gruppe === 'kante') && aS.info[ii].a === 5) aFl++;
+}
+eq(aSteg, 2, 'beide Stegsegmente tragen a_steg');
+eq(aFl, 10, 'alle Flansch- und Kantensegmente tragen a_flansch');
+ok(hatCode(aS.hinweise, 'msg_a_je_segment'), 'unterschiedliche a-Masse werden im Ergebnis benannt');
+nahe(aS.endkrater_abzug, 2 * 2 * 5 + 2 * 2 * 3, 1e-9, 'der Endkrater wird mit dem a des jeweiligen Endsegments abgezogen');
+var aT = 0;
+for (ii = 0; ii < aS.info.length; ii++) if (aS.info[ii].gruppe === 'steg') aT += (aS.info[ii].t === 5.6) ? 1 : 0;
+eq(aT, 2, 'die Bauteildicke am Steg wird je Segment mitgefuehrt (Futter fuer die a-Grenzen in N3)');
+
+/* ========================================================================= */
+sek('S21 · Profileingabe — jede Kombination liefert ein rechenbares Nahtbild');
+
+var komb = 0, kFehler = 0, kKontrolle = 0, kFlaeche = 0, kCode = 0, kGruppe = 0, jj;
+for (pk = 0; pk < Profil.PROFILE.length; pk++) {
+  var pcode = Profil.PROFILE[pk];
+  kl = Profil.kantenFuer(pcode);
+  ok(kl.length > 0, 'Profil ' + pcode + ' bietet mindestens eine Kantenauswahl');
+  for (kk = 0; kk < kl.length; kk++) {
+    komb++;
+    var pp = bau(mustermasse(pcode, kl[kk]));
+    if (!pp.ok) { kFehler++; console.log('    baut nicht: ' + pcode + ' / ' + kl[kk]); continue; }
+    var rr = Naht.rechne(pp.segmente);
+    if (!rr.ok) { kFehler++; continue; }
+    if (!rr.kontrolle.ok) kKontrolle++;
+    var soll = 0;
+    for (jj = 0; jj < pp.info.length; jj++) {
+      soll += pp.info[jj].a * pp.info[jj].l;
+      if (!pp.info[jj].code) kCode++;
+      if (Profil.SEGMENTGRUPPEN.indexOf(pp.info[jj].gruppe) < 0) kGruppe++;
+    }
+    if (Math.abs(rr.A - soll) > 1e-6 * Math.max(1, soll)) kFlaeche++;
+  }
+}
+eq(komb, 19, 'alle 19 Profil-/Kantenkombinationen sind abgedeckt');
+eq(kFehler, 0, 'jede Kombination liefert ein rechenbares Nahtbild');
+eq(kKontrolle, 0, 'die Selbstpruefung des Nahtbild-Kerns ist bei jeder Kombination gruen');
+eq(kFlaeche, 0, 'A_w stimmt bei jeder Kombination mit SUMME(a*l) ueberein (zweiter Rechenpfad)');
+eq(kCode, 0, 'jedes Segment traegt einen Herkunfts-Code fuer Grafik und Rechenweg');
+eq(kGruppe, 0, 'jedes Segment traegt eine bekannte Segmentgruppe');
+
+/* Symmetrie und Unsymmetrie muessen sich im Nahtbild wiederfinden */
+var sB = Naht.rechne(bau({ profil: 'blech', kanten: 'rundum', b: 200, t1: 12, a: 5 }).segmente);
+nahe(sB.ys, 0, 1e-9, 'Blech rundum: Schwerpunkt liegt in der Mitte (ys)');
+nahe(sB.zs, 0, 1e-9, 'Blech rundum: Schwerpunkt liegt in der Mitte (zs)');
+nahe(sB.Iyz, 0, 1e-6, 'Blech rundum: kein Zentrifugalmoment');
+var sI = Naht.rechne(bau({ profil: 'i_profil', kanten: 'rundum', b: 100, h: 200, tw: 5.6, tf: 8.5, a: 4 }).segmente);
+nahe(sI.ys, 0, 1e-9, 'I-Profil rundum ist doppelt symmetrisch (ys)');
+nahe(sI.zs, 0, 1e-9, 'I-Profil rundum ist doppelt symmetrisch (zs)');
+ok(sI.Iy > sI.Iz, 'I-Profil: Iy ist deutlich groesser als Iz');
+var sU = Naht.rechne(bau({ profil: 'u_profil', kanten: 'rundum', b: 50, h: 100, tw: 6, tf: 8.5, a: 4 }).segmente);
+nahe(sU.zs, 0, 1e-9, 'U-Profil ist zur y-Achse symmetrisch');
+ok(Math.abs(sU.ys) > 1, 'U-Profil: der Schwerpunkt des Nahtbilds liegt NICHT in der Profilmitte');
+var sE = Naht.rechne(bau({ profil: 'blech', kanten: 'eine_flanke', b: 200, t1: 12, a: 5 }).segmente);
+nahe(sE.zs, -6, 1e-9, 'einseitige Kehlnaht: der Schwerpunkt liegt auf der geschweissten Seite');
+
+/* ========================================================================= */
+sek('S22 · Profileingabe — Fehlerfaelle, Determinismus, Nichtmutation');
+
+function fehlerCode(o) { var r = bau(o); return r.ok ? '(ok)' : (r.fehler[0] && r.fehler[0].code); }
+eq(fehlerCode({ kanten: 'rundum', b: 100, t1: 10, a: 5 }), 'msg_profil_fehlt', 'fehlendes Profil');
+eq(fehlerCode({ profil: 'traeger', kanten: 'rundum', b: 100, t1: 10, a: 5 }), 'msg_profil_unbekannt', 'unbekanntes Profil');
+eq(fehlerCode({ profil: 'blech', b: 100, t1: 10, a: 5 }), 'msg_kanten_fehlt', 'fehlende Kantenauswahl');
+eq(fehlerCode({ profil: 'blech', kanten: 'flansche', b: 100, t1: 10, a: 5 }), 'msg_kanten_unpassend', 'Kantenauswahl passt nicht zum Profil');
+eq(fehlerCode({ profil: 'blech', kanten: 'rundum', t1: 10, a: 5 }), 'msg_mass_fehlt', 'fehlendes Profilmass');
+eq(fehlerCode({ profil: 'blech', kanten: 'rundum', b: 100, t1: 10 }), 'msg_profil_a_fehlt', 'fehlendes a-Mass');
+eq(fehlerCode({ profil: 'i_profil', kanten: 'rundum', b: 100, h: 20, tw: 5, tf: 12, a: 4 }), 'msg_mass_tf_zu_gross', 'Flansche dicker als das halbe Profil');
+eq(fehlerCode({ profil: 'i_profil', kanten: 'rundum', b: 10, h: 200, tw: 12, tf: 8, a: 4 }), 'msg_mass_tw_zu_gross', 'Steg breiter als der Flansch');
+eq(fehlerCode({ profil: 'winkel', kanten: 'rundum', b: 40, h: 40, t1: 40, a: 4 }), 'msg_mass_t_zu_gross', 'Winkeldicke erreicht die Schenkellaenge');
+eq(fehlerCode({ profil: 'rohr_rund', kanten: 'rundum', d: 20, t1: 3, a: 25 }), 'msg_seg_a_zu_gross', 'a groesser als der Rohrdurchmesser wird vom Nahtbild-Kern abgefangen');
+var fM = bau({ profil: 'blech', kanten: 'rundum', t1: 10, a: 5 });
+eq(fM.fehler[0].feld, 'b', 'der Fehler benennt das betroffene Feld');
+
+var detEin = { profil: 'i_profil', kanten: 'flansche', b: 100, h: 200, tw: 5.6, tf: 8.5, a: 4 };
+var detKopie = JSON.stringify(detEin);
+var det1 = JSON.stringify(bau(detEin));
+var det2 = JSON.stringify(bau(detEin));
+eq(det1, det2, 'baue() ist deterministisch');
+eq(JSON.stringify(detEin), detKopie, 'baue() mutiert die Eingabe nicht');
+var kanten1 = Profil.kantenFuer('blech');
+kanten1.push('unsinn');
+eq(Profil.kantenFuer('blech').length, 4, 'kantenFuer() gibt eine Kopie zurueck');
+var wieder = bau(detEin);
+nahe(wieder.l_netto, JSON.parse(det1).l_netto, 1e-12, 'wiederholter Aufruf liefert dasselbe Ergebnis');
+
+/* ========================================================================= */
+sek('S23 · Profileingabe — Auswahlquelle, Felder und Texte stimmen ueberein');
+
+eq(Options.codes('profil', {}).join(','), Profil.PROFILE.join(','),
+   'optionen.js und profil.js kennen dieselben Profile in derselben Reihenfolge');
+var kAbw = 0;
+for (pk = 0; pk < Profil.PROFILE.length; pk++) {
+  var a1 = Options.codes('kanten', { profil: Profil.PROFILE[pk] }).slice().sort().join(',');
+  var a2 = Profil.kantenFuer(Profil.PROFILE[pk]).slice().sort().join(',');
+  if (a1 !== a2) { kAbw++; console.log('    Abweichung bei ' + Profil.PROFILE[pk] + ': ' + a1 + ' / ' + a2); }
+}
+eq(kAbw, 0, 'die Kantenauswahl ist in optionen.js und profil.js identisch');
+eq(Options.codes('kanten', { profil: 'blech', nahtart: 'kehl_umlaufend' }).join(','), 'rundum',
+   'eine ausdruecklich umlaufende Kehlnaht laesst nur "rundum" zu');
+ok(Options.gruppeAktiv('kanten', { profil: 'rohr_rund' }), 'die Kantenfrage erscheint auch beim Rundrohr');
+
+var mFehlt = 0, mk, ml;
+for (pk = 0; pk < Profil.PROFILE.length; pk++) {
+  ml = Profil.masseFuer(Profil.PROFILE[pk]);
+  for (mk = 0; mk < ml.length; mk++) {
+    if (!Valid.feld(ml[mk].code)) { mFehlt++; console.log('    kein Eingabefeld: ' + ml[mk].code); }
+  }
+}
+eq(mFehlt, 0, 'jedes Profilmass hat ein Eingabefeld mit Beschriftung und Laien-ⓘ');
+
+var pflichtFehlt = 0;
+var zProfil = { profil: 'i_profil' };
+if (!Valid.istPflicht(Valid.feld('tw'), zProfil)) pflichtFehlt++;
+if (!Valid.istPflicht(Valid.feld('tf'), zProfil)) pflichtFehlt++;
+if (Valid.istPflicht(Valid.feld('d'), zProfil)) pflichtFehlt++;
+if (!Valid.istPflicht(Valid.feld('d'), { profil: 'rohr_rund' })) pflichtFehlt++;
+if (Valid.istPflicht(Valid.feld('tw'), { profil: 'blech' })) pflichtFehlt++;
+eq(pflichtFehlt, 0, 'Profilmasse sind genau dort Pflicht, wo das gewaehlte Profil sie braucht');
+
+var cOhne3 = 0;
+for (ii = 0; ii < Profil.CODES.length; ii++) {
+  if (!Kern.has(Profil.CODES[ii])) { cOhne3++; console.log('    ohne Text: ' + Profil.CODES[ii]); }
+}
+eq(cOhne3, 0, 'jede Meldung der Profileingabe ist dreisprachig hinterlegt');
+var sgOhne = 0;
+for (ii = 0; ii < Profil.SEGMENTGRUPPEN.length; ii++) {
+  if (!Kern.has('sg_' + Profil.SEGMENTGRUPPEN[ii])) { sgOhne++; }
+}
+eq(sgOhne, 0, 'jede Segmentgruppe ist beschriftet');
+var prKeys = ['pr_titel', 'pr_profil', 'pr_kanten', 'pr_raupen', 'pr_umlaufend', 'pr_offen',
+              'pr_l_brutto', 'pr_l_netto', 'pr_l_kontur', 'pr_endkrater', 'pr_bogen',
+              'pr_handanker', 'pr_anker_rohr', 'pr_anker_kreis', 'pr_anker_iprofil', 'pr_anker_endkrater'];
+var prOhne = 0;
+for (ii = 0; ii < prKeys.length; ii++) if (!Kern.has(prKeys[ii])) { prOhne++; console.log('    ohne Text: ' + prKeys[ii]); }
+eq(prOhne, 0, 'alle Beschriftungen der Profilkarte sind vorhanden');
 
 /* ========================================================================= */
 console.log('\n════════════════════════════════════════════');

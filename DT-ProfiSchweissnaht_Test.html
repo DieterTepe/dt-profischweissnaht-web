@@ -71,6 +71,14 @@
 
   <section class="card">
     <div class="card-head">
+      <span class="eyebrow">N2b · profil.js</span>
+      <h2 id="h_profil">Profileingabe</h2>
+    </div>
+    <div class="card-body" id="profilHost"></div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
       <span class="eyebrow">daten.js</span>
       <h2 id="h_luecken">Ehrliche Lücken</h2>
     </div>
@@ -102,6 +110,7 @@
 <script src="optionen.js"></script>
 <script src="validate.js"></script>
 <script src="naht.js"></script>
+<script src="profil.js"></script>
 
 <!-- ===================================================================== -->
 <!--  N1/N2-ZWISCHENSTAND: kleine Statusanzeige, damit Fundament und
@@ -135,7 +144,8 @@
       ['daten.js', window.DTNData],
       ['optionen.js', window.DTNOptions],
       ['validate.js', window.DTNValidate],
-      ['naht.js', window.DTNNaht]
+      ['naht.js', window.DTNNaht],
+      ['profil.js', window.DTNProfil]
     ];
     var fehlt = 0, rows = '';
     for (var i = 0; i < mods.length; i++) {
@@ -276,6 +286,65 @@
     host.innerHTML = out;
   }
 
+  /* ---- N2b: Profileingabe live — Profil + Kanten ergeben das Nahtbild ---- */
+  function profil() {
+    var host = id('profilHost');
+    if (!window.DTNProfil || !window.DTNNaht || !window.DTNI18nKern) { host.textContent = '\u2013'; return; }
+    var PR = window.DTNProfil, NA = window.DTNNaht;
+
+    /* Beispiel: Rechteck-Hohlprofil 100 x 60, Eckradius 8 mm, rundum, a = 4 mm */
+    var e = { profil: 'rohr_rechteck', kanten: 'rundum', b: 100, h: 60, t1: 4, r_ecke: 8, a: 4 };
+    var p = PR.baue(e);
+    if (!p.ok) { host.textContent = '\u2013'; return; }
+    var r = NA.rechne(p.segmente);
+    if (!r.ok) { host.textContent = '\u2013'; return; }
+
+    var out = '<div style="margin:0 0 8px 0"><strong>' + esc(K('nb_beispiel')) + ':</strong> ' +
+              esc(K('opt_profil_rohr_rechteck')) + ' 100 \u00d7 60 mm, r = 8 mm, a = 4 mm</div>';
+
+    var zeilen = [
+      ['pr_profil',    esc(K('opt_profil_' + p.profil))],
+      ['pr_kanten',    esc(K('opt_kanten_' + p.kanten))],
+      ['pr_raupen',    zahl(p.raupen, 0) + ' \u00b7 ' + esc(K(p.umlaufend ? 'pr_umlaufend' : 'pr_offen'))],
+      ['pr_l_brutto',  zahl(p.l_brutto, 1) + ' ' + esc(K('unit_mm'))],
+      ['pr_l_kontur',  zahl(p.l_kontur, 1) + ' ' + esc(K('unit_mm'))],
+      ['pr_bogen',     zahl(p.bogen_nicht_gerechnet, 1) + ' ' + esc(K('unit_mm'))],
+      ['pr_endkrater', zahl(p.endkrater_abzug, 1) + ' ' + esc(K('unit_mm'))],
+      ['pr_l_netto',   zahl(p.l_netto, 1) + ' ' + esc(K('unit_mm'))],
+      ['gr_A',         zahl(r.A, 1) + ' ' + esc(K('unit_mm2'))],
+      ['gr_Iy',        zahl(r.Iy, 0) + ' ' + esc(K('unit_mm4'))],
+      ['gr_Wt',        zahl(r.Wt, 0) + ' ' + esc(K('unit_mm3'))]
+    ];
+    out += '<dl class="kv">';
+    for (var i = 0; i < zeilen.length; i++) {
+      out += '<dt>' + esc(K(zeilen[i][0])) + '</dt><dd>' + zeilen[i][1] + '</dd>';
+    }
+    out += '</dl>';
+
+    /* Hand-Anker: die Umfaenge gegen geschlossene Formeln */
+    function nahe2(x, y) { return Math.abs(x - y) <= 1e-6 * Math.max(1, Math.abs(y)); }
+    var pKr = PR.baue({ profil: 'rohr_rund', kanten: 'rundum', d: 114.3, t1: 6, a: 5 });
+    var pIp = PR.baue({ profil: 'i_profil', kanten: 'rundum', b: 100, h: 200, tw: 5.6, tf: 8.5, a: 4 });
+    var pFl = PR.baue({ profil: 'blech', kanten: 'flanken', b: 200, t1: 12, a: 5 });
+
+    var anker = [
+      ['pr_anker_rohr',      nahe2(p.l_brutto, 2 * (100 + 60) - 8 * 8), '2\u00b7(100+60) \u2212 8\u00b78 = 256 mm'],
+      ['pr_anker_kreis',     pKr.ok && nahe2(pKr.l_brutto, Math.PI * 114.3), '\u03c0\u00b7114,3 = 359,08 mm'],
+      ['pr_anker_iprofil',   pIp.ok && nahe2(pIp.l_brutto, 2 * 200 + 4 * 100 - 2 * 5.6), '2\u00b7200 + 4\u00b7100 \u2212 2\u00b75,6 = 788,8 mm'],
+      ['pr_anker_endkrater', pFl.ok && nahe2(pFl.l_netto, 2 * (200 - 2 * 5)), '2\u00b7(200 \u2212 2\u00b75) = 380 mm']
+    ];
+    out += '<div style="margin:10px 0 4px 0"><strong>' + esc(K('pr_handanker')) + '</strong></div>';
+    for (i = 0; i < anker.length; i++) {
+      out += '<div style="font-size:13px">' + haken(anker[i][1]) + ' ' + esc(K(anker[i][0])) +
+             '<br><span style="color:var(--muted)">' + anker[i][2] + '</span></div>';
+    }
+
+    for (i = 0; i < p.hinweise.length; i++) {
+      out += '<div class="gap-note">' + esc(K(p.hinweise[i].code)) + '</div>';
+    }
+    host.innerHTML = out;
+  }
+
   function luecken() {
     var host = id('lueckenHost');
     if (!window.DTNData) { host.textContent = '–'; return; }
@@ -301,12 +370,13 @@
     id('h_status').textContent = 'Fundament (N1)';
     id('h_optionen').textContent = K('inputTitle');
     id('h_nahtbild').textContent = K('nb_titel');
+    id('h_profil').textContent = K('pr_titel');
     id('h_luecken').textContent = K('gap');
     id('h_nichtgeprueft').textContent = K('ng_titel');
     id('footNote').textContent = K('disclaimer');
   }
 
-  function zeichne() { texte(); status(); optionen(); nahtbild(); luecken(); nichtGeprueft(); }
+  function zeichne() { texte(); status(); optionen(); nahtbild(); profil(); luecken(); nichtGeprueft(); }
 
   function sprache(l) {
     LANG = l;
