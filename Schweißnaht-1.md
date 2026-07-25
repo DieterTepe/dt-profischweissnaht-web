@@ -9,8 +9,9 @@
 > Sie ist so geschrieben, dass ein **neuer Chat ohne Vorwissen** damit weiterarbeiten kann.
 
 ```
-Plan-Version : 2.2 · Stand 2026-07-25
+Plan-Version : 2.3 · Stand 2026-07-25
 Status       : N1 (Fundament) von Dieter geprüft und ABGENOMMEN.
+               Profileingabe abgestimmt und als N2b/N2c eingeplant (Abschnitt 2.2b).
                → NÄCHSTER SCHRITT: Baustein N2 (Nahtbild-Kern, naht.js).
 Basislinie   : 128 Assertions · DOM-Smokes 39 (voll) + 40 (test) · i18n-Parität 0 Abweichungen
                (Basislinie darf nur WACHSEN — nie schrumpfen, nie gelockert werden.)
@@ -155,6 +156,58 @@ Alle Standardfälle sind damit **nur noch Presets, die Segmente füllen** — di
 für alle. Ein **freier Modus mit Live-SVG-Vorschau** deckt Sonderfälle ab.
 Vorteil: ein prüfbarer Kern statt vieler Sonderwege, exakt gegen Hand-Anker verifizierbar.
 
+### 2.2b Profileingabe — Nahtbild aus Profil + Kantenauswahl *(abgestimmt 2026-07-25)*
+
+**Grundsatz:** Aus einem Profil kommt nicht *eine Zahl Nahtlänge*, sondern das **ganze
+Nahtbild** — Lage der Segmente, nicht nur ihre Summe. Für Zug reicht die Länge, für Biegung
+und Torsion entscheidet die Lage (I_y, I_z, I_p). `profil.js` erzeugt deshalb **Segmente**,
+keine Länge.
+
+**Schichtung (bindend):** `profil.js` (Profil + Maße + Kantenauswahl → Segmente) →
+`naht.js` (Segmente → Querschnittswerte). `naht.js` bleibt dumm. Die Presets (2.11) setzen
+auf `profil.js` auf, statt Segmentlisten doppelt zu pflegen.
+
+**Stufe 1 — parametrisch (V1, Maße eintippen).** Deckt nach Dieters Praxiseinschätzung
+75–80 % der Fälle ab, braucht **keine Recherche** und funktioniert für jede Abmessung:
+
+1. **Blech / Flachstahl** — Lasche, Knotenblech, Stirnplatte (häufigster Fall)
+2. **Rechteck-/Quadrat-Hohlprofil** — Maschinenrahmen, Konsolen, Geländer
+3. **Rundrohr** — Rohr auf Platte, der Torsionsfall
+4. **I-/H-Profil** — Träger an Stütze, Konsole am Flansch
+5. **U-Profil** — *von Dieter aus der Praxis ergänzt, kommt oft vor*
+6. **Winkel** — Streben, kleine Konsolen
+7. **Vollrund** — Bolzen/Welle auf Platte, fast immer Torsion
+
+> **Ehrlich:** Die Abdeckungsquote 75–80 % ist Dieters Erfahrungseinschätzung,
+> **keine belegte Statistik**. Sie steuert nur den Bauumfang, nie eine Rechnung.
+
+**Stufe 2 — Normprofil-Katalog (nach V1).** IPE, HEA/HEB, UPE/UPN, RHS/SHS, Rohr nach
+EN 10365 / EN 10219 als **eigenes Datenpaket**, gestaffelt gefüllt wie der Kerbfallkatalog,
+je zwei Quellen, **ehrliche Lücken sichtbar**. Reiner Komfort — Stufe 1 kann alles bereits.
+
+**Die zweite Abfrage ist wichtiger als das Profil selbst: WELCHE KANTEN sind geschweißt?**
+Rundum · nur Flanken · nur Stirnseiten · beim I-/U-Profil nur Flansche oder auch Steg.
+Ohne diese Abfrage rechnet das Programm Nähte mit, die es nicht gibt.
+
+**Fachliche Fallen, die `profil.js` beherrschen muss:**
+- **Endkraterabzug 2·a** entfällt bei umlaufender Naht, greift bei **jedem** offenen Segment.
+  Genau hier wird von Hand am häufigsten falsch gerechnet.
+- **Eckradien bei Hohlprofilen** verkürzen den Umfang — und in der Ecke entsteht keine
+  saubere Kehlnaht. Sicherheitsrelevant, nicht kosmetisch.
+- **Unterschiedliche Dicken je Segment** (Steg/Flansch) → je Segment eigenes a-Grenzmaß.
+  `naht.js` kann das (a je Segment); `profil.js` muss es füllen.
+- **Rundrohr:** l = π·d mit dem **Außendurchmesser** — Festlegung muss im Rechenweg stehen.
+
+**Auswahl-Skizze = Live-Vorschau des erzeugten Nahtbilds**, kein separat gezeichnetes Symbol.
+Dieselben Segmente, die gerechnet werden, werden gezeichnet — eine Quelle, kann nie
+auseinanderlaufen. Ändert der Anwender die Kantenauswahl, erscheint bzw. verschwindet die
+Naht sofort. **Folge für die Reihenfolge:** `svglib.js` + `schaubild.js` werden von N6 auf
+**N2c vorgezogen**.
+
+**Die errechnete Länge ist ein VORSCHLAG**, mit „eigener Wert"-Haken überschreibbar
+(Regel 3.1). Erklärungen laufen über die vorhandene Laien-ⓘ-Struktur
+(Was ist das · Üblicher Bereich · Empfehlung) — nur füllen, nichts Neues bauen.
+
 ### 2.3 Beide Rechenrichtungen (im Kern, nicht als Extra)
 
 - **Nachweis:** a-Maß gegeben → Spannungen, Ausnutzungsgrad, Ampel.
@@ -248,7 +301,8 @@ Sonderformen bleiben zunächst außen vor.
 5. **Träger an Stütze über Stirnplatte** — Stahlbau-Standardfall
 6. **Durchgeschweißter Blechstoß** — Stumpfnaht-Pfad
 
-Presets sind **reine Daten** (Segmente + Vorbelegungen) → jederzeit erweiterbar.
+Presets sind **reine Daten** (Profil + Kantenauswahl + Vorbelegungen) → sie setzen auf
+`profil.js` auf und werden nicht als eigene Segmentlisten gepflegt. Jederzeit erweiterbar.
 
 ### 2.12 Lasteingabe: beide Wege wählbar
 
@@ -341,6 +395,8 @@ dt-profischweissnaht-web/
 │                                     Assistent + **Verträglichkeitsregeln** (3.4)
 ├── validate.js    (DTNValidate)   → Feldschema (dreisprachig) + zweistufige Prüfung
 ├── naht.js        (DTNNaht)       → Nahtbild-Kern: Segmente → A_w, Schwerpunkt, I_y, I_z, I_p
+├── profil.js      (DTNProfil)     → Profiltyp + Maße + Kantenauswahl → Segmente (2.2b);
+│                                     parametrisch in V1, Normprofil-Katalog später
 ├── solver.js      (DTNSolver)     → Spannungen aus N/Q/M/T · Welt A + Welt B ·
 │                                     Nachweis UND Auslegung
 ├── rechenweg.js   (DTNRechenweg)  → selbstprüfender Rechenweg für ALLE Module
@@ -414,12 +470,13 @@ Zahlen stehen in der HTML-Legende, nicht im SVG (Übersetzbarkeit).
 |---|---|---|
 | **N1** | **Fundament** | `daten.js` (11 Werkstoffe, Beiwerte, ISO 5817, EXC) + `optionen.js` (einzige Auswahlquelle **inkl. Verträglichkeitsregeln**) + i18n-Gerüst DE/EN/PT + `validate.js`. Alle Codes sprachneutral. |
 | **N2** | **Nahtbild-Kern** | `naht.js`: Segmente → A_w, Schwerpunkt, I_y, I_z, I_p. DOM-frei. Hand-Anker: Rechteckbild + Kreisnaht geschlossen nachgerechnet. |
+| **N2b** | **Profileingabe** | `profil.js`: 7 parametrische Profile + Kantenauswahl → Segmente. Endkraterabzug, Eckradien, Dicke je Segment. DOM-frei. Hand-Anker: Umfang Rechteckrohr und Kreisnaht. |
+| **N2c** | **Nahtbild-Grafik** *(von N6 vorgezogen)* | `svglib.js` + `schaubild.js`: SVG-Vorschau des Nahtbilds, Segmente farbig, Schwerpunkt. Dient zugleich als **Auswahl-Skizze** der Profileingabe. |
 | **N3** | **Spannungen + beide Welten** | `solver.js`: σ⊥, τ⊥, τ∥ aus N/Q/M/T · Welt A (EC3) · Welt B (klassisch) · **Nachweis UND Auslegung**. |
 | **N4** | **Rechenweg** | `rechenweg.js`: selbstprüfende Schritte für N2/N3, dreisprachig. |
 | **N5** | **UI-Basis** | 2 HTMLs, `style.css`, Formular mit aufklappbaren Bereichen und Freischalt-Haken, Ergebnis-Kacheln, Ampel, i18n, Theme (**Start immer dunkel**), Laien-ⓘ, Block „Ausführung & Dokumentation" (ISO 5817 + EXC). **Erster Handy-Test.** |
-| **N6** | **Nahtbild-Grafik** | `svglib.js` + `schaubild.js`: SVG-Vorschau des Nahtbilds, Segmente farbig, Schwerpunkt. |
-| **N6b** | **ISO-2553-Symbolgenerator** | `symbol.js`: Pfeil-/Gegenseite, a- bzw. z-Maß, Länge, Rundumnaht, Baustellennaht. Nutzt `svglib.js`. Bewusst **vor** dem Launch — Verkaufsargument. |
-| **N7** | **Presets** | Die 6 Starter als Segment-Daten + Vorbelegungen, **mit Merkmalen für die kontextbezogene Beispielliste** (3.2). |
+| **N6b** | **ISO-2553-Symbolgenerator** | `symbol.js`: Pfeil-/Gegenseite, a- bzw. z-Maß, Länge, Rundumnaht, Baustellennaht. Nutzt `svglib.js` aus N2c. Bewusst **vor** dem Launch — Verkaufsargument. |
+| **N7** | **Presets** | Die 6 Starter als Profil-/Kantendaten auf `profil.js`, **mit Merkmalen für die kontextbezogene Beispielliste** (3.2). |
 | **N8** | **Assistent** | `assistent.js` (DOM-freie Dialoglogik) + Overlay-UI, Button-Einstieg, tabellengestützt aus `optionen.js`, mit Erklärungen/Tipps/Skizzen je Dialog, Übernahme vorhandener Eingaben. |
 | **N9** | **Vorwärmung & t8/5** | `thermik.js` + Panel + Rechenweg + Assistenten-Schritte. |
 | **N10** | **Kosten/Zeit/Draht** | `kosten.js` + Panel + Rechenweg + Assistenten-Schritte. |
@@ -431,8 +488,9 @@ Zahlen stehen in der HTML-Legende, nicht im SVG (Übersetzbarkeit).
 | **N15** | **Verzug & Schrumpfung** | `verzug.js` + Panel, klar als **Abschätzung** gekennzeichnet. |
 | **N16** | **Feinschliff + Build** | Presets ausbauen, Wissenstexte, Code-Audit, Bündelung + Obfuskierung (zwei Bündel, Unterschied nur `DT_EDITION`). **→ V1-Launch.** |
 
-**Später (nicht V1):** unterbrochene Nähte, Loch-/Schlitznähte, weitere Kerbfälle,
-FKM-Richtlinie, Kranbau-Regelwerke, AWS/US-Normen.
+**Später (nicht V1):** **Normprofil-Katalog** (IPE/HEA/HEB/UPE/UPN/RHS/Rohr, 2.2b Stufe 2),
+unterbrochene Nähte, Loch-/Schlitznähte, weitere Kerbfälle, FKM-Richtlinie, Kranbau-Regelwerke,
+AWS/US-Normen.
 
 ---
 
@@ -554,6 +612,17 @@ verdrahtet, Sperr-Overlay in der Testversion, Registrierung + Long-Press-Reset.
   Angesetzt wird der **konservative untere** Wert, sichtbar als Lücke, per „eigener Wert"
   überschreibbar.
 
+**Aus der Abstimmung 2026-07-25 (Profileingabe):**
+- **Profil erzeugt Segmente, nicht eine Länge** — sonst fehlt für Biegung/Torsion die Lage.
+- **Zweistufig:** parametrisch in V1 (7 Profile, keine Recherche nötig), Normprofil-Katalog
+  später als eigenes Datenpaket, gestaffelt und mit sichtbaren Lücken.
+- **U-Profil von Dieter aus der Praxis ergänzt** (kommt oft vor) → Satz von 6 auf 7 erweitert.
+- **Kantenauswahl ist eigene Pflichtabfrage** (rundum / Flanken / Stirn / Flansche / Steg).
+- **Auswahl-Skizze = Live-Vorschau des gerechneten Nahtbilds**, kein separates Symbol →
+  `svglib.js` + `schaubild.js` von N6 auf **N2c vorgezogen**.
+- **Abdeckung 75–80 % ist Erfahrungseinschätzung, keine belegte Statistik** — so im Plan
+  gekennzeichnet, steuert nur den Bauumfang.
+
 **Aus der Rückmeldung 2026-07-25 (N1 abgenommen):**
 - N1 von Dieter am Handy geprüft: läuft, alle Sprachumstellungen sauber. **Abgenommen.**
 - **Neue bindende Vorgabe: die HTML startet immer im dunklen Design** (Schalter bleibt,
@@ -596,6 +665,13 @@ Verträglichkeitsregeln, EINE Filterfunktion, Wegeaufzählung), `i18n_kern.js` (
 (16 Felder, zweistufige Prüfung), `style.css`, beide HTMLs (Unterschied verifiziert: genau
 eine Zeile). Vier Korrekturen aus 6.1 im Code verankert und durch Assertions abgesichert.
 **Nächster Schritt: N2 (Nahtbild-Kern, `naht.js`).**
+**v2.3 (2026-07-25):** **Profileingabe abgestimmt und eingeplant.** Neuer Abschnitt 2.2b
+(7 parametrische Profile inkl. **U-Profil**, Kantenauswahl als Pflichtabfrage, Endkraterabzug/
+Eckradien/Dicke je Segment, Länge als überschreibbarer Vorschlag, Normprofil-Katalog als
+Stufe 2 nach V1). Neue Bausteine **N2b** (`profil.js`) und **N2c** (Grafik, von N6 vorgezogen);
+N6 entfällt, N6b nutzt `svglib.js` aus N2c; N7-Presets setzen auf `profil.js` auf.
+Modulkarte um `profil.js` ergänzt.
+
 **v2.2 (2026-07-25):** N1 von Dieter am Handy geprüft und **abgenommen** (Sprachumschaltung
 sauber). Neue bindende Vorgabe aufgenommen: **Startdarstellung immer dunkel** (Abschnitt 3.1,
 Umsetzung in N5). Sonst unverändert.
