@@ -9,16 +9,16 @@
 > Sie ist so geschrieben, dass ein **neuer Chat ohne Vorwissen** damit weiterarbeiten kann.
 
 ```
-Plan-Version : 2.8 · Stand 2026-07-25
-Status       : N1 (Fundament), N2 (Nahtbild-Kern) und N2b (Profileingabe) von Dieter am
-               Handy geprüft und ABGENOMMEN.
-               N2c (Nahtbild-Grafik, svglib.js + schaubild.js) gebaut und ausgeliefert —
-               **wartet auf Dieters Prüfung am Handy.**
+Plan-Version : 2.10 · Stand 2026-07-26
+Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe) und
+               N2c (Nahtbild-Grafik) von Dieter am Handy geprüft und ABGENOMMEN.
                Alle Dateien liegen aktuell in /mnt/project/ UND auf GitHub Pages.
-               → NÄCHSTER SCHRITT nach der Abnahme: Baustein N3 (Spannungen, solver.js)
+               Für N3 ist zusätzlich die Aufrundung des a-Maßes entschieden (2.3).
+               Recherche für N3 ist NICHT nötig — die Grundlagen liegen in R1/R3.
+               → NÄCHSTER SCHRITT: Baustein N3 (Spannungen, solver.js)
                  — Auftrag in Abschnitt 5.1, Schnittstellen in 4.5 (naht.js), 4.6 (profil.js)
                    und 4.7 (svglib.js + schaubild.js).
-Basislinie   : 381 Assertions · DOM-Smokes 102 (voll) + 103 (test) · i18n-Parität 0 Abweichungen
+Basislinie   : 382 Assertions · DOM-Smokes 102 (voll) + 103 (test) · i18n-Parität 0 Abweichungen
                (Basislinie darf nur WACHSEN — nie schrumpfen, nie gelockert werden.)
 Dateistand   : siehe Abschnitt 8.1 — dort steht, was fertig ist und was noch fehlt.
 ```
@@ -82,7 +82,7 @@ Schritt. Danach Plan-Kopf (Version/Status/Basislinie) + Changelog pflegen.
 6. Abschnitt **5.1** lesen: der ausformulierte Auftrag für den nächsten Baustein **N3**.
 7. Arbeitsordner herstellen (Befehl unter Punkt 6 der Kickoff-Liste), dann
    `node test_naht.js`, `node dom_smoke_voll.js`, `node dom_smoke_test.js` laufen lassen
-   und die Basislinie aus dem Plan-Kopf bestätigen (**381 / 102 / 103 · 0 Fehler**),
+   und die Basislinie aus dem Plan-Kopf bestätigen (**382 / 102 / 103 · 0 Fehler**),
    **bevor** etwas gebaut wird.
 8. Erst dann N3 bauen — Fließband nach Punkt 5 der Kickoff-Liste.
 
@@ -235,6 +235,20 @@ Naht sofort. **Folge für die Reihenfolge:** `svglib.js` + `schaubild.js` werden
 - **Auslegung:** a-Maß gesucht → „welches a brauche ich?". Direkt auflösbar (σ ∝ 1/a),
   für Sonderfälle Iteration dahinter. Ergebnis auf praxisübliche a-Maße aufgerundet,
   Mindest-/Höchstgrenzen geprüft.
+
+**Aufrundung des a-Maßes — BINDEND (entschieden 2026-07-26, Begründung im Entscheidungslog):**
+- **Voreinstellung: ganze mm, immer AUFgerundet** (nie ab). a4, a5, a6 — das ist ein
+  Fertigungsmaß, kein Rechenergebnis; die Streuung beim Handschweißen ist größer als ein
+  halber Millimeter. „a = 4,37 mm" täuscht eine Genauigkeit vor, die es nicht gibt.
+- **Umschaltbar auf halbe mm** (3; 3,5; 4; …) — nötig bei dünnen Blechen: bei t = 5 mm liegt
+  a_max = 0,7 · t_min bereits bei 3,5 mm, da ist ganzzahlig zu grob.
+- **Keine Sprungreihe** (3, 4, 5, 6, 8, 10): a7 und a9 kommen in der Praxis vor, und der
+  Sprung 6 → 8 verschenkt spürbar Schweißgut.
+- Über den **„eigener Wert"-Haken** ist ohnehin jede Zahl eintragbar (Regel 3.1).
+- **Im Rechenweg stehen BEIDE Zahlen:** „erforderlich a = 4,37 mm → gewählt a = 5 mm".
+- **Nach** dem Aufrunden wird gegen `a_max = 0,7 · t_min` (und die Mindestmaße) geprüft —
+  passt das gewählte Maß nicht mehr zur Blechdicke, gibt es eine **ehrliche Meldung** statt
+  eines stillen Ergebnisses.
 
 ### 2.4 Was der Rechner NICHT prüft *(bestätigt + 4 Ergänzungen, 2026-07-24)*
 
@@ -704,7 +718,7 @@ Legendenschlüssel: `sb_naht` · `sb_kontur` · `sb_eckluecke` · `sb_schwerpunk
 | **N1** ✅ | **Fundament** *(abgenommen 2026-07-25)* | `daten.js` (11 Werkstoffe, Beiwerte, ISO 5817, EXC) + `optionen.js` (einzige Auswahlquelle **inkl. Verträglichkeitsregeln**) + i18n-Gerüst DE/EN/PT + `validate.js`. Alle Codes sprachneutral. |
 | **N2** ✅ | **Nahtbild-Kern** *(abgenommen 2026-07-25)* | `naht.js`: Segmente → A_w, Schwerpunkt, I_y, I_z, I_yz, I_p, Hauptachsen, W_y/W_z/W_t, offen/geschlossen, Selbstprüfung. DOM-frei. Vier Hand-Anker geschlossen nachgerechnet. **Schnittstelle: Abschnitt 4.5.** |
 | **N2b** ✅ | **Profileingabe** *(abgenommen 2026-07-25)* | `profil.js`: 7 parametrische Profile + Kantenauswahl → Segmente. Raupenmodell mit Endkraterabzug je freiem Ende, Eckradien, a je Segment. DOM-frei. **Schnittstelle: Abschnitt 4.6.** |
-| **N2c** ✅ | **Nahtbild-Grafik** *(gebaut 2026-07-25, wartet auf Abnahme)* | `svglib.js` + `schaubild.js`: SVG-Vorschau des Nahtbilds, Segmente farbig nach Gruppe, Schwerpunkt und Achsen, nicht geschweißte Kanten gestrichelt, Ecklücken sichtbar. Zugleich **Auswahl-Skizze** der Profileingabe. **Schnittstelle: Abschnitt 4.7.** |
+| **N2c** ✅ | **Nahtbild-Grafik** *(abgenommen 2026-07-26)* | `svglib.js` + `schaubild.js`: SVG-Vorschau des Nahtbilds, Segmente farbig nach Gruppe, Schwerpunkt und Achsen, nicht geschweißte Kanten gestrichelt, Ecklücken sichtbar. Zugleich **Auswahl-Skizze** der Profileingabe. **Schnittstelle: Abschnitt 4.7.** |
 | **N3** ⬅ | **Spannungen + beide Welten — NÄCHSTER SCHRITT** | `solver.js`: σ⊥, τ⊥, τ∥ aus N/Q/M/T · Welt A (EC3) · Welt B (klassisch) · **Nachweis UND Auslegung**. |
 | **N4** | **Rechenweg** | `rechenweg.js`: selbstprüfende Schritte für N2/N3, dreisprachig. |
 | **N5** | **UI-Basis** | 2 HTMLs, `style.css`, Formular mit aufklappbaren Bereichen und Freischalt-Haken, Ergebnis-Kacheln, Ampel, i18n, Theme (**Start immer dunkel**), Laien-ⓘ, Block „Ausführung & Dokumentation" (ISO 5817 + EXC). **Erster Handy-Test.** |
@@ -739,9 +753,14 @@ Legendenschlüssel: `sb_naht` · `sb_kontur` · `sb_eckluecke` · `sb_schwerpunk
   **Welt A und Welt B werden nie vermischt** (2.8) — der Code muss das strukturell
   erzwingen, nicht nur durch Text.
 - **Beide Rechenrichtungen (2.3):** Nachweis (a gegeben → Ausnutzung) **und** Auslegung
-  (a gesucht). Auslegung direkt auflösen (σ ∝ 1/a), Ergebnis auf praxisübliche a-Maße
-  aufrunden, Grenzen aus `validate.js` prüfen. **Pflicht-Assertion: beide sind zueinander
-  invers** (a aus der Auslegung eingesetzt ⇒ Ausnutzung ≈ 1).
+  (a gesucht). Auslegung direkt auflösen (σ ∝ 1/a), Grenzen aus `validate.js` prüfen.
+  **Pflicht-Assertion: beide sind zueinander invers** (a aus der Auslegung eingesetzt
+  ⇒ Ausnutzung ≈ 1).
+  **Aufrundung nach der bindenden Regel in 2.3:** Voreinstellung ganze mm, immer aufgerundet;
+  Schalter auf halbe mm; `a_erf` und `a_gewaehlt` **beide** im Ergebnis und im Rechenweg;
+  nach dem Aufrunden erneut gegen a_max = 0,7 · t_min prüfen und sonst ehrlich melden.
+  Dafür kommen eine Auswahlgruppe (`a_rundung`: `ganze_mm` | `halbe_mm`) in `optionen.js`
+  und die zugehörigen Meldungen ins i18n-Wörterbuch.
 - **Aluminium:** eigener Weg über f_w **mit WEZ-Entfestigung** (ρ_haz), kein β_w — die
   Abminderung muss im Ergebnis ausdrücklich sichtbar sein (2.5, 6.1).
 - **Ampel und Ausnutzungsgrad**, Liste der nicht geprüften Punkte (2.4) im Ergebnis.
@@ -837,7 +856,7 @@ verdrahtet, Sperr-Overlay in der Testversion, Registrierung + Long-Press-Reset.
 **Referenzdateien (read-only, nur Muster):** `DT-ProfiPassung_Testversion-Orginal.html` ·
 `DT-ProfiPassung.html` · `DT-ProfiPassung_Test.html`
 
-### 8.1 Dateistand nach N2c *(Stand 2026-07-25)*
+### 8.1 Dateistand nach N2c *(Stand 2026-07-26)*
 
 **Produktdateien:**
 | Datei | Stand |
@@ -857,7 +876,7 @@ verdrahtet, Sperr-Overlay in der Testversion, Registrierung + Long-Press-Reset.
 | `style.css` | **N2c erweitert** — Grafikrahmen und Legende (`.svg-box`, `.legende`) |
 
 **DEV-ONLY — nur in `/mnt/project/`, NIE ausliefern und nicht auf GitHub nötig:**
-`test_naht.js` (381 Assertions) · `dom_smoke_voll.js` (102 Prüfungen) ·
+`test_naht.js` (382 Assertions) · `dom_smoke_voll.js` (102 Prüfungen) ·
 `dom_smoke_test.js` (103 Prüfungen, ruft den Lauf aus `dom_smoke_voll.js` auf — unverändert).
 
 **Noch nicht gebaut:** `solver.js` (N3) ·
@@ -865,7 +884,7 @@ verdrahtet, Sperr-Overlay in der Testversion, Registrierung + Long-Press-Reset.
 `kosten.js` (N10) · `report.js` (N11) · `ermuedung.js` (N13) · `kerbfall.js` (N14) · `verzug.js` (N15).
 
 **Erste Handlung im neuen Chat:** Arbeitsordner herstellen und die drei Testläufe starten.
-Melden müssen sie **381 / 102 / 103 · 0 Fehler**. Weicht etwas ab, erst das klären.
+Melden müssen sie **382 / 102 / 103 · 0 Fehler**. Weicht etwas ab, erst das klären.
 
 ---
 
@@ -991,6 +1010,24 @@ Melden müssen sie **381 / 102 / 103 · 0 Fehler**. Weicht etwas ab, erst das kl
 - **Zweiter Rechenpfad in der Legende:** die Summe der Legendenlängen ist identisch mit
   `l_netto` aus `profil.js` — eine falsch gezeichnete Naht fiele sofort auf.
 
+**Aus der Abstimmung 2026-07-26 (vor N3) — Aufrundung des a-Maßes:**
+- Dieter hat die Entscheidung an Claude gegeben; festgelegt ist: **ganze mm als
+  Voreinstellung, immer aufgerundet, umschaltbar auf halbe mm.** Ausformuliert in 2.3.
+- **Begründung:** Das a-Maß ist ein Fertigungsmaß — auf der Zeichnung steht a4 oder a5, und
+  der Schweißer stellt danach ein. Ein Ergebnis wie 4,37 mm täuscht eine Genauigkeit vor, die
+  in der Werkstatt nicht existiert; das widerspräche dem Grundsatz „ehrliche Zahlen".
+- **Warum keine Sprungreihe** (3, 4, 5, 6, 8, 10): a7 und a9 kommen vor, und wer von 6 auf 8
+  aufrunden muss, verschenkt Schweißgut — bei gleichem a-Sprung wächst das Nahtvolumen
+  überproportional (Kostenmodul N10 rechnet genau das aus).
+- **Warum trotzdem halbe mm als Schalter:** bei t = 5 mm ist a_max = 0,7 · t = 3,5 mm — mit
+  ganzen mm gäbe es dort zwischen a3 und a_max keine Stufe mehr.
+
+**Aus der Rückmeldung 2026-07-26 (N2c abgenommen):**
+- N2c von Dieter am Handy geprüft: beide Nahtbilder, Einfärbung nach Segmentgruppe,
+  Ecklücken, Schwerpunkt und die dreisprachige Legende laufen. **Abgenommen.**
+  Projektordner und GitHub sind auf diesem Stand.
+- Damit ist die **Basislinie 382 / 102 / 103** verbindlich — sie darf nur noch wachsen.
+
 **Aus der Rückmeldung 2026-07-25 (N1 abgenommen):**
 - N1 von Dieter am Handy geprüft: läuft, alle Sprachumstellungen sauber. **Abgenommen.**
 - **Neue bindende Vorgabe: die HTML startet immer im dunklen Design** (Schalter bleibt,
@@ -1096,7 +1133,7 @@ nicht geschweißte Kanten, sichtbare Ecklücken, kein Text im SVG), Kickoff-Punk
 Verweis darauf ergänzt. Basislinie unverändert **309 / 79 / 80**.
 **Nächster Schritt: N2c (Nahtbild-Grafik).**
 
-**v2.8 (2026-07-25):** **Baustein N2c (Nahtbild-Grafik) gebaut und ausgeliefert:**
+**v2.8 (2026-07-26):** **Baustein N2c (Nahtbild-Grafik) gebaut und ausgeliefert:**
 `svglib.js` (13 Grundbausteine: Linie, Polylinie/Polygon, Kreis, Rechteck, Nahtdreieck,
 Kraftpfeil, Maßlinie, Schraffur, Beschriftungspunkt, Schwerpunktkreuz, Achsenkreuz, Rahmen,
 SVG-Hülle; Bounding-Box, Auto-Skalierung mit gedrehter z-Achse, striktes Zahlformat,
@@ -1108,8 +1145,21 @@ um Grafikrahmen und Legende ergänzt, beide HTMLs um die Karte „Nahtbild-Grafi
 Zeichnungen: rundum und nur Flanken, gleicher Maßstab).
 Neuer Abschnitt **4.7** (vollständige Schnittstelle), Abschnitt **5.1** neu als Auftrag für
 **N3**. Alle 19 Kantenkombinationen der 7 Profile durchgezeichnet und geprüft.
-**Basislinie 309 → 381 Assertions · Smokes 79/80 → 102/103.**
-**Nächster Schritt: Abnahme durch Dieter, danach N3 (Spannungen, `solver.js`).**
+**Basislinie 309 → 382 Assertions · Smokes 79/80 → 102/103.**
+
+**v2.9 (2026-07-26):** **N2c von Dieter am Handy geprüft und ABGENOMMEN**, Projektordner und
+GitHub auf diesem Stand. Basislinie **382 / 102 / 103** verbindlich.
+**Nächster Schritt: N3 (Spannungen + beide Welten, `solver.js`) — Auftrag in Abschnitt 5.1.**
+
+**v2.10 (2026-07-26):** **Aufrundung des a-Maßes bei der Auslegung entschieden und
+verankert** (Abschnitt 2.3 bindend, Auftrag 5.1 ergänzt, Begründung im Entscheidungslog):
+ganze mm als Voreinstellung, immer aufgerundet, umschaltbar auf halbe mm, keine Sprungreihe,
+`a_erf` und `a_gewaehlt` beide im Rechenweg, Nachprüfung gegen a_max nach dem Aufrunden.
+Außerdem festgehalten: **für N3 ist keine zusätzliche Recherche nötig** — Welt A (beide
+Verfahren, Umklappen der Naht, Verhältnis √(3/2) ≈ 1,22), Welt B (durchgerechnetes Beispiel
+S235: 218 → 207 N/mm²) und Aluminium mit WEZ-Entfestigung sind in R1 und R3 belegt.
+Code unverändert, **Basislinie unverändert 382 / 102 / 103**.
+**Nächster Schritt: N3 bauen — im neuen Chat mit „weiter mit N3" einsteigen.**
 ═══════════════════════════════════════════════════════════════════════════
 Ende Schweißnaht-1.md · DT-ProfiSchweissnaht
 ═══════════════════════════════════════════════════════════════════════════
