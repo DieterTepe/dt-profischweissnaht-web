@@ -1721,6 +1721,163 @@ for (rwI = 0; rwI < rwHilfe.length; rwI++) {
 eq(rwHFehlt, 0, 'die ' + rwHilfe.length + ' Laien-ⓘ des Rechenwegs sind in DE/EN/PT vollstaendig');
 
 /* ========================================================================= */
+sek('S29 · N5a UI-Grundgeruest — Geruest, Texte, Editionsgleichheit');
+var fsU = require('fs');
+var Ui = require('./ui.js');
+
+/* --- Modul und die bindenden Vorgaben ---------------------------------- */
+ok(!!Ui, 'ui.js laedt als Modul');
+eq(Ui.NAME, 'ui', 'Namensraum DTNUi');
+ok(typeof Ui.start === 'function', 'ui.js bietet start(win, doc)');
+eq(Ui.START_THEME, 'dark', 'BINDEND (Plan 3.1): die Oberflaeche startet immer im dunklen Design');
+eq(Ui.START_SPRACHE, 'de', 'Startsprache ist Deutsch');
+eq(Ui.SPRACHEN.length, 3, 'drei Sprachen DE/EN/PT');
+eq(Ui.BEREICHE.length, 8, 'acht aufklappbare Bereiche im Formulargeruest');
+ok(Ui.BEREICHE.indexOf(Ui.BEREICH_START_OFFEN) >= 0, 'der beim Start offene Bereich gehoert zur Liste');
+ok(Ui.start(null, null) === null, 'ohne DOM tut ui.js nichts und wirft nicht');
+
+var uiDoppelt = 0, uiI, uiJ;
+for (uiI = 0; uiI < Ui.BEREICHE.length; uiI++) {
+  for (uiJ = uiI + 1; uiJ < Ui.BEREICHE.length; uiJ++) {
+    if (Ui.BEREICHE[uiI] === Ui.BEREICHE[uiJ]) uiDoppelt++;
+  }
+}
+eq(uiDoppelt, 0, 'kein Bereichscode doppelt');
+
+/* --- ui.js bleibt fachlogikfrei ---------------------------------------- */
+var uiSrc = fsU.readFileSync(__dirname + '/ui.js', 'utf8');
+var uiVerboten = ['DTNSolver', 'DTNNaht', 'DTNProfil', 'DTNRechenweg', 'DTNSchaubild', 'DTNData'];
+var uiTreffer = [];
+for (uiI = 0; uiI < uiVerboten.length; uiI++) {
+  if (uiSrc.indexOf(uiVerboten[uiI]) >= 0) uiTreffer.push(uiVerboten[uiI]);
+}
+eq(uiTreffer.length, 0, 'ui.js enthaelt KEINE Fachlogik — es ruft kein Rechenmodul auf (' + uiTreffer.join(',') + ')');
+ok(uiSrc.indexOf('Math.') < 0, 'ui.js rechnet nichts (kein Math. im Quelltext)');
+ok(uiSrc.indexOf('DTNI18nKern') > 0, 'ui.js holt seine Texte ausschliesslich aus dem Woerterbuch');
+
+/* --- Texte: jeder Bereich hat Titel und Laien-Erklaerung in DE/EN/PT ---- */
+var uiFehltText = 0, uiKurz = 0;
+for (uiI = 0; uiI < Ui.BEREICHE.length; uiI++) {
+  var uiC = Ui.BEREICHE[uiI];
+  ['sec_' + uiC, 'sec_' + uiC + '_hint'].forEach(function (k) {
+    if (!Kern.has(k)) { uiFehltText++; console.log('    ohne Text: ' + k); return; }
+    ['de', 'en', 'pt'].forEach(function (l) {
+      var v = Kern.t(k, l);
+      if (!v || v.charAt(0) === '[') uiFehltText++;
+      if (/_hint$/.test(k) && v.length < 40) uiKurz++;
+    });
+  });
+}
+eq(uiFehltText, 0, 'jeder der 8 Bereiche hat Titel und Erklaerung in allen drei Sprachen');
+eq(uiKurz, 0, 'jede Bereichserklaerung ist wirklich eine Erklaerung, kein Stichwort');
+
+var uiSchluessel = ['appName', 'tagline', 'calc', 'reset', 'loadExample', 'assistant',
+  'outSave', 'outLoad', 'outPrint', 'outRtf', 'outDesign', 'themeTitle', 'infoTitle',
+  'inputTitle', 'resultTitle', 'pathTitle', 'vizTitle', 'close', 'disclaimer',
+  'impressum', 'infoProdukt', 'infoNormen', 'editionTest', 'uiEditionVoll',
+  'uiGeruest', 'uiGeleert', 'uiFolgtN5b', 'uiFolgtN5c', 'uiFolgtN7', 'uiFolgtN8',
+  'uiFolgtN11', 'resultIdle', 'vizIdle', 'pathIdle'];
+var uiFehltK = 0;
+for (uiI = 0; uiI < uiSchluessel.length; uiI++) {
+  if (!Kern.has(uiSchluessel[uiI])) { uiFehltK++; console.log('    ohne Text: ' + uiSchluessel[uiI]); continue; }
+  ['de', 'en', 'pt'].forEach(function (l) {
+    var v = Kern.t(uiSchluessel[uiI], l);
+    if (!v || v.charAt(0) === '[') uiFehltK++;
+  });
+}
+eq(uiFehltK, 0, 'alle ' + uiSchluessel.length + ' Bedientexte der Oberflaeche sind dreisprachig belegt');
+
+var uiKnopfFehlt = 0;
+for (uiI = 0; uiI < Ui.GERUEST_BUTTONS.length; uiI++) {
+  if (!Kern.has(Ui.GERUEST_BUTTONS[uiI][1])) uiKnopfFehlt++;
+}
+eq(uiKnopfFehlt, 0, 'jeder noch nicht verdrahtete Knopf hat eine ehrliche, uebersetzte Meldung');
+ok(/N11/.test(Kern.t('uiFolgtN11', 'de')) && /N11/.test(Kern.t('uiFolgtN11', 'en')),
+   'die Geruestmeldung nennt den Baustein, der den Knopf verdrahtet');
+
+/* --- Beide HTMLs: genau eine Zeile Unterschied -------------------------- */
+var uiVoll = fsU.readFileSync(__dirname + '/DT-ProfiSchweissnaht.html', 'utf8').split('\n');
+var uiTest = fsU.readFileSync(__dirname + '/DT-ProfiSchweissnaht_Test.html', 'utf8').split('\n');
+eq(uiVoll.length, uiTest.length, 'beide HTMLs haben dieselbe Zeilenzahl');
+var uiDiff = [];
+for (uiI = 0; uiI < uiVoll.length; uiI++) {
+  if (uiVoll[uiI] !== uiTest[uiI]) uiDiff.push(uiI + 1);
+}
+eq(uiDiff.length, 1, 'die beiden HTMLs unterscheiden sich in GENAU EINER Zeile (Zeile ' + uiDiff.join(',') + ')');
+ok(uiDiff.length === 1 && /DT_EDITION/.test(uiVoll[uiDiff[0] - 1]),
+   'und diese eine Zeile ist die Editionsweiche');
+ok(/window\.DT_EDITION = 'full';/.test(uiVoll.join('\n')), 'Voll-HTML steht auf full');
+ok(/window\.DT_EDITION = 'test';/.test(uiTest.join('\n')), 'Test-HTML steht auf test');
+
+/* --- Pflicht-Elemente, Ladereihenfolge, Startdarstellung ---------------- */
+var uiHtml = uiVoll.join('\n');
+var uiIdFehlt = [];
+for (uiI = 0; uiI < Ui.IDS.length; uiI++) {
+  if (uiHtml.indexOf('id="' + Ui.IDS[uiI] + '"') < 0) uiIdFehlt.push(Ui.IDS[uiI]);
+}
+eq(uiIdFehlt.length, 0, 'alle ' + Ui.IDS.length + ' Pflicht-Elemente stehen in der HTML (' + uiIdFehlt.join(',') + ')');
+
+var uiAccFehlt = [];
+for (uiI = 0; uiI < Ui.BEREICHE.length; uiI++) {
+  ['acc_', 'accBtn_', 'accBody_', 'accTitel_', 'accHint_', 'accCaret_'].forEach(function (p) {
+    if (uiHtml.indexOf('id="' + p + Ui.BEREICHE[uiI] + '"') < 0) uiAccFehlt.push(p + Ui.BEREICHE[uiI]);
+  });
+}
+eq(uiAccFehlt.length, 0, 'jeder Bereich hat Kopf, Korpus, Titel, Erklaerung und Pfeil (' + uiAccFehlt.join(',') + ')');
+
+ok(/<html lang="de" translate="no" data-theme="dark">/.test(uiHtml),
+   'die HTML startet dunkel, ohne Aufblitzen des hellen Designs');
+ok(/translate="no"/.test(uiHtml) && /notranslate/.test(uiHtml), 'notranslate ist gesetzt');
+eq((uiHtml.match(/<script>/g) || []).length, 1,
+   'genau ein Inline-Skript: die Editionsweiche — die Zwischen-Statusseite aus N1-N4 ist weg');
+
+var uiSrcRe = /<script src="([^"]+)"><\/script>/g, uiSrcs = [], uiM;
+while ((uiM = uiSrcRe.exec(uiHtml)) !== null) uiSrcs.push(uiM[1]);
+eq(uiSrcs.length, 13, '13 Module in der HTML eingebunden');
+eq(uiSrcs[uiSrcs.length - 1], 'ui.js', 'ui.js laedt zuletzt');
+var uiDateiFehlt = [];
+for (uiI = 0; uiI < uiSrcs.length; uiI++) {
+  if (!fsU.existsSync(__dirname + '/' + uiSrcs[uiI])) uiDateiFehlt.push(uiSrcs[uiI]);
+}
+eq(uiDateiFehlt.length, 0, 'jede eingebundene Datei liegt wirklich im Ordner (' + uiDateiFehlt.join(',') + ')');
+
+/* --- Jeder i18n-Schluessel der HTML ist dreisprachig belegt -------------- */
+var uiKeyRe = /data-i18n(?:-title|-ph)?="([a-zA-Z0-9_]+)"/g, uiKeys = [], uiK;
+while ((uiK = uiKeyRe.exec(uiHtml)) !== null) if (uiKeys.indexOf(uiK[1]) < 0) uiKeys.push(uiK[1]);
+ok(uiKeys.length >= 25, 'die HTML beschriftet sich ueber ' + uiKeys.length + ' i18n-Schluessel');
+var uiHtmlFehlt = [];
+for (uiI = 0; uiI < uiKeys.length; uiI++) {
+  if (!Kern.has(uiKeys[uiI])) { uiHtmlFehlt.push(uiKeys[uiI]); continue; }
+  ['de', 'en', 'pt'].forEach(function (l) {
+    var v = Kern.t(uiKeys[uiI], l);
+    if (!v || v.charAt(0) === '[') uiHtmlFehlt.push(uiKeys[uiI] + '.' + l);
+  });
+}
+eq(uiHtmlFehlt.length, 0, 'jeder i18n-Schluessel der HTML ist in DE/EN/PT belegt (' + uiHtmlFehlt.join(',') + ')');
+
+/* --- style.css traegt jede Klasse, die die Oberflaeche benutzt ---------- */
+var uiCss = fsU.readFileSync(__dirname + '/style.css', 'utf8');
+var uiCssFehlt = [];
+for (uiI = 0; uiI < Ui.KLASSEN.length; uiI++) {
+  if (uiCss.indexOf('.' + Ui.KLASSEN[uiI]) < 0) uiCssFehlt.push(Ui.KLASSEN[uiI]);
+}
+eq(uiCssFehlt.length, 0, 'style.css kennt alle ' + Ui.KLASSEN.length + ' Klassen der Oberflaeche (' + uiCssFehlt.join(',') + ')');
+ok(/\[data-theme="dark"\]/.test(uiCss), 'style.css hat einen eigenen Satz Farben fuer das dunkle Design');
+ok(/@media print/.test(uiCss), 'style.css hat einen Druck-Satz (Grundlage fuer N11)');
+ok(/@media \(min-width:900px\)/.test(uiCss), 'Handy zuerst: zweispaltig erst ab 900 px');
+
+/* --- Klassen, die in der HTML stehen, kennt die CSS ebenfalls ----------- */
+var uiClsRe = /class="([^"]+)"/g, uiCls = [], uiCM;
+while ((uiCM = uiClsRe.exec(uiHtml)) !== null) {
+  uiCM[1].split(/\s+/).forEach(function (c) { if (c && uiCls.indexOf(c) < 0) uiCls.push(c); });
+}
+var uiOhneCss = [];
+for (uiI = 0; uiI < uiCls.length; uiI++) {
+  if (uiCss.indexOf('.' + uiCls[uiI]) < 0) uiOhneCss.push(uiCls[uiI]);
+}
+eq(uiOhneCss.length, 0, 'jede in der HTML benutzte Klasse ist in style.css angelegt (' + uiOhneCss.join(',') + ')');
+
+/* ========================================================================= */
 console.log('\n════════════════════════════════════════════');
 console.log(' Assertions: ' + N + '   ·   Fehler: ' + FAIL.length);
 if (FAIL.length) {

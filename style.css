@@ -135,3 +135,111 @@ label{font-size:var(--f0); color:var(--muted)}
   body{background:#fff; color:#000}
   .card{border:1px solid #999; break-inside:avoid}
 }
+
+/* ============================================================================
+   N5a — UI-Grundgeruest: Aktionsleiste, Aufklappbereiche, Formularraster,
+   Ergebniskacheln, Ampel, Rechenwegzeilen, Dialog.
+   Klassen, die erst spaeter gefuellt werden, sind hier bereits angelegt
+   (N5b: Felder und eigener-Wert-Haken · N5c: Kacheln, Ampel, Rechenweg).
+   ========================================================================== */
+
+/* ---------- Aktionsleiste (oben) ---------- */
+.actionbar{
+  display:flex; flex-wrap:wrap; gap:8px; align-items:center;
+  padding:8px var(--pad); background:var(--card);
+  border-bottom:1px solid var(--line);
+}
+.actionbar input[type=text]{flex:1 1 180px; min-width:0}
+.dt-msg{font-size:var(--f0); color:var(--muted); flex:1 1 100%}
+.field-inline{display:flex; align-items:center; gap:6px}
+.field-inline select{min-width:170px}
+.btn-assist{background:var(--card2); border-color:var(--akzent); color:var(--akzent); font-weight:600}
+
+/* ---------- rechte Spalte ---------- */
+.spalte{display:grid; gap:var(--gap); min-width:0}
+
+/* ---------- Formulargeruest ---------- */
+.geruest-note{
+  margin:0 0 10px 0; padding:9px 11px; border-radius:9px;
+  font-size:var(--f0); color:var(--muted);
+  background:var(--card2); border-left:4px solid var(--akzent);
+}
+.acc{border:1px solid var(--line); border-radius:10px; margin:0 0 8px 0; overflow:hidden; background:var(--card)}
+.acc.offen{border-color:var(--akzent)}
+.acc-head{
+  display:flex; align-items:center; gap:8px; width:100%;
+  padding:11px 12px; cursor:pointer; text-align:left;
+  font-size:var(--f1); font-weight:600; color:var(--fg);
+  background:var(--card2); border:0; border-radius:0;
+}
+.acc.offen .acc-head{background:var(--akzent); color:var(--akzent-fg)}
+.acc-caret{font-size:var(--f0); opacity:.8; flex:0 0 auto}
+.acc-titel{flex:1 1 auto; min-width:0}
+.acc-body{padding:12px; border-top:1px solid var(--line)}
+.acc-hint{margin:0 0 8px 0; font-size:var(--f0); color:var(--muted)}
+.platzhalter{
+  padding:9px 11px; border-radius:9px; font-size:var(--f0); color:var(--muted);
+  background:var(--card2); border:1px dashed var(--line);
+}
+
+/* ---------- Felder (N5b) ---------- */
+.feld{display:grid; gap:4px; margin:0 0 10px 0}
+.feld-zeile{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+.feld-zeile input,.feld-zeile select{flex:1 1 120px; min-width:0}
+.eigener-wert{display:inline-flex; align-items:center; gap:5px; font-size:var(--f0); color:var(--muted)}
+.info-i{
+  width:22px; height:22px; flex:0 0 auto; border-radius:50%; cursor:pointer;
+  background:var(--card2); color:var(--akzent); border:1px solid var(--line);
+  font-size:var(--f0); font-weight:700; line-height:1;
+}
+
+/* ---------- Ergebniskacheln und Ampel (N5c) ---------- */
+.tiles{display:grid; gap:8px; grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
+.tile{padding:10px 12px; border-radius:10px; background:var(--card2); border:1px solid var(--line)}
+.tile .k{font-size:var(--f0); color:var(--muted)}
+.tile-wert{font-size:var(--f2); font-weight:700; font-variant-numeric:tabular-nums}
+.ampel{
+  display:inline-flex; align-items:center; gap:8px; padding:8px 12px;
+  border-radius:999px; font-size:var(--f1); font-weight:600;
+}
+.ampel::before{content:""; width:14px; height:14px; border-radius:50%; background:currentColor}
+.ampel.gruen{color:var(--ok)}
+.ampel.gelb{color:var(--warn)}
+.ampel.rot{color:var(--bad)}
+.status-banner.idle{border-left:4px solid var(--line); color:var(--muted)}
+
+/* ---------- Rechenwegzeilen (N5c) ---------- */
+.rw-zeile{padding:9px 0; border-bottom:1px solid var(--line)}
+.rw-zeile:last-child{border-bottom:0}
+.rw-titel{font-size:var(--f1); font-weight:600}
+.rw-formel{font-size:var(--f0); color:var(--muted); font-family:ui-monospace,Menlo,Consolas,monospace}
+.rw-werte{font-size:var(--f0); font-variant-numeric:tabular-nums}
+.rw-quelle{font-size:var(--f0); color:var(--muted)}
+/* ZWEI HAEKCHENARTEN — nie vermischen (Plan 4.9): Rechenprobe vs. Nachweis */
+.rw-haken{color:var(--ok); font-weight:700}
+.rw-haken.fehl{color:var(--bad)}
+.rw-nachweis{
+  display:inline-block; padding:1px 8px; border-radius:999px;
+  font-size:var(--f0); font-weight:600; border:1px solid currentColor; color:var(--ok);
+}
+.rw-nachweis.fehl{color:var(--warn)}
+
+/* ---------- Dialog ---------- */
+.modal-overlay{
+  position:fixed; inset:0; z-index:50; padding:16px;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(0,0,0,.55);
+}
+.modal-overlay[hidden]{display:none}
+.modal{
+  width:100%; max-width:520px; max-height:88vh; overflow:auto;
+  background:var(--card); border:1px solid var(--line); border-radius:var(--r);
+}
+.modal-head{padding:12px var(--pad); border-bottom:1px solid var(--line); background:var(--card2)}
+.modal-head h3{margin:0; font-size:var(--f2)}
+.modal-body{padding:var(--pad); font-size:var(--f0)}
+.modal-body p{margin:0 0 10px 0}
+.modal-actions{padding:0 var(--pad) var(--pad); display:flex; gap:8px; justify-content:flex-end}
+.info-edition{font-weight:600; color:var(--akzent)}
+.impressum{color:var(--muted)}
+.app-footer .norm{color:var(--fg); font-weight:600}

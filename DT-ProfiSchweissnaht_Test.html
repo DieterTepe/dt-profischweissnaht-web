@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de" translate="no">
+<html lang="de" translate="no" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -18,8 +18,8 @@
 
 <header class="app-header">
   <div class="brand">
-    <span class="mark" id="brandMark">DT-ProfiSchweissnaht</span>
-    <span class="tag" id="brandTag">Schweißnahtberechnung – Stahlbau und Maschinenbau</span>
+    <span class="mark" id="brandMark" data-i18n="appName">DT-ProfiSchweissnaht</span>
+    <span class="tag" id="brandTag" data-i18n="tagline">Schweißnahtberechnung – Stahlbau und Maschinenbau</span>
     <span class="license-line" id="licenseLine" hidden></span>
   </div>
   <div class="header-spacer"></div>
@@ -35,98 +35,198 @@
         <svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#DA291C"/><rect width="12" height="20" fill="#046A38"/><circle cx="12" cy="10" r="3.6" fill="none" stroke="#FFCE00" stroke-width="1.4"/><circle cx="12" cy="10" r="1.5" fill="#fff" stroke="#FFCE00" stroke-width=".6"/></svg>PT
       </button>
     </div>
-    <button type="button" class="icon-btn" id="themeBtn" title="Hell / Dunkel" aria-label="Hell/Dunkel umschalten">◐</button>
-    <button type="button" class="icon-btn" id="infoBtn" title="Info" aria-label="Info">i</button>
+    <button type="button" class="icon-btn" id="themeBtn" title="Hell / Dunkel" aria-label="Hell/Dunkel umschalten" data-i18n-title="themeTitle">◐</button>
+    <button type="button" class="icon-btn" id="infoBtn" title="Info" aria-label="Info" data-i18n-title="infoTitle">i</button>
   </div>
 </header>
 
+<!-- Bedienleiste -->
+<div class="subbar">
+  <div class="field-inline">
+    <label for="presetSel" id="presetLabel" data-i18n="loadExample">Beispiel laden</label>
+    <select id="presetSel" aria-label="Beispiel"></select>
+  </div>
+  <button type="button" class="btn btn-assist" id="assistBtn" data-i18n="assistant">Assistent starten</button>
+  <button type="button" class="btn btn-primary" id="calcBtn" data-i18n="calc">Berechnen</button>
+  <button type="button" class="btn btn-ghost" id="resetBtn" data-i18n="reset">Leeren</button>
+</div>
+
+<!-- Aktionsleiste: bewusst OBEN (Plan 3.1 / N11) -->
+<div class="actionbar">
+  <input type="text" id="dtLabel" maxlength="40" placeholder="Bezeichnung (optional)" data-i18n-ph="outDesign" aria-label="Bezeichnung">
+  <button type="button" class="btn btn-ghost" id="saveBtn" data-i18n="outSave">Speichern (.dts)</button>
+  <button type="button" class="btn btn-ghost" id="loadBtn" data-i18n="outLoad">Öffnen (.dts)</button>
+  <button type="button" class="btn btn-ghost" id="printBtn" data-i18n="outPrint">Drucken / PDF</button>
+  <button type="button" class="btn btn-ghost" id="rtfBtn" data-i18n="outRtf">Word (.rtf)</button>
+  <span id="dtMsg" class="dt-msg" role="status" aria-live="polite"></span>
+</div>
+
 <main class="app-main">
 
-  <section class="card">
+  <!-- ---------------- linke Seite: Eingabe ---------------- -->
+  <section class="card" id="cardInput" aria-labelledby="inHead">
     <div class="card-head">
-      <span class="eyebrow">N1</span>
-      <h2 id="h_status">Fundament</h2>
+      <span class="eyebrow">EN 1993-1-8 · Roloff/Matek</span>
+      <h2 id="inHead" data-i18n="inputTitle">Eingabe</h2>
     </div>
-    <div class="card-body">
-      <div class="status-banner ok" id="statusBanner">–</div>
-      <dl class="kv" id="statusKV"></dl>
+    <div class="card-body" id="formHost">
+
+      <p class="geruest-note" id="geruestNote" data-i18n="uiGeruest">Grundgerüst der Oberfläche.</p>
+
+      <section class="acc" id="acc_grund">
+        <button type="button" class="acc-head" id="accBtn_grund" aria-expanded="false" aria-controls="accBody_grund">
+          <span class="acc-caret" id="accCaret_grund" aria-hidden="true">▸</span>
+          <span class="acc-titel" id="accTitel_grund" data-i18n="sec_grund">Grundeinstellung</span>
+        </button>
+        <div class="acc-body" id="accBody_grund" hidden>
+          <p class="acc-hint" id="accHint_grund" data-i18n="sec_grund_hint"></p>
+          <div class="platzhalter" data-i18n="uiFolgtN5b"></div>
+        </div>
+      </section>
+
+      <section class="acc" id="acc_werkstoff">
+        <button type="button" class="acc-head" id="accBtn_werkstoff" aria-expanded="false" aria-controls="accBody_werkstoff">
+          <span class="acc-caret" id="accCaret_werkstoff" aria-hidden="true">▸</span>
+          <span class="acc-titel" id="accTitel_werkstoff" data-i18n="sec_werkstoff">Werkstoff</span>
+        </button>
+        <div class="acc-body" id="accBody_werkstoff" hidden>
+          <p class="acc-hint" id="accHint_werkstoff" data-i18n="sec_werkstoff_hint"></p>
+          <div class="platzhalter" data-i18n="uiFolgtN5b"></div>
+        </div>
+      </section>
+
+      <section class="acc" id="acc_naht">
+        <button type="button" class="acc-head" id="accBtn_naht" aria-expanded="false" aria-controls="accBody_naht">
+          <span class="acc-caret" id="accCaret_naht" aria-hidden="true">▸</span>
+          <span class="acc-titel" id="accTitel_naht" data-i18n="sec_naht">Nahtart und Nahtvorbereitung</span>
+        </button>
+        <div class="acc-body" id="accBody_naht" hidden>
+          <p class="acc-hint" id="accHint_naht" data-i18n="sec_naht_hint"></p>
+          <div class="platzhalter" data-i18n="uiFolgtN5b"></div>
+        </div>
+      </section>
+
+      <section class="acc" id="acc_geometrie">
+        <button type="button" class="acc-head" id="accBtn_geometrie" aria-expanded="false" aria-controls="accBody_geometrie">
+          <span class="acc-caret" id="accCaret_geometrie" aria-hidden="true">▸</span>
+          <span class="acc-titel" id="accTitel_geometrie" data-i18n="sec_geometrie">Bauteil und Nahtbild</span>
+        </button>
+        <div class="acc-body" id="accBody_geometrie" hidden>
+          <p class="acc-hint" id="accHint_geometrie" data-i18n="sec_geometrie_hint"></p>
+          <div class="platzhalter" data-i18n="uiFolgtN5b"></div>
+        </div>
+      </section>
+
+      <section class="acc" id="acc_lasten">
+        <button type="button" class="acc-head" id="accBtn_lasten" aria-expanded="false" aria-controls="accBody_lasten">
+          <span class="acc-caret" id="accCaret_lasten" aria-hidden="true">▸</span>
+          <span class="acc-titel" id="accTitel_lasten" data-i18n="sec_lasten">Lasten</span>
+        </button>
+        <div class="acc-body" id="accBody_lasten" hidden>
+          <p class="acc-hint" id="accHint_lasten" data-i18n="sec_lasten_hint"></p>
+          <div class="platzhalter" data-i18n="uiFolgtN5b"></div>
+        </div>
+      </section>
+
+      <section class="acc" id="acc_beiwerte">
+        <button type="button" class="acc-head" id="accBtn_beiwerte" aria-expanded="false" aria-controls="accBody_beiwerte">
+          <span class="acc-caret" id="accCaret_beiwerte" aria-hidden="true">▸</span>
+          <span class="acc-titel" id="accTitel_beiwerte" data-i18n="sec_beiwerte">Beiwerte und eigene Werte</span>
+        </button>
+        <div class="acc-body" id="accBody_beiwerte" hidden>
+          <p class="acc-hint" id="accHint_beiwerte" data-i18n="sec_beiwerte_hint"></p>
+          <div class="platzhalter" data-i18n="uiFolgtN5b"></div>
+        </div>
+      </section>
+
+      <section class="acc" id="acc_zusatz">
+        <button type="button" class="acc-head" id="accBtn_zusatz" aria-expanded="false" aria-controls="accBody_zusatz">
+          <span class="acc-caret" id="accCaret_zusatz" aria-hidden="true">▸</span>
+          <span class="acc-titel" id="accTitel_zusatz" data-i18n="sec_zusatz">Zusatzbereiche</span>
+        </button>
+        <div class="acc-body" id="accBody_zusatz" hidden>
+          <p class="acc-hint" id="accHint_zusatz" data-i18n="sec_zusatz_hint"></p>
+          <div class="platzhalter" data-i18n="uiFolgtN5b"></div>
+        </div>
+      </section>
+
+      <section class="acc" id="acc_ausfuehrung">
+        <button type="button" class="acc-head" id="accBtn_ausfuehrung" aria-expanded="false" aria-controls="accBody_ausfuehrung">
+          <span class="acc-caret" id="accCaret_ausfuehrung" aria-hidden="true">▸</span>
+          <span class="acc-titel" id="accTitel_ausfuehrung" data-i18n="sec_ausfuehrung">Ausführung und Dokumentation</span>
+        </button>
+        <div class="acc-body" id="accBody_ausfuehrung" hidden>
+          <p class="acc-hint" id="accHint_ausfuehrung" data-i18n="sec_ausfuehrung_hint"></p>
+          <div class="platzhalter" data-i18n="uiFolgtN5b"></div>
+        </div>
+      </section>
+
     </div>
   </section>
 
-  <section class="card">
-    <div class="card-head">
-      <span class="eyebrow">optionen.js</span>
-      <h2 id="h_optionen">Auswahlgruppen</h2>
-    </div>
-    <div class="card-body" id="optionenHost"></div>
-  </section>
+  <!-- ---------------- rechte Seite: Ergebnis, Nahtbild, Rechenweg ---------------- -->
+  <div class="spalte">
 
-  <section class="card">
-    <div class="card-head">
-      <span class="eyebrow">N2 · naht.js</span>
-      <h2 id="h_nahtbild">Nahtbild</h2>
-    </div>
-    <div class="card-body" id="nahtHost"></div>
-  </section>
+    <section class="card" id="cardResult" aria-labelledby="outHead">
+      <div class="card-head">
+        <span class="eyebrow">N/mm² · mm</span>
+        <h2 id="outHead" data-i18n="resultTitle">Ergebnis</h2>
+      </div>
+      <div class="card-body" id="resultHost">
+        <div class="status-banner idle" id="resultIdle" data-i18n="resultIdle"></div>
+      </div>
+    </section>
 
-  <section class="card">
-    <div class="card-head">
-      <span class="eyebrow">N2b · profil.js</span>
-      <h2 id="h_profil">Profileingabe</h2>
-    </div>
-    <div class="card-body" id="profilHost"></div>
-  </section>
+    <section class="card" id="cardGrafik" aria-labelledby="vizHead">
+      <div class="card-head">
+        <span class="eyebrow">SVG</span>
+        <h2 id="vizHead" data-i18n="vizTitle">Nahtbild</h2>
+      </div>
+      <div class="card-body" id="grafikHost">
+        <div class="status-banner idle" id="vizIdle" data-i18n="vizIdle"></div>
+      </div>
+    </section>
 
-  <section class="card">
-    <div class="card-head">
-      <span class="eyebrow">N2c · svglib.js + schaubild.js</span>
-      <h2 id="h_grafik">Nahtbild-Grafik</h2>
-    </div>
-    <div class="card-body" id="grafikHost"></div>
-  </section>
+    <section class="card" id="cardWeg" aria-labelledby="wegHead">
+      <div class="card-head">
+        <span class="eyebrow">Nachweis</span>
+        <h2 id="wegHead" data-i18n="pathTitle">Rechenweg</h2>
+      </div>
+      <div class="card-body" id="wegHost">
+        <div class="status-banner idle" id="pathIdle" data-i18n="pathIdle"></div>
+      </div>
+    </section>
 
-  <section class="card">
-    <div class="card-head">
-      <span class="eyebrow">N3 &middot; solver.js</span>
-      <h2 id="h_spannung">Spannungen und Nachweis</h2>
-    </div>
-    <div class="card-body" id="spannungHost"></div>
-  </section>
-
-  <section class="card">
-    <div class="card-head">
-      <span class="eyebrow">N4 &middot; rechenweg.js</span>
-      <h2 id="h_rechenweg">Rechenweg</h2>
-    </div>
-    <div class="card-body" id="wegHost"></div>
-  </section>
-
-  <section class="card">
-    <div class="card-head">
-      <span class="eyebrow">daten.js</span>
-      <h2 id="h_luecken">Ehrliche Lücken</h2>
-    </div>
-    <div class="card-body" id="lueckenHost"></div>
-  </section>
-
-  <section class="card">
-    <div class="card-head">
-      <span class="eyebrow">2.4</span>
-      <h2 id="h_nichtgeprueft">Was NICHT geprüft wird</h2>
-    </div>
-    <div class="card-body" id="ngHost"></div>
-  </section>
-
+  </div>
 </main>
 
 <footer class="app-footer">
-  <span id="footNorm">EN 1993-1-8 · EN 1993-1-4 · EN 1999-1-1 · EN 1011-2 · EN 1090 · ISO 5817 · ISO 2553</span><br>
-  <span id="footNote">Berechnung ohne Gewähr, vor Produktivnutzung gegen die Originalnormen prüfen.</span><br>
-  <span>Dieter Tepe · Mühlenstraße 2 · 48477 Dreierwalde · Dieter.Tepe@live.de · www.dt-profidreieck.de</span>
+  <span class="norm">EN 1993-1-8 · EN 1993-1-4 · EN 1999-1-1 · EN 1011-2 · EN 1090 · ISO 5817 · ISO 2553</span><br>
+  <span id="footNote" data-i18n="disclaimer">Berechnung ohne Gewähr, vor Produktivnutzung gegen die Originalnormen prüfen.</span><br>
+  <span id="footImpressum" data-i18n="impressum">Dieter Tepe · Mühlenstraße 2 · 48477 Dreierwalde · Dieter.Tepe@live.de · www.dt-profidreieck.de</span>
 </footer>
 
+<!-- Info-Dialog mit Impressum -->
+<div class="modal-overlay" id="infoModal" role="dialog" aria-modal="true" aria-labelledby="infoTitleH" hidden>
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="infoTitleH" data-i18n="infoTitle">Info</h3>
+    </div>
+    <div class="modal-body">
+      <p id="infoProdukt" data-i18n="infoProdukt"></p>
+      <p id="infoEdition" class="info-edition"></p>
+      <p id="infoDisclaimer" data-i18n="disclaimer"></p>
+      <p id="infoNormen" data-i18n="infoNormen"></p>
+      <p id="infoImpressum" class="impressum" data-i18n="impressum">Dieter Tepe · Mühlenstraße 2 · 48477 Dreierwalde · Dieter.Tepe@live.de · www.dt-profidreieck.de</p>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-primary" id="infoClose" data-i18n="close">Schließen</button>
+    </div>
+  </div>
+</div>
+
 <!-- Module in Abhaengigkeitsreihenfolge (Schweissnaht-1.md 4.1).
-     Noch nicht vorhandene Module folgen in den Bausteinen N2b ff. -->
+     ui.js laedt zuletzt und ist das einzige DOM-nahe Modul. -->
 <script src="i18n_kern.js"></script>
 <script src="i18n_hilfe.js"></script>
 <script src="i18n_kerbfall.js"></script>
@@ -139,563 +239,6 @@
 <script src="schaubild.js"></script>
 <script src="solver.js"></script>
 <script src="rechenweg.js"></script>
-
-<!-- ===================================================================== -->
-<!--  N1/N2/N2b/N2c/N3-ZWISCHENSTAND: kleine Statusanzeige, damit Fundament,
-      Nahtbild-Kern, Profileingabe, Grafik und Nachweis am Handy pruefbar sind.
-      Entfaellt vollstaendig mit N5. -->
-<!-- ===================================================================== -->
-<script>
-(function () {
-  'use strict';
-  var LANG = 'de';
-
-  function id(x) { return document.getElementById(x); }
-  function K(k) { return window.DTNI18nKern ? window.DTNI18nKern.t(k, LANG) : k; }
-
-  function esc(s) {
-    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  }
-
-  function edition() {
-    var ed = (window.DT_EDITION === 'test') ? 'test' : 'full';
-    var bar = id('editionBar');
-    if (ed === 'test') { bar.hidden = false; bar.textContent = K('editionTest'); }
-    else { bar.hidden = true; bar.textContent = ''; }
-    return ed;
-  }
-
-  function status() {
-    var mods = [
-      ['i18n_kern.js', window.DTNI18nKern],
-      ['i18n_hilfe.js', window.DTNI18nHilfe],
-      ['i18n_kerbfall.js', window.DTNI18nKerb],
-      ['daten.js', window.DTNData],
-      ['optionen.js', window.DTNOptions],
-      ['validate.js', window.DTNValidate],
-      ['naht.js', window.DTNNaht],
-      ['profil.js', window.DTNProfil],
-      ['svglib.js', window.DTNSvgLib],
-      ['schaubild.js', window.DTNSchaubild],
-      ['solver.js', window.DTNSolver],
-      ['rechenweg.js', window.DTNRechenweg]
-    ];
-    var fehlt = 0, rows = '';
-    for (var i = 0; i < mods.length; i++) {
-      var ok = !!mods[i][1];
-      if (!ok) fehlt++;
-      rows += '<dt>' + esc(mods[i][0]) + '</dt><dd>' + (ok ? '\u2713' : '\u2717') + '</dd>';
-    }
-    if (window.DTNData) {
-      rows += '<dt>Werkstoffe</dt><dd>' + window.DTNData.WERKSTOFFE.length + '</dd>';
-    }
-    if (window.DTNOptions) {
-      rows += '<dt>Auswahlgruppen</dt><dd>' + window.DTNOptions.GRUPPEN.length + '</dd>';
-    }
-    if (window.DTNValidate) {
-      rows += '<dt>Eingabefelder</dt><dd>' + window.DTNValidate.SCHEMA.length + '</dd>';
-    }
-    if (window.DTNI18nKern) {
-      rows += '<dt>i18n-Schl\u00fcssel</dt><dd>' + window.DTNI18nKern.keys().length + '</dd>';
-    }
-    rows += '<dt>Edition</dt><dd>' + esc(edition()) + '</dd>';
-    id('statusKV').innerHTML = rows;
-
-    var b = id('statusBanner');
-    b.textContent = (fehlt === 0)
-      ? 'Fundament vollst\u00e4ndig geladen \u2014 Baustein N1.'
-      : (fehlt + ' Modul(e) fehlen \u2014 bitte alle Dateien in denselben Ordner legen.');
-    b.className = 'status-banner ' + (fehlt === 0 ? 'ok' : 'bad');
-  }
-
-  function optionen() {
-    var host = id('optionenHost');
-    if (!window.DTNOptions || !window.DTNI18nKern) { host.textContent = '–'; return; }
-    var G = window.DTNOptions.GRUPPEN, out = '';
-    for (var i = 0; i < G.length; i++) {
-      var g = G[i];
-      out += '<div style="margin:0 0 10px 0"><strong>' + esc(K('grp_' + g.code)) + '</strong><br>';
-      var liste = [];
-      for (var j = 0; j < g.optionen.length; j++) {
-        liste.push(esc(K('opt_' + g.code + '_' + g.optionen[j].code)));
-      }
-      out += '<span style="font-size:13px;color:var(--muted)">' + liste.join(' · ') + '</span></div>';
-    }
-    host.innerHTML = out;
-  }
-
-  /* ---- N2: Nahtbild-Kern live vorrechnen (Hand-Anker + Selbstpruefung) ---- */
-  function zahl(x, dec) {
-    if (typeof x !== 'number' || !isFinite(x)) return '\u2013';
-    if (dec === undefined) dec = 2;
-    var neg = x < 0, s = Math.abs(x).toFixed(dec).split('.');
-    var g = s[0], out = '', c = 0, k;
-    for (k = g.length - 1; k >= 0; k--) {
-      out = g.charAt(k) + out; c++;
-      if (c % 3 === 0 && k > 0) out = (LANG === 'en' ? ',' : '.') + out;
-    }
-    if (s[1]) out += (LANG === 'en' ? '.' : ',') + s[1];
-    return (neg ? '\u2212' : '') + out;
-  }
-
-  function haken(b) { return b ? '\u2713' : '\u2717'; }
-
-  function nahtbild() {
-    var host = id('nahtHost');
-    if (!window.DTNNaht || !window.DTNI18nKern) { host.textContent = '\u2013'; return; }
-    var NA = window.DTNNaht;
-
-    /* Beispiel: Doppelkehlnaht, Hoehe 200 mm, Abstand 100 mm, a = 5 mm */
-    var h = 200, b = 100, a = 5;
-    var segs = [ NA.linie(-b / 2, -h / 2, -b / 2, h / 2, a),
-                 NA.linie(b / 2, -h / 2, b / 2, h / 2, a) ];
-    var r = NA.rechne(segs);
-    if (!r.ok) { host.textContent = '\u2013'; return; }
-
-    var out = '<div style="margin:0 0 8px 0"><strong>' + esc(K('nb_beispiel')) + ':</strong> ' +
-              '2 \u00d7 ' + zahl(h, 0) + ' mm, ' + esc(K('nb_segmente')).toLowerCase() +
-              ' ' + zahl(b, 0) + ' mm, a = ' + zahl(a, 0) + ' mm</div>';
-
-    var zeilen = [
-      ['gr_A',     r.A,     'unit_mm2', 1],
-      ['gr_l_ges', r.l_ges, 'unit_mm',  1],
-      ['gr_ys',    r.ys,    'unit_mm',  2],
-      ['gr_zs',    r.zs,    'unit_mm',  2],
-      ['gr_Iy',    r.Iy,    'unit_mm4', 0],
-      ['gr_Iz',    r.Iz,    'unit_mm4', 0],
-      ['gr_Ip',    r.Ip,    'unit_mm4', 0],
-      ['gr_Wy',    r.Wy,    'unit_mm3', 0],
-      ['gr_Wt',    r.Wt,    'unit_mm3', 0],
-      ['gr_rmax',  r.rmax,  'unit_mm',  2]
-    ];
-    out += '<dl class="kv">';
-    for (var i = 0; i < zeilen.length; i++) {
-      out += '<dt>' + esc(K(zeilen[i][0])) + '</dt><dd>' +
-             zahl(zeilen[i][1], zeilen[i][3]) + ' ' + esc(K(zeilen[i][2])) + '</dd>';
-    }
-    out += '<dt>' + esc(K('nb_modell')) + '</dt><dd>' +
-           esc(K(r.modell === 'exakt' ? 'nb_modell_exakt' : 'nb_modell_duennwandig')) + '</dd>';
-    out += '<dt>' + esc(K('nb_titel')) + '</dt><dd>' +
-           esc(K(r.geschlossen ? 'nb_geschlossen' : 'nb_offen')) + '</dd>';
-    out += '</dl>';
-
-    /* Hand-Anker: gegen geschlossene Formeln nachgerechnet */
-    function nahe(x, y) { return Math.abs(x - y) <= 1e-6 * Math.max(1, Math.abs(y)); }
-    var rD = NA.rechne(segs, { modell: 'duennwandig' });
-
-    var tF = 40, lF = 200, aF = 4;
-    var um = [ NA.linie(-tF / 2, -lF / 2, -tF / 2, lF / 2, aF),
-               NA.linie(tF / 2, -lF / 2, tF / 2, lF / 2, aF),
-               NA.linie(-tF / 2, lF / 2, tF / 2, lF / 2, aF),
-               NA.linie(-tF / 2, -lF / 2, tF / 2, -lF / 2, aF) ];
-    var rUm = NA.rechne(um);
-    var sollUm = 2 * (aF * lF * lF * lF / 12) + 2 * (tF * aF * aF * aF / 12) + 2 * (tF * aF * (lF / 2) * (lF / 2));
-
-    var dK = 100, aK = 5, rKr = NA.rechne([ NA.kreis(0, 0, dK, aK) ]);
-    var D4 = Math.pow(dK + aK, 4) - Math.pow(dK - aK, 4);
-
-    var anker = [
-      ['nb_anker_rechteck', nahe(r.Iy, a * h * h * h / 6) && nahe(rD.Iz, 0.5 * a * h * b * b),
-       'I_y = a\u00b7h\u00b3/6 \u00b7 I_z = \u00bd\u00b7a\u00b7h\u00b7b\u00b2'],
-      ['nb_anker_umlauf', nahe(rUm.Iy, sollUm),
-       'I = 2\u00b7(a\u00b7l\u00b3/12) + 2\u00b7(t\u00b7a\u00b3/12) + 2\u00b7(t\u00b7a\u00b7(l/2)\u00b2)'],
-      ['nb_anker_kreis', nahe(rKr.A, Math.PI * dK * aK) && nahe(rKr.Wt, Math.PI / 16 * D4 / (dK + aK)),
-       'A = \u03c0\u00b7d\u00b7a \u00b7 W_t = (\u03c0/16)\u00b7[(d+a)\u2074\u2212(d\u2212a)\u2074]/(d+a)']
-    ];
-    out += '<div style="margin:10px 0 4px 0"><strong>' + esc(K('nb_handanker')) + '</strong></div>';
-    for (i = 0; i < anker.length; i++) {
-      out += '<div style="font-size:13px">' + haken(anker[i][1]) + ' ' + esc(K(anker[i][0])) +
-             '<br><span style="color:var(--muted)">' + anker[i][2] + '</span></div>';
-    }
-
-    out += '<div style="margin:10px 0 4px 0"><strong>' + esc(K('nb_selbstpruefung')) + '</strong></div>' +
-           '<div style="font-size:13px">' + haken(r.kontrolle.schwerpunkt_ok) + ' ' + esc(K('nb_kontrolle_schwerpunkt')) + '<br>' +
-           haken(r.kontrolle.polar_ok) + ' ' + esc(K('nb_kontrolle_polar')) + '<br>' +
-           haken(r.kontrolle.hauptachsen_ok) + ' ' + esc(K('nb_kontrolle_haupt')) + '</div>';
-
-    for (i = 0; i < r.hinweise.length; i++) {
-      out += '<div class="gap-note">' + esc(K(r.hinweise[i].code)) + '</div>';
-    }
-    host.innerHTML = out;
-  }
-
-  /* ---- N2b: Profileingabe live — Profil + Kanten ergeben das Nahtbild ---- */
-  function profil() {
-    var host = id('profilHost');
-    if (!window.DTNProfil || !window.DTNNaht || !window.DTNI18nKern) { host.textContent = '\u2013'; return; }
-    var PR = window.DTNProfil, NA = window.DTNNaht;
-
-    /* Beispiel: Rechteck-Hohlprofil 100 x 60, Eckradius 8 mm, rundum, a = 4 mm */
-    var e = { profil: 'rohr_rechteck', kanten: 'rundum', b: 100, h: 60, t1: 4, r_ecke: 8, a: 4 };
-    var p = PR.baue(e);
-    if (!p.ok) { host.textContent = '\u2013'; return; }
-    var r = NA.rechne(p.segmente);
-    if (!r.ok) { host.textContent = '\u2013'; return; }
-
-    var out = '<div style="margin:0 0 8px 0"><strong>' + esc(K('nb_beispiel')) + ':</strong> ' +
-              esc(K('opt_profil_rohr_rechteck')) + ' 100 \u00d7 60 mm, r = 8 mm, a = 4 mm</div>';
-
-    var zeilen = [
-      ['pr_profil',    esc(K('opt_profil_' + p.profil))],
-      ['pr_kanten',    esc(K('opt_kanten_' + p.kanten))],
-      ['pr_raupen',    zahl(p.raupen, 0) + ' \u00b7 ' + esc(K(p.umlaufend ? 'pr_umlaufend' : 'pr_offen'))],
-      ['pr_l_brutto',  zahl(p.l_brutto, 1) + ' ' + esc(K('unit_mm'))],
-      ['pr_l_kontur',  zahl(p.l_kontur, 1) + ' ' + esc(K('unit_mm'))],
-      ['pr_bogen',     zahl(p.bogen_nicht_gerechnet, 1) + ' ' + esc(K('unit_mm'))],
-      ['pr_endkrater', zahl(p.endkrater_abzug, 1) + ' ' + esc(K('unit_mm'))],
-      ['pr_l_netto',   zahl(p.l_netto, 1) + ' ' + esc(K('unit_mm'))],
-      ['gr_A',         zahl(r.A, 1) + ' ' + esc(K('unit_mm2'))],
-      ['gr_Iy',        zahl(r.Iy, 0) + ' ' + esc(K('unit_mm4'))],
-      ['gr_Wt',        zahl(r.Wt, 0) + ' ' + esc(K('unit_mm3'))]
-    ];
-    out += '<dl class="kv">';
-    for (var i = 0; i < zeilen.length; i++) {
-      out += '<dt>' + esc(K(zeilen[i][0])) + '</dt><dd>' + zeilen[i][1] + '</dd>';
-    }
-    out += '</dl>';
-
-    /* Hand-Anker: die Umfaenge gegen geschlossene Formeln */
-    function nahe2(x, y) { return Math.abs(x - y) <= 1e-6 * Math.max(1, Math.abs(y)); }
-    var pKr = PR.baue({ profil: 'rohr_rund', kanten: 'rundum', d: 114.3, t1: 6, a: 5 });
-    var pIp = PR.baue({ profil: 'i_profil', kanten: 'rundum', b: 100, h: 200, tw: 5.6, tf: 8.5, a: 4 });
-    var pFl = PR.baue({ profil: 'blech', kanten: 'flanken', b: 200, t1: 12, a: 5 });
-
-    var anker = [
-      ['pr_anker_rohr',      nahe2(p.l_brutto, 2 * (100 + 60) - 8 * 8), '2\u00b7(100+60) \u2212 8\u00b78 = 256 mm'],
-      ['pr_anker_kreis',     pKr.ok && nahe2(pKr.l_brutto, Math.PI * 114.3), '\u03c0\u00b7114,3 = 359,08 mm'],
-      ['pr_anker_iprofil',   pIp.ok && nahe2(pIp.l_brutto, 2 * 200 + 4 * 100 - 2 * 5.6), '2\u00b7200 + 4\u00b7100 \u2212 2\u00b75,6 = 788,8 mm'],
-      ['pr_anker_endkrater', pFl.ok && nahe2(pFl.l_netto, 2 * (200 - 2 * 5)), '2\u00b7(200 \u2212 2\u00b75) = 380 mm']
-    ];
-    out += '<div style="margin:10px 0 4px 0"><strong>' + esc(K('pr_handanker')) + '</strong></div>';
-    for (i = 0; i < anker.length; i++) {
-      out += '<div style="font-size:13px">' + haken(anker[i][1]) + ' ' + esc(K(anker[i][0])) +
-             '<br><span style="color:var(--muted)">' + anker[i][2] + '</span></div>';
-    }
-
-    for (i = 0; i < p.hinweise.length; i++) {
-      out += '<div class="gap-note">' + esc(K(p.hinweise[i].code)) + '</div>';
-    }
-    host.innerHTML = out;
-  }
-
-  /* ---- N2c: Nahtbild-Grafik — gezeichnet wird, was gerechnet wird ---- */
-  function grafik() {
-    var host = id('grafikHost');
-    if (!window.DTNSchaubild || !window.DTNSvgLib || !window.DTNProfil || !window.DTNI18nKern) {
-      host.textContent = '\u2013'; return;
-    }
-    var SB = window.DTNSchaubild;
-
-    /* Dasselbe Profil zweimal: einmal rundum geschweisst, einmal nur die
-       Flanken. Gleicher Massstab — die Naht verschwindet, die Kontur bleibt. */
-    var basis = { profil: 'rohr_rechteck', b: 100, h: 60, t1: 4, r_ecke: 8, a: 4 };
-    function mit(kanten) {
-      var e = {}, k;
-      for (k in basis) if (Object.prototype.hasOwnProperty.call(basis, k)) e[k] = basis[k];
-      e.kanten = kanten;
-      return SB.ausProfil(e, { breite: 300, hoehe: 220 });
-    }
-    var g1 = mit('rundum'), g2 = mit('flanken');
-    if (!g1.ok || !g2.ok) { host.textContent = '\u2013'; return; }
-
-    var out = '<div style="margin:0 0 8px 0"><strong>' + esc(K('nb_beispiel')) + ':</strong> ' +
-              esc(K('opt_profil_rohr_rechteck')) + ' 100 \u00d7 60 mm, r = 8 mm, a = 4 mm \u2014 ' +
-              esc(K('opt_kanten_rundum')) + ' / ' + esc(K('opt_kanten_flanken')) + '</div>';
-
-    out += '<div class="svg-paar">' +
-           '<div class="svg-box">' + g1.svg + '</div>' +
-           '<div class="svg-box">' + g2.svg + '</div></div>';
-
-    /* Legende: Codes kommen aus schaubild.js, der Text aus dem Woerterbuch,
-       die Zahlen stehen hier in der HTML — im SVG steht kein Text (4.3). */
-    var alle = g1.legende.concat(g2.legende), gesehen = {}, liste = [], i, L;
-    for (i = 0; i < alle.length; i++) {
-      L = alle[i];
-      if (gesehen[L.code]) continue;
-      gesehen[L.code] = 1;
-      liste.push(L);
-    }
-    out += '<div style="margin:10px 0 4px 0"><strong>' + esc(K('sb_legende')) + '</strong></div>' +
-           '<div class="legende">';
-    for (i = 0; i < liste.length; i++) {
-      L = liste[i];
-      out += '<span class="li"><span class="sw ' + esc(L.stil) + '" style="border-top-color:' +
-             esc(L.farbe) + '"></span>' + esc(K(L.code)) +
-             (L.l ? ' <span class="n">' + zahl(L.l, 1) + ' ' + esc(K('unit_mm')) + '</span>' : '') +
-             '</span>';
-    }
-    out += '</div>';
-
-    out += '<dl class="kv" style="margin-top:10px">' +
-           '<dt>' + esc(K('sb_massstab')) + '</dt><dd>' + zahl(g1.mm_je_px, 3) + ' ' + esc(K('sb_mm_je_px')) + '</dd>' +
-           '<dt>' + esc(K('nb_segmente')) + '</dt><dd>' + zahl(g1.n_seg, 0) + ' / ' + zahl(g2.n_seg, 0) + '</dd>' +
-           '<dt>' + esc(K('sb_eckluecke')) + '</dt><dd>' + zahl(g1.n_luecken, 0) + '</dd>' +
-           '</dl>';
-
-    var hs = g1.hinweise.concat(g2.hinweise), hin = {};
-    for (i = 0; i < hs.length; i++) {
-      if (hin[hs[i].code]) continue;
-      hin[hs[i].code] = 1;
-      out += '<div class="gap-note">' + esc(K(hs[i].code)) + '</div>';
-    }
-    host.innerHTML = out;
-  }
-
-  /* ---- N3: Spannungen, beide Welten, Nachweis und Auslegung ---- */
-  function spannung() {
-    var host = id('spannungHost');
-    if (!window.DTNSolver || !window.DTNNaht || !window.DTNI18nKern) { host.textContent = '\u2013'; return; }
-    var SO = window.DTNSolver, NA = window.DTNNaht;
-
-    /* Beispiel: Konsole am Stuetzenflansch. Doppelkehlnaht, zwei senkrechte
-       Naehte 200 mm hoch im Abstand 100 mm, a = 5 mm, S355, Querzug 200 kN. */
-    var h = 200, b = 100, a = 5;
-    function segs(aa) {
-      return [ NA.linie(-b / 2, -h / 2, -b / 2, h / 2, aa),
-               NA.linie(b / 2, -h / 2, b / 2, h / 2, aa) ];
-    }
-    function basis(extra) {
-      var e = { welt: 'A', rechenrichtung: 'nachweis', nachweisverfahren: 'richtungsbezogen',
-                werkstoff: 'S355', bw_regelsatz: 'na_de', nahtart: 'kehl_doppel',
-                t1: 10, t2: 10, modell: 'duennwandig',
-                segmente: segs(a), umlaufend: false }, k;
-      for (k in extra) if (Object.prototype.hasOwnProperty.call(extra, k)) e[k] = extra[k];
-      return e;
-    }
-
-    var rA   = SO.rechne(basis({ N: 200000 }));
-    var rV   = SO.rechne(basis({ N: 200000, nachweisverfahren: 'vereinfacht' }));
-    var rL   = SO.rechne(basis({ Qz: 200000 }));
-    var rLV  = SO.rechne(basis({ Qz: 200000, nachweisverfahren: 'vereinfacht' }));
-    var rDop = SO.rechne(basis({ N: 200000, segmente: segs(2 * a) }));
-    var rB   = SO.rechne(basis({ welt: 'B', werkstoff: 'S235',
-                 nahtguete: 'durchgeschweisst_zug_ungeprueft', lastfall: 'ruhend',
-                 Re: 240, S: 1.1, N: 200000 }));
-    var rAus = SO.rechne(basis({ N: 900000, rechenrichtung: 'auslegung',
-                 a: a, a_rundung: 'ganze_mm' }));
-    if (!rA.ok || !rB.ok || !rAus.ok) { host.textContent = '\u2013'; return; }
-    var rPruef = SO.rechne(basis({ N: 900000, segmente: segs(rAus.auslegung.a_erf) }));
-
-    var out = '<div style="margin:0 0 8px 0"><strong>' + esc(K('nb_beispiel')) + ':</strong> ' +
-              esc(K('opt_nahtart_kehl_doppel')) + ', 2 \u00d7 200 mm, ' +
-              esc(K('fld_b')) + ' = 100 mm, a = 5 mm, S355, N = 200 kN</div>';
-
-    /* --- Welt A ------------------------------------------------------- */
-    out += '<div style="margin:10px 0 4px 0"><strong>' + esc(K('grp_welt')) + ' A \u2014 ' +
-           esc(K('opt_nachweisverfahren_richtungsbezogen')) + '</strong><br>' +
-           '<span style="font-size:12px;color:var(--muted)">' + esc(K('sv_formel_ec3')) + '</span></div>';
-    var zA = [
-      ['sv_sigma_x',    rA.massgebend.sigma_x,    'unit_Nmm2', 2],
-      ['sv_sigma_senk', rA.massgebend.sigma_senk, 'unit_Nmm2', 2],
-      ['sv_tau_senk',   rA.massgebend.tau_senk,   'unit_Nmm2', 2],
-      ['sv_tau_par',    rA.massgebend.tau_par,    'unit_Nmm2', 2],
-      ['sv_sigma_v',    rA.massgebend.sigma_v,    'unit_Nmm2', 2],
-      ['sv_R_d',        rA.widerstand.R_d,        'unit_Nmm2', 2]
-    ];
-    out += '<dl class="kv">';
-    for (var i = 0; i < zA.length; i++) {
-      out += '<dt>' + esc(K(zA[i][0])) + '</dt><dd>' +
-             zahl(zA[i][1], zA[i][3]) + ' ' + esc(K(zA[i][2])) + '</dd>';
-    }
-    out += '<dt>' + esc(K('sv_ausnutzung')) + '</dt><dd>' + zahl(100 * rA.eta, 1) + ' %</dd>';
-    out += '<dt>' + esc(K('sv_ampel')) + '</dt><dd>' + esc(K('amp_' + rA.ampel)) + '</dd>';
-    out += '<dt>' + esc(K('sv_massgebend')) + '</dt><dd>y = ' + zahl(rA.massgebend.y, 1) +
-           ' mm, z = ' + zahl(rA.massgebend.z, 1) + ' mm (' + esc(K('sv_segment')) + ' ' +
-           zahl(rA.massgebend.seg + 1, 0) + ')</dd>';
-    out += '</dl>';
-
-    /* --- Welt B, ausdruecklich getrennt -------------------------------- */
-    out += '<div style="margin:10px 0 4px 0"><strong>' + esc(K('grp_welt')) + ' B \u2014 S235, ' +
-           esc(K('opt_nahtguete_durchgeschweisst_zug_ungeprueft')) + '</strong><br>' +
-           '<span style="font-size:12px;color:var(--muted)">' + esc(K('sv_formel_weltb_formel')) + '</span></div>';
-    out += '<dl class="kv">' +
-           '<dt>' + esc(K('fld_Re')) + '</dt><dd>' + zahl(rB.widerstand.Re, 0) + ' ' + esc(K('unit_Nmm2')) + '</dd>' +
-           '<dt>' + esc(K('fld_S')) + '</dt><dd>' + zahl(rB.widerstand.S, 2) + '</dd>' +
-           '<dt>' + esc(K('fld_nu')) + '</dt><dd>' + zahl(rB.widerstand.nu, 2) + '</dd>' +
-           '<dt>' + esc(K('sv_R_d')) + '</dt><dd>' + zahl(rB.widerstand.sigma_zul, 2) + ' ' + esc(K('unit_Nmm2')) + '</dd>' +
-           '<dt>' + esc(K('sv_sigma_res')) + '</dt><dd>' + zahl(rB.massgebend.sigma_res, 2) + ' ' + esc(K('unit_Nmm2')) + '</dd>' +
-           '<dt>' + esc(K('sv_ausnutzung')) + '</dt><dd>' + zahl(100 * rB.eta, 1) + ' %</dd>' +
-           '<dt>' + esc(K('sv_pfad')) + '</dt><dd>' + esc(K('sv_pfad_formel')) + '</dd>' +
-           '</dl>';
-    out += '<div class="gap-note">' + esc(K('sv_getrennt')) + '</div>';
-
-    /* --- Auslegung ----------------------------------------------------- */
-    out += '<div style="margin:10px 0 4px 0"><strong>' + esc(K('opt_rechenrichtung_auslegung')) +
-           '</strong> \u2014 N = 900 kN</div>';
-    out += '<dl class="kv">' +
-           '<dt>' + esc(K('sv_a_erf')) + '</dt><dd>' + zahl(rAus.auslegung.a_erf, 2) + ' ' + esc(K('unit_mm')) + '</dd>' +
-           '<dt>' + esc(K('sv_a_gewaehlt')) + '</dt><dd>' + zahl(rAus.auslegung.a_gewaehlt, 1) + ' ' + esc(K('unit_mm')) + '</dd>' +
-           '<dt>' + esc(K('sv_a_max')) + '</dt><dd>' + zahl(rAus.grenzen.je_segment[0].a_max, 1) + ' ' + esc(K('unit_mm')) + '</dd>' +
-           '<dt>' + esc(K('sv_ausnutzung')) + '</dt><dd>' + zahl(100 * rAus.auslegung.eta_mit_gewaehlt, 1) + ' %</dd>' +
-           '<dt>' + esc(K('sv_stufe')) + '</dt><dd>' + esc(K('opt_a_rundung_' + rAus.auslegung.rundung)) + '</dd>' +
-           '</dl>';
-
-    /* --- Hand-Anker: gegen belegte Beispiele nachgerechnet ------------- */
-    function nahe3(x, y) { return Math.abs(x - y) <= 1e-6 * Math.max(1, Math.abs(y)); }
-    var anker = [
-      ['sv_anker_verhaeltnis', nahe3(rV.eta / rA.eta, Math.sqrt(1.5)),
-       'f_w,end / f_w = \u221a(3/2) = ' + zahl(rV.eta / rA.eta, 4)],
-      ['sv_anker_laengs', nahe3(rL.eta, rLV.eta),
-       '\u03b7 = ' + zahl(rL.eta, 6) + ' = ' + zahl(rLV.eta, 6)],
-      ['sv_anker_adopp', nahe3(rA.eta / rDop.eta, 2),
-       '\u03b7(a5) / \u03b7(a10) = ' + zahl(rA.eta / rDop.eta, 6)],
-      ['sv_anker_invers', rPruef.ok && nahe3(rPruef.eta, 1),
-       '\u03b7(a_erf) = ' + zahl(rPruef.eta, 6)],
-      ['sv_anker_weltb', nahe3(rB.widerstand.sigma_zul, 207.2727272727),
-       '0,95 \u00b7 240/1,1 = ' + zahl(rB.widerstand.sigma_zul, 2) + ' N/mm\u00b2']
-    ];
-    out += '<div style="margin:10px 0 4px 0"><strong>' + esc(K('sv_handanker')) + '</strong></div>';
-    for (i = 0; i < anker.length; i++) {
-      out += '<div style="font-size:13px">' + haken(anker[i][1]) + ' ' + esc(K(anker[i][0])) +
-             '<br><span style="color:var(--muted)">' + anker[i][2] + '</span></div>';
-    }
-
-    /* --- Warnungen ZUERST: sie sind sicherheitsrelevant ---------------- */
-    var ws = rA.warnungen.concat(rB.warnungen, rAus.warnungen), gesW = {};
-    for (i = 0; i < ws.length; i++) {
-      if (gesW[ws[i].code]) continue;
-      gesW[ws[i].code] = 1;
-      out += '<div class="status-banner warn" style="margin:8px 0">\u26a0 ' +
-             esc(K(ws[i].code)) + '</div>';
-    }
-
-    /* --- ehrliche Hinweise --------------------------------------------- */
-    var hs = rA.hinweise.concat(rB.hinweise, rAus.hinweise), ges = {};
-    for (i = 0; i < hs.length; i++) {
-      if (ges[hs[i].code]) continue;
-      ges[hs[i].code] = 1;
-      out += '<div class="gap-note">' + esc(K(hs[i].code)) + '</div>';
-    }
-    host.innerHTML = out;
-  }
-
-  /* ---- N4: der selbstpruefende Rechenweg ---- */
-  function rechenweg() {
-    var host = id('wegHost');
-    if (!window.DTNRechenweg || !window.DTNNaht || !window.DTNI18nKern) { host.textContent = '\u2013'; return; }
-    var WG = window.DTNRechenweg, NA = window.DTNNaht;
-
-    /* Derselbe Fall wie in der Nachweiskarte, aber als AUSLEGUNG gerechnet:
-       so stehen a_erf und a_gewaehlt beide im Weg (2.3). */
-    var ein = {
-      welt: 'A', rechenrichtung: 'auslegung', nachweisverfahren: 'richtungsbezogen',
-      werkstoff: 'S355', bw_regelsatz: 'na_de', nahtart: 'kehl_doppel',
-      t1: 10, t2: 10, modell: 'duennwandig',
-      segmente: [NA.linie(-50, -100, -50, 100, 5), NA.linie(50, -100, 50, 100, 5)],
-      umlaufend: false, N: 600000, My: 12000, a: 5, a_rundung: 'ganze_mm'
-    };
-    var rw = WG.baue(ein);
-    if (!rw.ok) { host.textContent = '\u2013'; return; }
-    var g = WG.rendere(rw, LANG), out = '', i, j, ab, sc;
-
-    out += '<div style="margin:0 0 8px 0"><strong>' + esc(K('nb_beispiel')) + ':</strong> ' +
-           esc(K('opt_rechenrichtung_auslegung')) + ' \u2014 ' +
-           esc(K('opt_nahtart_kehl_doppel')) + ', 2 \u00d7 200 mm, S355, N = 600 kN, M = 12 kNm</div>';
-
-    for (i = 0; i < g.abschnitte.length; i++) {
-      ab = g.abschnitte[i];
-      out += '<div style="margin:12px 0 4px 0;font-weight:600">' + esc(ab.titel) + '</div>';
-      for (j = 0; j < ab.schritte.length; j++) {
-        sc = ab.schritte[j];
-        out += '<div style="margin:0 0 7px 0;font-size:13px">';
-        out += '<span style="color:var(--muted)">' + sc.nr + '.</span> ' + esc(sc.titel);
-        if (sc.haken_zeichen) out += ' ' + sc.haken_zeichen;
-        if (sc.erfuellt === true) out += ' <span style="font-size:12px;color:var(--muted)">(' +
-                                        esc(sc.erfuellt_text) + ')</span>';
-        if (sc.wert_text) out += '<br><span>' + esc(sc.wert_text) + '</span>';
-        if (sc.formel) out += '<br><code style="font-size:12px">' + esc(sc.formel) + '</code>';
-        if (sc.eingesetzt) out += '<br><span style="color:var(--muted)">' + esc(sc.eingesetzt) + '</span>';
-        if (sc.quelle) out += '<br><span style="font-size:12px;color:var(--muted)">' +
-                              esc(K('rw_grundlage')) + ': ' + esc(sc.quelle) + '</span>';
-        if (sc.probe) out += '<br><span style="font-size:12px;color:var(--muted)">' + esc(sc.probe) + '</span>';
-        if (sc.erfuellt === false) out += '<div class="status-banner warn" style="margin:5px 0">' +
-                                         '\u26a0 ' + esc(sc.erfuellt_text) + '</div>';
-        if (sc.hinweis) out += '<div class="gap-note">' + esc(sc.hinweis) + '</div>';
-        if (sc.liste && sc.liste.length) {
-          out += '<ul style="margin:4px 0 0 0;padding-left:18px">';
-          for (var m = 0; m < sc.liste.length; m++) out += '<li>' + esc(sc.liste[m]) + '</li>';
-          out += '</ul>';
-        }
-        out += '</div>';
-      }
-    }
-
-    var bad = g.selbstpruefung_ok ? 'ok' : 'bad';
-    out += '<div class="status-banner ' + bad + '" style="margin:10px 0">' +
-           haken(g.selbstpruefung_ok) + ' ' + esc(K('rw_selbstpruefung')) + ': ' +
-           g.n_haken_ok + ' / ' + g.n_haken + '</div>';
-    host.innerHTML = out;
-  }
-
-  function luecken() {
-    var host = id('lueckenHost');
-    if (!window.DTNData) { host.textContent = '–'; return; }
-    var L = window.DTNData.luecken(), seen = {}, out = '';
-    for (var i = 0; i < L.length; i++) {
-      if (seen[L[i].code]) continue;
-      seen[L[i].code] = 1;
-      out += '<div class="gap-note">' + esc(K('lk_' + L[i].code)) + '</div>';
-    }
-    host.innerHTML = out || '<div class="status-banner ok">–</div>';
-  }
-
-  function nichtGeprueft() {
-    var host = id('ngHost');
-    if (!window.DTNData || !window.DTNI18nKern) { host.textContent = '–'; return; }
-    var N = window.DTNData.NICHT_GEPRUEFT, out = '<ul style="margin:0;padding-left:18px;font-size:13px">';
-    for (var i = 0; i < N.length; i++) out += '<li>' + esc(K('ng_' + N[i])) + '</li>';
-    host.innerHTML = out + '</ul>';
-  }
-
-  function texte() {
-    id('brandTag').textContent = K('tagline');
-    id('h_status').textContent = 'Fundament (N1)';
-    id('h_optionen').textContent = K('inputTitle');
-    id('h_nahtbild').textContent = K('nb_titel');
-    id('h_profil').textContent = K('pr_titel');
-    id('h_grafik').textContent = K('sb_titel');
-    id('h_spannung').textContent = K('sv_titel');
-    id('h_rechenweg').textContent = K('rw_titel');
-    id('h_luecken').textContent = K('gap');
-    id('h_nichtgeprueft').textContent = K('ng_titel');
-    id('footNote').textContent = K('disclaimer');
-  }
-
-  function zeichne() { texte(); status(); optionen(); nahtbild(); profil(); grafik(); spannung(); rechenweg(); luecken(); nichtGeprueft(); }
-
-  function sprache(l) {
-    LANG = l;
-    var btns = document.querySelectorAll('.lang-btn'), i;
-    for (i = 0; i < btns.length; i++) {
-      if (btns[i].getAttribute('data-lang') === l) btns[i].classList.add('active');
-      else btns[i].classList.remove('active');
-    }
-    document.documentElement.setAttribute('lang', l);
-    zeichne();
-  }
-
-  var btns = document.querySelectorAll('.lang-btn');
-  for (var i = 0; i < btns.length; i++) {
-    (function (b) {
-      b.addEventListener('click', function () { sprache(b.getAttribute('data-lang')); });
-    })(btns[i]);
-  }
-
-  var tb = id('themeBtn');
-  if (tb) tb.addEventListener('click', function () {
-    var d = document.documentElement;
-    d.setAttribute('data-theme', d.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
-  });
-
-  var ib = id('infoBtn');
-  if (ib) ib.addEventListener('click', function () {
-    window.alert('DT-ProfiSchweissnaht\nDieter Tepe · M\u00fchlenstra\u00dfe 2 · 48477 Dreierwalde\nDieter.Tepe@live.de · www.dt-profidreieck.de');
-  });
-
-  window.DTN_N1_zeichne = zeichne;
-  window.DTN_N1_sprache = sprache;
-  zeichne();
-})();
-</script>
+<script src="ui.js"></script>
 </body>
 </html>
