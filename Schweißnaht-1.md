@@ -11,7 +11,7 @@
 > Einstieg dort: **„weiter mit N4"** — dann der Reihenfolge in Kickoff-Punkt 5b folgen.
 
 ```
-Plan-Version : 2.12 · Stand 2026-07-26
+Plan-Version : 2.13 · Stand 2026-07-26
 Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                N2c (Nahtbild-Grafik) und N3 (Spannungen + beide Welten)
                von Dieter am Handy geprüft und ABGENOMMEN.
@@ -19,9 +19,11 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                am 2026-07-26 gegengeprüft: alle 11 Module, style.css, beide HTMLs und
                die drei DEV-ONLY-Dateien vorhanden, Testläufe direkt aus dem
                Projektordner grün.
-               → NÄCHSTER SCHRITT: Baustein N4 (Rechenweg, rechenweg.js)
+               → NÄCHSTER SCHRITT: Baustein N4 (Rechenweg, rechenweg.js) — einteilig
                  — Auftrag in Abschnitt 5.1, Schnittstellen in 4.5 (naht.js), 4.6 (profil.js),
                    4.7 (svglib.js + schaubild.js) und 4.8 (solver.js).
+               Große Bausteine (N5, N8, N13, N14) werden in ETAPPEN gebaut — Regel in
+               Kickoff-Punkt 5c, Etappen in Abschnitt 5.2.
 Basislinie   : 580 Assertions · DOM-Smokes 149 (voll) + 150 (test) · i18n-Parität 0 Abweichungen
                (VERBINDLICH. Basislinie darf nur WACHSEN — nie schrumpfen, nie gelockert werden.)
 Dateistand   : siehe Abschnitt 8.1 — dort steht, was fertig ist und was noch fehlt.
@@ -95,6 +97,36 @@ Einstiegssatz von Dieter: **„weiter mit N4"**.
    und die Basislinie aus dem Plan-Kopf bestätigen (**580 / 149 / 150 · 0 Fehler**),
    **bevor** etwas gebaut wird. Weicht etwas ab, erst das klären.
 10. Erst dann N4 bauen — Fließband nach Punkt 5 der Kickoff-Liste.
+
+**5c) GROSSE BAUSTEINE WERDEN VORHER IN ETAPPEN ZERLEGT — BINDEND**
+*(Dieters Festlegung 2026-07-26, Begründung im Entscheidungslog)*
+
+Der Kontext eines Chats überlebt eine Token-Pause, aber **nicht** einen Chatwechsel. Reißt
+ein Chat mitten in einem Baustein ab, ist das Einzige, was überlebt, **diese Datei**.
+Daraus folgt die harte Regel:
+
+> **Nie mitten im Modul aufhören — immer an einer grünen Messung.**
+> Ein Zwischenstand darf niemals „Datei halb geschrieben" heißen. Er heißt:
+> *Modul läuft, `node --check` sauber, i18n-Parität 0, DOM-Smokes und Harness grün —
+> der Umfang ist aber noch unvollständig, und der fehlende Teil steht als eigene,
+> benannte Etappe im Plan.*
+
+**Verfahren, wenn ein Baustein absehbar nicht in ein Kontingent passt:**
+1. **VOR dem ersten Codezeichen** die Etappen festlegen und in Abschnitt **5.2** eintragen,
+   Dieter bestätigt sie. Das kostet fast nichts und ist die ganze Absicherung.
+2. Jede Etappe ist **einzeln lieferbar und einzeln abnehmbar** — mit eigenen Assertions,
+   eigener Smoke-Erweiterung und einer eigenen Zeile im Changelog.
+3. Nach jeder Etappe: Plan-Kopf (Status/Basislinie) und Abschnitt 8.1 fortschreiben, damit
+   ein neuer Chat **schwarz auf weiß** liest, welche Etappe fertig ist und welche folgt.
+4. Der Plan-Kopf nennt dann nicht nur den Baustein, sondern die **Etappe**
+   (z. B. „nächster Schritt: N5, Etappe b").
+5. Läuft ein Chat trotzdem unerwartet aus: **die letzte grüne Lieferung ist der Stand.**
+   Halbfertiges wird verworfen, nicht gerettet — Wiederherstellungsversuche aus dem
+   Gedächtnis sind die gefährlichste Fehlerquelle des ganzen Projekts.
+
+**Betroffen sind nach heutiger Einschätzung: N5, N8, N13 und N14** (Etappen in 5.2).
+Kleine Bausteine (N4, N6b, N7, N9, N10, N11, N12, N15) bleiben einteilig — wenn sich das
+beim Bauen als falsch erweist, wird geteilt statt gehetzt.
 
 **6) TOKEN-PAUSEN:** Dieter stoppt bei ~90 % Verbrauch, Pause **4 Stunden**, dann weiter.
 Vor der Pause den genauen Stand nennen; Wiedereinstieg mit „weiter mit <Baustein>".
@@ -809,6 +841,9 @@ tragen je Code + Einheitsschlüssel, Beschriftung `sv_<code>`.
 > Voller Umfang in V1. Nicht der Umfang wird reduziert, sondern die **Reihenfolge**
 > risikosortiert: erst Kern, dann die billigen Zusatzbereiche, dann der große Ermüdungsblock,
 > zuletzt Verzug. Nach N12 ist das Programm bereits **verkaufsfähig**.
+>
+> **Die vier großen Bausteine N5, N8, N13 und N14 werden in Etappen gebaut** — jede Etappe
+> einzeln lieferbar und abnehmbar (Regel in Kickoff-Punkt 5c, Etappen in Abschnitt 5.2).
 
 | # | Baustein | Inhalt (Kurz) |
 |---|---|---|
@@ -873,6 +908,40 @@ Negativkontrolle, i18n-Parität über alle Schritte, Determinismus, Nichtmutatio
 **Später (nicht V1):** **Normprofil-Katalog** (IPE/HEA/HEB/UPE/UPN/RHS/Rohr, 2.2b Stufe 2),
 unterbrochene Nähte, Loch-/Schlitznähte, weitere Kerbfälle, FKM-Richtlinie, Kranbau-Regelwerke,
 AWS/US-Normen, EN 1993-1-8:2024 (2. Generation, β_w,mod — Werte noch nicht belegbar).
+
+### 5.2 Etappenteilung der großen Bausteine *(Regel in Kickoff-Punkt 5c)*
+
+> **Vorschlag, noch nicht endgültig.** Die Etappen eines Bausteins werden **unmittelbar vor
+> dessen Bau** mit Dieter final abgestimmt und hier festgeschrieben — dann ist der Umfang
+> jeder Lieferung klar, bevor Tokens ausgegeben werden. Die Reihenfolge innerhalb eines
+> Bausteins ist so gewählt, dass **jede Etappe für sich lauffähig und prüfbar** ist.
+
+**N5 — UI-Basis (vier Etappen):**
+| Etappe | Inhalt | Am Handy prüfbar |
+|---|---|---|
+| **N5a** | Grundgerüst: beide HTMLs neu, `ui.js`, `style.css` — Kopfzeile mit Marke und Lizenzzeile, Sprachumschalter DE/EN/PT, Theme-Button mit **Start immer dunkel** (3.1), Info-ⓘ, Subbar, leeres Formulargerüst mit aufklappbaren Bereichen. Die Zwischen-Statusseiten aus N1–N3 fallen hier weg. | Sieht aus wie ein Programm, startet dunkel, drei Sprachen laufen |
+| **N5b** | Eingabeseite: alle Auswahlgruppen aus `optionen.js` über **die** Filterfunktion, alle Felder aus `validate.js`, Freischalt-Haken, **„eigener Wert"-Haken überall**, Laien-ⓘ an jedem Feld, „Leeren" leert wirklich alles (3.1) | Man kann einen Fall wirklich eingeben |
+| **N5c** | Ergebnisseite: Ergebnis-Kacheln, Ampel, Nahtbild-Grafik eingebunden, **Rechenweg aus N4 angezeigt**, Liste 2.4, Warnungen und ehrliche Lücken sichtbar | Ein vollständiger Nachweis von Eingabe bis Ergebnis |
+| **N5d** | Block „Ausführung & Dokumentation" (ISO 5817 + EXC, ehrlich als nicht rechenwirksam beschriftet, 2.7) | Der Block klappt auf und erscheint in der Ausgabe |
+
+**N8 — Assistent (drei Etappen):**
+| Etappe | Inhalt |
+|---|---|
+| **N8a** | `assistent.js`: DOM-freie Dialoglogik, Schrittfolge aus `optionen.js` und `validate.js`, Verzweigung, Umkehrbarkeit jedes Schritts, Übernahme bereits gefüllter Felder — vollständig in Node testbar, **ohne** Oberfläche |
+| **N8b** | Overlay-UI: Button-Einstieg, ein Dialogfenster je Schritt mit Laien-Erklärung, Standardwert-Tipp, **Skizze** und antippbarer Auswahl (3.3) |
+| **N8c** | Mündung in die volle Anzeige mit Rechenweg und Liste 2.4; ab hier gilt die **Prozessregel**, dass jeder spätere Baustein seine Assistenten-Schritte mitliefert |
+
+**N13/N14 — Ermüdung und Kerbfallkatalog:**
+| Etappe | Inhalt |
+|---|---|
+| **N13a** | `ermuedung.js` Rechenkern Stahl: Wöhlerlinie m = 3/5, Δσ_C, γ_Mf, Einstufenkollektiv + Hand-Anker |
+| **N13b** | Miner-Schadensakkumulation und Kollektive, Alu-Kern nach EN 1999-1-3 |
+| **N14a** | `kerbfall.js`: **Struktur vollständig** (Codes, Kategorien, Anwendungsbedingungen, Verweis auf Skizze) mit den ersten Details — ab hier ist jede Lücke sichtbar statt still |
+| **N14b…** | Füllung in Etappen von je 8–12 Details, jedes mit eigener SVG-Skizze und **2 Quellen**. Hier wird Dieter nach seinen Praxis-Kerbfällen gefragt (Reihenfolge der Füllung) |
+
+**Nicht geteilt** (nach heutiger Einschätzung einteilig): N4, N6b, N7, N9, N10, N11, N12, N15.
+Erweist sich das beim Bauen als falsch, wird **geteilt statt gehetzt** — eine unfertige
+Lieferung ist teurer als eine zusätzliche.
 
 ---
 
@@ -1127,6 +1196,24 @@ Melden müssen sie **580 / 149 / 150 · 0 Fehler**. Weicht etwas ab, erst das kl
 - **Warum trotzdem halbe mm als Schalter:** bei t = 5 mm ist a_max = 0,7 · t = 3,5 mm — mit
   ganzen mm gäbe es dort zwischen a3 und a_max keine Stufe mehr.
 
+**Aus der Abstimmung 2026-07-26 (Etappen bei großen Bausteinen):**
+- **Anlass:** Dieter hat darauf hingewiesen, dass einige kommende Aufgaben mit einem
+  Token-Kontingent nicht zu schaffen sind und ein **abgebrochener Chat** die Gefahr birgt,
+  nicht richtig fortzusetzen. Das ist die richtige Sorge: eine Token-Pause ist harmlos
+  (der Kontext bleibt), ein Chatwechsel mitten im Baustein ist es nicht.
+- **Festgelegt:** Große Bausteine werden **vor** dem Bauen in Etappen zerlegt, jede einzeln
+  lieferbar und abnehmbar. Ausformuliert in Kickoff-Punkt **5c**, Etappen in **5.2**.
+- **Kernsatz:** *Nie mitten im Modul aufhören — immer an einer grünen Messung.* Ein
+  Zwischenstand ist niemals „Datei halb geschrieben", sondern „läuft, aber Umfang noch offen".
+- **Und ausdrücklich:** Halbfertiges wird bei einem Abbruch **verworfen, nicht gerettet.**
+  Wiederherstellung aus dem Gedächtnis ist die gefährlichste Fehlerquelle des Projekts —
+  gerade weil sie sich hilfsbereit anfühlt.
+- **Klarstellung, die dabei nötig war:** Claude hatte zunächst vermutet, nach einer
+  Token-Pause müsse der Plan neu gelesen werden. Das ist **falsch** — in diesem Chat gab es
+  eine Pause, und der Kontext war danach vollständig da. Dieter hatte das aus zwei
+  eigenen Durchläufen richtig eingeschätzt. Festgehalten, damit die Fehlannahme nicht
+  in einem späteren Chat wiederkehrt.
+
 **Aus der Rückmeldung 2026-07-26 (N3 abgenommen):**
 - N3 von Dieter am Handy geprüft: beide Bemessungswelten nebeneinander, die Auslegung mit
   `a_erf` und `a_gewaehlt`, die fünf Hand-Anker und die sichtbare a_max-Warnung laufen in
@@ -1352,6 +1439,18 @@ für N4) und um einen **Vollständigkeitscheck des Projektordners** erweitert �
 davon, dass `dom_smoke_voll.js` in diesem Chat einmal fehlte. Code unverändert.
 **Nächster Schritt: N4 bauen — im neuen Chat mit „weiter mit N4" einsteigen.
 Auftrag steht in Abschnitt 5.1, Schnittstelle von solver.js in Abschnitt 4.8.**
+
+**v2.13 (2026-07-26):** **Etappenregel für große Bausteine aufgenommen** (Dieters
+Festlegung, Begründung im Entscheidungslog): neuer Kickoff-Punkt **5c** mit dem Kernsatz
+*„Nie mitten im Modul aufhören — immer an einer grünen Messung"*, dem Verfahren zur
+Etappenfestlegung **vor** dem ersten Codezeichen und der harten Regel, dass Halbfertiges
+bei einem Abbruch verworfen und nicht aus dem Gedächtnis rekonstruiert wird. Neuer
+Abschnitt **5.2** mit der vorgeschlagenen Etappenteilung von **N5** (vier Etappen a–d),
+**N8** (drei Etappen a–c) und **N13/N14**; die übrigen Bausteine bleiben einteilig.
+Abschnitt 5 im Kopf entsprechend ergänzt. Außerdem richtiggestellt: eine Token-Pause
+**erhält** den Chatkontext, nur ein Chatwechsel verliert ihn. Code unverändert,
+Basislinie unverändert **580 / 149 / 150**.
+**Nächster Schritt unverändert: N4 (Rechenweg) — Einstieg „weiter mit N4".**
 ═══════════════════════════════════════════════════════════════════════════
 Ende Schweißnaht-1.md · DT-ProfiSchweissnaht
 ═══════════════════════════════════════════════════════════════════════════
