@@ -16,6 +16,7 @@ var Profil  = require('./profil.js');
 var Svg     = require('./svglib.js');
 var Bild    = require('./schaubild.js');
 var Solver  = require('./solver.js');
+var Weg     = require('./rechenweg.js');
 
 var N = 0, FAIL = [], SEKTION = '';
 function sek(s) { SEKTION = s; console.log('\n— ' + s + ' —'); }
@@ -1455,6 +1456,269 @@ for (svKi = 0; svKi < svAlleCodes.length; svKi++) {
   });
 }
 eq(svDreiSpr, 0, 'jeder N3-Meldungstext liegt in allen drei Sprachen vor');
+
+/* ========================================================================= */
+sek('S28 · N4 Rechenweg — Vollstaendigkeit, Proben, Negativkontrolle');
+
+ok(!!Weg, 'rechenweg.js geladen');
+ok(typeof Weg.baue === 'function' && typeof Weg.ausErgebnis === 'function' &&
+   typeof Weg.rendere === 'function' && typeof Weg.pruefe === 'function',
+   'baue, ausErgebnis, rendere und pruefe sind da');
+
+/* --- Testfaelle: jeder Rechenpfad mindestens einmal -------------------- */
+function rwSegs(a) {
+  return [Naht.linie(-50, -100, -50, 100, a), Naht.linie(50, -100, 50, 100, a)];
+}
+/* Unsymmetrisch: ys, zs und Iyz sind ungleich null. Nur so faellt eine
+   verfaelschte Null ueberhaupt auf (Testdaten-Falle aus diesem Baustein). */
+var rwSegU = [Naht.linie(0, 0, 0, 200, 5, 'steg'),
+              Naht.linie(0, 200, 120, 200, 4, 'flansch'),
+              Naht.linie(0, 0, 80, 0, 4, 'fuss')];
+
+var rwFaelle = [
+  ['A richtungsbezogen', { welt: 'A', rechenrichtung: 'nachweis', nachweisverfahren: 'richtungsbezogen',
+    werkstoff: 'S355', bw_regelsatz: 'na_de', nahtart: 'kehl_doppel', t1: 10, t2: 10,
+    modell: 'duennwandig', segmente: rwSegs(5), N: 200000 }],
+  ['A vereinfacht', { welt: 'A', rechenrichtung: 'nachweis', nachweisverfahren: 'vereinfacht',
+    werkstoff: 'S355', bw_regelsatz: 'na_de', nahtart: 'kehl_doppel', t1: 10, t2: 10,
+    segmente: rwSegs(5), Qz: 150000 }],
+  ['A Edelstahl', { welt: 'A', rechenrichtung: 'nachweis', werkstoff: '1.4404',
+    nahtart: 'kehl_doppel', t1: 8, t2: 8, segmente: rwSegs(4), N: 100000 }],
+  ['A Aluminium', { welt: 'A', rechenrichtung: 'nachweis', werkstoff: 'AW6082', zustand: 'T6',
+    zusatzwerkstoff: '5356', nahtart: 'kehl_doppel', t1: 10, t2: 10,
+    segmente: rwSegs(6), N: 80000 }],
+  ['B Formelweg', { welt: 'B', rechenrichtung: 'nachweis', werkstoff: 'S235',
+    nahtguete: 'durchgeschweisst_zug_ungeprueft', lastfall: 'ruhend', nahtart: 'stumpf_v',
+    t1: 10, t2: 10, segmente: rwSegs(7), N: 200000 }],
+  ['B Tabellenweg', { welt: 'B', rechenrichtung: 'nachweis', werkstoff: 'S235',
+    weltb_nahtgruppe: 'kehl_flach', nahtguete: 'kehlnaht_allgemein', lastfall: 'schwellend',
+    nahtart: 'kehl_doppel', t1: 10, t2: 10, segmente: rwSegs(5), N: 100000 }],
+  ['A Auslegung Rundrohr', { welt: 'A', rechenrichtung: 'auslegung', werkstoff: 'S355',
+    bw_regelsatz: 'na_de', nahtart: 'kehl_umlaufend',
+    profil_eingabe: { profil: 'rohr_rund', kanten: 'rundum', d: 100, t1: 8, a: 4 },
+    t1: 8, t2: 8, T: 15000, N: 50000, a: 4, a_rundung: 'ganze_mm' }],
+  ['A I-Profil Flansche', { welt: 'A', rechenrichtung: 'nachweis', werkstoff: 'S355',
+    bw_regelsatz: 'na_de', nahtart: 'kehl_doppel',
+    profil_eingabe: { profil: 'i_profil', kanten: 'flansche', b: 100, h: 200, tw: 6, tf: 9, a: 5 },
+    t1: 9, t2: 9, My: 15000, Qz: 60000 }],
+  ['A Stumpf teilweise', { welt: 'A', rechenrichtung: 'nachweis', werkstoff: 'S275',
+    bw_regelsatz: 'na_de', nahtart: 'stumpf_hv', t1: 12, t2: 12,
+    segmente: rwSegs(8), My: 20000 }],
+  ['A Stumpf durchgeschweisst', { welt: 'A', rechenrichtung: 'nachweis', werkstoff: 'S275',
+    bw_regelsatz: 'na_de', nahtart: 'stumpf_v', t1: 12, t2: 12,
+    segmente: rwSegs(12), My: 20000 }],
+  ['A unsymmetrisch', { welt: 'A', rechenrichtung: 'nachweis', werkstoff: 'S355',
+    bw_regelsatz: 'na_de', nahtart: 'kehl_doppel', t1: 10, t2: 10, segmente: rwSegU,
+    N: 120000, My: 9000, Mz: 4000, Qz: 30000, T: 2500 }]
+];
+
+var rwI, rwJ, rwK, rwE, rwW, rwP, rwG;
+
+/* --- Jeder Pfad liefert einen vollstaendigen, in sich stimmigen Weg ---- */
+var rwOhneOk = 0, rwOhneProbe = 0, rwProbeFehl = 0, rwLeerCode = 0,
+    rwFremdAb = 0, rwFremdSchritt = 0, rwFremdQuelle = 0, rwFremdProbe = 0;
+for (rwI = 0; rwI < rwFaelle.length; rwI++) {
+  rwW = Weg.baue(rwFaelle[rwI][1]);
+  if (!rwW.ok) { rwOhneOk++; console.log('    kein Weg: ' + rwFaelle[rwI][0]); continue; }
+  rwP = Weg.pruefe(rwW);
+  if (rwP.n === 0) rwOhneProbe++;
+  if (!rwP.ok) { rwProbeFehl++; console.log('    Probe gekippt bei ' + rwFaelle[rwI][0] + ': ' + rwP.fehlgeschlagen.join(',')); }
+  for (rwJ = 0; rwJ < rwW.schritte.length; rwJ++) {
+    var rwS = rwW.schritte[rwJ];
+    if (!rwS.code) rwLeerCode++;
+    if (Weg.ABSCHNITTE.indexOf(rwS.abschnitt) < 0) rwFremdAb++;
+    if (Weg.SCHRITTE.indexOf(rwS.code) < 0) { rwFremdSchritt++; console.log('    unbekannter Schritt: ' + rwS.code); }
+    if (rwS.quelle && Weg.QUELLEN.indexOf(rwS.quelle) < 0) { rwFremdQuelle++; console.log('    unbekannte Quelle: ' + rwS.quelle); }
+    if (rwS.probe && Weg.PROBEN.indexOf(rwS.probe) < 0) { rwFremdProbe++; console.log('    unbekannte Probe: ' + rwS.probe); }
+  }
+}
+eq(rwOhneOk, 0, 'alle ' + rwFaelle.length + ' Rechenpfade liefern einen Rechenweg');
+eq(rwOhneProbe, 0, 'jeder Rechenweg traegt mindestens eine Rechenprobe');
+eq(rwProbeFehl, 0, 'in keinem Rechenpfad kippt eine Rechenprobe');
+eq(rwLeerCode, 0, 'jeder Schritt hat einen Code');
+eq(rwFremdAb, 0, 'jeder Schritt liegt in einem bekannten Abschnitt');
+eq(rwFremdSchritt, 0, 'jeder Schrittcode steht im Verzeichnis SCHRITTE');
+eq(rwFremdQuelle, 0, 'jede benannte Grundlage steht im Verzeichnis QUELLEN');
+eq(rwFremdProbe, 0, 'jede Probe steht im Verzeichnis PROBEN');
+
+/* --- Jeder Code hat seinen Text, und zwar in allen drei Sprachen ------- */
+var rwAlleCodes = Weg.ABSCHNITTE.concat(Weg.SCHRITTE, Weg.PROBEN, Weg.QUELLEN);
+var rwOhneText = 0, rwOhneSpr = 0;
+for (rwI = 0; rwI < rwAlleCodes.length; rwI++) {
+  if (!Kern.has(rwAlleCodes[rwI])) { rwOhneText++; console.log('    ohne Text: ' + rwAlleCodes[rwI]); }
+  ['de', 'en', 'pt'].forEach(function (l) {
+    var t = Kern.t(rwAlleCodes[rwI], l);
+    if (!t || t.charAt(0) === '[') rwOhneSpr++;
+  });
+}
+eq(rwOhneText, 0, 'jeder Code des Rechenwegs hat einen Text (' + rwAlleCodes.length + ' Codes)');
+eq(rwOhneSpr, 0, 'jeder Text des Rechenwegs liegt in DE, EN und PT vor');
+ok(Kern.has('rw_titel') && Kern.has('rw_probe') && Kern.has('rw_selbstpruefung'),
+   'die Rahmenbeschriftungen des Rechenwegs sind vorhanden');
+
+/* --- Dreisprachig gerendert, ohne einen einzigen Platzhalter ----------- */
+var rwPlatz = 0, rwLeerTitel = 0;
+for (rwI = 0; rwI < rwFaelle.length; rwI++) {
+  rwW = Weg.baue(rwFaelle[rwI][1]);
+  if (!rwW.ok) continue;
+  ['de', 'en', 'pt'].forEach(function (l) {
+    rwG = Weg.rendere(rwW, l);
+    if (/\[[a-z0-9_.]+\]/.test(Weg.alleTexte(rwG))) {
+      rwPlatz++;
+      console.log('    Platzhalter in ' + l + ' bei ' + rwFaelle[rwI][0] + ': ' +
+                  /\[[a-z0-9_.]+\]/.exec(Weg.alleTexte(rwG))[0]);
+    }
+    for (rwJ = 0; rwJ < rwG.schritte.length; rwJ++) {
+      if (!rwG.schritte[rwJ].titel) rwLeerTitel++;
+    }
+  });
+}
+eq(rwPlatz, 0, 'kein unuebersetzter Platzhalter in DE/EN/PT ueber alle Rechenpfade');
+eq(rwLeerTitel, 0, 'jeder Schritt hat in jeder Sprache eine Ueberschrift');
+
+/* --- Zahlformat: DE und PT mit Komma, EN mit Punkt --------------------- */
+eq(Weg.zahl(1234.5, 1, 'de'), '1.234,5', 'DE: Tausenderpunkt und Dezimalkomma');
+eq(Weg.zahl(1234.5, 1, 'pt'), '1.234,5', 'PT: wie DE');
+eq(Weg.zahl(1234.5, 1, 'en'), '1,234.5', 'EN: Tausenderkomma und Dezimalpunkt');
+eq(Weg.zahl(-2.5, 2, 'de'), '\u22122,50', 'negatives Vorzeichen ist ein echtes Minuszeichen');
+eq(Weg.zahl(NaN, 2, 'de'), '\u2013', 'kein Wert -> Gedankenstrich statt NaN');
+eq(Weg.fuellen('{0} + {1} = {2}', [{ v: 1, nk: 0 }, { v: 2, nk: 0 }, { v: 3, nk: 0 }], 'de'),
+   '1 + 2 = 3', 'Vorlage wird mit den Zahlen gefuellt');
+
+/* --- PFLICHT-ASSERTION: Negativkontrolle ------------------------------- */
+/* Ein absichtlich verfaelschtes Ergebnis MUSS ein Haekchen umkippen.      */
+var rwEinU = rwFaelle[10][1];
+var rwPfade = ['nahtbild.A', 'nahtbild.l_ges', 'nahtbild.ys', 'nahtbild.zs',
+  'nahtbild.Iy', 'nahtbild.Iz', 'nahtbild.Iyz', 'nahtbild.Ip', 'nahtbild.Wt',
+  'massgebend.sigma_x', 'massgebend.tau_n', 'massgebend.tau_t', 'massgebend.q_senk',
+  'massgebend.sigma_senk', 'massgebend.tau_senk', 'massgebend.tau_par',
+  'massgebend.sigma_v', 'widerstand.R_d', 'widerstand.fu', 'widerstand.betaW',
+  'widerstand.gammaM2', 'eta', 'schnittgroessen.N', 'schnittgroessen.Qz',
+  'schnittgroessen.My', 'schnittgroessen.Mz', 'schnittgroessen.T'];
+var rwUnerkannt = 0;
+for (rwI = 0; rwI < rwPfade.length; rwI++) {
+  rwE = Solver.rechne(rwEinU);
+  var rwZiel = rwE, rwT = rwPfade[rwI].split('.');
+  for (rwJ = 0; rwJ < rwT.length - 1; rwJ++) rwZiel = rwZiel[rwT[rwJ]];
+  rwZiel[rwT[rwT.length - 1]] = rwZiel[rwT[rwT.length - 1]] * 1.000001;
+  if (Weg.pruefe(Weg.ausErgebnis(rwE, rwEinU)).ok) {
+    rwUnerkannt++;
+    console.log('    NICHT erkannt: ' + rwPfade[rwI]);
+  }
+}
+eq(rwUnerkannt, 0, 'NEGATIVKONTROLLE: alle ' + rwPfade.length +
+   ' verfaelschten Ergebniswerte kippen ein Haekchen (Verfaelschung nur 1e-6 relativ)');
+ok(Weg.pruefe(Weg.baue(rwEinU)).ok, 'derselbe Fall bleibt unverfaelscht vollstaendig gruen');
+
+/* --- Rechenprobe und Nachweis sind GETRENNT ---------------------------- */
+/* Ein zu kleines a-Mass ist ein nicht erfuellter Nachweis, KEIN Rechen-
+   fehler. Wuerde beides in einem Haekchen stecken, waere die Selbst-
+   pruefung als Warnsignal wertlos. */
+var rwKlein = Weg.baue({ welt: 'A', rechenrichtung: 'nachweis', werkstoff: 'S235',
+  bw_regelsatz: 'na_de', nahtart: 'kehl_doppel', t1: 10, t2: 10,
+  segmente: rwSegs(2), N: 30000 });
+ok(rwKlein.ok, 'zu duenne Naht liefert trotzdem einen vollstaendigen Rechenweg');
+ok(rwKlein.selbstpruefung_ok === true, 'a unter a_min kippt KEINE Rechenprobe');
+ok(rwKlein.nachweis_ok === false, 'a unter a_min wird als nicht erfuellter Nachweis gemeldet');
+var rwAmin = null;
+for (rwI = 0; rwI < rwKlein.schritte.length; rwI++) {
+  if (rwKlein.schritte[rwI].code === 'rw_s_a_min') rwAmin = rwKlein.schritte[rwI];
+}
+ok(!!rwAmin && rwAmin.erfuellt === false, 'der Schritt "Mindest-a-Mass" traegt das rote Haekchen');
+ok(!!rwAmin && rwAmin.hinweis === 'msg_sv_a_unter_amin', 'und den passenden Klartext-Hinweis');
+
+/* --- Die Haekchen aus naht.js stehen als Zeilen im Rechenweg ----------- */
+var rwStd = Weg.baue(rwFaelle[0][1]);
+function rwSchritt(w, code) {
+  for (var k = 0; k < w.schritte.length; k++) if (w.schritte[k].code === code) return w.schritte[k];
+  return null;
+}
+ok(!!rwSchritt(rwStd, 'rw_s_kontrolle_schwerpunkt'), 'Selbstpruefung Schwerpunkt steht im Rechenweg');
+ok(!!rwSchritt(rwStd, 'rw_s_kontrolle_polar'), 'Selbstpruefung Ip = Iy + Iz steht im Rechenweg');
+ok(!!rwSchritt(rwStd, 'rw_s_kontrolle_haupt'), 'Selbstpruefung Hauptachsen steht im Rechenweg');
+ok(rwSchritt(rwStd, 'rw_s_kontrolle_gesamt').haken === true, 'die Gesamtzeile zaehlt alle Haekchen');
+ok(!!rwSchritt(rwStd, 'rw_s_nicht_geprueft'), 'die Liste 2.4 steht im Rechenweg');
+eq(rwSchritt(rwStd, 'rw_s_nicht_geprueft').liste.length, 10,
+   'die Liste 2.4 traegt alle 10 Punkte');
+eq(rwSchritt(rwStd, 'rw_s_flaeche').probe, 'rw_p_flaeche',
+   'die Nahtflaeche nennt ihren zweiten Rechenpfad');
+eq(rwSchritt(rwStd, 'rw_s_widerstand').quelle, 'qu_ec3_1_8',
+   'der Widerstand nennt seine Grundlage EN 1993-1-8');
+eq(rwSchritt(rwStd, 'rw_s_werkstoff').text, 'opt_werkstoff_S355',
+   'der Werkstoff steht als Code, nicht als Text');
+
+/* --- Hand-Anker mitten im Rechenweg ----------------------------------- */
+/* Konsole 2 x 200 mm, a5, N = 200 kN: A_w = 2000 mm2, sigma_x = 100 N/mm2,
+   sigma_v = sqrt(2)*100, R_d = 490/(0,90*1,25). */
+nahe(rwSchritt(rwStd, 'rw_s_flaeche').ergebnis, 2000, 1e-9, 'HAND-ANKER: A_w = 2 * 5 * 200 = 2000 mm2');
+nahe(rwSchritt(rwStd, 'rw_s_sigma_x').ergebnis, 100, 1e-9, 'HAND-ANKER: sigma_x = 200000/2000 = 100 N/mm2');
+nahe(rwSchritt(rwStd, 'rw_s_umklappen').ergebnis, 100 / Math.sqrt(2), 1e-9,
+     'HAND-ANKER: Umklappen ergibt 70,71 N/mm2');
+nahe(rwSchritt(rwStd, 'rw_s_sigma_v').ergebnis, Math.sqrt(2) * 100, 1e-9,
+     'HAND-ANKER: sigma_v = sqrt(2)*sigma_x bei reinem Querzug');
+nahe(rwSchritt(rwStd, 'rw_s_widerstand').ergebnis, 490 / (0.90 * 1.25), 1e-9,
+     'HAND-ANKER: R_d = 490/(0,90*1,25) = 435,56 N/mm2');
+
+/* --- Auslegung: BEIDE a-Zahlen stehen im Rechenweg (2.3) --------------- */
+var rwAus = Weg.baue(rwFaelle[6][1]);
+var rwErf = rwSchritt(rwAus, 'rw_s_a_erf'), rwGew = rwSchritt(rwAus, 'rw_s_a_gewaehlt');
+ok(!!rwErf && !!rwGew, 'Auslegung: erforderliches UND gewaehltes a-Mass sind eigene Schritte');
+ok(rwGew.ergebnis >= rwErf.ergebnis - 1e-9, 'das gewaehlte a-Mass ist nie kleiner als das erforderliche');
+ok(rwGew.ergebnis - rwErf.ergebnis < 1.0 + 1e-9, 'aufgerundet wird hoechstens um eine ganze Stufe');
+ok(Math.abs(rwGew.ergebnis - Math.round(rwGew.ergebnis)) < 1e-9,
+   'bei ganzen Millimetern liegt das gewaehlte Mass auf der Stufenreihe');
+ok(rwErf.haken === true && rwGew.haken === true, 'beide a-Schritte sind durch eine Probe gedeckt');
+ok(!!rwSchritt(rwAus, 'rw_s_a_kontrolle'), 'die Nachrechnung mit dem gewaehlten a-Mass steht dabei');
+
+/* --- Determinismus und Nichtmutation ---------------------------------- */
+var rwEin1 = { welt: 'A', rechenrichtung: 'nachweis', werkstoff: 'S355', bw_regelsatz: 'na_de',
+  nahtart: 'kehl_doppel', t1: 10, t2: 10, segmente: rwSegs(5), N: 200000 };
+var rwVor = JSON.stringify(rwEin1);
+var rwA1 = Weg.baue(rwEin1), rwA2 = Weg.baue(rwEin1);
+eq(JSON.stringify(rwEin1), rwVor, 'rechenweg.js mutiert seine Eingabe nicht');
+eq(JSON.stringify(rwA1.schritte), JSON.stringify(rwA2.schritte),
+   'zwei Laeufe liefern denselben Rechenweg (Determinismus)');
+eq(JSON.stringify(Weg.rendere(rwA1, 'de')), JSON.stringify(Weg.rendere(rwA2, 'de')),
+   'auch das Rendern ist deterministisch');
+var rwSegVor = JSON.stringify(rwEin1.segmente);
+Weg.baue({ welt: 'A', rechenrichtung: 'auslegung', werkstoff: 'S355', bw_regelsatz: 'na_de',
+  nahtart: 'kehl_doppel', t1: 10, t2: 10, segmente: rwEin1.segmente, N: 600000, a: 5 });
+eq(JSON.stringify(rwEin1.segmente), rwSegVor, 'auch die Auslegung laesst die Segmente unberuehrt');
+
+/* --- Fehlerfall: kein halber Rechenweg, keine stille Zahl -------------- */
+var rwFehl = Weg.baue({ welt: 'A', werkstoff: 'S355', nahtart: 'kehl_doppel', segmente: rwSegs(5) });
+ok(rwFehl.ok === false, 'ohne Last gibt es keinen Rechenweg');
+eq(rwFehl.schritte.length, 0, 'im Fehlerfall gibt es KEINEN einzigen Schritt');
+ok(rwFehl.fehler.length > 0, 'im Fehlerfall steht der Fehlercode da');
+ok(rwFehl.selbstpruefung_ok === false, 'im Fehlerfall gilt die Selbstpruefung als nicht bestanden');
+eq(Weg.rendere(rwFehl, 'de').schritte.length, 0, 'auch gerendert bleibt der Fehlerfall leer');
+
+/* --- Abschnitte in fester Reihenfolge ---------------------------------- */
+var rwFolge = [];
+for (rwI = 0; rwI < rwAus.abschnitte.length; rwI++) rwFolge.push(rwAus.abschnitte[rwI].code);
+var rwSortiert = true;
+for (rwI = 1; rwI < rwFolge.length; rwI++) {
+  if (Weg.ABSCHNITTE.indexOf(rwFolge[rwI]) <= Weg.ABSCHNITTE.indexOf(rwFolge[rwI - 1])) rwSortiert = false;
+}
+ok(rwSortiert, 'die Abschnitte stehen in der festgelegten Reihenfolge: ' + rwFolge.join(' \u2192 '));
+ok(rwFolge.indexOf('rw_ab_auslegung') > rwFolge.indexOf('rw_ab_nachweis'),
+   'die Auslegung steht hinter dem Nachweis');
+ok(rwFolge[rwFolge.length - 1] === 'rw_ab_hinweise',
+   'Warnungen und ehrliche Hinweise stehen am Schluss');
+
+/* --- Laien-ⓘ am Rechenweg --------------------------------------------- */
+var rwHilfe = ['rw_titel', 'rw_s_umklappen', 'rw_s_sigma_v', 'rw_s_widerstand',
+               'rw_s_ausnutzung', 'rw_s_a_gewaehlt', 'rw_s_kontrolle_gesamt'];
+var rwHFehlt = 0;
+for (rwI = 0; rwI < rwHilfe.length; rwI++) {
+  if (!Hilfe.has(rwHilfe[rwI])) { rwHFehlt++; console.log('    ohne Laien-ⓘ: ' + rwHilfe[rwI]); continue; }
+  ['de', 'en', 'pt'].forEach(function (l) {
+    ['was', 'bereich', 'tipp'].forEach(function (f) {
+      if (!Hilfe.h(rwHilfe[rwI], l, f)) rwHFehlt++;
+    });
+  });
+}
+eq(rwHFehlt, 0, 'die ' + rwHilfe.length + ' Laien-ⓘ des Rechenwegs sind in DE/EN/PT vollstaendig');
 
 /* ========================================================================= */
 console.log('\n════════════════════════════════════════════');

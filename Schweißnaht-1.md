@@ -6,25 +6,26 @@
 > **Diese Datei ersetzt `Schweißnaht.md` vollständig.** Sie enthält den Stand nach dem
 > Konzeptgespräch (2026-07-23), nach der abgeschlossenen Recherche (R1–R6), nach der
 > Abstimmung vom **2026-07-24** (alle offenen Fragen aus Abschnitt 0 geklärt) und nach den
-> abgenommenen Bausteinen **N1, N2, N2b, N2c und N3** (Stand 2026-07-26).
+> abgenommenen Bausteinen **N1, N2, N2b, N2c und N3** und dem gebauten Baustein **N4**
+> (Stand 2026-07-26).
 > Sie ist so geschrieben, dass ein **neuer Chat ohne Vorwissen** damit weiterarbeiten kann.
-> Einstieg dort: **„weiter mit N4"** — dann der Reihenfolge in Kickoff-Punkt 5b folgen.
+> Einstieg dort: **„weiter mit N5a"** — dann der Reihenfolge in Kickoff-Punkt 5b folgen.
 
 ```
-Plan-Version : 2.13 · Stand 2026-07-26
+Plan-Version : 2.14 · Stand 2026-07-26
 Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                N2c (Nahtbild-Grafik) und N3 (Spannungen + beide Welten)
                von Dieter am Handy geprüft und ABGENOMMEN.
-               Projektordner /mnt/project/ UND GitHub Pages sind auf diesem Stand —
-               am 2026-07-26 gegengeprüft: alle 11 Module, style.css, beide HTMLs und
-               die drei DEV-ONLY-Dateien vorhanden, Testläufe direkt aus dem
-               Projektordner grün.
-               → NÄCHSTER SCHRITT: Baustein N4 (Rechenweg, rechenweg.js) — einteilig
-                 — Auftrag in Abschnitt 5.1, Schnittstellen in 4.5 (naht.js), 4.6 (profil.js),
-                   4.7 (svglib.js + schaubild.js) und 4.8 (solver.js).
+               N4 (Rechenweg, rechenweg.js) GEBAUT und ausgeliefert —
+               Abnahme am Handy steht noch aus.
+               → NÄCHSTER SCHRITT: erst N4 am Handy prüfen. Danach Baustein N5
+                 (UI-Basis) in vier Etappen — Einstieg „weiter mit N5a",
+                 Auftrag in Abschnitt 5.1, Etappen in 5.2.
+                 Schnittstellen: 4.5 (naht.js), 4.6 (profil.js),
+                 4.7 (svglib.js + schaubild.js), 4.8 (solver.js), 4.9 (rechenweg.js).
                Große Bausteine (N5, N8, N13, N14) werden in ETAPPEN gebaut — Regel in
                Kickoff-Punkt 5c, Etappen in Abschnitt 5.2.
-Basislinie   : 580 Assertions · DOM-Smokes 149 (voll) + 150 (test) · i18n-Parität 0 Abweichungen
+Basislinie   : 641 Assertions · DOM-Smokes 182 (voll) + 183 (test) · i18n-Parität 0 Abweichungen
                (VERBINDLICH. Basislinie darf nur WACHSEN — nie schrumpfen, nie gelockert werden.)
 Dateistand   : siehe Abschnitt 8.1 — dort steht, was fertig ist und was noch fehlt.
 ```
@@ -78,7 +79,7 @@ welche Dateien zu überschreiben sind** → Dieter bestätigt am Handy → erst 
 Schritt. Danach Plan-Kopf (Version/Status/Basislinie) + Changelog pflegen.
 
 **5b) WIEDEREINSTIEG IN EINEM NEUEN CHAT — genau diese Reihenfolge:**
-Einstiegssatz von Dieter: **„weiter mit N4"**.
+Einstiegssatz von Dieter: **„weiter mit N5a"**.
 1. Diese Datei komplett lesen (`Schweißnaht-1.md`, sie ist die alleinige Grundlage).
 2. Abschnitt **8.1** lesen: was ist fertig, was fehlt.
 3. Abschnitt **4.5** lesen: die fertige Schnittstelle von `naht.js` (N2).
@@ -86,17 +87,20 @@ Einstiegssatz von Dieter: **„weiter mit N4"**.
    die Grafik und N7 (Presets) auf. Fachlicher Hintergrund steht in **2.2b**.
 5. Abschnitt **4.7** lesen: die fertige Schnittstelle von `svglib.js` + `schaubild.js`
    (N2c) — darauf setzen N5 (UI), N6b (ISO 2553) und N14 (Kerbfallskizzen) auf.
-6. Abschnitt **4.8** lesen: die fertige Schnittstelle von `solver.js` (N3) — **darauf
-   setzt N4 unmittelbar auf.** Das ist die wichtigste Schnittstelle für den nächsten Schritt.
-7. Abschnitt **5.1** lesen: der ausformulierte Auftrag für den nächsten Baustein **N4**.
-8. **Vollständigkeit des Projektordners prüfen** (Liste in 8.1): 11 Module, `style.css`,
+6. Abschnitt **4.8** lesen: die fertige Schnittstelle von `solver.js` (N3).
+7. Abschnitt **4.9** lesen: die fertige Schnittstelle von `rechenweg.js` (N4) — **darauf
+   setzt N5c unmittelbar auf.** Wichtig ist dort besonders, dass N5 nur RENDERT und
+   die beiden Häkchenarten (Rechenprobe / Nachweis) nicht vermischt.
+8. Abschnitt **5.1** lesen: der ausformulierte Auftrag für die nächste Etappe **N5a**,
+   und Abschnitt **5.2**: die vier Etappen von N5.
+9. **Vollständigkeit des Projektordners prüfen** (Liste in 8.1): 12 Module, `style.css`,
    beide HTMLs und **alle drei** DEV-ONLY-Dateien. `dom_smoke_test.js` allein läuft nicht,
    sie ruft `dom_smoke_voll.js` auf — fehlt eine davon, zuerst bei Dieter nachfragen.
-9. Arbeitsordner herstellen (Befehl unter Punkt 6 der Kickoff-Liste), dann
+10. Arbeitsordner herstellen (Befehl unter Punkt 6 der Kickoff-Liste), dann
    `node test_naht.js`, `node dom_smoke_voll.js`, `node dom_smoke_test.js` laufen lassen
-   und die Basislinie aus dem Plan-Kopf bestätigen (**580 / 149 / 150 · 0 Fehler**),
+   und die Basislinie aus dem Plan-Kopf bestätigen (**641 / 182 / 183 · 0 Fehler**),
    **bevor** etwas gebaut wird. Weicht etwas ab, erst das klären.
-10. Erst dann N4 bauen — Fließband nach Punkt 5 der Kickoff-Liste.
+11. Erst dann N5a bauen — Fließband nach Punkt 5 der Kickoff-Liste.
 
 **5c) GROSSE BAUSTEINE WERDEN VORHER IN ETAPPEN ZERLEGT — BINDEND**
 *(Dieters Festlegung 2026-07-26, Begründung im Entscheidungslog)*
@@ -125,8 +129,9 @@ Daraus folgt die harte Regel:
    Gedächtnis sind die gefährlichste Fehlerquelle des ganzen Projekts.
 
 **Betroffen sind nach heutiger Einschätzung: N5, N8, N13 und N14** (Etappen in 5.2).
-Kleine Bausteine (N4, N6b, N7, N9, N10, N11, N12, N15) bleiben einteilig — wenn sich das
+Kleine Bausteine (N6b, N7, N9, N10, N11, N12, N15) bleiben einteilig — wenn sich das
 beim Bauen als falsch erweist, wird geteilt statt gehetzt.
+**N4 hat die Einteilung bestätigt:** einteilig gebaut, in einem Zug grün geliefert.
 
 **6) TOKEN-PAUSEN:** Dieter stoppt bei ~90 % Verbrauch, Pause **4 Stunden**, dann weiter.
 Vor der Pause den genauen Stand nennen; Wiedereinstieg mit „weiter mit <Baustein>".
@@ -462,9 +467,9 @@ dt-profischweissnaht-web/
 ├── DT-ProfiSchweissnaht_Test.html → Testedition (Unterschied: NUR window.DT_EDITION)
 ├── style.css                      → Design-Tokens/Look (aus der Passung portiert)
 ├── i18n_kern.js   (DTNI18nKern)   → Bedienung, Felder, Meldungen, Rechenweg-Beschriftungen
-│                                     ✅ fertig (N1–N3) · 435 Schlüssel
+│                                     ✅ fertig (N1–N4) · 520 Schlüssel
 ├── i18n_hilfe.js  (DTNI18nHilfe)  → Laien-ⓘ-Texte, Dialog-Erklärungen, Tipps
-│                                     ✅ fertig (N1–N3) · 57 Einträge
+│                                     ✅ fertig (N1–N4) · 64 Einträge
 ├── i18n_kerbfall.js (DTNI18nKerb) → Kerbfall-Bezeichnungen und Anwendungsbedingungen
 │                                     ⬜ Gerüst steht, Füllung in N14
 ├── daten.js       (DTNData)       → 11 Werkstoffe, β_w, f_u, R_e, Nahtgütefaktoren,
@@ -485,7 +490,9 @@ dt-profischweissnaht-web/
 ├── solver.js      (DTNSolver)     → Spannungen aus N/Q/M/T · Welt A + Welt B ·
 │                                     Nachweis UND Auslegung, Aufrundung des a-Maßes,
 │                                     Ampel  ✅ fertig (N3) · Schnittstelle in 4.8
-├── rechenweg.js   (DTNRechenweg)  → selbstprüfender Rechenweg für ALLE Module
+├── rechenweg.js   (DTNRechenweg)  → selbstprüfender Rechenweg für ALLE Module;
+│                                     Schrittliste als Daten, zweiter Rechenpfad je
+│                                     Schritt  ✅ fertig (N4) · Schnittstelle in 4.9
 ├── ermuedung.js   (DTNFatigue)    → Wöhlerlinie, γ_Mf, Miner, Kollektive
 ├── thermik.js     (DTNThermal)    → CET/CEV, Streckenenergie, t8/5, Vorwärmtemperatur
 ├── kosten.js      (DTNCost)       → Nahtvolumen, Draht-/Gasbedarf, Zeit, Kosten
@@ -515,7 +522,7 @@ svglib → schaubild → symbol → beratung → assistent → report → ui
 **Tatsächlich in den HTMLs eingetragen (Stand N3, vom DOM-Smoke geprüft):**
 ```
 i18n_kern → i18n_hilfe → i18n_kerbfall → daten → optionen → validate → naht → profil →
-svglib → schaubild → solver
+svglib → schaubild → solver → rechenweg
 ```
 Jeder neue Baustein trägt sein `<script src>` an der richtigen Stelle nach und erweitert
 im DOM-Smoke die Liste `erwartet` sowie die Namenszuordnung (`'profil.js': 'DTNProfil'`).
@@ -834,6 +841,83 @@ tragen je Code + Einheitsschlüssel, Beschriftung `sv_<code>`.
 - **kein β_Lw stillschweigend**: der Beiwert wird berechnet und gemeldet, angewendet nur
   auf ausdrücklichen Wunsch.
 
+### 4.9 Schnittstelle `rechenweg.js` (fertig aus N4 — darauf setzen N5c und N11 auf)
+
+> **Nicht ändern, nur benutzen.** `rechenweg.js` ist DOM-frei, deterministisch und mutiert
+> seine Eingaben nicht. Namensraum `DTNRechenweg`. Lädt **nach** `naht.js`, `profil.js`,
+> `solver.js` und `i18n_kern.js`.
+
+**Zwei Einstiege:**
+- `DTNRechenweg.baue(eingabe)` — nimmt **exakt dieselbe Eingabe wie `DTNSolver.rechne()`**,
+  rechnet und beschriftet in einem Aufruf.
+- `DTNRechenweg.ausErgebnis(ergebnis, eingabe)` — wenn `solver.js` schon gerechnet hat.
+  **Das ist der Weg für N5**: einmal rechnen, dann beschriften — nicht zweimal rechnen.
+
+**Die Schrittliste ist DATEN, kein Text.** Je Schritt:
+```js
+{ nr, abschnitt, code,        // code = i18n-Schlüssel der Überschrift
+  formel,                     // Klartext, Symbole sprachneutral ('A_w = Σ (a_i · l_i)')
+  vorlage, werte,             // '{0} / {1} = {2}' + [{v, nk}] → erst beim Rendern gefüllt
+  ergebnis, nk, einheit,      // Zahl + Nachkommastellen + Einheitsschlüssel
+  text,                       // Ergebnis, das selbst ein Code ist ('opt_werkstoff_S355')
+  liste,                      // Liste von Codes (Liste 2.4, Warnungen, Hinweise)
+  quelle,                     // benannte Grundlage, Code aus QUELLEN
+  haken,                      // RECHENPROBE: true | false | null
+  erfuellt,                   // NACHWEIS:    true | false | null
+  probe, hinweis }            // Codes
+```
+
+**ZWEI HÄKCHENARTEN — NIE VERMISCHEN (Festlegung aus N4):**
+- **`haken`** ist die **Rechenprobe**: ein zweiter, unabhängiger Rechenpfad. `false` heißt
+  **Programmfehler**.
+- **`erfuellt`** ist der **Nachweis**: a ≥ a_min, a ≤ a_max, η ≤ 1, l ≥ l_eff. `false` heißt
+  **die Naht trägt so nicht** — das ist ein normales, ehrliches Ergebnis, kein Fehler.
+- Im Gesamtergebnis: `selbstpruefung_ok` (alle Rechenproben) und `nachweis_ok` (alle
+  Nachweise) sind **getrennte Felder**. Die Oberfläche muss sie auch **optisch** trennen,
+  sonst ist die Selbstprüfung als Warnsignal wertlos.
+
+**11 Abschnitte in fester Reihenfolge** (`ABSCHNITTE`): `rw_ab_eingaben` · `rw_ab_nahtbild` ·
+`rw_ab_schnittgroessen` · `rw_ab_spannungen` · `rw_ab_widerstand` · `rw_ab_nachweis` ·
+`rw_ab_auslegung` · `rw_ab_grenzen` · `rw_ab_selbstpruefung` · `rw_ab_nicht_geprueft` ·
+`rw_ab_hinweise`. Dazu **42 Schrittcodes** (`SCHRITTE`), **18 Probencodes** (`PROBEN`) und
+**8 benannte Grundlagen** (`QUELLEN`) — jeder Code dreisprachig belegt.
+
+**Rückgabe von `baue()` / `ausErgebnis()`:**
+`ok` · `version` · `welt` · `rechenrichtung` · `verfahren` · `modell` ·
+`abschnitte[]` (je `{code, schritte[]}`) · `schritte[]` (flach, durchnummeriert) ·
+`n_schritte` · `n_haken` / `n_haken_ok` · `n_nachweise` / `n_nachweise_ok` ·
+`selbstpruefung_ok` · `nachweis_ok` · `nicht_geprueft[]` ·
+`fehler` / `warnungen` / `hinweise` · `ergebnis` (die Solver-Rückgabe durchgereicht).
+**Bei einem Fehler ist `ok:false` und es gibt NULL Schritte** — kein halber Rechenweg.
+
+**Weitere Funktionen:**
+`rendere(rw, sprache)` → fertige Zeilen mit `titel`, `formel`, `eingesetzt`, `ergebnis`,
+`wert_text`, `quelle`, `haken_zeichen`, `erfuellt_zeichen`, `erfuellt_text`, `probe`,
+`hinweis`, `liste[]` · `alleTexte(gerendert)` (ein String, für die Platzhalterprüfung) ·
+`pruefe(rw)` · `zahl(x, nk, sprache)` · `fuellen(vorlage, werte, sprache)`.
+
+**Zahlformat:** DE und PT mit Dezimalkomma und Tausenderpunkt, EN umgekehrt. Negatives
+Vorzeichen ist ein echtes Minuszeichen (U+2212), fehlender Wert ein Gedankenstrich.
+
+**DIE PROBEN — das ist der Kern des Moduls.** Nachgerechnet werden unabhängig:
+l_ges gegen Σ l_i · A_w gegen Σ a·l · y_s/z_s gegen Σ(A_i·y_i)/A_w · I_p gegen I_y + I_z ·
+I_1 + I_2 gegen I_y + I_z · W_t gegen I_p/r_max · l_netto gegen l_brutto − Endkraterabzug ·
+σ_x aus der allgemeinen schiefen Biegung · τ über die Invarianz der Projektion ·
+q⊥ und die Aufteilung mit 1/√2 · σ_v aus ihren Anteilen · R_d aus ihren Faktoren ·
+η aus ist/Grenze · a_erf gegen a_bezug·Faktor · a_gewaehlt gegen die Stufenreihe ·
+die Momentenumrechnung Nm → Nmm gegen die Eingabe.
+**Durch Assertion gesichert: 27 verfälschte Ergebniswerte kippen alle ein Häkchen** —
+bei einer Verfälschung von nur 1e-6 relativ.
+
+**WAS `rechenweg.js` BEWUSST NICHT TUT:**
+- **es rechnet den Nachweis nicht noch einmal** — die maßgebenden Zahlen kommen aus
+  `solver.js`, nachgerechnet wird nur zur Probe,
+- **es entscheidet nichts** (keine Ampel, keine Auslegung, keine Grenzen) — es beschriftet
+  und prüft,
+- **es erfindet keine Zahl**: fehlt ein Wert, bleibt der Schritt ohne Zahl und ohne Haken
+  statt mit einem stillen Ersatzwert,
+- **keine Oberfläche, kein DOM, keine Formatierung außerhalb von `rendere()`**.
+
 ---
 
 ## 5. Bausteine — risikosortiert, mit Launch-Checkpoint
@@ -852,8 +936,8 @@ tragen je Code + Einheitsschlüssel, Beschriftung `sv_<code>`.
 | **N2b** ✅ | **Profileingabe** *(abgenommen 2026-07-25)* | `profil.js`: 7 parametrische Profile + Kantenauswahl → Segmente. Raupenmodell mit Endkraterabzug je freiem Ende, Eckradien, a je Segment. DOM-frei. **Schnittstelle: Abschnitt 4.6.** |
 | **N2c** ✅ | **Nahtbild-Grafik** *(abgenommen 2026-07-26)* | `svglib.js` + `schaubild.js`: SVG-Vorschau des Nahtbilds, Segmente farbig nach Gruppe, Schwerpunkt und Achsen, nicht geschweißte Kanten gestrichelt, Ecklücken sichtbar. Zugleich **Auswahl-Skizze** der Profileingabe. **Schnittstelle: Abschnitt 4.7.** |
 | **N3** ✅ | **Spannungen + beide Welten** *(abgenommen 2026-07-26)* | `solver.js`: σ⊥, τ⊥, τ∥ aus N/Q/M/T · Welt A (EC3, beide Verfahren) · Welt B (klassisch, Tabelle + Formel) · **Nachweis UND Auslegung** mit Aufrundung · Ampel. **Schnittstelle: Abschnitt 4.8.** |
-| **N4** ⬅ | **Rechenweg — NÄCHSTER SCHRITT** | `rechenweg.js`: selbstprüfende Schritte für N2/N2b/N3, dreisprachig. |
-| **N5** | **UI-Basis** | 2 HTMLs, `style.css`, Formular mit aufklappbaren Bereichen und Freischalt-Haken, Ergebnis-Kacheln, Ampel, i18n, Theme (**Start immer dunkel**), Laien-ⓘ, Block „Ausführung & Dokumentation" (ISO 5817 + EXC). **Erster Handy-Test.** |
+| **N4** ✅ | **Rechenweg** *(gebaut 2026-07-26, Abnahme offen)* | `rechenweg.js`: selbstprüfende Schrittliste für N2/N2b/N3, dreisprachig, zweiter Rechenpfad je Schritt, Rechenprobe und Nachweis getrennt. **Schnittstelle: Abschnitt 4.9.** |
+| **N5** ⬅ | **UI-Basis — NÄCHSTER SCHRITT (vier Etappen, 5.2)** | 2 HTMLs, `style.css`, Formular mit aufklappbaren Bereichen und Freischalt-Haken, Ergebnis-Kacheln, Ampel, i18n, Theme (**Start immer dunkel**), Laien-ⓘ, Block „Ausführung & Dokumentation" (ISO 5817 + EXC). **Erster Handy-Test.** |
 | **N6b** | **ISO-2553-Symbolgenerator** | `symbol.js`: Pfeil-/Gegenseite, a- bzw. z-Maß, Länge, Rundumnaht, Baustellennaht. Nutzt `svglib.js` aus N2c. Bewusst **vor** dem Launch — Verkaufsargument. |
 | **N7** | **Presets** | Die 6 Starter als Profil-/Kantendaten auf `profil.js`, **mit Merkmalen für die kontextbezogene Beispielliste** (3.2). |
 | **N8** | **Assistent** | `assistent.js` (DOM-freie Dialoglogik) + Overlay-UI, Button-Einstieg, tabellengestützt aus `optionen.js`, mit Erklärungen/Tipps/Skizzen je Dialog, Übernahme vorhandener Eingaben. |
@@ -867,43 +951,39 @@ tragen je Code + Einheitsschlüssel, Beschriftung `sv_<code>`.
 | **N15** | **Verzug & Schrumpfung** | `verzug.js` + Panel, klar als **Abschätzung** gekennzeichnet. |
 | **N16** | **Feinschliff + Build** | Presets ausbauen, Wissenstexte, Code-Audit, Bündelung + Obfuskierung (zwei Bündel, Unterschied nur `DT_EDITION`). **→ V1-Launch.** |
 
-### 5.1 Auftrag für den nächsten Baustein **N4 — Rechenweg** *(hier ansetzen)*
+### 5.1 Auftrag für die nächste Etappe **N5a — UI-Grundgerüst** *(hier ansetzen)*
 
-> Alles, was N4 braucht, ist fertig und liefert **Codes statt Texte**: `profil.js` (4.6)
-> die Segmente samt Herkunft, `naht.js` (4.5) die Querschnittswerte samt Selbstprüfung,
-> `schaubild.js` (4.7) das Bild samt Legendencodes, `solver.js` (4.8) die Spannungen an
-> jedem Randpunkt, den maßgebenden Punkt, jeden Einzelnachweis und die Auslegung mit
-> `a_erf` **und** `a_gewaehlt`. N4 baut **`rechenweg.js` (`DTNRechenweg`)** — DOM-frei,
-> deterministisch, wie die Vorgänger.
+> **Zuerst:** N4 muss am Handy abgenommen sein. Erst danach beginnt N5.
+> Alles, was N5 braucht, ist fertig und liefert **Codes statt Texte**: `optionen.js` die
+> Auswahlgruppen samt Verträglichkeitsregeln, `validate.js` die Felder, `naht.js`/`profil.js`
+> das Nahtbild, `schaubild.js` das Bild, `solver.js` den Nachweis und `rechenweg.js` (4.9)
+> die fertig beschriftbare Schrittliste. **N5 rechnet nichts — N5 rendert.**
 
-**Warum das das Herzstück ist:** Der selbstprüfende Rechenweg ist das Nachweis-Herzstück
-des Produkts (stehende Regel 8). Er muss **vollständig in der gewählten Sprache** stehen,
-inklusive aller Formel- und Werte-Beschriftungen.
+**N5 wird in VIER ETAPPEN gebaut** (Regel Kickoff 5c, Etappen in 5.2). Diese Etappe ist
+**N5a — Grundgerüst**:
 
-**Zu bauen:**
-- **Schrittliste als Daten, nicht als Text:** je Schritt `code` (i18n-Schlüssel),
-  `formel` (Klartext, Symbole sprachneutral), `eingesetzt` (Formel mit den echten Zahlen),
-  `ergebnis` + `einheit`, `quelle` (Norm/Regelwerk), `haken` (bestanden ja/nein) und
-  optional `hinweis`. Die Oberfläche (N5) und die Ausgaben (N11) rendern nur.
-- **Abschnitte:** Eingaben → Nahtbild (Segmente, A_w, Schwerpunkt, I_y/I_z/I_p, gewähltes
-  Rechenmodell) → Schnittgrößen → Spannungen am maßgebenden Punkt → Widerstand mit
-  benannter Grundlage → jeder Einzelnachweis mit Ausnutzung → Auslegung mit **beiden**
-  a-Zahlen → Grenzen (a_min, a_max, l_eff) → Liste 2.4 → Lücken und Hinweise.
-- **Selbstprüfung sichtbar:** die Häkchen aus `naht.js` (`kontrolle`: statische Momente
-  um den Schwerpunkt = 0, I_p = I_y + I_z, I_1 + I_2 = I_y + I_z) und die Hand-Anker
-  gehören als Zeilen in den Rechenweg, nicht in eine Fußnote.
-- **Zweiter Rechenpfad je Schritt, wo es billig ist** (z. B. A_w = Σ a·l gegen die Summe
-  aus `teile[]`) — eine Abweichung muss auffallen.
-- **Negativkontrolle:** ein absichtlich verfälschtes Ergebnis muss ein Häkchen umkippen.
-  Das ist die Pflicht-Assertion für N4.
-- **Dreisprachig über alle Presets:** der Rechenweg muss in DE/EN/PT vollständig sein,
-  ohne einen einzigen Platzhalter.
+- **Beide HTMLs neu**, ohne die Zwischen-Statusseiten aus N1–N4: Kopfzeile mit Marke und
+  Lizenzzeile, Sprachumschalter DE/EN/PT mit Flaggen-SVG, Theme-Button, Info-ⓘ mit
+  Impressum, Subbar mit „Beispiel laden" + Berechnen + Leeren, Aktionsleiste **oben**
+  (Bezeichnungsfeld, Speichern, Öffnen, Drucken/PDF, Word) — die Buttons erst als Gerüst,
+  verdrahtet wird in N11. Muster: `DT-ProfiPassung.html` (Kickoff-Punkt 4).
+- **`ui.js`** als neues Modul: Sprachumschaltung, Theme, Aufklappbereiche, Leeren.
+  DOM-nah, aber **ohne jede Fachlogik**.
+- **Startdarstellung IMMER DUNKEL** (3.1, bindend) — in beiden Editionen gleich, im
+  DOM-Smoke abzusichern.
+- **`style.css`** auf den vollen Umfang bringen (Formularraster, Aufklappbereiche,
+  Ergebniskacheln, Ampel, Rechenwegzeilen) — die Klassen dürfen leer bleiben, solange sie
+  existieren; gefüllt werden sie in N5b/N5c.
+- **Leeres Formulargerüst** mit den aufklappbaren Bereichen der späteren Eingabeseite.
+- **Testbalken der Testedition** bleibt, Unterschied der beiden HTMLs weiterhin **genau
+  eine Zeile**.
 
-**Abzuliefern wie immer:** Modul + `<script src>` an der richtigen Stelle in beiden HTMLs
-(nach `solver.js`), Ergebnis in der Zwischen-Statusseite sichtbar (entfällt mit N5),
-DOM-Smokes erweitert, Harness um eine Sektion **S28** (Vollständigkeit je Schritt,
-Negativkontrolle, i18n-Parität über alle Schritte, Determinismus, Nichtmutation).
-**Recherche:** nicht nötig — N4 beschriftet nur, was N2/N2b/N3 belegt gerechnet haben.
+**Am Handy prüfbar:** Es sieht aus wie ein Programm, startet dunkel, die drei Sprachen
+laufen durch, die Bereiche klappen auf und zu.
+
+**Abzuliefern wie immer:** Module + `<script src>` an der richtigen Stelle in beiden HTMLs,
+DOM-Smokes erweitert (neu: Startzustand dunkel, Aufklappen, Aktionsleiste vorhanden),
+Harness um eine Sektion **S29**. **Recherche:** nicht nötig.
 
 **Später (nicht V1):** **Normprofil-Katalog** (IPE/HEA/HEB/UPE/UPN/RHS/Rohr, 2.2b Stufe 2),
 unterbrochene Nähte, Loch-/Schlitznähte, weitere Kerbfälle, FKM-Richtlinie, Kranbau-Regelwerke,
@@ -939,7 +1019,11 @@ AWS/US-Normen, EN 1993-1-8:2024 (2. Generation, β_w,mod — Werte noch nicht be
 | **N14a** | `kerbfall.js`: **Struktur vollständig** (Codes, Kategorien, Anwendungsbedingungen, Verweis auf Skizze) mit den ersten Details — ab hier ist jede Lücke sichtbar statt still |
 | **N14b…** | Füllung in Etappen von je 8–12 Details, jedes mit eigener SVG-Skizze und **2 Quellen**. Hier wird Dieter nach seinen Praxis-Kerbfällen gefragt (Reihenfolge der Füllung) |
 
-**Nicht geteilt** (nach heutiger Einschätzung einteilig): N4, N6b, N7, N9, N10, N11, N12, N15.
+**N5a ist mit Dieter abgestimmt und der Auftrag steht ausformuliert in 5.1.**
+N5b bis N5d werden jeweils **vor** ihrem Bau bestätigt.
+
+**Nicht geteilt** (einteilig): N6b, N7, N9, N10, N11, N12, N15 — bei N4 hat sich die
+Einschätzung bestätigt.
 Erweist sich das beim Bauen als falsch, wird **geteilt statt gehetzt** — eine unfertige
 Lieferung ist teurer als eine zusätzliche.
 
@@ -1022,43 +1106,43 @@ verdrahtet, Sperr-Overlay in der Testversion, Registrierung + Long-Press-Reset.
 **Referenzdateien (read-only, nur Muster):** `DT-ProfiPassung_Testversion-Orginal.html` ·
 `DT-ProfiPassung.html` · `DT-ProfiPassung_Test.html`
 
-### 8.1 Dateistand nach N3 *(Stand 2026-07-26)*
+### 8.1 Dateistand nach N4 *(Stand 2026-07-26)*
 
 **Produktdateien:**
 | Datei | Stand |
 |---|---|
-| `DT-ProfiSchweissnaht.html` | Voll-Edition (`DT_EDITION='full'`), lädt **11 Module**, enthält die **Zwischen-Statusseite N1/N2/N2b/N2c/N3** (entfällt mit N5) |
+| `DT-ProfiSchweissnaht.html` | Voll-Edition (`DT_EDITION='full'`), lädt **12 Module**, enthält die **Zwischen-Statusseite N1/N2/N2b/N2c/N3/N4** (entfällt mit N5a) |
 | `DT-ProfiSchweissnaht_Test.html` | Test-Edition — **verifiziert: Unterschied genau eine Zeile** |
 | `daten.js` | N1, unverändert |
 | `naht.js` | N2, unverändert — Schnittstelle in 4.5 |
 | `profil.js` | N2b, unverändert — Schnittstelle in 4.6 |
 | `svglib.js` | N2c, unverändert — Schnittstelle in 4.7 |
 | `schaubild.js` | N2c, unverändert — Schnittstelle in 4.7 |
-| `solver.js` | **N3** — Spannungen, beide Welten, Nachweis + Auslegung, Schnittstelle in 4.8 |
-| `optionen.js` | **N3 geändert** — 20 Gruppen, 89 Optionen (neu: `a_rundung`, `weltb_nahtgruppe`) |
-| `validate.js` | **N3 geändert** — 29 Felder (neu: Qy, Qz, My, Mz, Re) |
-| `i18n_kern.js` | **N3 erweitert** — 322 → **435 Schlüssel** |
-| `i18n_hilfe.js` | **N3 erweitert** — 50 → **57 Laien-ⓘ-Einträge** |
+| `solver.js` | N3, unverändert — Schnittstelle in 4.8 |
+| `rechenweg.js` | **N4 NEU** — selbstprüfende Schrittliste, Schnittstelle in 4.9 |
+| `optionen.js` | N3, unverändert — 20 Gruppen, 89 Optionen |
+| `validate.js` | N3, unverändert — 29 Felder |
+| `i18n_kern.js` | **N4 erweitert** — 435 → **520 Schlüssel** (11 Abschnitte, 42 Schritte, 18 Proben, 8 Grundlagen, 6 Rahmentexte) |
+| `i18n_hilfe.js` | **N4 erweitert** — 57 → **64 Laien-ⓘ-Einträge** |
 | `i18n_kerbfall.js` | Gerüst, unverändert (Füllung in N14) |
-| `style.css` | N2c, unverändert (N3 nutzt die vorhandenen Klassen `kv`, `gap-note`, `status-banner warn`) |
+| `style.css` | N2c, unverändert (N4 nutzt die vorhandenen Klassen `kv`, `gap-note`, `status-banner ok/warn/bad`) |
 
 **DEV-ONLY — nur in `/mnt/project/`, NIE ausliefern und nicht auf GitHub nötig:**
-`test_naht.js` (580 Assertions, Sektionen S1–S27) · `dom_smoke_voll.js` (149 Prüfungen) ·
-`dom_smoke_test.js` (150 Prüfungen, ruft den Lauf aus `dom_smoke_voll.js` auf).
+`test_naht.js` (**641 Assertions**, Sektionen S1–S28) · `dom_smoke_voll.js` (**182 Prüfungen**) ·
+`dom_smoke_test.js` (**183 Prüfungen**, ruft den Lauf aus `dom_smoke_voll.js` auf; in N4
+**unverändert**).
 ⚠ **Beide Smoke-Dateien müssen im Projektordner liegen** — `dom_smoke_test.js` allein läuft nicht.
 
-**Noch nicht gebaut:** `rechenweg.js` (N4) · `ui.js` (N5) · `symbol.js` (N6b) ·
+**Noch nicht gebaut:** `ui.js` (N5) · `symbol.js` (N6b) ·
 `assistent.js` (N8) · `thermik.js` (N9) · `kosten.js` (N10) · `report.js` (N11) ·
 `ermuedung.js` (N13) · `kerbfall.js` (N14) · `verzug.js` (N15).
 
-**Am 2026-07-26 gegengeprüft:** Projektordner und GitHub tragen genau diesen Stand.
-Alle 11 Module, `style.css`, beide HTMLs und die drei DEV-ONLY-Dateien sind vorhanden;
-die Ladereihenfolge in der HTML zeigt auf lauter existierende Dateien; die drei Testläufe
-sind **direkt aus dem Projektordner** grün gelaufen.
+**Nach N4 zu überschreiben** (alles andere bleibt unberührt): `rechenweg.js` (neu),
+`i18n_kern.js`, `i18n_hilfe.js`, beide HTMLs, `test_naht.js`, `dom_smoke_voll.js`.
 
-**Erste Handlung im neuen Chat:** Vollständigkeit gegen die Tabelle oben prüfen,
-Arbeitsordner herstellen, die drei Testläufe starten.
-Melden müssen sie **580 / 149 / 150 · 0 Fehler**. Weicht etwas ab, erst das klären.
+**Erste Handlung im neuen Chat:** Vollständigkeit gegen die Tabelle oben prüfen
+(**12 Module**), Arbeitsordner herstellen, die drei Testläufe starten.
+Melden müssen sie **641 / 182 / 183 · 0 Fehler**. Weicht etwas ab, erst das klären.
 
 ---
 
@@ -1267,6 +1351,33 @@ Melden müssen sie **580 / 149 / 150 · 0 Fehler**. Weicht etwas ab, erst das kl
   mit Eckradius bleibt die Torsionsrechnung gültig, statt eine falsche Warnung zu zeigen.
 - **`t_min` wird selbst gebildet** aus `t1`/`t2`, wenn es nicht ausdrücklich angegeben ist.
 
+**Aus N4 (2026-07-26) — Festlegungen, die beim Bauen entstanden sind:**
+- **Rechenprobe und Nachweis sind ZWEI Häkchen, nicht eines.** Die erste Fassung hat beides
+  in `haken` zusammengefasst — dann meldete die Selbstprüfung „nicht bestanden", nur weil
+  das a-Maß unter a_min lag. Das ist ein Fehlalarm und macht das Warnsignal wertlos.
+  Jetzt: `haken` = zweiter Rechenpfad (`false` ⇒ **Programmfehler**), `erfuellt` = Nachweis
+  (`false` ⇒ **die Naht trägt so nicht**, ein ehrliches Ergebnis). Getrennt gezählt, getrennt
+  gemeldet und in der Karte auch **optisch** getrennt dargestellt.
+- **Der Rechenweg ist Daten, keine Zeichenkette.** Zahlen bleiben Zahlen, die Einsetz-Zeile
+  ist eine Vorlage mit Platzhaltern. Erst `rendere(rw, sprache)` setzt Text und Zahlformat
+  zusammen. Sonst wäre das Dezimalkomma in der Datenstruktur eingebacken und der Rechenweg
+  auf Englisch falsch formatiert.
+- **Keine Wörter in Formeln.** Die erste Fassung hatte „a_gew = AUFrunden(a_erf, Stufe)" —
+  das wäre in EN und PT deutsch stehengeblieben. Formeln enthalten jetzt ausschließlich
+  Symbole (`a_gew = ⌈a_erf / Δa⌉ · Δa`), Sprache lebt nur im Wörterbuch.
+- **Der zweite Rechenpfad muss wirklich zweiter Pfad sein.** A_w, y_s/z_s und l_ges werden
+  aus den Segmenten neu gebildet, ohne einen Wert aus `naht.js` anzufassen; σ_x aus der
+  allgemeinen schiefen Biegung; τ über die Invarianz der Projektion (der Betrag der
+  Schubresultierenden hängt nicht von der Projektionsrichtung ab — eine besonders billige
+  und trotzdem scharfe Probe).
+- **Testdaten-Falle, die dabei aufgefallen ist:** Am symmetrischen Nahtbild sind y_s und z_s
+  exakt null — eine Verfälschung *mal einem Faktor* ändert die Null nicht und bleibt
+  unbemerkt. Die Negativkontrolle läuft deshalb am **unsymmetrischen** Nahtbild. Nicht der
+  Code war schwach, sondern der Testfall. Für alle künftigen Negativkontrollen merken.
+- **Zwei vermeintliche Fehler waren meine Testeingaben**, nicht der Code: ein erfundener
+  Zusatzwerkstoff-Code und ein absurdes Torsionsmoment. `solver.js` hat in beiden Fällen
+  ehrlich gemeldet, woran es lag — genau wie vorgesehen.
+
 **Aus der Rückmeldung 2026-07-26 (N2c abgenommen):**
 - N2c von Dieter am Handy geprüft: beide Nahtbilder, Einfärbung nach Segmentgruppe,
   Ecklücken, Schwerpunkt und die dreisprachige Legende laufen. **Abgenommen.**
@@ -1451,6 +1562,27 @@ Abschnitt 5 im Kopf entsprechend ergänzt. Außerdem richtiggestellt: eine Token
 **erhält** den Chatkontext, nur ein Chatwechsel verliert ihn. Code unverändert,
 Basislinie unverändert **580 / 149 / 150**.
 **Nächster Schritt unverändert: N4 (Rechenweg) — Einstieg „weiter mit N4".**
+
+**v2.14 (2026-07-26):** **Baustein N4 (Rechenweg) gebaut und ausgeliefert:**
+`rechenweg.js` (Schrittliste als Daten statt als Text: 11 Abschnitte, 42 Schrittcodes,
+18 Probencodes, 8 benannte Grundlagen; `baue()` und `ausErgebnis()` als Einstiege,
+`rendere(rw, sprache)` setzt erst beim Rendern Text und Zahlformat zusammen;
+DE/PT mit Dezimalkomma, EN mit Dezimalpunkt; **zweiter Rechenpfad an fast jedem Schritt**;
+die Häkchen aus `naht.js` und die Liste 2.4 stehen als eigene Zeilen im Weg).
+**Rechenprobe und Nachweis baulich getrennt** (`haken` / `erfuellt`, `selbstpruefung_ok` /
+`nachweis_ok`) — Begründung im Entscheidungslog.
+`i18n_kern.js` auf **520 Schlüssel**, `i18n_hilfe.js` auf **64 Laien-ⓘ-Einträge**,
+beide HTMLs um die Karte „Rechenweg" (Auslegungsbeispiel S355, N = 600 kN: a_erf = 7,793 mm
+→ gewählt a8, danach ehrliche a_max-Warnung nach Regel 2.3).
+Neuer Abschnitt **4.9** (vollständige Schnittstelle), Abschnitt **5.1** neu als Auftrag für
+**N5a**, Kickoff-Punkt 5b auf N5a umgestellt.
+Harness-Sektion **S28**: elf Rechenpfade durchgerechnet, Verzeichnisse gegen die Texte
+geprüft, Zahlformat je Sprache, Determinismus, Nichtmutation, leerer Fehlerfall,
+Abschnittsreihenfolge — und die **Pflicht-Negativkontrolle: 27 verfälschte Ergebniswerte
+kippen alle ein Häkchen** bei einer Verfälschung von nur 1e-6 relativ.
+Fünf Hand-Anker stehen jetzt im Rechenweg selbst (A_w, σ_x, Umklappen, σ_v = √2·σ_x, R_d).
+**Basislinie 580 → 641 Assertions · Smokes 149/150 → 182/183 · i18n-Parität 0.**
+**Nächster Schritt: N4 am Handy prüfen, dann N5a (UI-Grundgerüst).**
 ═══════════════════════════════════════════════════════════════════════════
 Ende Schweißnaht-1.md · DT-ProfiSchweissnaht
 ═══════════════════════════════════════════════════════════════════════════

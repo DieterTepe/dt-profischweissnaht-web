@@ -110,7 +110,7 @@ function lauf(edition) {
   while ((mm = srcRe.exec(html)) !== null) srcs.push(mm[1]);
   var erwartet = ['i18n_kern.js', 'i18n_hilfe.js', 'i18n_kerbfall.js', 'daten.js', 'optionen.js',
                   'validate.js', 'naht.js', 'profil.js', 'svglib.js', 'schaubild.js',
-                  'solver.js'];
+                  'solver.js', 'rechenweg.js'];
   ok(srcs.join(',') === erwartet.join(','), 'Ladereihenfolge stimmt: ' + srcs.join(' → '));
 
   /* 2) ALLE Module gemeinsam laden — genau in dieser Reihenfolge */
@@ -123,7 +123,7 @@ function lauf(edition) {
                  'optionen.js': 'DTNOptions', 'validate.js': 'DTNValidate',
                  'naht.js': 'DTNNaht', 'profil.js': 'DTNProfil',
                  'svglib.js': 'DTNSvgLib', 'schaubild.js': 'DTNSchaubild',
-                 'solver.js': 'DTNSolver' }[srcs[i]];
+                 'solver.js': 'DTNSolver', 'rechenweg.js': 'DTNRechenweg' }[srcs[i]];
     win[name] = mod;
     ok(!!mod, 'Modul geladen: ' + srcs[i]);
   }
@@ -257,6 +257,35 @@ function lauf(edition) {
   ok(/OHNE den Faktor 3/.test(sp), 'DE: Welt B rechnet ohne Faktor 3 — ehrlich benannt');
   ok(/AUFgerundet/.test(sp), 'DE: die Aufrundung wird ehrlich gemeldet');
 
+  /* 6f) Rechenweg N4 — selbstpruefend, dreisprachig, vollstaendig */
+  var wg = d.byId.wegHost.inhalt();
+  ok(wg.length > 1500, 'Rechenweg-Karte ist aufgebaut');
+  ok(/Eingaben/.test(wg), 'DE: Abschnitt "Eingaben" erscheint');
+  ok(/Nahtbild/.test(wg), 'DE: Abschnitt "Nahtbild" erscheint');
+  ok(/Spannungen am ma\u00dfgebenden Punkt/.test(wg), 'DE: Abschnitt "Spannungen" erscheint');
+  ok(/Auslegung des a-Ma\u00dfes/.test(wg), 'DE: Abschnitt "Auslegung" erscheint');
+  ok(/Was NICHT gepr\u00fcft wird/.test(wg), 'DE: die Liste 2.4 steht im Rechenweg');
+  ok(/A_w = \u03a3 \(a_i \u00b7 l_i\)/.test(wg), 'die Formel der Nahtflaeche steht im Klartext da');
+  ok(/3\.200,0 mm\u00b2/.test(wg), 'A_w des ausgelegten a-Masses ist eingesetzt (3.200,0 mm\u00b2)');
+  ok(/EN 1993-1-8/.test(wg), 'die benannte Grundlage EN 1993-1-8 steht am Schritt');
+  ok(/Zweiter Rechenpfad/.test(wg), 'DE: der zweite Rechenpfad wird ausgewiesen');
+  ok(/erforderliche|Erforderliches a-Ma\u00df/.test(wg), 'DE: das erforderliche a-Mass steht im Weg');
+  ok(/Gew\u00e4hltes a-Ma\u00df/.test(wg), 'DE: das gewaehlte a-Mass steht daneben (2.3)');
+  ok(/AUFgerundet/.test(wg), 'DE: die Aufrundung wird im Rechenweg ehrlich gemeldet');
+  ok((wg.match(/\u2713/g) || []).length >= 15, 'der Rechenweg zeigt mindestens 15 gruene Haekchen');
+  ok(/status-banner ok/.test(wg), 'die Selbstpruefung des Rechenwegs meldet "bestanden"');
+  ok(wg.indexOf('\u2717') < 0, 'keine Rechenprobe des Rechenwegs schlaegt fehl');
+  ok(/status-banner warn/.test(wg),
+     'der nicht erfuellte Nachweis erscheint als sichtbare Warnung, nicht als Rechenfehler');
+  ok(/7,793/.test(wg) && /8,0 mm/.test(wg),
+     'BEIDE a-Zahlen stehen im Rechenweg: erforderlich 7,793 mm und gewaehlt 8,0 mm (2.3)');
+  ok(/8,00 \u2264 7,00 mm/.test(wg),
+     'nach dem Aufrunden wird gegen a_max geprueft — und das Ergebnis ehrlich gemeldet (2.3)');
+  ok(/Bemessungswelt/.test(wg) && /Stahlbau nach EN 1993-1-8/.test(wg),
+     'die gewaehlte Bemessungswelt steht als erster Schritt');
+  ok(/\u03c3_v = \u221a\(\u03c3\u22a5\u00b2 \+ 3\u00b7\(\u03c4\u22a5\u00b2 \+ \u03c4\u2225\u00b2\)\)/.test(wg),
+     'die Formel der Vergleichsspannung steht im Rechenweg');
+
   /* 7) Sprachumschaltung real durchklicken — inkl. Platzhalter-Kontrolle */
   function alleTexte() {
     return d.byId.optionenHost.inhalt() + d.byId.lueckenHost.inhalt() +
@@ -264,6 +293,7 @@ function lauf(edition) {
            d.byId.profilHost.inhalt() + d.byId.h_profil.inhalt() +
            d.byId.grafikHost.inhalt() + d.byId.h_grafik.inhalt() +
            d.byId.spannungHost.inhalt() + d.byId.h_spannung.inhalt() +
+           d.byId.wegHost.inhalt() + d.byId.h_rechenweg.inhalt() +
            d.byId.h_luecken.inhalt() + d.byId.h_nichtgeprueft.inhalt() +
            d.byId.h_nahtbild.inhalt() + d.byId.footNote.inhalt();
   }
@@ -299,6 +329,12 @@ function lauf(edition) {
   ok(/never mixed/.test(d.byId.spannungHost.inhalt()), 'EN: Trennung der Welten uebersetzt');
   ok(/141.42 N\/mm\u00b2/.test(d.byId.spannungHost.inhalt()), 'EN: Spannungen im englischen Zahlformat');
   ok((d.byId.spannungHost.inhalt().match(/\u2713/g) || []).length >= 5, 'EN: Hand-Anker bleiben gruen');
+  ok(/Input data/.test(d.byId.wegHost.inhalt()), 'EN: Abschnitt "Input data" uebersetzt');
+  ok(/Weld area/.test(d.byId.wegHost.inhalt()), 'EN: Schritt "Weld area" uebersetzt');
+  ok(/Second path/.test(d.byId.wegHost.inhalt()), 'EN: der zweite Rechenpfad ist uebersetzt');
+  ok(/Selected throat size/.test(d.byId.wegHost.inhalt()), 'EN: das gewaehlte a-Mass ist uebersetzt');
+  ok(/3,200.0 mm\u00b2/.test(d.byId.wegHost.inhalt()), 'EN: Rechenweg im englischen Zahlformat');
+  ok(d.byId.wegHost.inhalt().indexOf('\u2717') < 0, 'EN: keine Rechenprobe schlaegt fehl');
   ok(!/\[[a-z0-9_.]+\]/.test(alleTexte()), 'EN: kein unuebersetzter Platzhalter');
 
   var bPt = klick('pt');
@@ -322,6 +358,11 @@ function lauf(edition) {
   ok(/Garganta necess\u00e1ria/.test(d.byId.spannungHost.inhalt()), 'PT: erforderliches a-Mass uebersetzt');
   ok(/nunca se misturam/.test(d.byId.spannungHost.inhalt()), 'PT: Trennung der Welten uebersetzt');
   ok((d.byId.spannungHost.inhalt().match(/\u2713/g) || []).length >= 5, 'PT: Hand-Anker bleiben gruen');
+  ok(/Dados de entrada/.test(d.byId.wegHost.inhalt()), 'PT: Abschnitt "Dados de entrada" uebersetzt');
+  ok(/\u00c1rea de solda/.test(d.byId.wegHost.inhalt()), 'PT: Schritt "Área de solda" uebersetzt');
+  ok(/Segunda via/.test(d.byId.wegHost.inhalt()), 'PT: der zweite Rechenpfad ist uebersetzt');
+  ok(/Garganta escolhida/.test(d.byId.wegHost.inhalt()), 'PT: das gewaehlte a-Mass ist uebersetzt');
+  ok(d.byId.wegHost.inhalt().indexOf('\u2717') < 0, 'PT: keine Rechenprobe schlaegt fehl');
   ok(!/\[[a-z0-9_.]+\]/.test(alleTexte()), 'PT: kein unuebersetzter Platzhalter');
 
   klick('de');

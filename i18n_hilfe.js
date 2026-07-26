@@ -709,6 +709,94 @@
       pt: { was: 'Tensão de cedência do material base para o método B. Pré-preenchida da tabela e substituível pela opção de valor próprio.',
             bereich: 'Tipicamente 215 a 460 N/mm² em aço.',
             tipp: 'Substitua apenas com um valor documentado – por exemplo o antigo 240 N/mm² de um exemplo de manual.' }
+    },
+
+    /* ==================================================================== */
+    /* N4 — Laien-ⓘ am Rechenweg                                            */
+    /* ==================================================================== */
+
+    rw_titel: {
+      de: { was: 'Der Rechenweg zeigt Schritt für Schritt, wie das Ergebnis zustande kommt: die Formel im Klartext, dieselbe Formel mit den eingesetzten Zahlen, das Ergebnis und die Norm, aus der die Formel stammt.',
+            bereich: 'Er ist immer vollständig – auch wenn der Nachweis nicht erfüllt ist.',
+            tipp: 'Für eine Prüfung oder eine Freigabe drucken Sie den Rechenweg mit aus. Jeder Wert lässt sich damit von Hand nachvollziehen.' },
+      en: { was: 'The calculation steps show how the result is obtained: the formula in plain text, the same formula with the actual figures, the result, and the standard the formula comes from.',
+            bereich: 'It is always complete – even when the verification is not satisfied.',
+            tipp: 'Print the calculation steps for a review or an approval. Every value can then be reproduced by hand.' },
+      pt: { was: 'A memória de cálculo mostra passo a passo como se chega ao resultado: a fórmula em texto claro, a mesma fórmula com os números introduzidos, o resultado e a norma de onde vem a fórmula.',
+            bereich: 'Está sempre completa – mesmo quando a verificação não é cumprida.',
+            tipp: 'Imprima a memória de cálculo para uma revisão ou aprovação. Assim qualquer valor pode ser reproduzido à mão.' }
+    },
+
+    rw_s_umklappen: {
+      de: { was: 'Eine Kehlnaht liegt schräg zur Anschlussfläche. Für den Nachweis wird sie rechnerisch in ihre schmalste Ebene geklappt – dort ist sie am schwächsten. Die quer wirkende Spannung teilt sich dabei zu gleichen Teilen auf eine Normal- und eine Schubspannung auf, jede mit dem Faktor 1/√2.',
+            bereich: 'Gilt für Kehlnähte und teilweise durchgeschweißte Nähte. Eine durchgeschweißte Stumpfnaht wird nicht geklappt.',
+            tipp: 'Das ist kein Rechentrick, sondern der Kern des Verfahrens nach EN 1993-1-8. Wer es weglässt, rechnet die Naht deutlich zu günstig.' },
+      en: { was: 'A fillet weld sits at an angle to the connected face. For the verification it is rotated into its narrowest plane – where it is weakest. The transverse stress then splits equally into a normal and a shear component, each with the factor 1/√2.',
+            bereich: 'Applies to fillet welds and partial-penetration welds. A full-penetration butt weld is not rotated.',
+            tipp: 'This is not a calculation trick but the core of the method in EN 1993-1-8. Omitting it makes the weld look far stronger than it is.' },
+      pt: { was: 'Uma solda de filete fica inclinada em relação à face ligada. Para a verificação é rodada para o seu plano mais estreito – onde é mais fraca. A tensão transversal divide-se então em partes iguais numa componente normal e numa de corte, cada uma com o fator 1/√2.',
+            bereich: 'Aplica-se a soldas de filete e de penetração parcial. Uma solda de topo de penetração total não é rodada.',
+            tipp: 'Não é um truque de cálculo mas o cerne do método da EN 1993-1-8. Omiti-lo faz a solda parecer muito mais resistente do que é.' }
+    },
+
+    rw_s_sigma_v: {
+      de: { was: 'Die Vergleichsspannung fasst Normal- und Schubspannungen zu einer einzigen Zahl zusammen, die sich direkt mit der Grenzspannung vergleichen lässt. Die Schubanteile gehen dabei mit dem Faktor 3 ein.',
+            bereich: 'Sie ist immer größer als jeder Einzelanteil.',
+            tipp: 'Vergleichen Sie nie eine einzelne Spannung mit der Grenzspannung – maßgebend ist die Vergleichsspannung.' },
+      en: { was: 'The equivalent stress combines normal and shear stresses into a single figure that can be compared directly with the design resistance. The shear terms enter with the factor 3.',
+            bereich: 'It is always larger than any individual component.',
+            tipp: 'Never compare a single stress component with the resistance – the equivalent stress governs.' },
+      pt: { was: 'A tensão equivalente reúne tensões normais e de corte num único valor que pode ser comparado diretamente com a tensão resistente. Os termos de corte entram com o fator 3.',
+            bereich: 'É sempre maior do que qualquer parcela isolada.',
+            tipp: 'Nunca compare uma tensão isolada com a resistência – a tensão equivalente é que governa.' }
+    },
+
+    rw_s_widerstand: {
+      de: { was: 'Die Grenzspannung ist der Wert, den die Naht höchstens aufnehmen darf. Sie entsteht aus der Werkstofffestigkeit, geteilt durch die Sicherheitsbeiwerte des jeweiligen Regelwerks.',
+            bereich: 'Im Stahlbau meist 200 bis 450 N/mm², im klassischen Maschinenbau deutlich niedriger.',
+            tipp: 'Die Zahl hängt am gewählten Regelwerk. Vergleichen Sie nie eine Grenzspannung aus Welt A mit einer aus Welt B.' },
+      en: { was: 'The design resistance is the highest stress the weld may carry. It follows from the material strength divided by the safety factors of the respective code.',
+            bereich: 'Typically 200 to 450 N/mm² in structural steelwork, considerably lower in classic mechanical engineering.',
+            tipp: 'The figure depends on the code chosen. Never compare a resistance from world A with one from world B.' },
+      pt: { was: 'A tensão resistente é o valor máximo que a solda pode suportar. Resulta da resistência do material dividida pelos coeficientes de segurança do respetivo regulamento.',
+            bereich: 'Tipicamente 200 a 450 N/mm² na construção metálica, bastante menor na engenharia mecânica clássica.',
+            tipp: 'O valor depende do regulamento escolhido. Nunca compare uma resistência do método A com uma do método B.' }
+    },
+
+    rw_s_ausnutzung: {
+      de: { was: 'Der Ausnutzungsgrad sagt, wie viel der zulässigen Belastung tatsächlich ausgeschöpft ist. 1,00 bedeutet: genau an der Grenze. Über 1,00 ist der Nachweis nicht erfüllt.',
+            bereich: '0 bis 1,00 zulässig; bis 0,90 grün, bis 1,00 gelb, darüber rot.',
+            tipp: 'Zielen Sie nicht auf 0,99. Fertigungstoleranzen und Lastannahmen sind ungenauer, als die zweite Nachkommastelle suggeriert.' },
+      en: { was: 'The utilisation states how much of the permissible load is actually used up. 1.00 means exactly at the limit. Above 1.00 the verification is not satisfied.',
+            bereich: '0 to 1.00 admissible; up to 0.90 green, up to 1.00 amber, above that red.',
+            tipp: 'Do not aim for 0.99. Fabrication tolerances and load assumptions are less precise than the second decimal place suggests.' },
+      pt: { was: 'O grau de utilização indica quanto da carga admissível é realmente consumido. 1,00 significa exatamente no limite. Acima de 1,00 a verificação não é cumprida.',
+            bereich: '0 a 1,00 admissível; até 0,90 verde, até 1,00 amarelo, acima disso vermelho.',
+            tipp: 'Não aponte a 0,99. As tolerâncias de fabrico e as hipóteses de carga são menos precisas do que a segunda casa decimal sugere.' }
+    },
+
+    rw_s_a_gewaehlt: {
+      de: { was: 'Das rechnerisch erforderliche a-Maß wird auf ein Fertigungsmaß aufgerundet – auf der Zeichnung steht a4 oder a5, nicht a4,37. Im Rechenweg stehen beide Zahlen nebeneinander.',
+            bereich: 'Voreinstellung ganze Millimeter, umschaltbar auf halbe.',
+            tipp: 'Nach dem Aufrunden wird noch einmal gegen a_max = 0,7 · t geprüft. Passt das gewählte Maß nicht mehr zur Blechdicke, erscheint eine Warnung – dann ist das Blech zu dünn, nicht die Naht zu klein.' },
+      en: { was: 'The throat size required by calculation is rounded up to a fabrication size – a drawing states a4 or a5, not a4.37. Both figures appear side by side in the calculation steps.',
+            bereich: 'Whole millimetres by default, switchable to half millimetres.',
+            tipp: 'After rounding up, a_max = 0.7 · t is checked again. If the selected size no longer suits the plate thickness a warning appears – then the plate is too thin, not the weld too small.' },
+      pt: { was: 'A garganta necessária por cálculo é arredondada para cima até uma medida de fabrico – num desenho consta a4 ou a5, não a4,37. Ambos os valores aparecem lado a lado na memória de cálculo.',
+            bereich: 'Milímetros inteiros por defeito, comutável para meios milímetros.',
+            tipp: 'Após o arredondamento verifica-se de novo a_max = 0,7 · t. Se a medida escolhida deixar de se adequar à espessura, surge um aviso – nesse caso a chapa é fina demais, não a solda pequena demais.' }
+    },
+
+    rw_s_kontrolle_gesamt: {
+      de: { was: 'Der Rechenweg prüft sich selbst: fast jeder Schritt wird über einen zweiten, unabhängigen Rechenpfad nachgerechnet. Diese Zeile zählt, wie viele dieser Proben bestanden sind.',
+            bereich: 'Erwartet wird immer die volle Zahl.',
+            tipp: 'Wichtig zu unterscheiden: eine fehlende Rechenprobe wäre ein Programmfehler. Ein nicht erfüllter Nachweis dagegen bedeutet nur, dass die Naht so nicht trägt – beides wird getrennt ausgewiesen.' },
+      en: { was: 'The calculation checks itself: nearly every step is recomputed via a second, independent path. This line counts how many of those cross-checks passed.',
+            bereich: 'The full count is always expected.',
+            tipp: 'An important distinction: a failed cross-check would be a program error. An unsatisfied verification merely means the weld does not carry as designed – the two are reported separately.' },
+      pt: { was: 'A memória de cálculo verifica-se a si própria: quase todos os passos são recalculados por uma segunda via independente. Esta linha conta quantas dessas verificações passaram.',
+            bereich: 'Espera-se sempre o número completo.',
+            tipp: 'Distinção importante: uma verificação cruzada falhada seria um erro do programa. Uma verificação não cumprida significa apenas que a solda não resiste assim – ambos são indicados em separado.' }
     }
   };
 

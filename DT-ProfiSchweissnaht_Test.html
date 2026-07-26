@@ -95,6 +95,14 @@
 
   <section class="card">
     <div class="card-head">
+      <span class="eyebrow">N4 &middot; rechenweg.js</span>
+      <h2 id="h_rechenweg">Rechenweg</h2>
+    </div>
+    <div class="card-body" id="wegHost"></div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
       <span class="eyebrow">daten.js</span>
       <h2 id="h_luecken">Ehrliche Lücken</h2>
     </div>
@@ -130,6 +138,7 @@
 <script src="svglib.js"></script>
 <script src="schaubild.js"></script>
 <script src="solver.js"></script>
+<script src="rechenweg.js"></script>
 
 <!-- ===================================================================== -->
 <!--  N1/N2/N2b/N2c/N3-ZWISCHENSTAND: kleine Statusanzeige, damit Fundament,
@@ -168,7 +177,8 @@
       ['profil.js', window.DTNProfil],
       ['svglib.js', window.DTNSvgLib],
       ['schaubild.js', window.DTNSchaubild],
-      ['solver.js', window.DTNSolver]
+      ['solver.js', window.DTNSolver],
+      ['rechenweg.js', window.DTNRechenweg]
     ];
     var fehlt = 0, rows = '';
     for (var i = 0; i < mods.length; i++) {
@@ -559,6 +569,64 @@
     host.innerHTML = out;
   }
 
+  /* ---- N4: der selbstpruefende Rechenweg ---- */
+  function rechenweg() {
+    var host = id('wegHost');
+    if (!window.DTNRechenweg || !window.DTNNaht || !window.DTNI18nKern) { host.textContent = '\u2013'; return; }
+    var WG = window.DTNRechenweg, NA = window.DTNNaht;
+
+    /* Derselbe Fall wie in der Nachweiskarte, aber als AUSLEGUNG gerechnet:
+       so stehen a_erf und a_gewaehlt beide im Weg (2.3). */
+    var ein = {
+      welt: 'A', rechenrichtung: 'auslegung', nachweisverfahren: 'richtungsbezogen',
+      werkstoff: 'S355', bw_regelsatz: 'na_de', nahtart: 'kehl_doppel',
+      t1: 10, t2: 10, modell: 'duennwandig',
+      segmente: [NA.linie(-50, -100, -50, 100, 5), NA.linie(50, -100, 50, 100, 5)],
+      umlaufend: false, N: 600000, My: 12000, a: 5, a_rundung: 'ganze_mm'
+    };
+    var rw = WG.baue(ein);
+    if (!rw.ok) { host.textContent = '\u2013'; return; }
+    var g = WG.rendere(rw, LANG), out = '', i, j, ab, sc;
+
+    out += '<div style="margin:0 0 8px 0"><strong>' + esc(K('nb_beispiel')) + ':</strong> ' +
+           esc(K('opt_rechenrichtung_auslegung')) + ' \u2014 ' +
+           esc(K('opt_nahtart_kehl_doppel')) + ', 2 \u00d7 200 mm, S355, N = 600 kN, M = 12 kNm</div>';
+
+    for (i = 0; i < g.abschnitte.length; i++) {
+      ab = g.abschnitte[i];
+      out += '<div style="margin:12px 0 4px 0;font-weight:600">' + esc(ab.titel) + '</div>';
+      for (j = 0; j < ab.schritte.length; j++) {
+        sc = ab.schritte[j];
+        out += '<div style="margin:0 0 7px 0;font-size:13px">';
+        out += '<span style="color:var(--muted)">' + sc.nr + '.</span> ' + esc(sc.titel);
+        if (sc.haken_zeichen) out += ' ' + sc.haken_zeichen;
+        if (sc.erfuellt === true) out += ' <span style="font-size:12px;color:var(--muted)">(' +
+                                        esc(sc.erfuellt_text) + ')</span>';
+        if (sc.wert_text) out += '<br><span>' + esc(sc.wert_text) + '</span>';
+        if (sc.formel) out += '<br><code style="font-size:12px">' + esc(sc.formel) + '</code>';
+        if (sc.eingesetzt) out += '<br><span style="color:var(--muted)">' + esc(sc.eingesetzt) + '</span>';
+        if (sc.quelle) out += '<br><span style="font-size:12px;color:var(--muted)">' +
+                              esc(K('rw_grundlage')) + ': ' + esc(sc.quelle) + '</span>';
+        if (sc.probe) out += '<br><span style="font-size:12px;color:var(--muted)">' + esc(sc.probe) + '</span>';
+        if (sc.erfuellt === false) out += '<div class="status-banner warn" style="margin:5px 0">' +
+                                         '\u26a0 ' + esc(sc.erfuellt_text) + '</div>';
+        if (sc.hinweis) out += '<div class="gap-note">' + esc(sc.hinweis) + '</div>';
+        if (sc.liste && sc.liste.length) {
+          out += '<ul style="margin:4px 0 0 0;padding-left:18px">';
+          for (var m = 0; m < sc.liste.length; m++) out += '<li>' + esc(sc.liste[m]) + '</li>';
+          out += '</ul>';
+        }
+        out += '</div>';
+      }
+    }
+
+    var bad = g.selbstpruefung_ok ? 'ok' : 'bad';
+    out += '<div class="status-banner ' + bad + '" style="margin:10px 0">' +
+           haken(g.selbstpruefung_ok) + ' ' + esc(K('rw_selbstpruefung')) + ': ' +
+           g.n_haken_ok + ' / ' + g.n_haken + '</div>';
+    host.innerHTML = out;
+  }
+
   function luecken() {
     var host = id('lueckenHost');
     if (!window.DTNData) { host.textContent = '–'; return; }
@@ -587,12 +655,13 @@
     id('h_profil').textContent = K('pr_titel');
     id('h_grafik').textContent = K('sb_titel');
     id('h_spannung').textContent = K('sv_titel');
+    id('h_rechenweg').textContent = K('rw_titel');
     id('h_luecken').textContent = K('gap');
     id('h_nichtgeprueft').textContent = K('ng_titel');
     id('footNote').textContent = K('disclaimer');
   }
 
-  function zeichne() { texte(); status(); optionen(); nahtbild(); profil(); grafik(); spannung(); luecken(); nichtGeprueft(); }
+  function zeichne() { texte(); status(); optionen(); nahtbild(); profil(); grafik(); spannung(); rechenweg(); luecken(); nichtGeprueft(); }
 
   function sprache(l) {
     LANG = l;
