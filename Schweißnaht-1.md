@@ -6,22 +6,22 @@
 > **Diese Datei ersetzt `Schweißnaht.md` vollständig.** Sie enthält den Stand nach dem
 > Konzeptgespräch (2026-07-23), nach der abgeschlossenen Recherche (R1–R6), nach der
 > Abstimmung vom **2026-07-24** (alle offenen Fragen aus Abschnitt 0 geklärt) und nach den
-> abgenommenen Bausteinen **N1, N2, N2b, N2c, N3 und N4** (Stand 2026-07-26).
+> abgenommenen Bausteinen **N1, N2, N2b, N2c, N3, N4 und N5a** (Stand 2026-07-27).
 > Sie ist so geschrieben, dass ein **neuer Chat ohne Vorwissen** damit weiterarbeiten kann.
-> Einstieg dort: **„weiter mit N5a"** — dann der Reihenfolge in Kickoff-Punkt 5b folgen.
+> Einstieg dort: **„weiter mit N5b"** — dann der Reihenfolge in Kickoff-Punkt 5b folgen.
 
 ```
-Plan-Version : 2.16 · Stand 2026-07-26
+Plan-Version : 2.17 · Stand 2026-07-27
 Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
-               N2c (Nahtbild-Grafik), N3 (Spannungen + beide Welten) und
-               N4 (Rechenweg) von Dieter am Handy geprüft und ABGENOMMEN.
-               **N5a (UI-Grundgerüst) gebaut und ausgeliefert — wartet auf die
-               Abnahme am Handy.** Beide HTMLs sind vollständig neu, die
-               Zwischen-Statusseite aus N1–N4 ist entfallen, `ui.js` ist neu.
-               → NÄCHSTER SCHRITT: N5a am Handy prüfen (startet dunkel? drei
-                 Sprachen? klappen die acht Bereiche auf und zu?), danach
-                 Etappe **N5b** (Eingabeseite) — Einstieg „weiter mit N5b",
-                 Auftragsvorschlag in Abschnitt 5.1, vor dem Bau bestätigen.
+               N2c (Nahtbild-Grafik), N3 (Spannungen + beide Welten),
+               N4 (Rechenweg) und **N5a (UI-Grundgerüst)** von Dieter am Handy
+               geprüft und ABGENOMMEN.
+               Projektordner /mnt/project/ UND GitHub Pages sind auf diesem Stand —
+               von Dieter am 2026-07-27 bestätigt: alle 13 Module, style.css,
+               beide HTMLs und die drei DEV-ONLY-Dateien liegen aktuell vor.
+               → NÄCHSTER SCHRITT: Etappe **N5b** (Eingabeseite) —
+                 Einstieg „weiter mit N5b". Auftragsvorschlag in Abschnitt 5.1;
+                 **Umfang zuerst mit Dieter bestätigen, dann bauen** (Regel 5c).
                  Schnittstellen: 4.5 (naht.js), 4.6 (profil.js),
                  4.7 (svglib.js + schaubild.js), 4.8 (solver.js),
                  4.9 (rechenweg.js), 4.10 (ui.js).
@@ -82,8 +82,6 @@ Schritt. Danach Plan-Kopf (Version/Status/Basislinie) + Changelog pflegen.
 
 **5b) WIEDEREINSTIEG IN EINEM NEUEN CHAT — genau diese Reihenfolge:**
 Einstiegssatz von Dieter: **„weiter mit N5b"**.
-*(Ist N5a noch nicht abgenommen, sagt Dieter das — dann zuerst seine Rückmeldung
-abarbeiten und erst danach N5b bauen.)*
 1. Diese Datei komplett lesen (`Schweißnaht-1.md`, sie ist die alleinige Grundlage).
 2. Abschnitt **8.1** lesen: was ist fertig, was fehlt.
 3. Abschnitt **4.5** lesen: die fertige Schnittstelle von `naht.js` (N2).
@@ -997,7 +995,7 @@ Titel und Erklärung kommen aus `sec_<code>` und `sec_<code>_hint`.
 | **N2c** ✅ | **Nahtbild-Grafik** *(abgenommen 2026-07-26)* | `svglib.js` + `schaubild.js`: SVG-Vorschau des Nahtbilds, Segmente farbig nach Gruppe, Schwerpunkt und Achsen, nicht geschweißte Kanten gestrichelt, Ecklücken sichtbar. Zugleich **Auswahl-Skizze** der Profileingabe. **Schnittstelle: Abschnitt 4.7.** |
 | **N3** ✅ | **Spannungen + beide Welten** *(abgenommen 2026-07-26)* | `solver.js`: σ⊥, τ⊥, τ∥ aus N/Q/M/T · Welt A (EC3, beide Verfahren) · Welt B (klassisch, Tabelle + Formel) · **Nachweis UND Auslegung** mit Aufrundung · Ampel. **Schnittstelle: Abschnitt 4.8.** |
 | **N4** ✅ | **Rechenweg** *(abgenommen 2026-07-26)* | `rechenweg.js`: selbstprüfende Schrittliste für N2/N2b/N3, dreisprachig, zweiter Rechenpfad je Schritt, Rechenprobe und Nachweis getrennt. **Schnittstelle: Abschnitt 4.9.** |
-| **N5** ⬅ | **UI-Basis — NÄCHSTER SCHRITT (vier Etappen, 5.2)** | 2 HTMLs, `style.css`, Formular mit aufklappbaren Bereichen und Freischalt-Haken, Ergebnis-Kacheln, Ampel, i18n, Theme (**Start immer dunkel**), Laien-ⓘ, Block „Ausführung & Dokumentation" (ISO 5817 + EXC). **Erster Handy-Test.** |
+| **N5** ⬅ | **UI-Basis — LAUFEND: N5a ✅ abgenommen, NÄCHSTER SCHRITT N5b (Etappen in 5.2)** | 2 HTMLs, `style.css`, Formular mit aufklappbaren Bereichen und Freischalt-Haken, Ergebnis-Kacheln, Ampel, i18n, Theme (**Start immer dunkel**), Laien-ⓘ, Block „Ausführung & Dokumentation" (ISO 5817 + EXC). **Erster Handy-Test.** |
 | **N6b** | **ISO-2553-Symbolgenerator** | `symbol.js`: Pfeil-/Gegenseite, a- bzw. z-Maß, Länge, Rundumnaht, Baustellennaht. Nutzt `svglib.js` aus N2c. Bewusst **vor** dem Launch — Verkaufsargument. |
 | **N7** | **Presets** | Die 6 Starter als Profil-/Kantendaten auf `profil.js`, **mit Merkmalen für die kontextbezogene Beispielliste** (3.2). |
 | **N8** | **Assistent** | `assistent.js` (DOM-freie Dialoglogik) + Overlay-UI, Button-Einstieg, tabellengestützt aus `optionen.js`, mit Erklärungen/Tipps/Skizzen je Dialog, Übernahme vorhandener Eingaben. |
@@ -1013,10 +1011,9 @@ Titel und Erklärung kommen aus `sec_<code>` und `sec_<code>_hint`.
 
 ### 5.1 Auftragsvorschlag für die nächste Etappe **N5b — Eingabeseite**
 
-> **Erst bestätigen, dann bauen** (Regel aus 5.2): N5b ist noch nicht mit Dieter
-> abgestimmt. Der Umfang unten ist der Vorschlag; Dieter sagt ja oder korrigiert ihn,
-> **bevor** das erste Codezeichen entsteht.
-> **Vorbedingung:** N5a am Handy geprüft und abgenommen.
+> **N5a ist abgenommen — N5b kann beginnen, sobald der Umfang steht.**
+> **Erst bestätigen, dann bauen** (Regel aus 5.2): Der Umfang unten ist der Vorschlag;
+> Dieter sagt ja oder korrigiert ihn, **bevor** das erste Codezeichen entsteht.
 
 Alles, was N5b braucht, ist fertig und liefert **Codes statt Texte**: `optionen.js` die
 20 Auswahlgruppen samt Verträglichkeitsregeln (**die eine Filterfunktion**, 3.4),
@@ -1078,7 +1075,7 @@ AWS/US-Normen, EN 1993-1-8:2024 (2. Generation, β_w,mod — Werte noch nicht be
 **N5 — UI-Basis (vier Etappen):**
 | Etappe | Inhalt | Am Handy prüfbar |
 |---|---|---|
-| **N5a** ✅ | *(gebaut 2026-07-26, wartet auf Abnahme)* Grundgerüst: beide HTMLs neu, `ui.js`, `style.css` — Kopfzeile mit Marke und Lizenzzeile, Sprachumschalter DE/EN/PT, Theme-Button mit **Start immer dunkel** (3.1), Info-ⓘ, Subbar, Aktionsleiste, leeres Formulargerüst mit acht aufklappbaren Bereichen. Die Zwischen-Statusseite aus N1–N4 ist weg. **Schnittstelle: 4.10.** | Sieht aus wie ein Programm, startet dunkel, drei Sprachen laufen |
+| **N5a** ✅ | *(abgenommen 2026-07-27)* Grundgerüst: beide HTMLs neu, `ui.js`, `style.css` — Kopfzeile mit Marke und Lizenzzeile, Sprachumschalter DE/EN/PT, Theme-Button mit **Start immer dunkel** (3.1), Info-ⓘ, Subbar, Aktionsleiste, leeres Formulargerüst mit acht aufklappbaren Bereichen. Die Zwischen-Statusseite aus N1–N4 ist weg. **Schnittstelle: 4.10.** | Sieht aus wie ein Programm, startet dunkel, drei Sprachen laufen |
 | **N5b** | Eingabeseite: alle Auswahlgruppen aus `optionen.js` über **die** Filterfunktion, alle Felder aus `validate.js`, Freischalt-Haken, **„eigener Wert"-Haken überall**, Laien-ⓘ an jedem Feld, „Leeren" leert wirklich alles (3.1) | Man kann einen Fall wirklich eingeben |
 | **N5c** | Ergebnisseite: Ergebnis-Kacheln, Ampel, Nahtbild-Grafik eingebunden, **Rechenweg aus N4 angezeigt**, Liste 2.4, Warnungen und ehrliche Lücken sichtbar | Ein vollständiger Nachweis von Eingabe bis Ergebnis |
 | **N5d** | Block „Ausführung & Dokumentation" (ISO 5817 + EXC, ehrlich als nicht rechenwirksam beschriftet, 2.7) | Der Block klappt auf und erscheint in der Ausgabe |
@@ -1218,7 +1215,11 @@ auf; in N5a **unverändert**).
 `kosten.js` (N10) · `report.js` (N11) · `ermuedung.js` (N13) · `kerbfall.js` (N14) ·
 `verzug.js` (N15).
 
-**N5a-Lieferung (2026-07-26), zu überschreiben:** `DT-ProfiSchweissnaht.html`,
+**Von Dieter am 2026-07-27 bestätigt:** Projektordner `/mnt/project/` und GitHub tragen
+genau diesen Stand. Die N5a-Lieferung ist eingespielt, am Handy geprüft und **abgenommen** —
+alles läuft sauber.
+
+**N5a-Lieferung (2026-07-26/27), eingespielt:** `DT-ProfiSchweissnaht.html`,
 `DT-ProfiSchweissnaht_Test.html`, `ui.js` (neu), `style.css`, `i18n_kern.js`,
 `test_naht.js`, `dom_smoke_voll.js`, `Schweißnaht-1.md`.
 **Unverändert bleiben:** alle Rechenmodule aus N1–N4, `i18n_hilfe.js`, `i18n_kerbfall.js`
@@ -1482,6 +1483,14 @@ Die Rechenmodule N1–N4 bleiben unberührt.
 - **Zwei vermeintliche Fehler waren meine Testeingaben**, nicht der Code: ein erfundener
   Zusatzwerkstoff-Code und ein absurdes Torsionsmoment. `solver.js` hat in beiden Fällen
   ehrlich gemeldet, woran es lag — genau wie vorgesehen.
+
+**Aus der Rückmeldung 2026-07-27 (N5a abgenommen):**
+- N5a von Dieter am Handy geprüft: die Oberfläche startet dunkel, die drei Sprachen laufen
+  durch, die acht Bereiche klappen auf und zu. **Abgenommen, ohne Nacharbeit.**
+  Projektordner und GitHub sind auf diesem Stand.
+- Damit ist die **Basislinie 679 / 234 / 235** verbindlich — sie darf nur noch wachsen.
+- **Damit ist zum ersten Mal ein Programm sichtbar**, kein Prüfstand: die Zwischen-Statusseite
+  aus N1–N4 ist ersatzlos entfallen und kommt nicht zurück.
 
 **Aus N5a (2026-07-26) — Festlegungen, die beim Bauen entstanden sind:**
 - **Das Formulargerüst steht als Markup in der HTML, nicht als Zeichenkette in `ui.js`.**
@@ -1762,6 +1771,16 @@ Ein echter Fehler beim Bauen gefunden und behoben: die Klasse `.norm` stand in d
 aber nicht in `style.css`.
 **Basislinie 641 → 679 Assertions · Smokes 182/183 → 234/235 · i18n-Parität 0.**
 **Nächster Schritt: N5a am Handy prüfen, dann N5b (Eingabeseite) abstimmen und bauen.**
+**v2.17 (2026-07-27):** **N5a (UI-Grundgerüst) von Dieter am Handy geprüft und
+ABGENOMMEN** — ohne Nacharbeit: startet dunkel, drei Sprachen laufen durch, die acht
+Bereiche klappen auf und zu. Projektordner `/mnt/project/` und GitHub Pages tragen diesen
+Stand (13 Module, `style.css`, beide HTMLs, drei DEV-ONLY-Dateien).
+Plan-Kopf, Bausteintabelle, Etappentabelle 5.2 und Abschnitt 8.1 auf den abgenommenen
+Stand gesetzt; die Vorbedingung „erst N5a prüfen" in 5.1 entfällt; Kickoff-Punkt 5b ohne
+Vorbehalt auf **„weiter mit N5b"**. Code unverändert.
+**Basislinie unverändert und verbindlich: 679 Assertions · Smokes 234/235 · i18n-Parität 0.**
+**Nächster Schritt: N5b (Eingabeseite) — Einstieg „weiter mit N5b". Auftragsvorschlag in
+Abschnitt 5.1, Umfang vor dem Bau bestätigen. Schnittstelle von `ui.js` in Abschnitt 4.10.**
 ═══════════════════════════════════════════════════════════════════════════
 Ende Schweißnaht-1.md · DT-ProfiSchweissnaht
 ═══════════════════════════════════════════════════════════════════════════
