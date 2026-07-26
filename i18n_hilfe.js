@@ -623,6 +623,92 @@
       pt: { was: 'O módulo de torção: momento polar a dividir pela maior distância ao centroide. O momento torsor a dividir por este valor dá o corte no ponto mais desfavorável.',
             bereich: 'Fiável em tubos e grupos fechados, apenas aproximado em grupos abertos.',
             tipp: 'Grupos redondos e fechados resistem melhor à torção – dois cordões laterais paralelos são o pior caso.' }
+    },
+
+    /* =============== N3 · solver.js =============== */
+
+    grp_a_rundung: {
+      de: { was: 'Auf welches Fertigungsmaß das errechnete a-Maß aufgerundet wird. Auf der Zeichnung steht a4 oder a5 – kein Schweißer stellt auf 4,37 mm ein.',
+            bereich: 'Ganze Millimeter (Voreinstellung) oder halbe Millimeter. Es wird IMMER aufgerundet, nie ab.',
+            tipp: 'Ganze Millimeter sind der Normalfall. Halbe Millimeter erst bei dünnen Blechen: bei t = 5 mm liegt a_max schon bei 3,5 mm, da ist ganzzahlig zu grob.' },
+      en: { was: 'To which fabrication size the computed throat is rounded up. The drawing says a4 or a5 – no welder sets 4.37 mm.',
+            bereich: 'Whole millimetres (default) or half millimetres. Always rounded UP, never down.',
+            tipp: 'Whole millimetres are the normal case. Use half millimetres only for thin plate: at t = 5 mm a_max is already 3.5 mm, so whole steps are too coarse.' },
+      pt: { was: 'Para que medida de fabrico a garganta calculada é arredondada. No desenho consta a4 ou a5 – nenhum soldador ajusta 4,37 mm.',
+            bereich: 'Milímetros inteiros (predefinição) ou meios milímetros. Sempre arredondado PARA CIMA, nunca para baixo.',
+            tipp: 'Milímetros inteiros são o caso normal. Meios milímetros só em chapa fina: com t = 5 mm, a_max já é 3,5 mm.' }
+    },
+
+    grp_weltb_nahtgruppe: {
+      de: { was: 'Zeile der klassischen Tabelle der zulässigen Spannungen. Nur damit greift der Tabellenwert – sonst wird über die Formel gerechnet.',
+            bereich: 'Fünf Zeilen, belegt für S235 und S355 in der Bewertungsgruppe B.',
+            tipp: 'Wenn Sie die Zeile nicht sicher zuordnen können, lassen Sie das Feld leer: dann rechnet das Programm ehrlich über die Formel σ_zul = R_e / S · ν und sagt es Ihnen.' },
+      en: { was: 'Row of the classic table of permissible stresses. Only with it does the table value apply – otherwise the formula is used.',
+            bereich: 'Five rows, documented for S235 and S355 in quality level B.',
+            tipp: 'If you cannot assign the row with confidence, leave it empty: the program then honestly uses the formula σ_perm = R_e / S · ν and tells you so.' },
+      pt: { was: 'Linha da tabela clássica de tensões admissíveis. Só com ela o valor tabelado se aplica – caso contrário usa-se a fórmula.',
+            bereich: 'Cinco linhas, documentadas para S235 e S355 no nível B.',
+            tipp: 'Se não conseguir atribuir a linha com segurança, deixe vazio: o programa usa então a fórmula σ_adm = R_e / S · ν e informa-o.' }
+    },
+
+    fld_Qy: {
+      de: { was: 'Querkraft in Richtung der waagerechten y-Achse, also seitlich am Nahtbild.',
+            bereich: 'Frei, in Newton. Null lassen, wenn nur senkrecht belastet wird.',
+            tipp: 'Die meisten Fälle brauchen nur Q_z. Q_y erst, wenn die Kraft schräg oder seitlich angreift.' },
+      en: { was: 'Shear force along the horizontal y axis, i.e. sideways on the weld group.',
+            bereich: 'Free, in newtons. Leave zero if the load acts vertically only.',
+            tipp: 'Most cases need only Q_z. Use Q_y when the force acts sideways or at an angle.' },
+      pt: { was: 'Esforço transverso na direção do eixo horizontal y, ou seja lateral ao grupo de solda.',
+            bereich: 'Livre, em newtons. Deixe zero se a carga só atua na vertical.',
+            tipp: 'A maioria dos casos só precisa de Q_z. Use Q_y quando a força atua lateral ou obliquamente.' }
+    },
+
+    fld_Qz: {
+      de: { was: 'Querkraft in Richtung der senkrechten z-Achse – der übliche Fall bei Konsolen und Kragarmen.',
+            bereich: 'Frei, in Newton.',
+            tipp: 'Dies ist die Querkraft, die man normalerweise meint. Sie erzeugt Schub längs senkrechter Nähte.' },
+      en: { was: 'Shear force along the vertical z axis – the usual case for brackets and cantilevers.',
+            bereich: 'Free, in newtons.',
+            tipp: 'This is the shear force normally meant. It produces shear along vertical welds.' },
+      pt: { was: 'Esforço transverso na direção do eixo vertical z – o caso usual em consolas.',
+            bereich: 'Livre, em newtons.',
+            tipp: 'É o esforço transverso habitualmente referido. Produz corte ao longo de cordões verticais.' }
+    },
+
+    fld_My: {
+      de: { was: 'Biegemoment um die waagerechte y-Achse – die starke Achse, der häufigste Biegefall.',
+            bereich: 'Frei, in Newtonmeter.',
+            tipp: 'Kraft mal Hebelarm. Wenn Sie den geometrischen Weg wählen, rechnet das Programm M_y selbst aus.' },
+      en: { was: 'Bending moment about the horizontal y axis – the strong axis, the most common bending case.',
+            bereich: 'Free, in newton metres.',
+            tipp: 'Force times lever arm. If you choose the geometric input the program computes M_y itself.' },
+      pt: { was: 'Momento fletor em torno do eixo horizontal y – o eixo forte, o caso mais comum.',
+            bereich: 'Livre, em newton metro.',
+            tipp: 'Força vezes braço. Na entrada geométrica o programa calcula M_y automaticamente.' }
+    },
+
+    fld_Mz: {
+      de: { was: 'Biegemoment um die senkrechte z-Achse – die schwache Achse.',
+            bereich: 'Frei, in Newtonmeter. Null lassen, wenn nur um die starke Achse gebogen wird.',
+            tipp: 'Treten M_y und M_z gemeinsam auf, liegt zweiachsige Biegung vor. Das Programm rechnet das mit.' },
+      en: { was: 'Bending moment about the vertical z axis – the weak axis.',
+            bereich: 'Free, in newton metres. Leave zero for bending about the strong axis only.',
+            tipp: 'If M_y and M_z occur together this is biaxial bending. The program covers it.' },
+      pt: { was: 'Momento fletor em torno do eixo vertical z – o eixo fraco.',
+            bereich: 'Livre, em newton metro. Deixe zero se só há flexão no eixo forte.',
+            tipp: 'Se M_y e M_z ocorrem juntos há flexão biaxial. O programa considera-a.' }
+    },
+
+    fld_Re: {
+      de: { was: 'Streckgrenze des Grundwerkstoffs für die Welt B. Wird aus der Werkstofftabelle vorbelegt und ist per Haken überschreibbar.',
+            bereich: 'Typisch 215 bis 460 N/mm² bei Stahl.',
+            tipp: 'Nur überschreiben, wenn Sie einen belegten Wert haben – zum Beispiel den alten Wert 240 N/mm² aus einem Lehrbuchbeispiel.' },
+      en: { was: 'Yield strength of the base material for world B. Pre-filled from the material table and overridable via the tick box.',
+            bereich: 'Typically 215 to 460 N/mm² for steel.',
+            tipp: 'Override only with a documented value – for instance the legacy 240 N/mm² from a textbook example.' },
+      pt: { was: 'Tensão de cedência do material base para o método B. Pré-preenchida da tabela e substituível pela opção de valor próprio.',
+            bereich: 'Tipicamente 215 a 460 N/mm² em aço.',
+            tipp: 'Substitua apenas com um valor documentado – por exemplo o antigo 240 N/mm² de um exemplo de manual.' }
     }
   };
 

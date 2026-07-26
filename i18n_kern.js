@@ -402,7 +402,151 @@
     lk_alu_kein_beta_w:             { de: 'Aluminium kennt kein βw – der Nachweis läuft über die Schweißgutfestigkeit fw.', en: 'Aluminium has no βw – verification uses the weld metal strength fw.', pt: 'O alumínio não tem βw – a verificação usa a resistência do metal depositado fw.' },
     lk_ec3_11_2005_vor_ac2009:      { de: 'Alt-Wert fu = 510 N/mm² aus EN 1993-1-1:2005 vor der Berichtigung AC:2009. Maßgebend ist 490 N/mm².', en: 'Legacy value fu = 510 N/mm² from EN 1993-1-1:2005 before corrigendum AC:2009. The governing value is 490 N/mm².', pt: 'Valor antigo fu = 510 N/mm² da EN 1993-1-1:2005 antes da errata AC:2009. Vigora 490 N/mm².' },
     lk_weltb_kein_verbindliches_regelwerk: { de: 'Für den allgemeinen Maschinenbau gibt es kein verbindliches Regelwerk. Grundlage sind Roloff/Matek und Decker.', en: 'There is no binding code for general mechanical engineering. The basis is Roloff/Matek and Decker.', pt: 'Não existe norma vinculativa para engenharia mecânica geral. A base é Roloff/Matek e Decker.' },
-    lk_nicht_normativ_in_ec3:       { de: 'Praxisrichtwert – in EN 1993-1-8 nicht normativ geregelt.', en: 'Practical guide value – not normative in EN 1993-1-8.', pt: 'Valor prático – não normativo na EN 1993-1-8.' }
+    lk_nicht_normativ_in_ec3:       { de: 'Praxisrichtwert – in EN 1993-1-8 nicht normativ geregelt.', en: 'Practical guide value – not normative in EN 1993-1-8.', pt: 'Valor prático – não normativo na EN 1993-1-8.' },
+
+    /* ===================================================================== */
+    /* N3 · solver.js — Spannungen, beide Bemessungswelten, Nachweis+Auslegung */
+    /* ===================================================================== */
+
+    /* --- Karte und Beschriftungen ---------------------------------------- */
+    sv_titel:            { de: 'Spannungen und Nachweis', en: 'Stresses and verification', pt: 'Tensões e verificação' },
+    sv_welt:             { de: 'Bemessungswelt', en: 'Design world', pt: 'Método de dimensionamento' },
+    sv_verfahren:        { de: 'Nachweisverfahren', en: 'Verification method', pt: 'Método de verificação' },
+    sv_ausnutzung:       { de: 'Ausnutzungsgrad', en: 'Utilisation', pt: 'Grau de utilização' },
+    sv_ampel:            { de: 'Ampel', en: 'Traffic light', pt: 'Semáforo' },
+    sv_massgebend:       { de: 'Maßgebender Punkt', en: 'Governing point', pt: 'Ponto determinante' },
+    sv_punkt:            { de: 'Punkt', en: 'Point', pt: 'Ponto' },
+    sv_segment:          { de: 'Segment', en: 'Segment', pt: 'Segmento' },
+    sv_widerstand:       { de: 'Nahtwiderstand', en: 'Weld resistance', pt: 'Resistência da solda' },
+    sv_erfuellt:         { de: 'Nachweis erfüllt', en: 'Verification satisfied', pt: 'Verificação cumprida' },
+    sv_nicht_erfuellt:   { de: 'Nachweis NICHT erfüllt', en: 'Verification NOT satisfied', pt: 'Verificação NÃO cumprida' },
+    sv_lastfall:         { de: 'Lastfall', en: 'Load case', pt: 'Caso de carga' },
+    sv_nahtgruppe:       { de: 'Nahtgruppe (Tabelle)', en: 'Weld group (table)', pt: 'Grupo de solda (tabela)' },
+    sv_pfad:             { de: 'Datenweg', en: 'Data path', pt: 'Origem dos dados' },
+    sv_pfad_tabelle:     { de: 'Tabellenwert (maßgeblich)', en: 'Table value (governing)', pt: 'Valor tabelado (vigente)' },
+    sv_pfad_formel:      { de: 'Formelweg (kein Tabellenwert)', en: 'Formula path (no table value)', pt: 'Via de fórmula (sem valor tabelado)' },
+    sv_getrennt:         { de: 'Welt A und Welt B werden nie vermischt', en: 'World A and world B are never mixed', pt: 'O método A e o método B nunca se misturam' },
+    sv_wez:              { de: 'WEZ-Entfestigung (Aluminium)', en: 'HAZ softening (aluminium)', pt: 'Amolecimento da ZTA (alumínio)' },
+    sv_rho_o:            { de: 'Abminderung Dehngrenze ρ_o,haz', en: 'Reduction of proof strength ρ_o,haz', pt: 'Redução do limite elástico ρ_o,haz' },
+    sv_rho_u:            { de: 'Abminderung Zugfestigkeit ρ_u,haz', en: 'Reduction of tensile strength ρ_u,haz', pt: 'Redução da resistência à tração ρ_u,haz' },
+    sv_f_o_haz:          { de: 'Dehngrenze in der WEZ f_o,haz', en: 'Proof strength in the HAZ f_o,haz', pt: 'Limite elástico na ZTA f_o,haz' },
+    sv_f_u_haz:          { de: 'Zugfestigkeit in der WEZ f_u,haz', en: 'Tensile strength in the HAZ f_u,haz', pt: 'Resistência à tração na ZTA f_u,haz' },
+    sv_b_haz:            { de: 'Breite der WEZ b_haz', en: 'Width of the HAZ b_haz', pt: 'Largura da ZTA b_haz' },
+    sv_faktor:           { de: 'Skalierungsfaktor des a-Maßes', en: 'Scaling factor of the throat size', pt: 'Fator de escala da garganta' },
+    sv_stufe:            { de: 'Rundungsstufe', en: 'Rounding step', pt: 'Passo de arredondamento' },
+    sv_a_bezug:          { de: 'Bezugs-a-Maß', en: 'Reference throat size', pt: 'Garganta de referência' },
+    sv_iterationen:      { de: 'Iterationsschritte', en: 'Iteration steps', pt: 'Passos de iteração' },
+
+    /* --- Ergebnisgrößen (DTNSolver.GROESSEN) ----------------------------- */
+    sv_sigma_x:          { de: 'Normalspannung senkrecht zur Anschlussebene σ_x', en: 'Normal stress perpendicular to the joint plane σ_x', pt: 'Tensão normal perpendicular ao plano de ligação σ_x' },
+    sv_tau_n:            { de: 'Schubspannung quer zur Nahtachse τ_n', en: 'Shear stress transverse to the weld axis τ_n', pt: 'Tensão de corte transversal ao eixo do cordão τ_n' },
+    sv_tau_t:            { de: 'Schubspannung längs der Nahtachse τ_t', en: 'Shear stress along the weld axis τ_t', pt: 'Tensão de corte ao longo do eixo do cordão τ_t' },
+    sv_q_senk:           { de: 'Quer wirkende Resultierende q⊥', en: 'Resultant acting transversely q⊥', pt: 'Resultante transversal q⊥' },
+    sv_sigma_senk:       { de: 'Normalspannung σ⊥ (senkrecht zur Nahtebene)', en: 'Normal stress σ⊥ (perpendicular to the throat plane)', pt: 'Tensão normal σ⊥ (perpendicular ao plano da garganta)' },
+    sv_tau_senk:         { de: 'Schubspannung τ⊥ (in der Nahtebene, quer)', en: 'Shear stress τ⊥ (in the throat plane, transverse)', pt: 'Tensão de corte τ⊥ (no plano da garganta, transversal)' },
+    sv_tau_par:          { de: 'Schubspannung τ∥ (in der Nahtebene, längs)', en: 'Shear stress τ∥ (in the throat plane, longitudinal)', pt: 'Tensão de corte τ∥ (no plano da garganta, longitudinal)' },
+    sv_sigma_v:          { de: 'Vergleichsspannung σ_v', en: 'Equivalent stress σ_v', pt: 'Tensão equivalente σ_v' },
+    sv_sigma_res:        { de: 'Resultierende Spannung σ_res', en: 'Resultant stress σ_res', pt: 'Tensão resultante σ_res' },
+    sv_R_d:              { de: 'Grenzspannung der Naht', en: 'Limit stress of the weld', pt: 'Tensão limite da solda' },
+    sv_eta:              { de: 'Ausnutzungsgrad η', en: 'Utilisation η', pt: 'Grau de utilização η' },
+    sv_a_erf:            { de: 'Erforderliches a-Maß a_erf', en: 'Required throat size a_req', pt: 'Garganta necessária a_nec' },
+    sv_a_gewaehlt:       { de: 'Gewähltes a-Maß (aufgerundet)', en: 'Selected throat size (rounded up)', pt: 'Garganta escolhida (arredondada para cima)' },
+    sv_a_max:            { de: 'Höchstmaß a_max = 0,7 · t_min', en: 'Maximum a_max = 0.7 · t_min', pt: 'Máximo a_max = 0,7 · t_min' },
+    sv_a_min:            { de: 'Mindestmaß a_min', en: 'Minimum a_min', pt: 'Mínimo a_min' },
+    sv_beta_Lw:          { de: 'Abminderungsbeiwert lange Naht β_Lw', en: 'Reduction factor for long welds β_Lw', pt: 'Fator de redução para cordões longos β_Lw' },
+
+    /* --- Nachweisgleichungen (Symbole sprachneutral) --------------------- */
+    sv_formel_ec3:            { de: '√(σ⊥² + 3·(τ⊥² + τ∥²)) ≤ f_u / (β_w · γ_M2)', en: '√(σ⊥² + 3·(τ⊥² + τ∥²)) ≤ f_u / (β_w · γ_M2)', pt: '√(σ⊥² + 3·(τ⊥² + τ∥²)) ≤ f_u / (β_w · γ_M2)' },
+    sv_formel_alu:            { de: '√(σ⊥² + 3·(τ⊥² + τ∥²)) ≤ f_w / γ_Mw', en: '√(σ⊥² + 3·(τ⊥² + τ∥²)) ≤ f_w / γ_Mw', pt: '√(σ⊥² + 3·(τ⊥² + τ∥²)) ≤ f_w / γ_Mw' },
+    sv_formel_weltb_tabelle:  { de: 'σ_v = √(σ⊥² + τ⊥² + τ∥²) ≤ σ_zul (Tabellenwert)', en: 'σ_v = √(σ⊥² + τ⊥² + τ∥²) ≤ σ_perm (table value)', pt: 'σ_v = √(σ⊥² + τ⊥² + τ∥²) ≤ σ_adm (valor tabelado)' },
+    sv_formel_weltb_formel:   { de: 'σ_v = √(σ⊥² + τ⊥² + τ∥²) ≤ σ_zul = R_e / S · ν', en: 'σ_v = √(σ⊥² + τ⊥² + τ∥²) ≤ σ_perm = R_e / S · ν', pt: 'σ_v = √(σ⊥² + τ⊥² + τ∥²) ≤ σ_adm = R_e / S · ν' },
+
+    /* --- Namen der Einzelnachweise -------------------------------------- */
+    sv_nw_haupt:         { de: 'Vergleichsspannung, richtungsbezogenes Verfahren', en: 'Equivalent stress, directional method', pt: 'Tensão equivalente, método direcional' },
+    sv_nw_sigma_senk:    { de: 'Zusatznachweis σ⊥ ≤ 0,9 · f_u / γ_M2', en: 'Additional check σ⊥ ≤ 0.9 · f_u / γ_M2', pt: 'Verificação adicional σ⊥ ≤ 0,9 · f_u / γ_M2' },
+    sv_nw_vereinfacht:   { de: 'Vereinfachtes Verfahren', en: 'Simplified method', pt: 'Método simplificado' },
+    sv_nw_weltb:         { de: 'Vergleichsspannung (Welt B)', en: 'Equivalent stress (world B)', pt: 'Tensão equivalente (método B)' },
+    sv_nw_weltb_schub:   { de: 'Schubspannung (Welt B)', en: 'Shear stress (world B)', pt: 'Tensão de corte (método B)' },
+
+    /* --- Ampel ----------------------------------------------------------- */
+    amp_gruen:           { de: 'Grün – ausreichende Reserve', en: 'Green – sufficient reserve', pt: 'Verde – reserva suficiente' },
+    amp_gelb:            { de: 'Gelb – knapp, aber erfüllt', en: 'Yellow – tight but satisfied', pt: 'Amarelo – no limite, mas cumprido' },
+    amp_rot:             { de: 'Rot – nicht erfüllt', en: 'Red – not satisfied', pt: 'Vermelho – não cumprido' },
+
+    /* --- Hand-Anker (Selbstprüfung im Rechenweg) ------------------------- */
+    sv_handanker:        { de: 'Hand-Anker – gegen belegte Beispiele nachgerechnet', en: 'Hand anchors – recomputed against documented examples', pt: 'Âncoras manuais – recalculadas com exemplos documentados' },
+    sv_anker_verhaeltnis:{ de: 'Bei Querzug ist das vereinfachte Verfahren um √(3/2) ≈ 1,2247 strenger', en: 'Under transverse tension the simplified method is stricter by √(3/2) ≈ 1.2247', pt: 'Sob tração transversal o método simplificado é mais rigoroso por √(3/2) ≈ 1,2247' },
+    sv_anker_laengs:     { de: 'Bei Beanspruchung längs der Naht liefern beide Verfahren dasselbe', en: 'For loading along the weld both methods give the same result', pt: 'Para carga ao longo do cordão ambos os métodos dão o mesmo resultado' },
+    sv_anker_adopp:      { de: 'Verdoppeltes a-Maß halbiert die Spannung', en: 'Doubling the throat size halves the stress', pt: 'Duplicar a garganta reduz a tensão à metade' },
+    sv_anker_invers:     { de: 'Auslegung und Nachweis sind zueinander invers (η = 1 bei a_erf)', en: 'Design and verification are mutually inverse (η = 1 at a_req)', pt: 'Dimensionamento e verificação são inversos (η = 1 em a_nec)' },
+    sv_anker_weltb:      { de: 'Welt B, S235: σ_zul = 0,95 · 240/1,1 = 207 N/mm²', en: 'World B, S235: σ_perm = 0.95 · 240/1.1 = 207 N/mm²', pt: 'Método B, S235: σ_adm = 0,95 · 240/1,1 = 207 N/mm²' },
+
+    /* --- Auswahlgruppe: Aufrundung des a-Maßes (2.3, bindend) ------------ */
+    grp_a_rundung:                { de: 'Aufrundung des a-Maßes', en: 'Rounding of the throat size', pt: 'Arredondamento da garganta' },
+    opt_a_rundung_ganze_mm:       { de: 'Ganze Millimeter (a4, a5, a6 …)', en: 'Whole millimetres (a4, a5, a6 …)', pt: 'Milímetros inteiros (a4, a5, a6 …)' },
+    opt_a_rundung_halbe_mm:       { de: 'Halbe Millimeter (a3; a3,5; a4 …)', en: 'Half millimetres (a3; a3.5; a4 …)', pt: 'Meios milímetros (a3; a3,5; a4 …)' },
+
+    /* --- Auswahlgruppe: Nahtgruppe für den Welt-B-Tabellenwert ----------- */
+    grp_weltb_nahtgruppe:                          { de: 'Nahtgruppe für den Tabellenwert (Welt B)', en: 'Weld group for the table value (world B)', pt: 'Grupo de solda para o valor tabelado (método B)' },
+    opt_weltb_nahtgruppe_stumpf_mit_gegenlage:     { de: 'Stumpfnaht mit Gegenlage', en: 'Butt weld with backing run', pt: 'Solda de topo com passe de raiz' },
+    opt_weltb_nahtgruppe_stumpf_ohne_gegenlage:    { de: 'Stumpfnaht ohne Gegenlage', en: 'Butt weld without backing run', pt: 'Solda de topo sem passe de raiz' },
+    opt_weltb_nahtgruppe_kehl_flach:               { de: 'Kehlnaht, flach', en: 'Fillet weld, flat', pt: 'Solda de filete, plana' },
+    opt_weltb_nahtgruppe_kehl_hohl:                { de: 'Kehlnaht, hohl', en: 'Fillet weld, concave', pt: 'Solda de filete, concava' },
+    opt_weltb_nahtgruppe_kehl_doppel_umlaufend:    { de: 'Doppelkehlnaht, umlaufend', en: 'Double fillet weld, all round', pt: 'Solda de filete dupla, em todo o contorno' },
+
+    /* --- Neue Eingabefelder (validate.js) ------------------------------- */
+    fld_Qy:  { de: 'Querkraft Q_y (waagerecht)', en: 'Shear force Q_y (horizontal)', pt: 'Esforço transverso Q_y (horizontal)' },
+    fld_Qz:  { de: 'Querkraft Q_z (senkrecht)', en: 'Shear force Q_z (vertical)', pt: 'Esforço transverso Q_z (vertical)' },
+    fld_My:  { de: 'Biegemoment M_y (um die starke Achse)', en: 'Bending moment M_y (about the strong axis)', pt: 'Momento fletor M_y (eixo forte)' },
+    fld_Mz:  { de: 'Biegemoment M_z (um die schwache Achse)', en: 'Bending moment M_z (about the weak axis)', pt: 'Momento fletor M_z (eixo fraco)' },
+    fld_Re:  { de: 'Streckgrenze R_e (Welt B)', en: 'Yield strength R_e (world B)', pt: 'Tensão de escoamento R_e (método B)' },
+
+    /* --- Meldungen: Fehler ---------------------------------------------- */
+    msg_sv_welt_fehlt:          { de: 'Bitte zuerst die Bemessungswelt wählen: A = Stahlbau nach EN 1993-1-8, B = klassischer Maschinenbau.', en: 'Please select the design world first: A = structural steel to EN 1993-1-8, B = classical mechanical engineering.', pt: 'Selecione primeiro o método: A = estrutura metálica EN 1993-1-8, B = engenharia mecânica clássica.' },
+    msg_sv_richtung_unbekannt:  { de: 'Unbekannte Rechenrichtung. Möglich sind Nachweis (a gegeben) und Auslegung (a gesucht).', en: 'Unknown calculation direction. Possible are verification (a given) and design (a sought).', pt: 'Direção de cálculo desconhecida. Possíveis: verificação (a dado) e dimensionamento (a procurado).' },
+    msg_sv_nahtbild_fehlt:      { de: 'Es liegt kein Nahtbild vor. Bitte Profil und Kantenauswahl angeben.', en: 'No weld group is defined. Please specify the section and the welded edges.', pt: 'Não há grupo de solda definido. Indique o perfil e as arestas soldadas.' },
+    msg_sv_werkstoff_fehlt:     { de: 'Bitte einen Werkstoff wählen.', en: 'Please select a material.', pt: 'Selecione um material.' },
+    msg_sv_werkstoff_unbekannt: { de: 'Dieser Werkstoff ist nicht hinterlegt.', en: 'This material is not stored.', pt: 'Este material não está registado.' },
+    msg_sv_kennwerte_fehlen:    { de: 'Für diese Kombination aus Werkstoff und Dicke liegen keine belegten Kennwerte vor.', en: 'No documented properties exist for this combination of material and thickness.', pt: 'Não existem valores documentados para esta combinação de material e espessura.' },
+    msg_sv_keine_last:          { de: 'Es ist keine Last eingegeben. Mindestens eine Schnittgröße (N, Q, M oder T) muss von Null verschieden sein.', en: 'No load has been entered. At least one internal force (N, Q, M or T) must be non-zero.', pt: 'Nenhuma carga introduzida. Pelo menos um esforço (N, Q, M ou T) deve ser diferente de zero.' },
+    msg_sv_last_doppelt:        { de: 'Dieselbe Last ist zweimal mit verschiedenen Werten eingegeben (Kurzform und ausführliche Form). Bitte nur einen Wert ausfüllen.', en: 'The same load has been entered twice with different values (short and explicit form). Please fill in only one value.', pt: 'A mesma carga foi introduzida duas vezes com valores diferentes (forma curta e explícita). Preencha apenas um valor.' },
+    msg_sv_verfahren_unpassend: { de: 'Das vereinfachte Verfahren gilt nur für Kehlnähte und teilweise durchgeschweißte Nähte, nicht für durchgeschweißte Stumpfnähte.', en: 'The simplified method applies only to fillet welds and partial-penetration welds, not to full-penetration butt welds.', pt: 'O método simplificado aplica-se apenas a soldas de filete e de penetração parcial, não a soldas de topo de penetração total.' },
+    msg_sv_alu_nur_weltA:       { de: 'Welt B kennt kein Aluminium: die klassischen Tabellenwerte decken nur Stahl ab. Aluminium verlangt EN 1999-1-1 mit WEZ-Entfestigung — bitte Welt A wählen.', en: 'World B does not cover aluminium: the classic table values apply to steel only. Aluminium requires EN 1999-1-1 with HAZ softening — please select world A.', pt: 'O método B não abrange alumínio: os valores tabelados clássicos só cobrem aço. O alumínio exige a EN 1999-1-1 com amolecimento da ZTA — selecione o método A.' },
+    msg_sv_lastfall_nur_weltB:  { de: 'Der Lastfall (ruhend/schwellend/wechselnd) gehört ausschließlich zu Welt B und bleibt in Welt A ohne Wirkung. Für Betriebsfestigkeit ist das Ermüdungsmodul zuständig — beide Nachweise werden nie multipliziert.', en: 'The load case (static/fluctuating/alternating) belongs exclusively to world B and has no effect in world A. Fatigue life is handled by the fatigue module — the two verifications are never multiplied.', pt: 'O caso de carga (estático/pulsante/alternado) pertence exclusivamente ao método B e não tem efeito no método A. A fadiga é tratada pelo módulo próprio — as duas verificações nunca se multiplicam.' },
+    msg_sv_kein_fw:             { de: 'Für diese Kombination aus Legierung und Zusatzwerkstoff ist keine Schweißgutfestigkeit f_w belegt.', en: 'No weld metal strength f_w is documented for this combination of alloy and filler.', pt: 'Não há resistência do metal depositado f_w documentada para esta combinação de liga e consumível.' },
+    msg_sv_kein_betaw:          { de: 'Für diesen Werkstoff ist kein Korrelationsbeiwert β_w hinterlegt.', en: 'No correlation factor β_w is stored for this material.', pt: 'Não há fator de correlação β_w registado para este material.' },
+    msg_sv_kein_nu:             { de: 'Ohne Angabe der Nahtgüte lässt sich kein Nahtgütefaktor ν bestimmen.', en: 'Without the weld quality no weld factor ν can be determined.', pt: 'Sem a qualidade da solda não é possível determinar o fator ν.' },
+    msg_sv_a_fehlt:             { de: 'Für die Auslegung fehlt ein Start-a-Maß als Bezugswert.', en: 'The design needs a starting throat size as reference.', pt: 'O dimensionamento necessita de uma garganta inicial como referência.' },
+    msg_sv_dicke_fehlt:         { de: 'Ohne Bauteildicke lässt sich das Höchstmaß a_max = 0,7 · t_min nicht prüfen.', en: 'Without the part thickness the maximum a_max = 0.7 · t_min cannot be checked.', pt: 'Sem a espessura da peça não é possível verificar a_max = 0,7 · t_min.' },
+    msg_sv_iteration_erfolglos: { de: 'Das erforderliche a-Maß ließ sich nicht bestimmen. Bitte Lasten und Nahtbild prüfen.', en: 'The required throat size could not be determined. Please check loads and weld group.', pt: 'Não foi possível determinar a garganta necessária. Verifique cargas e grupo de solda.' },
+    msg_sv_a_wirksam_null:      { de: 'Nach dem Abzug von 2 mm bleibt kein wirksames a-Maß übrig. Bitte a größer als 2 mm wählen.', en: 'After deducting 2 mm no effective throat size remains. Please choose a larger than 2 mm.', pt: 'Após deduzir 2 mm não resta garganta efetiva. Escolha a maior que 2 mm.' },
+
+    /* --- Meldungen: Warnungen ------------------------------------------- */
+    msg_sv_a_ueber_amax:        { de: 'Das a-Maß liegt über dem Höchstmaß a_max = 0,7 · t_min – für diese Blechdicke ist die Naht zu dick.', en: 'The throat size exceeds the maximum a_max = 0.7 · t_min – the weld is too thick for this plate thickness.', pt: 'A garganta excede o máximo a_max = 0,7 · t_min – o cordão é demasiado espesso para esta espessura.' },
+    msg_sv_a_unter_amin:        { de: 'Das a-Maß liegt unter dem Mindestmaß.', en: 'The throat size is below the minimum.', pt: 'A garganta está abaixo do mínimo.' },
+    msg_sv_l_eff_zu_kurz:       { de: 'Ein Nahtsegment ist kürzer als die Mindestlänge max(6·a; 30 mm) und darf so nicht angesetzt werden.', en: 'A weld segment is shorter than the minimum length max(6·a; 30 mm) and must not be counted.', pt: 'Um segmento é mais curto que o mínimo max(6·a; 30 mm) e não pode ser considerado.' },
+    msg_sv_lange_naht:          { de: 'Ein Nahtsegment ist länger als 150·a – so lange Nähte tragen nicht auf ganzer Länge gleichmäßig.', en: 'A weld segment is longer than 150·a – such long welds do not carry uniformly over their full length.', pt: 'Um segmento é mais longo que 150·a – cordões tão longos não resistem uniformemente em todo o comprimento.' },
+    msg_sv_nicht_erfuellt:      { de: 'Der Nachweis ist NICHT erfüllt: der Ausnutzungsgrad liegt über 1.', en: 'The verification is NOT satisfied: the utilisation exceeds 1.', pt: 'A verificação NÃO é cumprida: o grau de utilização excede 1.' },
+
+    /* --- Meldungen: Hinweise -------------------------------------------- */
+    msg_sv_umklappen:                 { de: 'Die Kehlnaht wird in ihre wirksame Nahtebene geklappt: die quer wirkende Spannung teilt sich mit dem Faktor 1/√2 auf σ⊥ und τ⊥ auf.', en: 'The fillet weld is rotated into its effective throat plane: the transverse stress splits onto σ⊥ and τ⊥ with the factor 1/√2.', pt: 'A solda de filete é rodada para o plano da garganta: a tensão transversal divide-se em σ⊥ e τ⊥ com o fator 1/√2.' },
+    msg_sv_stumpf_voll_kein_nachweis: { de: 'Bei durchgeschweißten Stumpfnähten ist in der Regel das schwächere Bauteil maßgebend, nicht die Naht. Es wird nicht umgeklappt.', en: 'For full-penetration butt welds the weaker part usually governs, not the weld. No rotation is applied.', pt: 'Em soldas de topo de penetração total o elemento mais fraco normalmente governa, não a solda. Não há rotação.' },
+    msg_sv_teil_abzug:                { de: 'Teilweise durchgeschweißte Naht: gerechnet wird mit dem wirksamen Maß a = a_nenn − 2 mm.', en: 'Partial-penetration weld: the calculation uses the effective size a = a_nom − 2 mm.', pt: 'Solda de penetração parcial: o cálculo usa a dimensão efetiva a = a_nom − 2 mm.' },
+    msg_sv_querkraft_mittelwert:      { de: 'Die Querkraft wird gleichmäßig über die Nahtfläche verteilt angesetzt (Q/A_w); die genauere Verteilung über das statische Moment bleibt außen vor.', en: 'The shear force is applied uniformly over the weld area (Q/A_w); the more accurate distribution via the first moment of area is not covered.', pt: 'O esforço transverso é aplicado uniformemente sobre a área de solda (Q/A_w); a distribuição mais exata pelo momento estático não é considerada.' },
+    msg_sv_weltb_ohne_faktor3:        { de: 'Welt B bildet die Vergleichsspannung nach Maschinenbau-Konvention OHNE den Faktor 3 vor den Schubanteilen.', en: 'World B forms the equivalent stress in the mechanical-engineering convention WITHOUT the factor 3 on the shear terms.', pt: 'O método B forma a tensão equivalente pela convenção da engenharia mecânica SEM o fator 3 nos termos de corte.' },
+    msg_sv_weltb_tabelle:             { de: 'Für S235 und S355 liegen in der Bewertungsgruppe B tabellierte zulässige Spannungen vor – Tabellenwerte sind maßgeblich.', en: 'Tabulated permissible stresses exist for S235 and S355 in quality level B – table values govern.', pt: 'Existem tensões admissíveis tabeladas para S235 e S355 no nível B – os valores tabelados vigoram.' },
+    msg_sv_weltb_formelweg:           { de: 'Gerechnet wird über die Formel σ_zul = R_e / S · ν – das ist ausdrücklich KEIN Tabellenwert.', en: 'The calculation uses the formula σ_perm = R_e / S · ν – this is explicitly NOT a table value.', pt: 'O cálculo usa a fórmula σ_adm = R_e / S · ν – explicitamente NÃO é um valor tabelado.' },
+    msg_sv_weltb_lastfall_ohne_wirkung:{ de: 'Der Lastfall (schwellend/wechselnd) wirkt nur im Tabellenweg. Im Formelweg geht er nicht ein – ehrliche Lücke.', en: 'The load case (alternating/fluctuating) only acts in the table path. It does not enter the formula path – an honest gap.', pt: 'O caso de carga (pulsante/alternado) só atua na via tabelada. Não entra na via de fórmula – lacuna declarada.' },
+    msg_sv_alu_wez:                   { de: 'Aluminium: die WEZ-Entfestigung ist ausgewiesen (ρ_haz). Ohne diesen Abminderungsfaktor rechnet man Alu-Nähte deutlich zu günstig.', en: 'Aluminium: the HAZ softening is reported (ρ_haz). Without this reduction factor aluminium welds come out much too favourable.', pt: 'Alumínio: o amolecimento da ZTA é indicado (ρ_haz). Sem este fator as soldas de alumínio resultam demasiado favoráveis.' },
+    msg_sv_alu_wez_nicht_geprueft:    { de: 'Die WEZ-Werte sind Information: der Nachweis des Grundwerkstoffs in der WEZ ist NICHT Teil dieser Nahtberechnung.', en: 'The HAZ values are information only: verification of the base material in the HAZ is NOT part of this weld calculation.', pt: 'Os valores da ZTA são informativos: a verificação do material base na ZTA NÃO faz parte deste cálculo.' },
+    msg_sv_kreis_verdichtet:          { de: 'Für die Kreisnaht wurden 72 Auswertepunkte verwendet, damit das Spannungsmaximum sicher gefunden wird.', en: '72 evaluation points were used for the circular weld so that the stress maximum is found reliably.', pt: 'Foram usados 72 pontos de avaliação no cordão circular para encontrar o máximo com segurança.' },
+    msg_sv_a_aufgerundet:             { de: 'Das erforderliche a-Maß wurde auf das nächste Fertigungsmaß AUFgerundet – im Rechenweg stehen beide Zahlen.', en: 'The required throat size was rounded UP to the next fabrication size – both figures appear in the calculation path.', pt: 'A garganta necessária foi arredondada PARA CIMA à medida de fabrico seguinte – ambos os valores constam no memorial.' },
+    msg_sv_a_je_segment_gerundet:     { de: 'Die Segmente haben unterschiedliche a-Maße; jedes wurde einzeln aufgerundet, denn a ist ein Fertigungsmaß.', en: 'The segments have different throat sizes; each was rounded up separately, because a is a fabrication dimension.', pt: 'Os segmentos têm gargantas diferentes; cada uma foi arredondada separadamente, pois a é uma medida de fabrico.' },
+    msg_sv_beta_lw_angewendet:        { de: 'Der Abminderungsbeiwert β_Lw für lange Nähte wurde angewendet.', en: 'The reduction factor β_Lw for long welds has been applied.', pt: 'O fator de redução β_Lw para cordões longos foi aplicado.' },
+    msg_sv_beta_lw_nicht_angewendet:  { de: 'Der Abminderungsbeiwert β_Lw für lange Nähte ist berechnet, aber NICHT angewendet.', en: 'The reduction factor β_Lw for long welds is computed but NOT applied.', pt: 'O fator de redução β_Lw para cordões longos foi calculado mas NÃO aplicado.' },
+    msg_sv_umlaufend_aus_profil:      { de: 'Die Naht läuft um (so ist die Kantenauswahl); die Lücken an den Eckradien sind keine offenen Nahtenden. Die Torsionsrechnung gilt hier.', en: 'The weld runs all round (that is the edge selection); the gaps at the corner radii are not open weld ends. The torsion calculation applies here.', pt: 'O cordão é contínuo (conforme a seleção de arestas); as folgas nos raios de canto não são extremidades abertas. O cálculo de torção aplica-se.' },
+    msg_sv_sigma_senk_zusatz:         { de: 'Zusätzlich zur Vergleichsspannung wird σ⊥ ≤ 0,9 · f_u / γ_M2 geprüft.', en: 'In addition to the equivalent stress, σ⊥ ≤ 0.9 · f_u / γ_M2 is checked.', pt: 'Além da tensão equivalente verifica-se σ⊥ ≤ 0,9 · f_u / γ_M2.' },
+    msg_sv_schiefe_biegung:           { de: 'Das Nahtbild ist unsymmetrisch (I_yz ≠ 0): gerechnet wird mit der allgemeinen schiefen Biegung.', en: 'The weld group is unsymmetric (I_yz ≠ 0): the general case of biaxial bending is used.', pt: 'O grupo de solda é assimétrico (I_yz ≠ 0): usa-se a flexão oblíqua geral.' }
   };
 
   function t(key, lang) {

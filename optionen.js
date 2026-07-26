@@ -130,6 +130,20 @@
       { code: 'kehlnaht_allgemein',              gilt_wenn: { nahtart: KEHL.concat(STUMPF_TEIL) } }
     ]},
 
+    /* Welt B: Zeile der klassischen Tabelle der zulaessigen Spannungen.
+       NICHT pflicht — wer die Zeile nicht sicher zuordnen kann, laesst sie
+       leer und bekommt ehrlich den Formelweg (stehende Regel: keine
+       erfundene Zuordnung von Nahtart auf Tabellenzeile). Belegt sind nur
+       S235 und S355 in der Bewertungsgruppe B (daten.js WELTB_TABELLE). */
+    { code: 'weltb_nahtgruppe', pflicht: false, verzweigt: false,
+      gilt_wenn: { welt: ['B'], werkstoff: ['S235', 'S355'] }, optionen: [
+      { code: 'stumpf_mit_gegenlage',  gilt_wenn: { nahtart: STUMPF_VOLL } },
+      { code: 'stumpf_ohne_gegenlage', gilt_wenn: { nahtart: STUMPF_VOLL } },
+      { code: 'kehl_flach',            gilt_wenn: { nahtart: KEHL.concat(STUMPF_TEIL) } },
+      { code: 'kehl_hohl',             gilt_wenn: { nahtart: KEHL.concat(STUMPF_TEIL) } },
+      { code: 'kehl_doppel_umlaufend', gilt_wenn: { nahtart: ['kehl_doppel', 'kehl_umlaufend'] } }
+    ]},
+
     /* Welt B: Lastfall (gehoert AUSSCHLIESSLICH zu Welt B, 2.8) */
     { code: 'lastfall', pflicht: true, verzweigt: false,
       gilt_wenn: { welt: ['B'] }, optionen: [
@@ -172,6 +186,16 @@
     { code: 'lasteingabe', pflicht: true, verzweigt: true, optionen: [
       { code: 'direkt' },
       { code: 'geometrisch' }
+    ]},
+
+    /* ---- N3: Aufrundung des a-Masses (2.3, BINDEND) -------------------- */
+    /* Nur bei der Auslegung sichtbar — beim Nachweis gibt der Anwender das
+       a-Mass selbst vor, da ist nichts zu runden. Immer AUFgerundet, nie ab.
+       verzweigt:false, damit die Wegeaufzaehlung nicht verdoppelt wird. */
+    { code: 'a_rundung', pflicht: true, verzweigt: false,
+      gilt_wenn: { rechenrichtung: ['auslegung'] }, optionen: [
+      { code: 'ganze_mm' },
+      { code: 'halbe_mm' }
     ]},
 
     { code: 'schweissverfahren', pflicht: false, verzweigt: false, optionen: [

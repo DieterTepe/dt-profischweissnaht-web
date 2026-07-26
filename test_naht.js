@@ -15,6 +15,7 @@ var Naht    = require('./naht.js');
 var Profil  = require('./profil.js');
 var Svg     = require('./svglib.js');
 var Bild    = require('./schaubild.js');
+var Solver  = require('./solver.js');
 
 var N = 0, FAIL = [], SEKTION = '';
 function sek(s) { SEKTION = s; console.log('\n— ' + s + ' —'); }
@@ -1001,6 +1002,459 @@ eq(gFalsch.fehler[0].code, 'msg_kanten_unpassend', 'der Fehler von profil.js ble
 var gRund = Bild.ausProfil({ profil: 'rohr_rund', kanten: 'rundum', d: 114.3, t1: 6, a: 5 });
 ok(/<circle/.test(gRund.svg), 'die Kreisnaht wird als Kreis gezeichnet');
 eq(gRund.gruppen.join(','), 'kreis', 'die Kreisnaht traegt die Segmentgruppe kreis');
+
+/* ========================================================================= */
+sek('S26 · Spannungen und beide Welten N3 — Hand-Anker gegen belegte Beispiele');
+
+/* Bezugs-Nahtbild: Doppelkehlnaht, Hoehe 200 mm, Abstand 100 mm, a = 5 mm.
+   Dasselbe Bild wie im Nahtbild-Kern (S15) — damit sind die Querschnitts-
+   werte dort schon geschlossen nachgerechnet und hier belastbar. */
+var svH = 200, svB = 100, svA = 5;
+function svSeg(a) {
+  return [ Naht.linie(-svB / 2, -svH / 2, -svB / 2, svH / 2, a),
+           Naht.linie(svB / 2, -svH / 2, svB / 2, svH / 2, a) ];
+}
+function svEin(extra) {
+  var e = { welt: 'A', rechenrichtung: 'nachweis', nachweisverfahren: 'richtungsbezogen',
+            werkstoff: 'S355', bw_regelsatz: 'na_de', nahtart: 'kehl_doppel',
+            t1: 10, t2: 10, modell: 'duennwandig',
+            segmente: svSeg(svA), umlaufend: false }, k;
+  for (k in extra) if (Object.prototype.hasOwnProperty.call(extra, k)) e[k] = extra[k];
+  return e;
+}
+
+ok(!!Solver, 'solver.js geladen');
+eq(typeof Solver.rechne, 'function', 'DTNSolver.rechne ist die Hauptfunktion');
+eq(Solver.WELTEN.join(','), 'A,B', 'genau zwei Bemessungswelten');
+eq(Solver.VERFAHREN.join(','), 'richtungsbezogen,vereinfacht', 'beide Verfahren der Welt A');
+eq(Solver.RICHTUNGEN.join(','), 'nachweis,auslegung', 'beide Rechenrichtungen im Kern (2.3)');
+eq(Solver.GROESSEN.length, 16, '16 Ergebnisgroessen mit Einheit');
+
+/* --- Hand-Anker 1: reine Querzugkraft ---------------------------------- */
+var svQz = Solver.rechne(svEin({ N: 200000 }));
+ok(svQz.ok, 'Querzug: Rechnung laeuft');
+nahe(svQz.nahtbild.A, 2 * svA * svH, 1e-9, 'A_w = 2*a*h = 2000 mm² (Hand-Anker aus S15)');
+nahe(svQz.massgebend.sigma_x, 100, 1e-9, 'sigma_x = N/A_w = 100 N/mm²');
+nahe(svQz.massgebend.sigma_senk, 100 / Math.SQRT2, 1e-9,
+     'UMKLAPPEN: sigma_senk = sigma_w/sqrt(2) = 70,71 (Roloff/Matek Nr. 30)');
+nahe(svQz.massgebend.tau_senk, 100 / Math.SQRT2, 1e-9, 'UMKLAPPEN: tau_senk = sigma_w/sqrt(2)');
+eq(svQz.massgebend.tau_par, 0, 'reiner Querzug: tau_parallel = 0');
+nahe(svQz.massgebend.sigma_v, Math.SQRT2 * 100, 1e-9,
+     'sigma_v = sqrt(2)*sigma_w — Probe der Aufteilung');
+nahe(svQz.widerstand.R_d, 490 / (0.90 * 1.25), 1e-9,
+     'Widerstand f_u/(beta_w*gamma_M2) = 490/(0,90*1,25) = 435,56');
+nahe(svQz.eta, Math.SQRT2 * 100 / (490 / (0.9 * 1.25)), 1e-12, 'Ausnutzungsgrad stimmt');
+eq(svQz.ampel, 'gruen', 'Ampel gruen bei 32 % Ausnutzung');
+ok(svQz.erfuellt, 'Nachweis ist erfuellt');
+
+/* --- Hand-Anker 2: Verhaeltnis der beiden Verfahren = sqrt(3/2) --------- */
+var svVer = Solver.rechne(svEin({ N: 200000, nachweisverfahren: 'vereinfacht' }));
+ok(svVer.ok, 'vereinfachtes Verfahren laeuft');
+nahe(svVer.widerstand.R_d_vereinfacht, (490 / Math.sqrt(3)) / (0.9 * 1.25), 1e-9,
+     'f_vw,d = (f_u/sqrt(3))/(beta_w*gamma_M2)');
+nahe(svVer.eta / svQz.eta, Math.sqrt(1.5), 1e-12,
+     'HAND-ANKER: bei Querzug ist das vereinfachte Verfahren um sqrt(3/2)=1,2247 strenger (Wald/CESTRUCO Q&A 3.4)');
+ok(svVer.eta > svQz.eta, 'das vereinfachte Verfahren liegt auf der sicheren Seite');
+
+/* --- Hand-Anker 3: reine Laengsbeanspruchung --------------------------- */
+var svLa = Solver.rechne(svEin({ Qz: 200000 }));
+var svLaV = Solver.rechne(svEin({ Qz: 200000, nachweisverfahren: 'vereinfacht' }));
+nahe(svLa.massgebend.tau_par, 100, 1e-9, 'Laengsschub tau_par = Q/A_w = 100 N/mm²');
+eq(svLa.massgebend.sigma_senk, 0, 'reiner Laengsschub: sigma_senk = 0');
+nahe(svLa.massgebend.sigma_v, Math.sqrt(3) * 100, 1e-9, 'sigma_v = sqrt(3)*tau_par');
+nahe(svLa.eta, svLaV.eta, 1e-12,
+     'HAND-ANKER: laengs der Naht liefern BEIDE Verfahren dasselbe (R1, Abschnitt 1.2)');
+
+/* --- Hand-Anker 4: Biegung gegen das Widerstandsmoment ----------------- */
+var svBi = Solver.rechne(svEin({ My: 20000 }));
+nahe(Math.abs(svBi.massgebend.sigma_x), 20000 * 1000 / svBi.nahtbild.Wy, 1e-9,
+     'Biegung: sigma = M_y / W_y (M in Nm, intern Nmm)');
+nahe(Math.abs(svBi.massgebend.sigma_x),
+     20000 * 1000 / ((svA * svH * svH * svH / 6) / (svH / 2)), 1e-9,
+     'Biegung geschlossen: W_y = (a*h³/6)/(h/2) = 66.667 mm³ — Roloff/Matek');
+ok(svBi.massgebend.sigma_x < 0 || svBi.massgebend.sigma_x > 0,
+   'der massgebende Biegepunkt liegt am Rand, das Vorzeichen wird mitgefuehrt');
+
+/* --- Hand-Anker 5: Kreisnaht unter Torsion ----------------------------- */
+var svKrS = [ Naht.kreis(0, 0, 100, 5) ];
+var svKrN = Naht.rechne(svKrS);
+var svKr = Solver.rechne({ welt: 'A', rechenrichtung: 'nachweis', werkstoff: 'S355',
+  bw_regelsatz: 'na_de', nahtart: 'kehl_umlaufend', t1: 10, t2: 10,
+  segmente: svKrS, umlaufend: true, T: 5000 });
+ok(svKr.ok, 'Kreisnaht unter Torsion laeuft');
+nahe(svKr.massgebend.tau_par, 5000 * 1000 / svKrN.Wt, 1e-6,
+     'HAND-ANKER: tau = T/W_t mit W_t = (pi/16)*[(d+a)^4-(d-a)^4]/(d+a) (Voigt)');
+ok(svKr.hinweise.length > 0, 'die Kreisnaht liefert ihre ehrlichen Hinweise mit');
+function svHat(liste, code) {
+  for (var q = 0; q < liste.length; q++) if (liste[q].code === code) return true;
+  return false;
+}
+ok(svHat(svKr.hinweise, 'msg_sv_kreis_verdichtet'),
+   'die Verdichtung auf 72 Auswertepunkte wird ehrlich gemeldet');
+ok(svHat(svKr.hinweise, 'msg_kreis_aussendurchmesser'),
+   'der Hinweis auf den Aussendurchmesser aus naht.js wird durchgereicht');
+
+/* --- Hand-Anker 6: WELT B, durchgerechnetes Lehrbuchbeispiel ----------- */
+var svWB = Solver.rechne(svEin({ welt: 'B', werkstoff: 'S235',
+  nahtguete: 'durchgeschweisst_zug_ungeprueft', lastfall: 'ruhend',
+  Re: 240, S: 1.1, N: 200000 }));
+ok(svWB.ok, 'Welt B laeuft');
+eq(svWB.widerstand.nu, 0.95, 'Nahtguetefaktor nu = 0,95 (Decker, nicht nachgewiesene Zugnaht)');
+nahe(svWB.widerstand.Re / svWB.widerstand.S, 218.1818181818, 1e-6,
+     'HAND-ANKER Welt B: zulaessige Spannung Stab = 240/1,1 = 218 N/mm²');
+nahe(svWB.widerstand.sigma_zul, 207.2727272727, 1e-6,
+     'HAND-ANKER Welt B: zulaessige Spannung Naht = 0,95*218 = 207 N/mm² (Lehrbuchbeispiel, R1 Abschnitt 2.2)');
+nahe(svWB.massgebend.sigma_res, 100, 1e-9,
+     'Welt B rechnet die Resultierende OHNE Faktor 3 (Maschinenbau-Konvention)');
+nahe(svWB.eta, 100 / 207.2727272727, 1e-9, 'Welt-B-Ausnutzung stimmt');
+ok(svHat(svWB.hinweise, 'msg_sv_weltb_ohne_faktor3'), 'fehlender Faktor 3 wird ehrlich benannt');
+ok(svHat(svWB.hinweise, 'msg_sv_weltb_formelweg'), 'der Formelweg wird als KEIN Tabellenwert gekennzeichnet');
+ok(svHat(svWB.hinweise, 'lk_weltb_kein_verbindliches_regelwerk'),
+   'die Luecke "kein verbindliches Regelwerk" bleibt sichtbar');
+
+/* --- Welt B: Tabellenweg ist massgeblich, wenn die Zeile gewaehlt ist --- */
+var svWBt = Solver.rechne(svEin({ welt: 'B', werkstoff: 'S235',
+  nahtguete: 'kehlnaht_allgemein', weltb_nahtgruppe: 'kehl_doppel_umlaufend',
+  lastfall: 'ruhend', N: 200000 }));
+eq(svWBt.widerstand.pfad, 'tabelle', 'gewaehlte Nahtgruppe -> Tabellenwert ist massgeblich');
+eq(svWBt.widerstand.sigma_zul, 140, 'S235, Doppelkehlnaht umlaufend, ruhend: 140 N/mm² (Decker)');
+eq(svWBt.widerstand.bewertungsgruppe, 'B', 'die Bewertungsgruppe des Tabellenwerts wird ausgewiesen');
+var svWBt2 = Solver.rechne(svEin({ welt: 'B', werkstoff: 'S235',
+  nahtguete: 'kehlnaht_allgemein', weltb_nahtgruppe: 'kehl_doppel_umlaufend',
+  lastfall: 'wechselnd', N: 200000 }));
+eq(svWBt2.widerstand.sigma_zul, 50, 'derselbe Fall wechselnd belastet: 50 N/mm² (Lastfall wirkt im Tabellenweg)');
+ok(svWBt2.eta > svWBt.eta, 'wechselnde Last ergibt eine hoehere Ausnutzung als ruhende');
+var svWBf = Solver.rechne(svEin({ welt: 'B', werkstoff: 'S275',
+  nahtguete: 'kehlnaht_allgemein', lastfall: 'wechselnd', S: 1.5, N: 200000 }));
+eq(svWBf.widerstand.pfad, 'formel', 'S275 ist nicht tabelliert -> Formelweg');
+ok(svHat(svWBf.hinweise, 'msg_sv_weltb_lastfall_ohne_wirkung'),
+   'EHRLICHE LUECKE: im Formelweg wirkt der Lastfall nicht — das wird gesagt');
+
+/* --- Die beiden Welten werden strukturell nie vermischt (2.8) ---------- */
+eq(svQz.widerstand.welt, 'A', 'Welt-A-Widerstand ist als solcher gekennzeichnet');
+eq(svWB.widerstand.welt, 'B', 'Welt-B-Widerstand ist als solcher gekennzeichnet');
+ok(!('S' in svQz.widerstand), 'Welt A kennt keinen Sicherheitsbeiwert S');
+ok(!('nu' in svQz.widerstand), 'Welt A kennt keinen Nahtguetefaktor nu');
+ok(!('Re' in svQz.widerstand), 'Welt A rechnet nicht mit der Streckgrenze');
+ok(!('sigma_zul' in svQz.widerstand), 'Welt A kennt keine zulaessige Spannung');
+ok(!('betaW' in svWB.widerstand), 'Welt B kennt kein beta_w');
+ok(!('gammaM2' in svWB.widerstand), 'Welt B kennt kein gamma_M2');
+ok(!('R_d_vereinfacht' in svWB.widerstand), 'Welt B kennt das vereinfachte Verfahren nicht');
+eq(svWB.verfahren, null, 'in Welt B gibt es kein Nachweisverfahren der Welt A');
+ok(svHat(Solver.rechne(svEin({ N: 1000, lastfall: 'schwellend' })).hinweise,
+         'msg_sv_lastfall_nur_weltB'),
+   'ein Lastfall in Welt A wird ehrlich als wirkungslos gemeldet');
+
+/* --- Invarianten -------------------------------------------------------- */
+var svA2 = Solver.rechne(svEin({ N: 200000, segmente: svSeg(2 * svA) }));
+nahe(svQz.eta / svA2.eta, 2, 1e-12, 'INVARIANTE: verdoppeltes a-Mass halbiert die Spannung');
+var svVersch = Solver.rechne(svEin({ N: 200000, My: 20000,
+  segmente: Naht.verschiebe(svSeg(svA), 1234, -567) }));
+var svOrig = Solver.rechne(svEin({ N: 200000, My: 20000 }));
+nahe(svVersch.eta, svOrig.eta, 1e-12,
+     'INVARIANTE: Verschieben des Nahtbilds aendert die Ausnutzung nicht (Bezug ist der Schwerpunkt)');
+var svGed = Solver.rechne(svEin({ Mz: 20000, segmente: Naht.drehe(svSeg(svA), 90, 0, 0) }));
+nahe(svGed.eta, svBi.eta, 1e-9,
+     'INVARIANTE: 90 Grad gedrehtes Nahtbild mit gedrehtem Moment ergibt dieselbe Ausnutzung');
+var svD1 = Solver.rechne(svEin({ N: 200000, My: 5000, T: 1000 }));
+var svD2 = Solver.rechne(svEin({ N: 200000, My: 5000, T: 1000 }));
+eq(JSON.stringify(svD1.nachweise), JSON.stringify(svD2.nachweise), 'DETERMINISMUS: gleiche Eingabe, gleiche Nachweise');
+nahe(svD1.eta, svD2.eta, 0, 'DETERMINISMUS: identische Ausnutzung');
+var svMut = svSeg(svA);
+var svVor = JSON.stringify(svMut);
+Solver.rechne(svEin({ N: 200000, segmente: svMut }));
+eq(JSON.stringify(svMut), svVor, 'NICHTMUTATION: die uebergebenen Segmente bleiben unberuehrt');
+var svEinObj = svEin({ N: 200000 });
+var svEinVor = JSON.stringify(svEinObj);
+Solver.rechne(svEinObj);
+eq(JSON.stringify(svEinObj), svEinVor, 'NICHTMUTATION: das Eingabeobjekt bleibt unberuehrt');
+
+/* --- Auslegung: Pflicht-Assertion "invers zum Nachweis" ---------------- */
+var svAus = Solver.rechne(svEin({ N: 900000, rechenrichtung: 'auslegung', a: svA,
+                                  a_rundung: 'ganze_mm' }));
+ok(svAus.ok, 'Auslegung laeuft');
+ok(svAus.auslegung !== null, 'die Auslegung liefert ihren eigenen Ergebnisblock');
+var svProbe = Solver.rechne(svEin({ N: 900000, segmente: svSeg(svAus.auslegung.a_erf) }));
+nahe(svProbe.eta, 1, 1e-9,
+     'PFLICHT-ASSERTION: a_erf in den Nachweis eingesetzt ergibt Ausnutzung 1 — Auslegung und Nachweis sind invers');
+ok(svAus.auslegung.a_gewaehlt >= svAus.auslegung.a_erf,
+   'das gewaehlte a-Mass ist nie kleiner als das erforderliche');
+ok(svAus.auslegung.eta_mit_gewaehlt <= 1 + 1e-12,
+   'mit dem aufgerundeten a-Mass ist der Nachweis erfuellt');
+eq(svAus.auslegung.a_gewaehlt, 8, 'a_erf = 7,31 mm wird auf ganze mm zu a8 AUFgerundet');
+ok(svAus.auslegung.a_erf < 8 && svAus.auslegung.a_erf > 7,
+   'a_erf liegt zwischen 7 und 8 mm — beide Zahlen stehen im Ergebnis (2.3)');
+ok(svHat(svAus.hinweise, 'msg_sv_a_aufgerundet'), 'die Aufrundung wird ehrlich gemeldet');
+
+/* Auslegung auch im exakten Modell (a^3-Glieder) — Iteration dahinter */
+var svAusE = Solver.rechne(svEin({ N: 900000, rechenrichtung: 'auslegung', a: svA,
+                                   a_rundung: 'ganze_mm', modell: 'exakt' }));
+var svProbeE = Solver.rechne(svEin({ N: 900000, modell: 'exakt',
+                                     segmente: svSeg(svAusE.auslegung.a_erf) }));
+nahe(svProbeE.eta, 1, 1e-9,
+     'PFLICHT-ASSERTION auch im Modell "exakt": die Iteration trifft die Ausnutzung 1 genau');
+ok(svAusE.auslegung.iterationen >= 1 && svAusE.auslegung.iterationen <= 60,
+   'die Iteration bleibt in der Schrittgrenze (' + svAusE.auslegung.iterationen + ' Schritte)');
+
+/* --- Aufrundung: die bindende Regel aus 2.3 ---------------------------- */
+eq(Solver.rundeA(4.37, 'ganze_mm').a_gewaehlt, 5, 'AUFrunden: 4,37 -> a5 (nie 4)');
+eq(Solver.rundeA(4.01, 'ganze_mm').a_gewaehlt, 5, 'AUFrunden: 4,01 -> a5');
+eq(Solver.rundeA(4.00, 'ganze_mm').a_gewaehlt, 4, 'genau 4,00 bleibt a4 (kein Sprung durch Rundungsfehler)');
+eq(Solver.rundeA(3.10, 'halbe_mm').a_gewaehlt, 3.5, 'halbe mm: 3,10 -> a3,5');
+eq(Solver.rundeA(3.50, 'halbe_mm').a_gewaehlt, 3.5, 'genau 3,50 bleibt a3,5');
+eq(Solver.rundeA(3.51, 'halbe_mm').a_gewaehlt, 4, 'halbe mm: 3,51 -> a4');
+eq(Solver.rundeA(6.20, 'ganze_mm').a_gewaehlt, 7, 'KEINE Sprungreihe: 6,20 -> a7, nicht a8');
+eq(Solver.rundeA(8.10, 'ganze_mm').a_gewaehlt, 9, 'KEINE Sprungreihe: 8,10 -> a9, nicht a10');
+eq(Solver.rundeA(4.37).rundung, 'ganze_mm', 'Voreinstellung sind ganze Millimeter');
+var svR = 0, svRi;
+for (svRi = 0; svRi < 400; svRi++) {
+  var svX = 0.5 + svRi * 0.0731;
+  if (Solver.rundeA(svX, 'ganze_mm').a_gewaehlt < svX - 1e-12) svR++;
+  if (Solver.rundeA(svX, 'halbe_mm').a_gewaehlt < svX - 1e-12) svR++;
+}
+eq(svR, 0, 'in 800 Proben wird NIE abgerundet — die Regel aus 2.3 haelt');
+
+/* --- a_max nach dem Aufrunden pruefen (2.3, letzter Punkt) ------------- */
+nahe(Solver.aMax(5), 3.5, 1e-12, 'a_max = 0,7*t: bei t = 5 mm sind das 3,5 mm');
+var svDuenn = Solver.rechne({ welt: 'A', rechenrichtung: 'auslegung', werkstoff: 'S235',
+  bw_regelsatz: 'na_de', nahtart: 'kehl_doppel', t1: 5, t2: 5, a: 3, a_rundung: 'ganze_mm',
+  modell: 'duennwandig', segmente: svSeg(3), umlaufend: false, N: 420000 });
+ok(svDuenn.ok, 'duennes Blech: die Rechnung laeuft');
+ok(svDuenn.auslegung.a_gewaehlt > Solver.aMax(5),
+   'das aufgerundete a-Mass liegt hier ueber a_max — genau der Fall aus 2.3');
+ok(svHat(svDuenn.warnungen, 'msg_sv_a_ueber_amax'),
+   'PFLICHT: nach dem Aufrunden wird gegen a_max geprueft und EHRLICH gemeldet');
+var svHalb = Solver.rechne({ welt: 'A', rechenrichtung: 'auslegung', werkstoff: 'S235',
+  bw_regelsatz: 'na_de', nahtart: 'kehl_doppel', t1: 5, t2: 5, a: 3, a_rundung: 'halbe_mm',
+  modell: 'duennwandig', segmente: svSeg(3), umlaufend: false, N: 150000 });
+eq(svHalb.auslegung.stufe, 0.5, 'Umschaltung auf halbe mm greift');
+ok(svHalb.auslegung.a_gewaehlt <= 3.5,
+   'mit halben mm passt das Ergebnis bei t = 5 mm noch unter a_max — die Begruendung aus 2.3');
+
+/* --- Aluminium: eigener Weg ueber f_w, WEZ sichtbar, kein beta_w ------- */
+var svAl = Solver.rechne(svEin({ werkstoff: 'AW6082', zustand: 'T6',
+  zusatzwerkstoff: '5356', werkstoffgruppe: 'alu', N: 100000, bw_regelsatz: null }));
+ok(svAl.ok, 'Aluminium laeuft');
+eq(svAl.widerstand.pfad, 'alu', 'Aluminium geht seinen eigenen Weg');
+eq(svAl.widerstand.fw, 210, 'f_w AW-6082 mit Zusatz 5356 = 210 N/mm² (EN 1999-1-1 Tab. 8.8)');
+eq(svAl.widerstand.gammaMw, 1.25, 'gamma_Mw = 1,25');
+nahe(svAl.widerstand.R_d, 210 / 1.25, 1e-12, 'Widerstand = f_w/gamma_Mw = 168 N/mm²');
+ok(!('betaW' in svAl.widerstand), 'KORREKTUR aus 6.1: Aluminium kennt KEIN beta_w');
+eq(svAl.widerstand.R_d_sigma_senk, null, 'EN 1999 kennt den Zusatznachweis 0,9*f_u nicht');
+ok(svAl.widerstand.wez.rho_u < 1, 'die WEZ-Entfestigung ist wirksam (rho_u < 1)');
+nahe(svAl.widerstand.wez.f_u_haz, svAl.widerstand.wez.rho_u * svAl.widerstand.wez.f_u, 1e-9,
+     'f_u,haz = rho_u,haz * f_u wird ausgerechnet und ausgewiesen');
+ok(svAl.widerstand.wez.b_haz > 0, 'die WEZ-Breite b_haz wird mitgeliefert');
+ok(svHat(svAl.hinweise, 'msg_sv_alu_wez'), 'die WEZ-Entfestigung wird ausdruecklich sichtbar gemacht (2.5)');
+ok(svHat(svAl.hinweise, 'msg_sv_alu_wez_nicht_geprueft'),
+   'EHRLICH: der Grundwerkstoff-Nachweis in der WEZ ist NICHT Teil der Nahtberechnung');
+ok(svHat(svAl.hinweise, 'lk_alu_kein_beta_w'), 'die Luecke "Alu ohne beta_w" bleibt sichtbar');
+var svAlB = Solver.rechne(svEin({ welt: 'B', werkstoff: 'AW6082', zustand: 'T6',
+  nahtguete: 'kehlnaht_allgemein', N: 100000 }));
+eq(svAlB.ok, false, 'ENTSCHEIDUNG N1: Welt B kennt kein Aluminium — die Rechnung wird verweigert');
+eq(svAlB.fehler[0].code, 'msg_sv_alu_nur_weltA', 'und zwar mit klarer Begruendung');
+ok(!('eta' in svAlB), 'bei einem Fehler gibt es KEINE Zahlen — kein stiller Teilwert');
+
+/* --- Edelstahl: beta_w = 1,0 fuer alle Sorten -------------------------- */
+var svEs = Solver.rechne(svEin({ werkstoff: '1.4404', werkstoffgruppe: 'edelstahl', N: 100000 }));
+eq(svEs.widerstand.betaW, 1.0, 'KORREKTUR aus 6.1: Edelstahl beta_w = 1,0');
+eq(svEs.widerstand.pfad, 'edelstahl', 'Edelstahl ist als eigener Weg gekennzeichnet');
+nahe(svEs.widerstand.R_d, 520 / (1.0 * 1.25), 1e-9, 'Edelstahl-Widerstand aus dem unteren Bandwert');
+
+/* --- Nahtarten: Umklappen ja/nein, 2-mm-Abzug -------------------------- */
+eq(Solver.nahtTyp('kehl_doppel'), 'kehl', 'Kehlnaht wird als Kehlnaht erkannt');
+eq(Solver.nahtTyp('stumpf_v'), 'stumpf_voll', 'V-Naht ist durchgeschweisst');
+eq(Solver.nahtTyp('stumpf_hv'), 'stumpf_teil', 'HV-Naht ist teilweise durchgeschweisst');
+eq(Solver.nahtTyp('gibtsnicht'), null, 'unbekannte Nahtart liefert null, nicht geraten');
+var svSt = Solver.rechne(svEin({ nahtart: 'stumpf_v', N: 100000 }));
+eq(svSt.umklappen, false, 'durchgeschweisste Stumpfnaht wird NICHT umgeklappt');
+nahe(svSt.massgebend.sigma_senk, 50, 1e-9, 'dort ist sigma_senk = sigma_x = N/A_w');
+ok(svHat(svSt.hinweise, 'msg_sv_stumpf_voll_kein_nachweis'),
+   'EHRLICH: bei durchgeschweisster Stumpfnaht ist meist das Bauteil massgebend');
+var svTeil = Solver.rechne(svEin({ nahtart: 'stumpf_hv', N: 100000 }));
+var svVgl = Solver.rechne(svEin({ nahtart: 'kehl_doppel', N: 100000, segmente: svSeg(3) }));
+eq(svTeil.a_abzug, 2, 'teilweise durchgeschweisst: 2 mm Abzug (Wald/CESTRUCO Q&A 3.5)');
+nahe(svTeil.eta, svVgl.eta, 1e-12, 'a5 mit Abzug rechnet genau wie a3 ohne Abzug');
+ok(svHat(svTeil.hinweise, 'msg_sv_teil_abzug'), 'der Abzug wird im Ergebnis benannt');
+var svTeilD = Solver.rechne(svEin({ nahtart: 'stumpf_hv', N: 100000, segmente: svSeg(1.5) }));
+eq(svTeilD.ok, false, 'a = 1,5 mm minus 2 mm ergibt kein wirksames Mass — ehrlicher Fehler');
+eq(svTeilD.fehler[0].code, 'msg_sv_a_wirksam_null', 'mit dem passenden Meldungscode');
+var svVerfF = Solver.rechne(svEin({ nahtart: 'stumpf_v', nachweisverfahren: 'vereinfacht', N: 1000 }));
+eq(svVerfF.ok, false, 'vereinfachtes Verfahren bei durchgeschweisster Stumpfnaht wird abgewiesen');
+eq(svVerfF.fehler[0].code, 'msg_sv_verfahren_unpassend', 'mit klarer Begruendung');
+
+/* --- Profileingabe als Eingang: umlaufend aus profil.js (4.6) ---------- */
+var svProf = Solver.rechne({ welt: 'A', rechenrichtung: 'nachweis', werkstoff: 'S235',
+  bw_regelsatz: 'na_de', nahtart: 'kehl_umlaufend', t1: 8, t2: 8, modell: 'exakt',
+  profil_eingabe: { profil: 'rohr_rechteck', kanten: 'rundum', b: 100, h: 60, t1: 8, r_ecke: 8, a: 4 },
+  N: 100000, T: 500 });
+ok(svProf.ok, 'solver.js nimmt eine Profileingabe direkt an (ein Aufruf, wie ausProfil in N2c)');
+eq(svProf.nahtbild.umlaufend, true, 'die Naht ist umlaufend — das sagt profil.js, nicht die Geometrie');
+eq(svProf.nahtbild.geschlossen, false, 'naht.js sieht die Ecklueken als offene Enden');
+ok(svHat(svProf.hinweise, 'msg_sv_umlaufend_aus_profil'),
+   'PFLICHT aus 4.6: N3 wertet "umlaufend" aus, NICHT "geschlossen" aus naht.js');
+ok(!svHat(svProf.hinweise, 'msg_torsion_offenes_nahtbild'),
+   'die Torsionswarnung fuer offene Nahtbilder erscheint hier zu Recht NICHT');
+var svProfOffen = Solver.rechne({ welt: 'A', rechenrichtung: 'nachweis', werkstoff: 'S235',
+  bw_regelsatz: 'na_de', nahtart: 'kehl_flanke', t1: 12, t2: 12,
+  profil_eingabe: { profil: 'blech', kanten: 'flanken', b: 200, t1: 12, a: 5 },
+  N: 100000, T: 500 });
+ok(svHat(svProfOffen.hinweise, 'msg_torsion_offenes_nahtbild'),
+   'beim wirklich offenen Nahtbild bleibt die Torsionswarnung stehen');
+var svProfF = Solver.rechne({ welt: 'A', rechenrichtung: 'nachweis', werkstoff: 'S235',
+  bw_regelsatz: 'na_de', nahtart: 'kehl_doppel', t1: 8, t2: 8,
+  profil_eingabe: { profil: 'i_profil', kanten: 'flanken', b: 100, h: 200, tw: 5.6, tf: 8.5, a: 4 },
+  N: 100000 });
+eq(svProfF.ok, false, 'ein Fehler aus profil.js wird durchgereicht, nicht uebermalt');
+eq(svProfF.fehler[0].code, 'msg_kanten_unpassend', 'und behaelt seinen Originalcode');
+
+/* --- Auslegung je Segment: a je Steg und Flansch getrennt aufgerundet -- */
+var svAusIP = Solver.rechne({ welt: 'A', rechenrichtung: 'auslegung', werkstoff: 'S355',
+  bw_regelsatz: 'na_de', nahtart: 'kehl_umlaufend', t1: 10, t2: 10, a_rundung: 'ganze_mm',
+  profil_eingabe: { profil: 'i_profil', kanten: 'flansche_steg', b: 100, h: 200,
+                    tw: 5.6, tf: 8.5, a: 5, a_steg: 4, a_flansch: 6 },
+  My: 40000 });
+ok(svAusIP.ok, 'Auslegung mit unterschiedlichen a-Massen je Segment laeuft');
+ok(svAusIP.auslegung.je_segment.length === svAusIP.nahtbild.n_seg,
+   'jedes Segment bekommt sein eigenes a_erf und a_gewaehlt');
+var svGanz = 0, svJi;
+for (svJi = 0; svJi < svAusIP.auslegung.je_segment.length; svJi++) {
+  var svJs = svAusIP.auslegung.je_segment[svJi];
+  if (Math.abs(svJs.a_gewaehlt - Math.round(svJs.a_gewaehlt)) < 1e-12) svGanz++;
+  if (svJs.a_gewaehlt < svJs.a_erf - 1e-12) svGanz = -999;
+}
+eq(svGanz, svAusIP.auslegung.je_segment.length,
+   'alle Segment-a-Masse sind ganze mm und nie kleiner als das erforderliche Mass');
+ok(svAusIP.auslegung.eta_mit_gewaehlt <= 1 + 1e-12,
+   'mit den aufgerundeten Segmentmassen ist der Nachweis erfuellt');
+
+/* --- Geometrische Grenzen ---------------------------------------------- */
+var svKurz = Solver.rechne(svEin({ N: 1000,
+  segmente: [ Naht.linie(-50, -10, -50, 10, 5), Naht.linie(50, -10, 50, 10, 5) ] }));
+ok(svHat(svKurz.warnungen, 'msg_sv_l_eff_zu_kurz'),
+   'zu kurzes Segment (l < max(6a; 30 mm)) wird gemeldet');
+var svLang = Solver.rechne(svEin({ N: 1000,
+  segmente: [ Naht.linie(-50, -500, -50, 500, 3), Naht.linie(50, -500, 50, 500, 3) ] }));
+ok(svHat(svLang.warnungen, 'msg_sv_lange_naht'), 'lange Naht (l > 150a) wird gemeldet');
+ok(svLang.grenzen.beta_Lw > 0 && svLang.grenzen.beta_Lw <= 1,
+   'beta_Lw wird berechnet und liegt zwischen 0 und 1 (' + svLang.grenzen.beta_Lw.toFixed(3) + ')');
+ok(svHat(svLang.hinweise, 'msg_sv_beta_lw_nicht_angewendet'),
+   'EHRLICH: beta_Lw wird berechnet, aber nicht ohne Zustimmung angewendet');
+var svDick = Solver.rechne(svEin({ N: 1000, t1: 5, t2: 5 }));
+ok(svHat(svDick.warnungen, 'msg_sv_a_ueber_amax'), 'a5 bei t = 5 mm ueberschreitet a_max = 3,5 mm');
+eq(svDick.grenzen.je_segment[0].a_max, 3.5, 'a_max wird je Segment ausgewiesen');
+var svAmin = Solver.rechne(svEin({ N: 1000, segmente: svSeg(2) }));
+ok(svHat(svAmin.warnungen, 'msg_sv_a_unter_amin'), 'a2 liegt unter dem Mindestmass a_min = 3 mm');
+
+/* --- Fehlerwege: nie ein stilles Ergebnis ------------------------------ */
+function svFehlt(ein, code, txt) {
+  var r = Solver.rechne(ein);
+  ok(r.ok === false && svHat(r.fehler, code), txt);
+  ok(!('eta' in r) && !('massgebend' in r), txt + ' — und liefert KEINE Zahlen');
+}
+svFehlt({}, 'msg_sv_welt_fehlt', 'ohne Bemessungswelt wird nicht gerechnet');
+svFehlt(svEin({ welt: 'C', N: 1 }), 'msg_sv_welt_fehlt', 'unbekannte Welt wird abgewiesen');
+svFehlt(svEin({ rechenrichtung: 'irgendwas', N: 1 }), 'msg_sv_richtung_unbekannt',
+        'unbekannte Rechenrichtung wird abgewiesen');
+svFehlt({ welt: 'A', werkstoff: 'S235', nahtart: 'kehl_doppel', N: 1 },
+        'msg_sv_nahtbild_fehlt', 'ohne Nahtbild wird nicht gerechnet');
+svFehlt({ welt: 'A', nahtart: 'kehl_doppel', segmente: svSeg(5), N: 1 },
+        'msg_sv_werkstoff_fehlt', 'ohne Werkstoff wird nicht gerechnet');
+svFehlt(svEin({ werkstoff: 'S999', N: 1 }), 'msg_sv_werkstoff_unbekannt',
+        'unbekannter Werkstoff wird abgewiesen');
+svFehlt(svEin({}), 'msg_sv_keine_last', 'ohne jede Last wird nicht gerechnet');
+svFehlt(svEin({ Q: 1000, Qz: 2000 }), 'msg_sv_last_doppelt',
+        'Kurzform und ausfuehrliche Form mit verschiedenen Werten -> ehrlicher Fehler');
+svFehlt(svEin({ M: 1000, My: 2000 }), 'msg_sv_last_doppelt',
+        'dasselbe fuer das Biegemoment');
+svFehlt(svEin({ welt: 'B', werkstoff: 'S235', N: 1000 }), 'msg_sv_kein_nu',
+        'Welt B ohne Nahtguete: kein nu, also keine Rechnung');
+svFehlt(svEin({ werkstoff: 'AW5083', zustand: 'O_H111', werkstoffgruppe: 'alu',
+                zusatzwerkstoff: '4043A', N: 1000 }), 'msg_sv_kein_fw',
+        'Alu ohne belegtes f_w fuer diese Zusatzkombination (AW-5083 mit 4043A)');
+var svOkQM = Solver.rechne(svEin({ Q: 1000, Qz: 1000, M: 500, My: 500 }));
+ok(svOkQM.ok, 'gleiche Werte in Kurz- und Langform sind kein Fehler');
+
+/* --- Ampel und Ausnutzungsgrad ---------------------------------------- */
+eq(Solver.ampel(0.5), 'gruen', 'Ampel: 50 % ist gruen');
+eq(Solver.ampel(0.90), 'gruen', 'Ampel: genau 90 % ist noch gruen');
+eq(Solver.ampel(0.95), 'gelb', 'Ampel: 95 % ist gelb');
+eq(Solver.ampel(1.0), 'gelb', 'Ampel: genau 100 % ist gelb, nicht rot');
+eq(Solver.ampel(1.01), 'rot', 'Ampel: ueber 100 % ist rot');
+var svRot = Solver.rechne(svEin({ N: 3000000 }));
+eq(svRot.ampel, 'rot', 'ueberlastete Naht bekommt die rote Ampel');
+eq(svRot.erfuellt, false, 'und wird als nicht erfuellt gekennzeichnet');
+ok(svHat(svRot.warnungen, 'msg_sv_nicht_erfuellt'), 'mit ausdruecklicher Warnung');
+ok(svRot.ok === true, 'ein nicht erfuellter Nachweis ist KEIN Fehler — er wird gerechnet und gemeldet');
+
+/* --- Zusatznachweis sigma_senk <= 0,9*fu/gammaM2 ---------------------- */
+eq(svQz.nachweise.length, 2, 'richtungsbezogen: zwei Nachweise (Vergleichsspannung + sigma_senk)');
+eq(svQz.nachweise[0].code, 'sv_nw_haupt', 'erster Nachweis ist die Vergleichsspannung');
+eq(svQz.nachweise[1].code, 'sv_nw_sigma_senk', 'zweiter Nachweis ist sigma_senk <= 0,9*fu/gammaM2');
+nahe(svQz.nachweise[1].grenze, 0.9 * 490 / 1.25, 1e-9, 'die Grenze des Zusatznachweises stimmt');
+eq(svVer.nachweise.length, 1, 'vereinfachtes Verfahren: genau ein Nachweis');
+ok(svQz.eta >= svQz.nachweise[0].eta && svQz.eta >= svQz.nachweise[1].eta,
+   'der ausgewiesene Ausnutzungsgrad ist der groesste aller Einzelnachweise');
+
+/* --- Liste "was NICHT geprueft wird" liegt im Ergebnis (2.4) ---------- */
+eq(svQz.nicht_geprueft.length, 10, 'die Liste 2.4 mit 10 Punkten steht im Ergebnis');
+svQz.nicht_geprueft.push('probe');
+eq(Solver.rechne(svEin({ N: 200000 })).nicht_geprueft.length, 10,
+   'die Liste ist eine Kopie — sie kann von aussen nicht verbogen werden');
+
+/* --- Selbstpruefung von naht.js wird durchgereicht -------------------- */
+ok(svQz.nahtbild.kontrolle.ok, 'die Selbstpruefung des Nahtbilds wird ins Ergebnis gehoben');
+ok(svQz.nahtbild.A > 0 && svQz.nahtbild.Ip > 0, 'die Querschnittswerte kommen mit');
+
+/* --- Geometrischer Lastweg (2.12) ------------------------------------- */
+var svGeo = Solver.schnittgroessen(10000, 250, 'quer');
+eq(svGeo.Qz, 10000, 'geometrischer Weg: Kraft wird zur Querkraft');
+nahe(svGeo.My, 2500, 1e-12, 'geometrischer Weg: M_y = F*e = 10 kN * 0,25 m = 2500 Nm');
+nahe(Solver.schnittgroessen(10000, 250, 'torsion').T, 2500, 1e-12,
+     'geometrischer Weg: dieselbe Kraft als Torsionsmoment');
+
+/* ========================================================================= */
+sek('S27 · N3 — jeder Code und jede Groesse hat ihren Text (DE/EN/PT)');
+var svOhne = 0, svAlleCodes = [], svKi;
+svAlleCodes = svAlleCodes.concat(Solver.CODES.fehler, Solver.CODES.warnungen, Solver.CODES.hinweise);
+for (svKi = 0; svKi < svAlleCodes.length; svKi++) {
+  if (!Kern.has(svAlleCodes[svKi])) { svOhne++; console.log('    ohne Text: ' + svAlleCodes[svKi]); }
+}
+eq(svOhne, 0, 'jeder Meldungscode von solver.js hat einen Text (' + svAlleCodes.length + ' Codes)');
+var svGrOhne = 0;
+for (svKi = 0; svKi < Solver.GROESSEN.length; svKi++) {
+  if (!Kern.has('sv_' + Solver.GROESSEN[svKi].code)) { svGrOhne++; console.log('    ohne Text: sv_' + Solver.GROESSEN[svKi].code); }
+  if (!Kern.has(Solver.GROESSEN[svKi].einheit)) { svGrOhne++; console.log('    ohne Einheit: ' + Solver.GROESSEN[svKi].einheit); }
+}
+eq(svGrOhne, 0, 'jede Ergebnisgroesse hat Beschriftung und Einheit');
+var svNwOhne = 0;
+['sv_nw_haupt', 'sv_nw_sigma_senk', 'sv_nw_vereinfacht', 'sv_nw_weltb', 'sv_nw_weltb_schub',
+ 'sv_formel_ec3', 'sv_formel_alu', 'sv_formel_weltb_tabelle', 'sv_formel_weltb_formel',
+ 'amp_gruen', 'amp_gelb', 'amp_rot'].forEach(function (k) {
+  if (!Kern.has(k)) { svNwOhne++; console.log('    ohne Text: ' + k); }
+});
+eq(svNwOhne, 0, 'Nachweisnamen, Nachweisgleichungen und Ampelstufen sind beschriftet');
+ok(Kern.has('grp_a_rundung') && Kern.has('opt_a_rundung_ganze_mm') && Kern.has('opt_a_rundung_halbe_mm'),
+   'die Auswahlgruppe a_rundung ist vollstaendig beschriftet');
+ok(Hilfe.has('grp_a_rundung'), 'Laien-ⓘ an der Auswahlgruppe a_rundung');
+ok(Hilfe.has('grp_weltb_nahtgruppe'), 'Laien-ⓘ an der Welt-B-Nahtgruppe');
+var svFldOhne = 0;
+['Qy', 'Qz', 'My', 'Mz', 'Re'].forEach(function (c) {
+  var f = Valid.feld(c);
+  if (!f) { svFldOhne++; console.log('    Feld fehlt: ' + c); return; }
+  if (!Kern.has(f.label)) svFldOhne++;
+  if (!Hilfe.has(f.hilfe)) svFldOhne++;
+  if (!Kern.has(f.einheit)) svFldOhne++;
+});
+eq(svFldOhne, 0, 'die fuenf neuen Eingabefelder haben Beschriftung, Laien-ⓘ und Einheit');
+var svDreiSpr = 0;
+for (svKi = 0; svKi < svAlleCodes.length; svKi++) {
+  ['de', 'en', 'pt'].forEach(function (l) {
+    var t = Kern.t(svAlleCodes[svKi], l);
+    if (!t || t.charAt(0) === '[') svDreiSpr++;
+  });
+}
+eq(svDreiSpr, 0, 'jeder N3-Meldungstext liegt in allen drei Sprachen vor');
 
 /* ========================================================================= */
 console.log('\n════════════════════════════════════════════');

@@ -87,6 +87,14 @@
 
   <section class="card">
     <div class="card-head">
+      <span class="eyebrow">N3 &middot; solver.js</span>
+      <h2 id="h_spannung">Spannungen und Nachweis</h2>
+    </div>
+    <div class="card-body" id="spannungHost"></div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
       <span class="eyebrow">daten.js</span>
       <h2 id="h_luecken">Ehrliche Lücken</h2>
     </div>
@@ -121,10 +129,11 @@
 <script src="profil.js"></script>
 <script src="svglib.js"></script>
 <script src="schaubild.js"></script>
+<script src="solver.js"></script>
 
 <!-- ===================================================================== -->
-<!--  N1/N2/N2b/N2c-ZWISCHENSTAND: kleine Statusanzeige, damit Fundament,
-      Nahtbild-Kern, Profileingabe und Grafik am Handy pruefbar sind.
+<!--  N1/N2/N2b/N2c/N3-ZWISCHENSTAND: kleine Statusanzeige, damit Fundament,
+      Nahtbild-Kern, Profileingabe, Grafik und Nachweis am Handy pruefbar sind.
       Entfaellt vollstaendig mit N5. -->
 <!-- ===================================================================== -->
 <script>
@@ -158,7 +167,8 @@
       ['naht.js', window.DTNNaht],
       ['profil.js', window.DTNProfil],
       ['svglib.js', window.DTNSvgLib],
-      ['schaubild.js', window.DTNSchaubild]
+      ['schaubild.js', window.DTNSchaubild],
+      ['solver.js', window.DTNSolver]
     ];
     var fehlt = 0, rows = '';
     for (var i = 0; i < mods.length; i++) {
@@ -421,6 +431,134 @@
     host.innerHTML = out;
   }
 
+  /* ---- N3: Spannungen, beide Welten, Nachweis und Auslegung ---- */
+  function spannung() {
+    var host = id('spannungHost');
+    if (!window.DTNSolver || !window.DTNNaht || !window.DTNI18nKern) { host.textContent = '\u2013'; return; }
+    var SO = window.DTNSolver, NA = window.DTNNaht;
+
+    /* Beispiel: Konsole am Stuetzenflansch. Doppelkehlnaht, zwei senkrechte
+       Naehte 200 mm hoch im Abstand 100 mm, a = 5 mm, S355, Querzug 200 kN. */
+    var h = 200, b = 100, a = 5;
+    function segs(aa) {
+      return [ NA.linie(-b / 2, -h / 2, -b / 2, h / 2, aa),
+               NA.linie(b / 2, -h / 2, b / 2, h / 2, aa) ];
+    }
+    function basis(extra) {
+      var e = { welt: 'A', rechenrichtung: 'nachweis', nachweisverfahren: 'richtungsbezogen',
+                werkstoff: 'S355', bw_regelsatz: 'na_de', nahtart: 'kehl_doppel',
+                t1: 10, t2: 10, modell: 'duennwandig',
+                segmente: segs(a), umlaufend: false }, k;
+      for (k in extra) if (Object.prototype.hasOwnProperty.call(extra, k)) e[k] = extra[k];
+      return e;
+    }
+
+    var rA   = SO.rechne(basis({ N: 200000 }));
+    var rV   = SO.rechne(basis({ N: 200000, nachweisverfahren: 'vereinfacht' }));
+    var rL   = SO.rechne(basis({ Qz: 200000 }));
+    var rLV  = SO.rechne(basis({ Qz: 200000, nachweisverfahren: 'vereinfacht' }));
+    var rDop = SO.rechne(basis({ N: 200000, segmente: segs(2 * a) }));
+    var rB   = SO.rechne(basis({ welt: 'B', werkstoff: 'S235',
+                 nahtguete: 'durchgeschweisst_zug_ungeprueft', lastfall: 'ruhend',
+                 Re: 240, S: 1.1, N: 200000 }));
+    var rAus = SO.rechne(basis({ N: 900000, rechenrichtung: 'auslegung',
+                 a: a, a_rundung: 'ganze_mm' }));
+    if (!rA.ok || !rB.ok || !rAus.ok) { host.textContent = '\u2013'; return; }
+    var rPruef = SO.rechne(basis({ N: 900000, segmente: segs(rAus.auslegung.a_erf) }));
+
+    var out = '<div style="margin:0 0 8px 0"><strong>' + esc(K('nb_beispiel')) + ':</strong> ' +
+              esc(K('opt_nahtart_kehl_doppel')) + ', 2 \u00d7 200 mm, ' +
+              esc(K('fld_b')) + ' = 100 mm, a = 5 mm, S355, N = 200 kN</div>';
+
+    /* --- Welt A ------------------------------------------------------- */
+    out += '<div style="margin:10px 0 4px 0"><strong>' + esc(K('grp_welt')) + ' A \u2014 ' +
+           esc(K('opt_nachweisverfahren_richtungsbezogen')) + '</strong><br>' +
+           '<span style="font-size:12px;color:var(--muted)">' + esc(K('sv_formel_ec3')) + '</span></div>';
+    var zA = [
+      ['sv_sigma_x',    rA.massgebend.sigma_x,    'unit_Nmm2', 2],
+      ['sv_sigma_senk', rA.massgebend.sigma_senk, 'unit_Nmm2', 2],
+      ['sv_tau_senk',   rA.massgebend.tau_senk,   'unit_Nmm2', 2],
+      ['sv_tau_par',    rA.massgebend.tau_par,    'unit_Nmm2', 2],
+      ['sv_sigma_v',    rA.massgebend.sigma_v,    'unit_Nmm2', 2],
+      ['sv_R_d',        rA.widerstand.R_d,        'unit_Nmm2', 2]
+    ];
+    out += '<dl class="kv">';
+    for (var i = 0; i < zA.length; i++) {
+      out += '<dt>' + esc(K(zA[i][0])) + '</dt><dd>' +
+             zahl(zA[i][1], zA[i][3]) + ' ' + esc(K(zA[i][2])) + '</dd>';
+    }
+    out += '<dt>' + esc(K('sv_ausnutzung')) + '</dt><dd>' + zahl(100 * rA.eta, 1) + ' %</dd>';
+    out += '<dt>' + esc(K('sv_ampel')) + '</dt><dd>' + esc(K('amp_' + rA.ampel)) + '</dd>';
+    out += '<dt>' + esc(K('sv_massgebend')) + '</dt><dd>y = ' + zahl(rA.massgebend.y, 1) +
+           ' mm, z = ' + zahl(rA.massgebend.z, 1) + ' mm (' + esc(K('sv_segment')) + ' ' +
+           zahl(rA.massgebend.seg + 1, 0) + ')</dd>';
+    out += '</dl>';
+
+    /* --- Welt B, ausdruecklich getrennt -------------------------------- */
+    out += '<div style="margin:10px 0 4px 0"><strong>' + esc(K('grp_welt')) + ' B \u2014 S235, ' +
+           esc(K('opt_nahtguete_durchgeschweisst_zug_ungeprueft')) + '</strong><br>' +
+           '<span style="font-size:12px;color:var(--muted)">' + esc(K('sv_formel_weltb_formel')) + '</span></div>';
+    out += '<dl class="kv">' +
+           '<dt>' + esc(K('fld_Re')) + '</dt><dd>' + zahl(rB.widerstand.Re, 0) + ' ' + esc(K('unit_Nmm2')) + '</dd>' +
+           '<dt>' + esc(K('fld_S')) + '</dt><dd>' + zahl(rB.widerstand.S, 2) + '</dd>' +
+           '<dt>' + esc(K('fld_nu')) + '</dt><dd>' + zahl(rB.widerstand.nu, 2) + '</dd>' +
+           '<dt>' + esc(K('sv_R_d')) + '</dt><dd>' + zahl(rB.widerstand.sigma_zul, 2) + ' ' + esc(K('unit_Nmm2')) + '</dd>' +
+           '<dt>' + esc(K('sv_sigma_res')) + '</dt><dd>' + zahl(rB.massgebend.sigma_res, 2) + ' ' + esc(K('unit_Nmm2')) + '</dd>' +
+           '<dt>' + esc(K('sv_ausnutzung')) + '</dt><dd>' + zahl(100 * rB.eta, 1) + ' %</dd>' +
+           '<dt>' + esc(K('sv_pfad')) + '</dt><dd>' + esc(K('sv_pfad_formel')) + '</dd>' +
+           '</dl>';
+    out += '<div class="gap-note">' + esc(K('sv_getrennt')) + '</div>';
+
+    /* --- Auslegung ----------------------------------------------------- */
+    out += '<div style="margin:10px 0 4px 0"><strong>' + esc(K('opt_rechenrichtung_auslegung')) +
+           '</strong> \u2014 N = 900 kN</div>';
+    out += '<dl class="kv">' +
+           '<dt>' + esc(K('sv_a_erf')) + '</dt><dd>' + zahl(rAus.auslegung.a_erf, 2) + ' ' + esc(K('unit_mm')) + '</dd>' +
+           '<dt>' + esc(K('sv_a_gewaehlt')) + '</dt><dd>' + zahl(rAus.auslegung.a_gewaehlt, 1) + ' ' + esc(K('unit_mm')) + '</dd>' +
+           '<dt>' + esc(K('sv_a_max')) + '</dt><dd>' + zahl(rAus.grenzen.je_segment[0].a_max, 1) + ' ' + esc(K('unit_mm')) + '</dd>' +
+           '<dt>' + esc(K('sv_ausnutzung')) + '</dt><dd>' + zahl(100 * rAus.auslegung.eta_mit_gewaehlt, 1) + ' %</dd>' +
+           '<dt>' + esc(K('sv_stufe')) + '</dt><dd>' + esc(K('opt_a_rundung_' + rAus.auslegung.rundung)) + '</dd>' +
+           '</dl>';
+
+    /* --- Hand-Anker: gegen belegte Beispiele nachgerechnet ------------- */
+    function nahe3(x, y) { return Math.abs(x - y) <= 1e-6 * Math.max(1, Math.abs(y)); }
+    var anker = [
+      ['sv_anker_verhaeltnis', nahe3(rV.eta / rA.eta, Math.sqrt(1.5)),
+       'f_w,end / f_w = \u221a(3/2) = ' + zahl(rV.eta / rA.eta, 4)],
+      ['sv_anker_laengs', nahe3(rL.eta, rLV.eta),
+       '\u03b7 = ' + zahl(rL.eta, 6) + ' = ' + zahl(rLV.eta, 6)],
+      ['sv_anker_adopp', nahe3(rA.eta / rDop.eta, 2),
+       '\u03b7(a5) / \u03b7(a10) = ' + zahl(rA.eta / rDop.eta, 6)],
+      ['sv_anker_invers', rPruef.ok && nahe3(rPruef.eta, 1),
+       '\u03b7(a_erf) = ' + zahl(rPruef.eta, 6)],
+      ['sv_anker_weltb', nahe3(rB.widerstand.sigma_zul, 207.2727272727),
+       '0,95 \u00b7 240/1,1 = ' + zahl(rB.widerstand.sigma_zul, 2) + ' N/mm\u00b2']
+    ];
+    out += '<div style="margin:10px 0 4px 0"><strong>' + esc(K('sv_handanker')) + '</strong></div>';
+    for (i = 0; i < anker.length; i++) {
+      out += '<div style="font-size:13px">' + haken(anker[i][1]) + ' ' + esc(K(anker[i][0])) +
+             '<br><span style="color:var(--muted)">' + anker[i][2] + '</span></div>';
+    }
+
+    /* --- Warnungen ZUERST: sie sind sicherheitsrelevant ---------------- */
+    var ws = rA.warnungen.concat(rB.warnungen, rAus.warnungen), gesW = {};
+    for (i = 0; i < ws.length; i++) {
+      if (gesW[ws[i].code]) continue;
+      gesW[ws[i].code] = 1;
+      out += '<div class="status-banner warn" style="margin:8px 0">\u26a0 ' +
+             esc(K(ws[i].code)) + '</div>';
+    }
+
+    /* --- ehrliche Hinweise --------------------------------------------- */
+    var hs = rA.hinweise.concat(rB.hinweise, rAus.hinweise), ges = {};
+    for (i = 0; i < hs.length; i++) {
+      if (ges[hs[i].code]) continue;
+      ges[hs[i].code] = 1;
+      out += '<div class="gap-note">' + esc(K(hs[i].code)) + '</div>';
+    }
+    host.innerHTML = out;
+  }
+
   function luecken() {
     var host = id('lueckenHost');
     if (!window.DTNData) { host.textContent = '–'; return; }
@@ -448,12 +586,13 @@
     id('h_nahtbild').textContent = K('nb_titel');
     id('h_profil').textContent = K('pr_titel');
     id('h_grafik').textContent = K('sb_titel');
+    id('h_spannung').textContent = K('sv_titel');
     id('h_luecken').textContent = K('gap');
     id('h_nichtgeprueft').textContent = K('ng_titel');
     id('footNote').textContent = K('disclaimer');
   }
 
-  function zeichne() { texte(); status(); optionen(); nahtbild(); profil(); grafik(); luecken(); nichtGeprueft(); }
+  function zeichne() { texte(); status(); optionen(); nahtbild(); profil(); grafik(); spannung(); luecken(); nichtGeprueft(); }
 
   function sprache(l) {
     LANG = l;

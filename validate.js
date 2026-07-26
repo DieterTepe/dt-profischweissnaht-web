@@ -72,6 +72,20 @@
     { code: 'T',  typ: 'zahl', einheit: 'unit_Nm',   min: -1e9, max: 1e9,  dez: 0,
       label: 'fld_T',  hilfe: 'fld_T',  pflicht: false },
 
+    /* ---- N3: ausfuehrliche Schnittgroessen. Q und M oben sind die
+           Kurzform (Q = Q_z, M = M_y) fuer den haeufigen Fall — wer schraeg
+           oder zweiachsig belastet, nutzt diese Felder. solver.js meldet es
+           ehrlich als Fehler, wenn Kurzform und ausfuehrliche Form mit
+           VERSCHIEDENEN Werten gefuellt sind (msg_sv_last_doppelt). ------ */
+    { code: 'Qy', typ: 'zahl', einheit: 'unit_N',    min: -1e9, max: 1e9,  dez: 0,
+      label: 'fld_Qy', hilfe: 'fld_Qy', pflicht: false },
+    { code: 'Qz', typ: 'zahl', einheit: 'unit_N',    min: -1e9, max: 1e9,  dez: 0,
+      label: 'fld_Qz', hilfe: 'fld_Qz', pflicht: false },
+    { code: 'My', typ: 'zahl', einheit: 'unit_Nm',   min: -1e9, max: 1e9,  dez: 0,
+      label: 'fld_My', hilfe: 'fld_My', pflicht: false },
+    { code: 'Mz', typ: 'zahl', einheit: 'unit_Nm',   min: -1e9, max: 1e9,  dez: 0,
+      label: 'fld_Mz', hilfe: 'fld_Mz', pflicht: false },
+
     { code: 'F',  typ: 'zahl', einheit: 'unit_N',    min: -1e9, max: 1e9,  dez: 0,
       label: 'fld_F',  hilfe: 'fld_F',  pflicht_wenn: { lasteingabe: ['geometrisch'] } },
     { code: 'e',  typ: 'zahl', einheit: 'unit_mm',   min: 0,    max: 100000, dez: 1,
@@ -90,7 +104,12 @@
       standard: 1.5, label: 'fld_S', hilfe: 'fld_S',
       pflicht_wenn: { welt: ['B'] }, ueberschreibbar: true },
     { code: 'nu', typ: 'zahl', einheit: 'unit_dimensionslos', min: 0.3, max: 1.0, dez: 2,
-      label: 'fld_nu', hilfe: 'fld_nu', pflicht: false, ueberschreibbar: true }
+      label: 'fld_nu', hilfe: 'fld_nu', pflicht: false, ueberschreibbar: true },
+
+    /* R_e wird aus der Werkstofftabelle vorbelegt und ist per Haken
+       ueberschreibbar (Regel 3.1) — nur Welt B rechnet mit der Streckgrenze. */
+    { code: 'Re', typ: 'zahl', einheit: 'unit_Nmm2', min: 100, max: 1000, dez: 0,
+      label: 'fld_Re', hilfe: 'fld_Re', pflicht: false, ueberschreibbar: true }
   ];
 
   function feld(code) {

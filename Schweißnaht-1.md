@@ -9,16 +9,16 @@
 > Sie ist so geschrieben, dass ein **neuer Chat ohne Vorwissen** damit weiterarbeiten kann.
 
 ```
-Plan-Version : 2.10 · Stand 2026-07-26
+Plan-Version : 2.11 · Stand 2026-07-26
 Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe) und
                N2c (Nahtbild-Grafik) von Dieter am Handy geprüft und ABGENOMMEN.
+               N3 (Spannungen + beide Welten, solver.js) GEBAUT UND AUSGELIEFERT —
+               Abnahme am Handy steht noch aus.
                Alle Dateien liegen aktuell in /mnt/project/ UND auf GitHub Pages.
-               Für N3 ist zusätzlich die Aufrundung des a-Maßes entschieden (2.3).
-               Recherche für N3 ist NICHT nötig — die Grundlagen liegen in R1/R3.
-               → NÄCHSTER SCHRITT: Baustein N3 (Spannungen, solver.js)
-                 — Auftrag in Abschnitt 5.1, Schnittstellen in 4.5 (naht.js), 4.6 (profil.js)
-                   und 4.7 (svglib.js + schaubild.js).
-Basislinie   : 382 Assertions · DOM-Smokes 102 (voll) + 103 (test) · i18n-Parität 0 Abweichungen
+               → NÄCHSTER SCHRITT: Baustein N4 (Rechenweg, rechenweg.js)
+                 — Auftrag in Abschnitt 5.1, Schnittstellen in 4.5 (naht.js), 4.6 (profil.js),
+                   4.7 (svglib.js + schaubild.js) und 4.8 (solver.js).
+Basislinie   : 580 Assertions · DOM-Smokes 149 (voll) + 150 (test) · i18n-Parität 0 Abweichungen
                (Basislinie darf nur WACHSEN — nie schrumpfen, nie gelockert werden.)
 Dateistand   : siehe Abschnitt 8.1 — dort steht, was fertig ist und was noch fehlt.
 ```
@@ -79,12 +79,18 @@ Schritt. Danach Plan-Kopf (Version/Status/Basislinie) + Changelog pflegen.
    die Grafik und N7 (Presets) auf. Fachlicher Hintergrund steht in **2.2b**.
 5. Abschnitt **4.7** lesen: die fertige Schnittstelle von `svglib.js` + `schaubild.js`
    (N2c) — darauf setzen N5 (UI), N6b (ISO 2553) und N14 (Kerbfallskizzen) auf.
-6. Abschnitt **5.1** lesen: der ausformulierte Auftrag für den nächsten Baustein **N3**.
+5b. Abschnitt **4.8** lesen: die fertige Schnittstelle von `solver.js` (N3) — darauf
+   setzt N4 (Rechenweg) unmittelbar auf.
+6. Abschnitt **5.1** lesen: der ausformulierte Auftrag für den nächsten Baustein **N4**.
 7. Arbeitsordner herstellen (Befehl unter Punkt 6 der Kickoff-Liste), dann
    `node test_naht.js`, `node dom_smoke_voll.js`, `node dom_smoke_test.js` laufen lassen
-   und die Basislinie aus dem Plan-Kopf bestätigen (**382 / 102 / 103 · 0 Fehler**),
+   und die Basislinie aus dem Plan-Kopf bestätigen (**580 / 149 / 150 · 0 Fehler**),
    **bevor** etwas gebaut wird.
-8. Erst dann N3 bauen — Fließband nach Punkt 5 der Kickoff-Liste.
+8. Erst dann N4 bauen — Fließband nach Punkt 5 der Kickoff-Liste.
+
+> **Merkposten aus dem N3-Chat:** `dom_smoke_voll.js` ist DEV-ONLY und fehlte einmal
+> im Projektordner (nur `dom_smoke_test.js` war da, die sie aufruft). Beim Wiedereinstieg
+> also **prüfen, ob beide Smoke-Dateien vorhanden sind**, bevor die Basislinie bestätigt wird.
 
 **6) TOKEN-PAUSEN:** Dieter stoppt bei ~90 % Verbrauch, Pause **4 Stunden**, dann weiter.
 Vor der Pause den genauen Stand nennen; Wiedereinstieg mit „weiter mit <Baustein>".
@@ -420,9 +426,9 @@ dt-profischweissnaht-web/
 ├── DT-ProfiSchweissnaht_Test.html → Testedition (Unterschied: NUR window.DT_EDITION)
 ├── style.css                      → Design-Tokens/Look (aus der Passung portiert)
 ├── i18n_kern.js   (DTNI18nKern)   → Bedienung, Felder, Meldungen, Rechenweg-Beschriftungen
-│                                     ✅ fertig (N1/N2/N2b) · 307 Schlüssel
+│                                     ✅ fertig (N1–N3) · 435 Schlüssel
 ├── i18n_hilfe.js  (DTNI18nHilfe)  → Laien-ⓘ-Texte, Dialog-Erklärungen, Tipps
-│                                     ✅ fertig (N1/N2/N2b) · 50 Einträge
+│                                     ✅ fertig (N1–N3) · 57 Einträge
 ├── i18n_kerbfall.js (DTNI18nKerb) → Kerbfall-Bezeichnungen und Anwendungsbedingungen
 │                                     ⬜ Gerüst steht, Füllung in N14
 ├── daten.js       (DTNData)       → 11 Werkstoffe, β_w, f_u, R_e, Nahtgütefaktoren,
@@ -432,16 +438,17 @@ dt-profischweissnaht-web/
 │                                     Anwendungsbedingungen, Verweis auf Skizze)
 ├── optionen.js    (DTNOptions)    → **einzige Options-/Auswahlquelle** für Formular UND
 │                                     Assistent + **Verträglichkeitsregeln** (3.4)
-│                                     ✅ fertig (N1/N2b) · 18 Gruppen, 82 Optionen
+│                                     ✅ fertig (N1/N2b/N3) · 20 Gruppen, 89 Optionen
 ├── validate.js    (DTNValidate)   → Feldschema (dreisprachig) + zweistufige Prüfung
-│                                     ✅ fertig (N1/N2b) · 24 Felder
+│                                     ✅ fertig (N1/N2b/N3) · 29 Felder
 ├── naht.js        (DTNNaht)       → Nahtbild-Kern: Segmente → A_w, Schwerpunkt, I_y, I_z, I_p
 │                                     ✅ fertig (N2) · Schnittstelle in 4.5
 ├── profil.js      (DTNProfil)     → Profiltyp + Maße + Kantenauswahl → Segmente (2.2b);
 │                                     7 Profile, Raupenmodell, Endkraterabzug, Eckradien,
 │                                     a je Segment  ✅ fertig (N2b) · Schnittstelle in 4.6
 ├── solver.js      (DTNSolver)     → Spannungen aus N/Q/M/T · Welt A + Welt B ·
-│                                     Nachweis UND Auslegung
+│                                     Nachweis UND Auslegung, Aufrundung des a-Maßes,
+│                                     Ampel  ✅ fertig (N3) · Schnittstelle in 4.8
 ├── rechenweg.js   (DTNRechenweg)  → selbstprüfender Rechenweg für ALLE Module
 ├── ermuedung.js   (DTNFatigue)    → Wöhlerlinie, γ_Mf, Miner, Kollektive
 ├── thermik.js     (DTNThermal)    → CET/CEV, Streckenenergie, t8/5, Vorwärmtemperatur
@@ -469,10 +476,10 @@ i18n_kern → i18n_hilfe → i18n_kerbfall → daten → kerbfall → optionen �
 naht → profil → solver → rechenweg → ermuedung → thermik → kosten → verzug →
 svglib → schaubild → symbol → beratung → assistent → report → ui
 ```
-**Tatsächlich in den HTMLs eingetragen (Stand N2c, vom DOM-Smoke geprüft):**
+**Tatsächlich in den HTMLs eingetragen (Stand N3, vom DOM-Smoke geprüft):**
 ```
 i18n_kern → i18n_hilfe → i18n_kerbfall → daten → optionen → validate → naht → profil →
-svglib → schaubild
+svglib → schaubild → solver
 ```
 Jeder neue Baustein trägt sein `<script src>` an der richtigen Stelle nach und erweitert
 im DOM-Smoke die Liste `erwartet` sowie die Namenszuordnung (`'profil.js': 'DTNProfil'`).
@@ -705,6 +712,92 @@ Legendenschlüssel: `sb_naht` · `sb_kontur` · `sb_eckluecke` · `sb_schwerpunk
   ohne `info[]` gibt es keine Lückenmarkierung,
 - **kein Text**, keine Zahl, keine Einheit im SVG.
 
+### 4.8 Schnittstelle `solver.js` (fertig aus N3 — darauf setzt N4 auf)
+
+> **Nicht ändern, nur benutzen.** `solver.js` ist DOM-frei, deterministisch und mutiert
+> seine Eingaben nicht. Namensraum `DTNSolver`. Lädt **nach** `daten.js`, `naht.js` und
+> `profil.js` (es benutzt alle drei).
+
+**Ein Aufruf:** `DTNSolver.rechne(eingabe)`.
+
+**Eingabe** (alle Feldnamen sind die Feldcodes aus `validate.js` bzw. die Gruppencodes aus
+`optionen.js` — das Formular kann seine Werte unverändert durchreichen):
+```js
+{ welt:'A'|'B', rechenrichtung:'nachweis'|'auslegung',
+  nachweisverfahren:'richtungsbezogen'|'vereinfacht',      // nur Welt A
+  werkstoff, werkstoffgruppe, zustand, zusatzwerkstoff, bw_regelsatz,
+  nahtart, nahtguete, lastfall, weltb_nahtgruppe,          // Welt B: guete/lastfall/nahtgruppe
+  segmente[] + info[] + umlaufend   ODER   profil_eingabe:{…wie DTNProfil.baue()…},
+  modell:'exakt'|'duennwandig',
+  N, Qy, Qz, My, Mz, T,            // Kurzform Q (=Qz) und M (=My) erlaubt
+  a, t1, t2, t_min, a_rundung:'ganze_mm'|'halbe_mm', beta_lw_anwenden,
+  gammaM2, gammaMw, betaW, fu, fw, Re, S, nu, a_min }      // alle „eigener Wert"
+```
+Lasten: **N und Q in Newton, M und T in Newtonmeter** (intern in Nmm umgerechnet).
+Ist eine Last **doppelt** angegeben (Kurzform *und* ausführliche Form mit verschiedenen
+Werten), gibt es einen **ehrlichen Fehler** statt einer stillen Auswahl.
+
+**Das Spannungsmodell — „Umklappen der Naht" (R1 Abschnitt 1.1):**
+Je Randpunkt entstehen `sigma_x` (senkrecht zur Anschlussebene, aus N, M_y, M_z),
+`tau_n` (in der Ebene, quer zur Nahtachse) und `tau_t` (in der Ebene, längs), letztere
+aus Q und T. Bei der 45-Grad-Kehlnaht teilt sich die quer wirkende Resultierende
+`q_senk = √(sigma_x² + tau_n²)` auf in `sigma_senk = tau_senk = q_senk/√2`; längs bleibt
+`tau_par = |tau_t|`. **Die durchgeschweißte Stumpfnaht wird NICHT umgeklappt.** Die
+teilweise durchgeschweißte Naht rechnet mit `a_wirksam = a − 2 mm`.
+Zwei belegte Proben, im Harness S26 nachgerechnet: bei Querzug ist das vereinfachte
+Verfahren um **√(3/2) ≈ 1,2247** strenger, bei Längsbeanspruchung liefern beide
+Verfahren **dasselbe**. Biegung läuft über die **allgemeine schiefe Biegung** (deckt
+I_yz ≠ 0 mit ab), Kreisnähte werden auf **72 Auswertepunkte** verdichtet.
+
+**Die beiden Welten sind BAULICH getrennt (2.8), nicht nur durch Text:** es gibt zwei
+Widerstandsbauer. Ein Welt-A-Widerstand enthält **kein** `S`, `nu`, `Re`, `sigma_zul`;
+ein Welt-B-Widerstand enthält **kein** `betaW`, `gammaM2`, `R_d_vereinfacht`. Wer die
+falsche Zahl sucht, findet sie nicht. Durch Assertions abgesichert.
+
+**Rückgabe bei `ok:true`:**
+`welt` · `rechenrichtung` · `verfahren` · `modell` · `nahtart` · `nahttyp` · `umklappen` ·
+`a_abzug` · `werkstoff{…}` · `widerstand{…}` (je Welt verschieden, mit `pfad`, `formel`,
+`R_d` und den Quellen) · `schnittgroessen{N,Qy,Qz,My,Mz,T}` (in N und Nmm) ·
+`nahtbild{…}` (Auszug aus `naht.js` inkl. `kontrolle` und `umlaufend`) ·
+`punkte[]` (je Punkt alle sieben Spannungsanteile + `sigma_v` + `sigma_res`) ·
+`massgebend` (der Punkt, der entscheidet) · `nachweise[]` (je Nachweis `code`, `ist`,
+`grenze`, `eta`, `erfuellt`) · `eta` · `ampel` (`gruen`|`gelb`|`rot`) · `erfuellt` ·
+`auslegung{a_erf, a_gewaehlt, a_bezug, faktor, stufe, rundung, iterationen,
+je_segment[], eta_mit_gewaehlt}` · `grenzen{a_min, je_segment[], verletzt[], beta_Lw}` ·
+`nicht_geprueft[]` (die Liste 2.4 als **Kopie**) · `fehler` · `warnungen` · `hinweise`.
+**Bei einem Fehler ist `ok:false` und es gibt KEINE Zahlen** — kein stiller Teilwert.
+
+**Auslegung (2.3):** direkt aufgelöst über σ ∝ 1/a, danach **nachiteriert** (nötig im
+Modell `exakt` wegen der a³-Glieder). Pflicht-Assertion: `a_erf` in den Nachweis
+eingesetzt ergibt **η = 1**. Danach wird **AUFgerundet** — je Segment einzeln, denn a ist
+ein Fertigungsmaß. `a_erf` **und** `a_gewaehlt` stehen beide im Ergebnis. **Nach** dem
+Aufrunden wird gegen `a_max = 0,7 · t_min` (je Segment!) und `a_min` geprüft; passt es
+nicht, gibt es eine sichtbare Warnung statt eines stillen Ergebnisses.
+
+**Weitere Funktionen:** `nahtTyp(code)` → `'kehl'|'stumpf_voll'|'stumpf_teil'|null` ·
+`rundeA(a_erf, rundung)` · `aMax(t_min)` · `ampel(eta)` ·
+`schnittgroessen(F, e, richtung)` (geometrischer Lastweg, 2.12).
+
+**Meldungscodes** (`DTNSolver.CODES`, 41 Stück, alle dreisprachig): 17 Fehler
+(`msg_sv_welt_fehlt`, `msg_sv_keine_last`, `msg_sv_last_doppelt`,
+`msg_sv_verfahren_unpassend`, `msg_sv_alu_nur_weltA`, `msg_sv_a_wirksam_null` …),
+5 Warnungen (`msg_sv_a_ueber_amax`, `msg_sv_a_unter_amin`, `msg_sv_l_eff_zu_kurz`,
+`msg_sv_lange_naht`, `msg_sv_nicht_erfuellt`) und 19 Hinweise (`msg_sv_umklappen`,
+`msg_sv_querkraft_mittelwert`, `msg_sv_weltb_ohne_faktor3`, `msg_sv_alu_wez`,
+`msg_sv_umlaufend_aus_profil` …). **Ergebnisgrößen** (`DTNSolver.GROESSEN`, 16 Stück)
+tragen je Code + Einheitsschlüssel, Beschriftung `sv_<code>`.
+
+**WAS `solver.js` BEWUSST NICHT TUT:**
+- **keine Texte** — nur sprachneutrale Codes (N4/N5 beschriften),
+- **keine Querschnittswerte** (`naht.js`) und **keine Profile** (`profil.js`),
+- **keine Ermüdung** (N13) — Lastfall und Ermüdung werden NIE multipliziert,
+- **keinen Grundwerkstoff-Nachweis**, auch nicht für die Alu-WEZ: die Abminderung wird
+  ausgewiesen, aber ehrlich als **nicht Teil des Nahtnachweises** beschriftet (2.4),
+- **keine erfundene Zuordnung** von Nahtart auf Welt-B-Tabellenzeile: die Zeile wählt der
+  Anwender, sonst läuft ehrlich der Formelweg,
+- **kein β_Lw stillschweigend**: der Beiwert wird berechnet und gemeldet, angewendet nur
+  auf ausdrücklichen Wunsch.
+
 ---
 
 ## 5. Bausteine — risikosortiert, mit Launch-Checkpoint
@@ -719,8 +812,8 @@ Legendenschlüssel: `sb_naht` · `sb_kontur` · `sb_eckluecke` · `sb_schwerpunk
 | **N2** ✅ | **Nahtbild-Kern** *(abgenommen 2026-07-25)* | `naht.js`: Segmente → A_w, Schwerpunkt, I_y, I_z, I_yz, I_p, Hauptachsen, W_y/W_z/W_t, offen/geschlossen, Selbstprüfung. DOM-frei. Vier Hand-Anker geschlossen nachgerechnet. **Schnittstelle: Abschnitt 4.5.** |
 | **N2b** ✅ | **Profileingabe** *(abgenommen 2026-07-25)* | `profil.js`: 7 parametrische Profile + Kantenauswahl → Segmente. Raupenmodell mit Endkraterabzug je freiem Ende, Eckradien, a je Segment. DOM-frei. **Schnittstelle: Abschnitt 4.6.** |
 | **N2c** ✅ | **Nahtbild-Grafik** *(abgenommen 2026-07-26)* | `svglib.js` + `schaubild.js`: SVG-Vorschau des Nahtbilds, Segmente farbig nach Gruppe, Schwerpunkt und Achsen, nicht geschweißte Kanten gestrichelt, Ecklücken sichtbar. Zugleich **Auswahl-Skizze** der Profileingabe. **Schnittstelle: Abschnitt 4.7.** |
-| **N3** ⬅ | **Spannungen + beide Welten — NÄCHSTER SCHRITT** | `solver.js`: σ⊥, τ⊥, τ∥ aus N/Q/M/T · Welt A (EC3) · Welt B (klassisch) · **Nachweis UND Auslegung**. |
-| **N4** | **Rechenweg** | `rechenweg.js`: selbstprüfende Schritte für N2/N3, dreisprachig. |
+| **N3** ✅ | **Spannungen + beide Welten** *(gebaut 2026-07-26, Abnahme offen)* | `solver.js`: σ⊥, τ⊥, τ∥ aus N/Q/M/T · Welt A (EC3, beide Verfahren) · Welt B (klassisch, Tabelle + Formel) · **Nachweis UND Auslegung** mit Aufrundung · Ampel. **Schnittstelle: Abschnitt 4.8.** |
+| **N4** ⬅ | **Rechenweg — NÄCHSTER SCHRITT** | `rechenweg.js`: selbstprüfende Schritte für N2/N2b/N3, dreisprachig. |
 | **N5** | **UI-Basis** | 2 HTMLs, `style.css`, Formular mit aufklappbaren Bereichen und Freischalt-Haken, Ergebnis-Kacheln, Ampel, i18n, Theme (**Start immer dunkel**), Laien-ⓘ, Block „Ausführung & Dokumentation" (ISO 5817 + EXC). **Erster Handy-Test.** |
 | **N6b** | **ISO-2553-Symbolgenerator** | `symbol.js`: Pfeil-/Gegenseite, a- bzw. z-Maß, Länge, Rundumnaht, Baustellennaht. Nutzt `svglib.js` aus N2c. Bewusst **vor** dem Launch — Verkaufsargument. |
 | **N7** | **Presets** | Die 6 Starter als Profil-/Kantendaten auf `profil.js`, **mit Merkmalen für die kontextbezogene Beispielliste** (3.2). |
@@ -735,47 +828,47 @@ Legendenschlüssel: `sb_naht` · `sb_kontur` · `sb_eckluecke` · `sb_schwerpunk
 | **N15** | **Verzug & Schrumpfung** | `verzug.js` + Panel, klar als **Abschätzung** gekennzeichnet. |
 | **N16** | **Feinschliff + Build** | Presets ausbauen, Wissenstexte, Code-Audit, Bündelung + Obfuskierung (zwei Bündel, Unterschied nur `DT_EDITION`). **→ V1-Launch.** |
 
-### 5.1 Auftrag für den nächsten Baustein **N3 — Spannungen + beide Welten** *(hier ansetzen)*
+### 5.1 Auftrag für den nächsten Baustein **N4 — Rechenweg** *(hier ansetzen)*
 
-> Alles, was N3 braucht, ist fertig: `profil.js` (4.6) liefert die Segmente, `naht.js` (4.5)
-> daraus A_w, Schwerpunkt, I_y, I_z, I_p, W_y/W_z/W_t und die **Randpunkte** (`punkte[]`),
-> `daten.js` liefert f_u, R_e, β_w (beide Regelsätze), γ_M2 und die Nahtgütefaktoren.
-> N3 baut **`solver.js` (`DTNSolver`)** — DOM-frei, deterministisch, wie die Vorgänger.
+> Alles, was N4 braucht, ist fertig und liefert **Codes statt Texte**: `profil.js` (4.6)
+> die Segmente samt Herkunft, `naht.js` (4.5) die Querschnittswerte samt Selbstprüfung,
+> `schaubild.js` (4.7) das Bild samt Legendencodes, `solver.js` (4.8) die Spannungen an
+> jedem Randpunkt, den maßgebenden Punkt, jeden Einzelnachweis und die Auslegung mit
+> `a_erf` **und** `a_gewaehlt`. N4 baut **`rechenweg.js` (`DTNRechenweg`)** — DOM-frei,
+> deterministisch, wie die Vorgänger.
+
+**Warum das das Herzstück ist:** Der selbstprüfende Rechenweg ist das Nachweis-Herzstück
+des Produkts (stehende Regel 8). Er muss **vollständig in der gewählten Sprache** stehen,
+inklusive aller Formel- und Werte-Beschriftungen.
 
 **Zu bauen:**
-- **Schnittgrößen → Spannungen:** N, Q_y, Q_z, M_y, M_z, T am Nahtbild; σ⊥, τ⊥, τ∥ an
-  **jedem Randpunkt** aus `punkte[]`, der maßgebende Punkt wird benannt.
-- **Welt A (EN 1993-1-8), richtungsbezogen:** √(σ⊥² + 3·(τ⊥² + τ∥²)) ≤ f_u/(β_w·γ_M2)
-  **und** σ⊥ ≤ 0,9·f_u/γ_M2. Dazu das **vereinfachte Verfahren** f_vw,d = (f_u/√3)/(β_w·γ_M2)
-  als wählbare Alternative (Abfragereihenfolge beachten: `nachweisverfahren` steht **nach**
-  `nahtart`, Entscheidungslog N1).
-- **Welt B (klassisch):** σ_zul = R_e/S · ν mit Lastfall ruhend/schwellend/wechselnd.
-  **Welt A und Welt B werden nie vermischt** (2.8) — der Code muss das strukturell
-  erzwingen, nicht nur durch Text.
-- **Beide Rechenrichtungen (2.3):** Nachweis (a gegeben → Ausnutzung) **und** Auslegung
-  (a gesucht). Auslegung direkt auflösen (σ ∝ 1/a), Grenzen aus `validate.js` prüfen.
-  **Pflicht-Assertion: beide sind zueinander invers** (a aus der Auslegung eingesetzt
-  ⇒ Ausnutzung ≈ 1).
-  **Aufrundung nach der bindenden Regel in 2.3:** Voreinstellung ganze mm, immer aufgerundet;
-  Schalter auf halbe mm; `a_erf` und `a_gewaehlt` **beide** im Ergebnis und im Rechenweg;
-  nach dem Aufrunden erneut gegen a_max = 0,7 · t_min prüfen und sonst ehrlich melden.
-  Dafür kommen eine Auswahlgruppe (`a_rundung`: `ganze_mm` | `halbe_mm`) in `optionen.js`
-  und die zugehörigen Meldungen ins i18n-Wörterbuch.
-- **Aluminium:** eigener Weg über f_w **mit WEZ-Entfestigung** (ρ_haz), kein β_w — die
-  Abminderung muss im Ergebnis ausdrücklich sichtbar sein (2.5, 6.1).
-- **Ampel und Ausnutzungsgrad**, Liste der nicht geprüften Punkte (2.4) im Ergebnis.
+- **Schrittliste als Daten, nicht als Text:** je Schritt `code` (i18n-Schlüssel),
+  `formel` (Klartext, Symbole sprachneutral), `eingesetzt` (Formel mit den echten Zahlen),
+  `ergebnis` + `einheit`, `quelle` (Norm/Regelwerk), `haken` (bestanden ja/nein) und
+  optional `hinweis`. Die Oberfläche (N5) und die Ausgaben (N11) rendern nur.
+- **Abschnitte:** Eingaben → Nahtbild (Segmente, A_w, Schwerpunkt, I_y/I_z/I_p, gewähltes
+  Rechenmodell) → Schnittgrößen → Spannungen am maßgebenden Punkt → Widerstand mit
+  benannter Grundlage → jeder Einzelnachweis mit Ausnutzung → Auslegung mit **beiden**
+  a-Zahlen → Grenzen (a_min, a_max, l_eff) → Liste 2.4 → Lücken und Hinweise.
+- **Selbstprüfung sichtbar:** die Häkchen aus `naht.js` (`kontrolle`: statische Momente
+  um den Schwerpunkt = 0, I_p = I_y + I_z, I_1 + I_2 = I_y + I_z) und die Hand-Anker
+  gehören als Zeilen in den Rechenweg, nicht in eine Fußnote.
+- **Zweiter Rechenpfad je Schritt, wo es billig ist** (z. B. A_w = Σ a·l gegen die Summe
+  aus `teile[]`) — eine Abweichung muss auffallen.
+- **Negativkontrolle:** ein absichtlich verfälschtes Ergebnis muss ein Häkchen umkippen.
+  Das ist die Pflicht-Assertion für N4.
+- **Dreisprachig über alle Presets:** der Rechenweg muss in DE/EN/PT vollständig sein,
+  ohne einen einzigen Platzhalter.
 
 **Abzuliefern wie immer:** Modul + `<script src>` an der richtigen Stelle in beiden HTMLs
-(nach `schaubild.js`), Ergebnis in der Zwischen-Statusseite sichtbar (entfällt mit N5),
-DOM-Smokes erweitert, Harness um eine Sektion **S26** (Hand-Anker gegen von Hand
-nachgerechnete Beispiele aus den Recherchedateien, Invarianten: a-Verdopplung halbiert die
-Spannung, Welten getrennt, Auslegung/Nachweis invers, Determinismus, Nichtmutation).
-**Recherche just-in-time:** Wird für die Hand-Anker ein zusätzlich belegtes Zahlenbeispiel
-gebraucht, rechtzeitig ansagen und von Dieter freischalten lassen.
+(nach `solver.js`), Ergebnis in der Zwischen-Statusseite sichtbar (entfällt mit N5),
+DOM-Smokes erweitert, Harness um eine Sektion **S28** (Vollständigkeit je Schritt,
+Negativkontrolle, i18n-Parität über alle Schritte, Determinismus, Nichtmutation).
+**Recherche:** nicht nötig — N4 beschriftet nur, was N2/N2b/N3 belegt gerechnet haben.
 
 **Später (nicht V1):** **Normprofil-Katalog** (IPE/HEA/HEB/UPE/UPN/RHS/Rohr, 2.2b Stufe 2),
 unterbrochene Nähte, Loch-/Schlitznähte, weitere Kerbfälle, FKM-Richtlinie, Kranbau-Regelwerke,
-AWS/US-Normen.
+AWS/US-Normen, EN 1993-1-8:2024 (2. Generation, β_w,mod — Werte noch nicht belegbar).
 
 ---
 
@@ -856,35 +949,37 @@ verdrahtet, Sperr-Overlay in der Testversion, Registrierung + Long-Press-Reset.
 **Referenzdateien (read-only, nur Muster):** `DT-ProfiPassung_Testversion-Orginal.html` ·
 `DT-ProfiPassung.html` · `DT-ProfiPassung_Test.html`
 
-### 8.1 Dateistand nach N2c *(Stand 2026-07-26)*
+### 8.1 Dateistand nach N3 *(Stand 2026-07-26)*
 
 **Produktdateien:**
 | Datei | Stand |
 |---|---|
-| `DT-ProfiSchweissnaht.html` | Voll-Edition (`DT_EDITION='full'`), lädt **10 Module**, enthält die **Zwischen-Statusseite N1/N2/N2b/N2c** (entfällt mit N5) |
+| `DT-ProfiSchweissnaht.html` | Voll-Edition (`DT_EDITION='full'`), lädt **11 Module**, enthält die **Zwischen-Statusseite N1/N2/N2b/N2c/N3** (entfällt mit N5) |
 | `DT-ProfiSchweissnaht_Test.html` | Test-Edition — **verifiziert: Unterschied genau eine Zeile** |
 | `daten.js` | N1, unverändert |
 | `naht.js` | N2, unverändert — Schnittstelle in 4.5 |
-| `optionen.js` | **N2b geändert** — 18 Gruppen, 82 Optionen (neu: `profil`, `kanten`) |
-| `validate.js` | **N2b geändert** — 24 Felder (neu: b, h, d, tw, tf, r_ecke, a_steg, a_flansch) |
-| `i18n_hilfe.js` (50 Einträge) | N2b, unverändert (die Grafik hat keine Eingabefelder) |
-| `i18n_kerbfall.js` | Gerüst, unverändert (Füllung in N14) |
 | `profil.js` | N2b, unverändert — Schnittstelle in 4.6 |
-| `svglib.js` | **N2c, neu** — 13 Grundbausteine, Auto-Skalierung, Schnittstelle in 4.7 |
-| `schaubild.js` | **N2c, neu** — Nahtbild-Grafik + Legendendaten, Schnittstelle in 4.7 |
-| `i18n_kern.js` | **N2c erweitert** — 307 → **322 Schlüssel** (6 Meldungen + 9 Beschriftungen) |
-| `style.css` | **N2c erweitert** — Grafikrahmen und Legende (`.svg-box`, `.legende`) |
+| `svglib.js` | N2c, unverändert — Schnittstelle in 4.7 |
+| `schaubild.js` | N2c, unverändert — Schnittstelle in 4.7 |
+| `solver.js` | **N3, neu** — Spannungen, beide Welten, Nachweis + Auslegung, Schnittstelle in 4.8 |
+| `optionen.js` | **N3 geändert** — 20 Gruppen, 89 Optionen (neu: `a_rundung`, `weltb_nahtgruppe`) |
+| `validate.js` | **N3 geändert** — 29 Felder (neu: Qy, Qz, My, Mz, Re) |
+| `i18n_kern.js` | **N3 erweitert** — 322 → **435 Schlüssel** |
+| `i18n_hilfe.js` | **N3 erweitert** — 50 → **57 Laien-ⓘ-Einträge** |
+| `i18n_kerbfall.js` | Gerüst, unverändert (Füllung in N14) |
+| `style.css` | N2c, unverändert (N3 nutzt die vorhandenen Klassen `kv`, `gap-note`, `status-banner warn`) |
 
 **DEV-ONLY — nur in `/mnt/project/`, NIE ausliefern und nicht auf GitHub nötig:**
-`test_naht.js` (382 Assertions) · `dom_smoke_voll.js` (102 Prüfungen) ·
-`dom_smoke_test.js` (103 Prüfungen, ruft den Lauf aus `dom_smoke_voll.js` auf — unverändert).
+`test_naht.js` (580 Assertions, Sektionen S1–S27) · `dom_smoke_voll.js` (149 Prüfungen) ·
+`dom_smoke_test.js` (150 Prüfungen, ruft den Lauf aus `dom_smoke_voll.js` auf).
+⚠ **Beide Smoke-Dateien müssen im Projektordner liegen** — `dom_smoke_test.js` allein läuft nicht.
 
-**Noch nicht gebaut:** `solver.js` (N3) ·
-`rechenweg.js` (N4) · `ui.js` (N5) · `symbol.js` (N6b) · `assistent.js` (N8) · `thermik.js` (N9) ·
-`kosten.js` (N10) · `report.js` (N11) · `ermuedung.js` (N13) · `kerbfall.js` (N14) · `verzug.js` (N15).
+**Noch nicht gebaut:** `rechenweg.js` (N4) · `ui.js` (N5) · `symbol.js` (N6b) ·
+`assistent.js` (N8) · `thermik.js` (N9) · `kosten.js` (N10) · `report.js` (N11) ·
+`ermuedung.js` (N13) · `kerbfall.js` (N14) · `verzug.js` (N15).
 
 **Erste Handlung im neuen Chat:** Arbeitsordner herstellen und die drei Testläufe starten.
-Melden müssen sie **382 / 102 / 103 · 0 Fehler**. Weicht etwas ab, erst das klären.
+Melden müssen sie **580 / 149 / 150 · 0 Fehler**. Weicht etwas ab, erst das klären.
 
 ---
 
@@ -1021,6 +1116,48 @@ Melden müssen sie **382 / 102 / 103 · 0 Fehler**. Weicht etwas ab, erst das kl
   überproportional (Kostenmodul N10 rechnet genau das aus).
 - **Warum trotzdem halbe mm als Schalter:** bei t = 5 mm ist a_max = 0,7 · t = 3,5 mm — mit
   ganzen mm gäbe es dort zwischen a3 und a_max keine Stufe mehr.
+
+**Aus N3 (2026-07-26) — Festlegungen, die beim Bauen entstanden sind:**
+- **Die Welten sind BAULICH getrennt, nicht nur durch Text.** Zwei Widerstandsbauer,
+  jeder liefert nur die Felder seiner Welt: Welt A ohne `S`/`nu`/`Re`/`sigma_zul`,
+  Welt B ohne `betaW`/`gammaM2`. Durch Assertions abgesichert. Ein Lastfall in Welt A
+  wird ausdrücklich als wirkungslos gemeldet.
+- **Das Umklappen ist der fachliche Kern.** Die quer wirkende Resultierende
+  √(σ_x² + τ_n²) teilt sich mit 1/√2 auf σ⊥ und τ⊥ auf. Damit reproduziert der Code
+  **beide** in R1 belegten Proben von selbst: Verhältnis der Verfahren √(3/2) = 1,2247
+  bei Querzug, Gleichstand bei Längsbeanspruchung. Das war die Bestätigung, dass das
+  Modell stimmt — nicht nur eine Formel, die plausibel aussieht.
+- **Kreisnähte werden auf 72 Punkte verdichtet.** Die 8 Randpunkte aus `naht.js` genügen
+  für die Querschnittswerte, nicht für das Spannungsmaximum. Wichtig dabei: der
+  Randradius muss **derselbe** sein wie in `naht.js` (im Modell `exakt` die Außenkante
+  (d+a)/2), sonst passt τ nicht zu W_t. Genau das war ein gefundener Fehler.
+- **Auslegung: direkt auflösen, dann nachiterieren.** Im Modell `duennwandig` ist
+  σ ∝ 1/a exakt, im Modell `exakt` wegen der a³-Glieder nur fast. Die Fixpunktiteration
+  braucht 1 bis 7 Schritte und trifft η = 1 auf 1e-9.
+- **Aufgerundet wird JE SEGMENT.** Bei unterschiedlichen a-Maßen (Steg/Flansch) wäre ein
+  gemeinsamer Faktor ein Rechenergebnis, kein Fertigungsmaß. Jedes Segment bekommt sein
+  eigenes ganzes (oder halbes) Millimeter — dadurch kann die Ausnutzung nur besser werden.
+- **`a_max` wird je Segment geprüft**, mit der Dicke aus `info[].t` von `profil.js` —
+  damit greift die in 2.2b geforderte segmentweise Dickengrenze wirklich.
+- **Welt-B-Tabelle: keine erfundene Zuordnung.** Nahtart → Tabellenzeile lässt sich nicht
+  belegt herleiten („mit Gegenlage" ist keine Eigenschaft der Nahtart). Deshalb wählt der
+  Anwender die Zeile in der neuen, **nicht** pflichtigen Gruppe `weltb_nahtgruppe`; ohne
+  Auswahl läuft ehrlich der Formelweg σ_zul = R_e/S·ν mit sichtbarem Hinweis. Der Lastfall
+  wirkt nur im Tabellenweg — auch das wird gesagt.
+- **β_Lw wird berechnet, aber nicht stillschweigend angewendet.** Bei l > 150·a erscheint
+  die Warnung und der Beiwert steht im Ergebnis; angewendet wird er nur auf Wunsch.
+- **Alu-WEZ ist Information, kein Nachweis.** ρ_haz, f_o,haz, f_u,haz und b_haz stehen im
+  Ergebnis und sind ausdrücklich als **nicht** Teil des Nahtnachweises beschriftet — der
+  Grundwerkstoff-Nachweis steht in der Liste 2.4.
+- **Kurzform und Langform der Lasten:** Q = Q_z und M = M_y bleiben für den häufigen Fall,
+  Qy/Qz/My/Mz kommen dazu. Sind beide mit **verschiedenen** Werten gefüllt, gibt es einen
+  Fehler statt einer stillen Auswahl.
+- **`Re` ist KEIN Pflichtfeld.** Beim Bauen zuerst als Pflicht angelegt — der Harness hat
+  sofort gemeldet, dass dadurch die zweite Prüfstufe nicht mehr lief. Der Wert kommt aus
+  der Werkstofftabelle und ist nur überschreibbar, wie `betaW`. Leitziel: wenige Eingaben.
+- **N3 wertet `umlaufend` aus, nicht `geschlossen`** (Vorgabe aus 4.6): bei Hohlprofilen
+  mit Eckradius bleibt die Torsionsrechnung gültig, statt eine falsche Warnung zu zeigen.
+- **`t_min` wird selbst gebildet** aus `t1`/`t2`, wenn es nicht ausdrücklich angegeben ist.
 
 **Aus der Rückmeldung 2026-07-26 (N2c abgenommen):**
 - N2c von Dieter am Handy geprüft: beide Nahtbilder, Einfärbung nach Segmentgruppe,
@@ -1160,6 +1297,29 @@ Verfahren, Umklappen der Naht, Verhältnis √(3/2) ≈ 1,22), Welt B (durchgere
 S235: 218 → 207 N/mm²) und Aluminium mit WEZ-Entfestigung sind in R1 und R3 belegt.
 Code unverändert, **Basislinie unverändert 382 / 102 / 103**.
 **Nächster Schritt: N3 bauen — im neuen Chat mit „weiter mit N3" einsteigen.**
+
+**v2.11 (2026-07-26):** **Baustein N3 (Spannungen + beide Welten) gebaut und
+ausgeliefert:** `solver.js` (Schnittgrößen N/Q_y/Q_z/M_y/M_z/T → σ⊥, τ⊥, τ∥ an jedem
+Randpunkt mit Benennung des maßgebenden Punkts; Umklappen der Kehlnaht mit 1/√2;
+durchgeschweißte Stumpfnaht ohne Umklappen; teilweise durchgeschweißt mit a − 2 mm;
+allgemeine schiefe Biegung; Kreisnähte auf 72 Punkte verdichtet; Welt A mit beiden
+Verfahren und dem Zusatznachweis σ⊥ ≤ 0,9·f_u/γ_M2; Welt B mit Tabellen- und Formelweg;
+Aluminium über f_w mit ausgewiesener WEZ-Entfestigung und ohne β_w; Nachweis UND Auslegung
+mit Aufrundung je Segment; Ampel; Grenzen a_min/a_max/l_eff/β_Lw; Liste 2.4 im Ergebnis).
+`optionen.js` um `a_rundung` und `weltb_nahtgruppe` erweitert (**20 Gruppen, 89 Optionen**,
+55.104 Wege ohne Sackgasse), `validate.js` um Qy/Qz/My/Mz/Re (**29 Felder**),
+`i18n_kern.js` auf **435 Schlüssel**, `i18n_hilfe.js` auf **57 Einträge**, beide HTMLs um
+die Karte „Spannungen und Nachweis" (Welt A und Welt B nebeneinander, Auslegung, fünf
+Hand-Anker, sichtbare Warnungen). Neuer Abschnitt **4.8** (vollständige Schnittstelle),
+Abschnitt **5.1** neu als Auftrag für **N4**.
+Sechs Hand-Anker geschlossen nachgerechnet: Verhältnis der Verfahren √(3/2) = 1,2247,
+Gleichstand bei Längsbeanspruchung, σ_v = √2·σ_w bei Querzug, Biegung gegen W_y,
+Kreisnaht-Torsion gegen W_t, Welt-B-Lehrbuchbeispiel S235 → 207 N/mm².
+Drei Fehler beim Bauen gefunden und behoben: Randradius der Kreisnaht passte nicht zu W_t,
+a-abhängige Meldungen bezogen sich auf den Startwert statt auf das Ergebnis der Auslegung,
+`Re` war fälschlich als Pflichtfeld angelegt (brach die zweite Prüfstufe).
+**Basislinie 382 → 580 Assertions · Smokes 102/103 → 149/150 · i18n-Parität 0.**
+**Nächster Schritt: N3 am Handy prüfen, dann N4 (Rechenweg).**
 ═══════════════════════════════════════════════════════════════════════════
 Ende Schweißnaht-1.md · DT-ProfiSchweissnaht
 ═══════════════════════════════════════════════════════════════════════════
