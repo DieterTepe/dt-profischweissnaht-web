@@ -4,22 +4,26 @@
 ## Wärmeführung, Kosten, Verzug · dreisprachig (DE/EN/PT) · offline · Handy zuerst
 
 > **Diese Datei ersetzt `Schweißnaht.md` vollständig.** Sie enthält den Stand nach dem
-> Konzeptgespräch (2026-07-23), nach der abgeschlossenen Recherche (R1–R6) und nach der
-> Abstimmung vom **2026-07-24**, in der **alle offenen Fragen aus Abschnitt 0 geklärt** wurden.
+> Konzeptgespräch (2026-07-23), nach der abgeschlossenen Recherche (R1–R6), nach der
+> Abstimmung vom **2026-07-24** (alle offenen Fragen aus Abschnitt 0 geklärt) und nach den
+> abgenommenen Bausteinen **N1, N2, N2b, N2c und N3** (Stand 2026-07-26).
 > Sie ist so geschrieben, dass ein **neuer Chat ohne Vorwissen** damit weiterarbeiten kann.
+> Einstieg dort: **„weiter mit N4"** — dann der Reihenfolge in Kickoff-Punkt 5b folgen.
 
 ```
-Plan-Version : 2.11 · Stand 2026-07-26
-Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe) und
-               N2c (Nahtbild-Grafik) von Dieter am Handy geprüft und ABGENOMMEN.
-               N3 (Spannungen + beide Welten, solver.js) GEBAUT UND AUSGELIEFERT —
-               Abnahme am Handy steht noch aus.
-               Alle Dateien liegen aktuell in /mnt/project/ UND auf GitHub Pages.
+Plan-Version : 2.12 · Stand 2026-07-26
+Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
+               N2c (Nahtbild-Grafik) und N3 (Spannungen + beide Welten)
+               von Dieter am Handy geprüft und ABGENOMMEN.
+               Projektordner /mnt/project/ UND GitHub Pages sind auf diesem Stand —
+               am 2026-07-26 gegengeprüft: alle 11 Module, style.css, beide HTMLs und
+               die drei DEV-ONLY-Dateien vorhanden, Testläufe direkt aus dem
+               Projektordner grün.
                → NÄCHSTER SCHRITT: Baustein N4 (Rechenweg, rechenweg.js)
                  — Auftrag in Abschnitt 5.1, Schnittstellen in 4.5 (naht.js), 4.6 (profil.js),
                    4.7 (svglib.js + schaubild.js) und 4.8 (solver.js).
 Basislinie   : 580 Assertions · DOM-Smokes 149 (voll) + 150 (test) · i18n-Parität 0 Abweichungen
-               (Basislinie darf nur WACHSEN — nie schrumpfen, nie gelockert werden.)
+               (VERBINDLICH. Basislinie darf nur WACHSEN — nie schrumpfen, nie gelockert werden.)
 Dateistand   : siehe Abschnitt 8.1 — dort steht, was fertig ist und was noch fehlt.
 ```
 
@@ -72,25 +76,25 @@ welche Dateien zu überschreiben sind** → Dieter bestätigt am Handy → erst 
 Schritt. Danach Plan-Kopf (Version/Status/Basislinie) + Changelog pflegen.
 
 **5b) WIEDEREINSTIEG IN EINEM NEUEN CHAT — genau diese Reihenfolge:**
+Einstiegssatz von Dieter: **„weiter mit N4"**.
 1. Diese Datei komplett lesen (`Schweißnaht-1.md`, sie ist die alleinige Grundlage).
 2. Abschnitt **8.1** lesen: was ist fertig, was fehlt.
-3. Abschnitt **4.5** lesen: die fertige Schnittstelle von `naht.js`.
-4. Abschnitt **4.6** lesen: die fertige Schnittstelle von `profil.js` — darauf setzen
+3. Abschnitt **4.5** lesen: die fertige Schnittstelle von `naht.js` (N2).
+4. Abschnitt **4.6** lesen: die fertige Schnittstelle von `profil.js` (N2b) — darauf setzen
    die Grafik und N7 (Presets) auf. Fachlicher Hintergrund steht in **2.2b**.
 5. Abschnitt **4.7** lesen: die fertige Schnittstelle von `svglib.js` + `schaubild.js`
    (N2c) — darauf setzen N5 (UI), N6b (ISO 2553) und N14 (Kerbfallskizzen) auf.
-5b. Abschnitt **4.8** lesen: die fertige Schnittstelle von `solver.js` (N3) — darauf
-   setzt N4 (Rechenweg) unmittelbar auf.
-6. Abschnitt **5.1** lesen: der ausformulierte Auftrag für den nächsten Baustein **N4**.
-7. Arbeitsordner herstellen (Befehl unter Punkt 6 der Kickoff-Liste), dann
+6. Abschnitt **4.8** lesen: die fertige Schnittstelle von `solver.js` (N3) — **darauf
+   setzt N4 unmittelbar auf.** Das ist die wichtigste Schnittstelle für den nächsten Schritt.
+7. Abschnitt **5.1** lesen: der ausformulierte Auftrag für den nächsten Baustein **N4**.
+8. **Vollständigkeit des Projektordners prüfen** (Liste in 8.1): 11 Module, `style.css`,
+   beide HTMLs und **alle drei** DEV-ONLY-Dateien. `dom_smoke_test.js` allein läuft nicht,
+   sie ruft `dom_smoke_voll.js` auf — fehlt eine davon, zuerst bei Dieter nachfragen.
+9. Arbeitsordner herstellen (Befehl unter Punkt 6 der Kickoff-Liste), dann
    `node test_naht.js`, `node dom_smoke_voll.js`, `node dom_smoke_test.js` laufen lassen
    und die Basislinie aus dem Plan-Kopf bestätigen (**580 / 149 / 150 · 0 Fehler**),
-   **bevor** etwas gebaut wird.
-8. Erst dann N4 bauen — Fließband nach Punkt 5 der Kickoff-Liste.
-
-> **Merkposten aus dem N3-Chat:** `dom_smoke_voll.js` ist DEV-ONLY und fehlte einmal
-> im Projektordner (nur `dom_smoke_test.js` war da, die sie aufruft). Beim Wiedereinstieg
-> also **prüfen, ob beide Smoke-Dateien vorhanden sind**, bevor die Basislinie bestätigt wird.
+   **bevor** etwas gebaut wird. Weicht etwas ab, erst das klären.
+10. Erst dann N4 bauen — Fließband nach Punkt 5 der Kickoff-Liste.
 
 **6) TOKEN-PAUSEN:** Dieter stoppt bei ~90 % Verbrauch, Pause **4 Stunden**, dann weiter.
 Vor der Pause den genauen Stand nennen; Wiedereinstieg mit „weiter mit <Baustein>".
@@ -812,7 +816,7 @@ tragen je Code + Einheitsschlüssel, Beschriftung `sv_<code>`.
 | **N2** ✅ | **Nahtbild-Kern** *(abgenommen 2026-07-25)* | `naht.js`: Segmente → A_w, Schwerpunkt, I_y, I_z, I_yz, I_p, Hauptachsen, W_y/W_z/W_t, offen/geschlossen, Selbstprüfung. DOM-frei. Vier Hand-Anker geschlossen nachgerechnet. **Schnittstelle: Abschnitt 4.5.** |
 | **N2b** ✅ | **Profileingabe** *(abgenommen 2026-07-25)* | `profil.js`: 7 parametrische Profile + Kantenauswahl → Segmente. Raupenmodell mit Endkraterabzug je freiem Ende, Eckradien, a je Segment. DOM-frei. **Schnittstelle: Abschnitt 4.6.** |
 | **N2c** ✅ | **Nahtbild-Grafik** *(abgenommen 2026-07-26)* | `svglib.js` + `schaubild.js`: SVG-Vorschau des Nahtbilds, Segmente farbig nach Gruppe, Schwerpunkt und Achsen, nicht geschweißte Kanten gestrichelt, Ecklücken sichtbar. Zugleich **Auswahl-Skizze** der Profileingabe. **Schnittstelle: Abschnitt 4.7.** |
-| **N3** ✅ | **Spannungen + beide Welten** *(gebaut 2026-07-26, Abnahme offen)* | `solver.js`: σ⊥, τ⊥, τ∥ aus N/Q/M/T · Welt A (EC3, beide Verfahren) · Welt B (klassisch, Tabelle + Formel) · **Nachweis UND Auslegung** mit Aufrundung · Ampel. **Schnittstelle: Abschnitt 4.8.** |
+| **N3** ✅ | **Spannungen + beide Welten** *(abgenommen 2026-07-26)* | `solver.js`: σ⊥, τ⊥, τ∥ aus N/Q/M/T · Welt A (EC3, beide Verfahren) · Welt B (klassisch, Tabelle + Formel) · **Nachweis UND Auslegung** mit Aufrundung · Ampel. **Schnittstelle: Abschnitt 4.8.** |
 | **N4** ⬅ | **Rechenweg — NÄCHSTER SCHRITT** | `rechenweg.js`: selbstprüfende Schritte für N2/N2b/N3, dreisprachig. |
 | **N5** | **UI-Basis** | 2 HTMLs, `style.css`, Formular mit aufklappbaren Bereichen und Freischalt-Haken, Ergebnis-Kacheln, Ampel, i18n, Theme (**Start immer dunkel**), Laien-ⓘ, Block „Ausführung & Dokumentation" (ISO 5817 + EXC). **Erster Handy-Test.** |
 | **N6b** | **ISO-2553-Symbolgenerator** | `symbol.js`: Pfeil-/Gegenseite, a- bzw. z-Maß, Länge, Rundumnaht, Baustellennaht. Nutzt `svglib.js` aus N2c. Bewusst **vor** dem Launch — Verkaufsargument. |
@@ -961,7 +965,7 @@ verdrahtet, Sperr-Overlay in der Testversion, Registrierung + Long-Press-Reset.
 | `profil.js` | N2b, unverändert — Schnittstelle in 4.6 |
 | `svglib.js` | N2c, unverändert — Schnittstelle in 4.7 |
 | `schaubild.js` | N2c, unverändert — Schnittstelle in 4.7 |
-| `solver.js` | **N3, neu** — Spannungen, beide Welten, Nachweis + Auslegung, Schnittstelle in 4.8 |
+| `solver.js` | **N3** — Spannungen, beide Welten, Nachweis + Auslegung, Schnittstelle in 4.8 |
 | `optionen.js` | **N3 geändert** — 20 Gruppen, 89 Optionen (neu: `a_rundung`, `weltb_nahtgruppe`) |
 | `validate.js` | **N3 geändert** — 29 Felder (neu: Qy, Qz, My, Mz, Re) |
 | `i18n_kern.js` | **N3 erweitert** — 322 → **435 Schlüssel** |
@@ -978,7 +982,13 @@ verdrahtet, Sperr-Overlay in der Testversion, Registrierung + Long-Press-Reset.
 `assistent.js` (N8) · `thermik.js` (N9) · `kosten.js` (N10) · `report.js` (N11) ·
 `ermuedung.js` (N13) · `kerbfall.js` (N14) · `verzug.js` (N15).
 
-**Erste Handlung im neuen Chat:** Arbeitsordner herstellen und die drei Testläufe starten.
+**Am 2026-07-26 gegengeprüft:** Projektordner und GitHub tragen genau diesen Stand.
+Alle 11 Module, `style.css`, beide HTMLs und die drei DEV-ONLY-Dateien sind vorhanden;
+die Ladereihenfolge in der HTML zeigt auf lauter existierende Dateien; die drei Testläufe
+sind **direkt aus dem Projektordner** grün gelaufen.
+
+**Erste Handlung im neuen Chat:** Vollständigkeit gegen die Tabelle oben prüfen,
+Arbeitsordner herstellen, die drei Testläufe starten.
 Melden müssen sie **580 / 149 / 150 · 0 Fehler**. Weicht etwas ab, erst das klären.
 
 ---
@@ -1116,6 +1126,17 @@ Melden müssen sie **580 / 149 / 150 · 0 Fehler**. Weicht etwas ab, erst das kl
   überproportional (Kostenmodul N10 rechnet genau das aus).
 - **Warum trotzdem halbe mm als Schalter:** bei t = 5 mm ist a_max = 0,7 · t = 3,5 mm — mit
   ganzen mm gäbe es dort zwischen a3 und a_max keine Stufe mehr.
+
+**Aus der Rückmeldung 2026-07-26 (N3 abgenommen):**
+- N3 von Dieter am Handy geprüft: beide Bemessungswelten nebeneinander, die Auslegung mit
+  `a_erf` und `a_gewaehlt`, die fünf Hand-Anker und die sichtbare a_max-Warnung laufen in
+  allen drei Sprachen. **Abgenommen.** Projektordner und GitHub sind auf diesem Stand.
+- Damit ist die **Basislinie 580 / 149 / 150** verbindlich — sie darf nur noch wachsen.
+- **Lehre aus diesem Chat, festgehalten für die nächsten Bausteine:** Der Harness hat drei
+  eigene Fehler gefunden, die von Hand nicht aufgefallen wären (Randradius der Kreisnaht,
+  a-abhängige Meldungen am falschen Bezugswert, `Re` fälschlich als Pflichtfeld) und die
+  i18n-Prüfung zwei fehlende Übersetzungen. Deshalb bleibt es bindend: **nach jedem
+  Teilschritt sofort messen**, nicht erst am Ende.
 
 **Aus N3 (2026-07-26) — Festlegungen, die beim Bauen entstanden sind:**
 - **Die Welten sind BAULICH getrennt, nicht nur durch Text.** Zwei Widerstandsbauer,
@@ -1320,6 +1341,17 @@ a-abhängige Meldungen bezogen sich auf den Startwert statt auf das Ergebnis der
 `Re` war fälschlich als Pflichtfeld angelegt (brach die zweite Prüfstufe).
 **Basislinie 382 → 580 Assertions · Smokes 102/103 → 149/150 · i18n-Parität 0.**
 **Nächster Schritt: N3 am Handy prüfen, dann N4 (Rechenweg).**
+
+**v2.12 (2026-07-26):** **N3 von Dieter am Handy geprüft und ABGENOMMEN**, Projektordner
+und GitHub auf diesem Stand — zusätzlich **gegengeprüft**: alle 11 Module, `style.css`,
+beide HTMLs und die drei DEV-ONLY-Dateien liegen vollständig im Projektordner, die
+Ladereihenfolge der HTML zeigt auf lauter existierende Dateien, und die drei Testläufe
+sind direkt aus dem Projektordner grün. Basislinie **580 / 149 / 150** verbindlich.
+Wiedereinstiegsliste 5b sauber neu numeriert (10 Schritte, Abschnitt 4.8 als Pflichtlektüre
+für N4) und um einen **Vollständigkeitscheck des Projektordners** erweitert — ausgelöst
+davon, dass `dom_smoke_voll.js` in diesem Chat einmal fehlte. Code unverändert.
+**Nächster Schritt: N4 bauen — im neuen Chat mit „weiter mit N4" einsteigen.
+Auftrag steht in Abschnitt 5.1, Schnittstelle von solver.js in Abschnitt 4.8.**
 ═══════════════════════════════════════════════════════════════════════════
 Ende Schweißnaht-1.md · DT-ProfiSchweissnaht
 ═══════════════════════════════════════════════════════════════════════════
