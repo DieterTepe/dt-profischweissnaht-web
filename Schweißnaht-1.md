@@ -5,24 +5,29 @@
 
 > **Diese Datei ersetzt `Schweißnaht.md` vollständig.** Sie enthält den Stand nach dem
 > Konzeptgespräch (2026-07-23), nach der abgeschlossenen Recherche (R1–R6), nach der
-> Abstimmung vom **2026-07-24** (alle offenen Fragen aus Abschnitt 0 geklärt), nach den
-> abgenommenen Bausteinen **N1, N2, N2b, N2c, N3, N4 und N5a** und nach der **gebauten,
-> noch nicht abgenommenen Etappe N5b** (Stand 2026-07-27).
+> Abstimmung vom **2026-07-24** (alle offenen Fragen aus Abschnitt 0 geklärt) und nach den
+> abgenommenen Bausteinen **N1, N2, N2b, N2c, N3, N4, N5a und N5b** (Stand 2026-07-27).
 > Sie ist so geschrieben, dass ein **neuer Chat ohne Vorwissen** damit weiterarbeiten kann.
-> Einstieg dort: **„weiter mit N5c"** — dann der Reihenfolge in Kickoff-Punkt 5b folgen.
+> Einstieg dort: **„weiter mit N5c-1"** — dann der Reihenfolge in Kickoff-Punkt 5b folgen.
 
 ```
-Plan-Version : 2.18 · Stand 2026-07-27
+Plan-Version : 2.23 · Stand 2026-07-27
 Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                N2c (Nahtbild-Grafik), N3 (Spannungen + beide Welten),
-               N4 (Rechenweg) und N5a (UI-Grundgerüst) von Dieter am Handy
-               geprüft und ABGENOMMEN.
-               **N5b (Eingabeseite) ist gebaut, gemessen und ausgeliefert —
-               die Abnahme am Handy steht noch aus.**
-               → NÄCHSTER SCHRITT: erst N5b am Handy prüfen. Danach Etappe **N5c**
-                 (Ergebnisseite) — Einstieg „weiter mit N5c". Auftragsvorschlag in
-                 Abschnitt 5.1; **Umfang zuerst mit Dieter bestätigen, dann bauen**
-                 (Regel 5c).
+               N4 (Rechenweg), N5a (UI-Grundgerüst) und **N5b (Eingabeseite)**
+               von Dieter am Handy geprüft und ABGENOMMEN.
+               Projektordner /mnt/project/ UND GitHub Pages sind auf diesem Stand —
+               von Dieter am 2026-07-27 bestätigt und gegengeprüft: alle 13 Module,
+               style.css, beide HTMLs und die drei DEV-ONLY-Dateien liegen aktuell vor,
+               die drei Testläufe sind direkt aus dem Projektordner grün.
+               → NÄCHSTER SCHRITT: Etappe **N5c-1** („Es rechnet") —
+                 Einstieg „weiter mit N5c-1". **N5c ist geteilt** (5.1 und 5.2), weil es
+                 als Ganzes zu groß war.
+                 **Der Auftrag ist bereits ENTSCHIEDEN und ausformuliert** — Umfang,
+                 Begründung, drei nachgerechnete Beispiele und die Feldbereinigung
+                 (`l` entfällt, `t1` profilabhängig, `t2` freiwillig) stehen fertig in
+                 Abschnitt 5.1. Dort auch, was der Solver zurückgibt.
+                 **Es muss nichts mehr abgestimmt werden — nur noch gebaut.**
                  Schnittstellen: 4.5 (naht.js), 4.6 (profil.js),
                  4.7 (svglib.js + schaubild.js), 4.8 (solver.js),
                  4.9 (rechenweg.js), 4.10 (ui.js — N5a **und N5b**).
@@ -82,7 +87,7 @@ welche Dateien zu überschreiben sind** → Dieter bestätigt am Handy → erst 
 Schritt. Danach Plan-Kopf (Version/Status/Basislinie) + Changelog pflegen.
 
 **5b) WIEDEREINSTIEG IN EINEM NEUEN CHAT — genau diese Reihenfolge:**
-Einstiegssatz von Dieter: **„weiter mit N5c"**.
+Einstiegssatz von Dieter: **„weiter mit N5c-1"**.
 1. Diese Datei komplett lesen (`Schweißnaht-1.md`, sie ist die alleinige Grundlage).
 2. Abschnitt **8.1** lesen: was ist fertig, was fehlt.
 3. Abschnitt **4.5** lesen: die fertige Schnittstelle von `naht.js` (N2).
@@ -106,7 +111,9 @@ Einstiegssatz von Dieter: **„weiter mit N5c"**.
    `node test_naht.js`, `node dom_smoke_voll.js`, `node dom_smoke_test.js` laufen lassen
    und die Basislinie aus dem Plan-Kopf bestätigen (**724 / 385 / 386 · 0 Fehler**),
    **bevor** etwas gebaut wird. Weicht etwas ab, erst das klären.
-12. Erst dann N5c bauen — Fließband nach Punkt 5 der Kickoff-Liste.
+12. Erst dann **N5c-1** bauen — Fließband nach Punkt 5 der Kickoff-Liste.
+    **Der Umfang steht fest und ist entschieden (5.1) — keine Rückfrage nötig, es sei denn,
+    beim Bauen kommt etwas Unerwartetes.**
 
 **5c) GROSSE BAUSTEINE WERDEN VORHER IN ETAPPEN ZERLEGT — BINDEND**
 *(Dieters Festlegung 2026-07-26, Begründung im Entscheidungslog)*
@@ -461,6 +468,32 @@ später Rechenfehler.
 **Harte Regel: erst ALLES leeren, dann laden.** Nie Altwerte in eine Neuberechnung einsickern
 lassen. Die `.dts`-Datei trägt eine **Formatversion**; passt sie nicht, gibt es eine
 **ehrliche Fehlermeldung** statt eines stillen Teil-Ladens. Wird als Testfall abgesichert.
+
+### 3.6 Versionszeile — das Programm sagt, welchen Standes es ist *(ab N5d)*
+
+**Der Programmstand muss am Handy ablesbar sein, ohne Dateidaten zu vergleichen.**
+Alle Module tragen bereits eine Kennung (`daten 0.1.0-N1`, `solver 0.1.0-N3`, `ui 0.6.0`),
+aber **nichts davon ist sichtbar** — der Info-ⓘ nennt bisher nur die Edition.
+
+**Vorgabe:**
+- Der **Info-ⓘ** zeigt eine Zeile mit **Programmstand und Plan-Version** (z. B.
+  „Stand N5d · Plan 2.23"). Gebaut wird sie aus den Modulkennungen, nicht von Hand
+  gepflegt — sonst ist sie die nächste Stelle, die auseinanderdriftet.
+- **Jede Ausgabe** (Druck, PDF, Word, `.dts`) trägt dieselbe Zeile (N11).
+- Eine Assertion prüft, dass die angezeigte Kennung mit den geladenen Modulen übereinstimmt.
+
+**Warum das mehr ist als Kosmetik:** Die Prüfdateien (`test_naht.js`, beide DOM-Smokes)
+sind **DEV-ONLY** und liegen nach V1 nur noch im Archiv, nicht beim ausgelieferten
+Programm. Sie sind aber die einzige Stelle, an der in ausführbarer Form steht, was
+„richtig" in diesem Programm bedeutet — und sie werden gebraucht, sobald jemand die
+zweite Generation der EN 1993-1-8 nachzieht, β_w,mod belegt, den Normprofil-Katalog
+ergänzt oder eine Werkstofftabelle aktualisiert.
+**Die Gefahr ist dann nicht der Verlust, sondern das Auseinanderdriften:** an der
+laufenden Version wird eine Kleinigkeit geradegezogen, das Archiv bleibt liegen, und ein
+Jahr später prüft der Harness einen Stand, den es nicht mehr gibt. Mit einer sichtbaren
+Versionszeile ist das in zwei Sekunden erkennbar statt gar nicht.
+**Regel dazu:** Das Archiv der Prüfdateien wird zusammen mit dem Plan mitgeführt und trägt
+denselben Stand wie das ausgelieferte Programm — nicht am Ende der Entwicklung abgeräumt.
 
 ---
 
@@ -1058,13 +1091,13 @@ Sichtbarkeitsbild — Zeichen für Zeichen.
 | **N2c** ✅ | **Nahtbild-Grafik** *(abgenommen 2026-07-26)* | `svglib.js` + `schaubild.js`: SVG-Vorschau des Nahtbilds, Segmente farbig nach Gruppe, Schwerpunkt und Achsen, nicht geschweißte Kanten gestrichelt, Ecklücken sichtbar. Zugleich **Auswahl-Skizze** der Profileingabe. **Schnittstelle: Abschnitt 4.7.** |
 | **N3** ✅ | **Spannungen + beide Welten** *(abgenommen 2026-07-26)* | `solver.js`: σ⊥, τ⊥, τ∥ aus N/Q/M/T · Welt A (EC3, beide Verfahren) · Welt B (klassisch, Tabelle + Formel) · **Nachweis UND Auslegung** mit Aufrundung · Ampel. **Schnittstelle: Abschnitt 4.8.** |
 | **N4** ✅ | **Rechenweg** *(abgenommen 2026-07-26)* | `rechenweg.js`: selbstprüfende Schrittliste für N2/N2b/N3, dreisprachig, zweiter Rechenpfad je Schritt, Rechenprobe und Nachweis getrennt. **Schnittstelle: Abschnitt 4.9.** |
-| **N5** ⬅ | **UI-Basis — LAUFEND: N5a ✅ abgenommen, N5b gebaut (Abnahme offen), NÄCHSTER SCHRITT N5c (Etappen in 5.2)** | 2 HTMLs, `style.css`, Formular mit aufklappbaren Bereichen und Freischalt-Haken, Ergebnis-Kacheln, Ampel, i18n, Theme (**Start immer dunkel**), Laien-ⓘ, Block „Ausführung & Dokumentation" (ISO 5817 + EXC). **Erster Handy-Test.** |
+| **N5** ⬅ | **UI-Basis — LAUFEND: N5a ✅ und N5b ✅ abgenommen, NÄCHSTER SCHRITT N5c-1 (Etappen in 5.2)** | 2 HTMLs, `style.css`, Formular mit aufklappbaren Bereichen und Freischalt-Haken, Ergebnis-Kacheln, Ampel, i18n, Theme (**Start immer dunkel**), Laien-ⓘ, Block „Ausführung & Dokumentation" (ISO 5817 + EXC). **Erster Handy-Test.** |
 | **N6b** | **ISO-2553-Symbolgenerator** | `symbol.js`: Pfeil-/Gegenseite, a- bzw. z-Maß, Länge, Rundumnaht, Baustellennaht. Nutzt `svglib.js` aus N2c. Bewusst **vor** dem Launch — Verkaufsargument. |
 | **N7** | **Presets** | Die 6 Starter als Profil-/Kantendaten auf `profil.js`, **mit Merkmalen für die kontextbezogene Beispielliste** (3.2). |
 | **N8** | **Assistent** | `assistent.js` (DOM-freie Dialoglogik) + Overlay-UI, Button-Einstieg, tabellengestützt aus `optionen.js`, mit Erklärungen/Tipps/Skizzen je Dialog, Übernahme vorhandener Eingaben. |
 | **N9** | **Vorwärmung & t8/5** | `thermik.js` + Panel + Rechenweg + Assistenten-Schritte. |
 | **N10** | **Kosten/Zeit/Draht** | `kosten.js` + Panel + Rechenweg + Assistenten-Schritte. |
-| **N11** | **Ausgaben** | `report.js`: `.dts` speichern/öffnen (**erst leeren, dann laden** + Formatversion), Druck/PDF, Word (.rtf), `guard()`-Gating. Aktionsleiste **oben**, Dateiname trägt Bezeichnung + Datum. |
+| **N11** | **Ausgaben** | `report.js`: `.dts` speichern/öffnen (**erst leeren, dann laden** + Formatversion), Druck/PDF, Word (.rtf), `guard()`-Gating. Aktionsleiste **oben**, Dateiname trägt Bezeichnung + Datum. **Jede Ausgabe trägt die Versionszeile** (3.6). |
 | **N12** | **Edition/Registrierung/Impressum** | Testbalken, Aktivierungsdialog beim Erststart (Name + Schlüssel, **keine Formatprüfung**), „Vollversion · lizenziert für <Name>", **10-s-Long-Press** = Reset, Info-ⓘ mit Impressum. |
 | **★** | **LAUNCH-CHECKPOINT** | **Ab hier verkaufsfähig.** Dieter entscheidet: weiterbauen oder veröffentlichen. |
 | **N13** | **Ermüdung — Rechenkern** | `ermuedung.js`: Wöhlerlinie m=3/5, γ_Mf, Miner, Kollektive + Rechenweg. **Hier Dieter nach seinen Praxis-Kerbfällen fragen.** |
@@ -1072,9 +1105,13 @@ Sichtbarkeitsbild — Zeichen für Zeichen.
 | **N15** | **Verzug & Schrumpfung** | `verzug.js` + Panel, klar als **Abschätzung** gekennzeichnet. |
 | **N16** | **Feinschliff + Build** | Presets ausbauen, Wissenstexte, Code-Audit, Bündelung + Obfuskierung (zwei Bündel, Unterschied nur `DT_EDITION`). **→ V1-Launch.** |
 
-### 5.1 Auftragsvorschlag für die nächste Etappe **N5c — Ergebnisseite**
+### 5.1 Auftrag für die nächste Etappe **N5c-1 — „Es rechnet"**
 
-> **Vorbedingung: N5b muss am Handy geprüft und abgenommen sein.**
+> **Dieser Auftrag ist entschieden, nicht mehr Vorschlag.** Dieter hat die offenen Fragen
+> am 2026-07-27 an Claude gegeben; die Entscheidungen stehen unten mit Begründung und mit
+> nachgerechneten Zahlen. Der nächste Chat kann direkt bauen.
+
+> **N5b ist abgenommen — N5c kann beginnen, sobald der Umfang steht.**
 > **Erst bestätigen, dann bauen** (Regel aus 5.2): Der Umfang unten ist der Vorschlag;
 > Dieter sagt ja oder korrigiert ihn, **bevor** das erste Codezeichen entsteht.
 
@@ -1083,25 +1120,157 @@ Alles, was N5c braucht, ist fertig: `solver.js` rechnet (4.8), `rechenweg.js` be
 **N5c rechnet nichts selbst — N5c rendert**, und zwar aus **einem** Aufruf:
 `DTNRechenweg.ausErgebnis(ergebnis, eingabe)` (einmal rechnen, dann beschriften).
 
-**Vorgeschlagener Umfang von N5c:**
-- **„Berechnen" führt zu Ende:** Eingaben aus `ui.js` → `solver.js` → `rechenweg.js`.
-  Der Prüfschritt aus N5b bleibt davor stehen; erst wenn er sauber ist, wird gerechnet.
-- **Ergebnis-Kacheln** (σ_v, Grenzwert, Ausnutzung η, gewähltes a) mit **Ampel**.
-- **Nahtbild-Grafik** aus `schaubild.js` in die vorhandene Karte, mit dreisprachiger
-  Legende aus den Legendencodes.
-- **Rechenweg vollständig angezeigt** — 11 Abschnitte, Formel im Klartext, eingesetzte
-  Zahlen, Quelle je Schritt.
-- **Die zwei Häkchenarten optisch getrennt** (Plan 4.9, bindend seit N4): Rechenprobe
-  (`haken`, `false` = Programmfehler) und Nachweis (`erfuellt`, `false` = die Naht trägt
-  so nicht). Die CSS-Klassen `rw-haken` und `rw-nachweis` stehen dafür schon bereit.
-- **Liste 2.4 sichtbar** („was der Rechner NICHT prüft"), dazu Warnungen und ehrliche
-  Lücken.
-- **Zahlformat je Sprache** über `rechenweg.rendere(rw, sprache)` — DE/PT Komma, EN Punkt.
+**ENTSCHIEDEN am 2026-07-27 (Dieter hat die Entscheidung an Claude gegeben) —
+FELDBEREINIGUNG, erster Schritt von N5c-1. Alles unten ist nachgemessen, nicht vermutet.**
 
-**Am Handy prüfbar:** ein vollständiger Nachweis von der Eingabe bis zum Ergebnis.
+Beim Vorbereiten von N5c wurde die Rechenkette Feld fuer Feld gegen das Formular gehalten.
+Ergebnis: **das Formular verlangt drei Angaben, die so nicht gebraucht werden.**
+
+| Feld | Wer liest es wirklich | Formular verlangt bisher |
+|---|---|---|
+| `l` | **niemand fuer die Rechnung.** Die Nahtlaenge entsteht immer aus der Profilgeometrie (`Naht.laenge(seg)`) | Pflicht bei allen 7 Profilen |
+| `t1` | Geometriemass **nur** bei Blech, Rechteckrohr, Rundrohr, Winkel | Pflicht bei allen 7 Profilen |
+| `t2` | nur als **Ersatz** fuer die massgebende Dicke | Pflicht bei allen 7 Profilen |
+
+**Der entscheidende Befund:** `profil.js` liefert die **Dicke je Segment** mit
+(`info[i].t` — Rechteckrohr 6 mm, I-Profil-Steg 9 mm, Blech 10 mm), und `solver.js` nutzt
+genau die; erst wenn sie fehlt, greift er auf `t1`/`t2` zurueck.
+**Die Kontrolle a <= 0,7 x t laeuft also laengst aus der Profilgeometrie.**
+`t1`/`t2` sind nur noch Rueckfallebene fuer den Weg, den das Formular gar nicht geht
+(Segmente direkt uebergeben). Ebenso ist `msg_sv_dicke_fehlt` zwar deklariert, wird aber
+**nirgends geworfen**.
+
+**Beschlossene Aenderungen — bewusst klein gehalten:**
+1. **`l` entfaellt aus dem Feldschema** (29 → 28 Felder). Es speiste in Stufe 2 von
+   `validate.js` nur `msg_leff_min` und `msg_l_lang` — beides prueft der Solver bereits
+   **je Segment aus der echten Geometrie**, mit derselben Formel `l_eff,min = max(6a, 30)`
+   (`msg_sv_l_eff_zu_kurz`, `msg_sv_lange_naht`). Zwei Quellen fuer dieselbe Pruefung sind
+   genau das, was 3.4 und 4.2 verhindern sollen — und die Geometrieversion ist die
+   genauere. **Die beiden Pruefungen in `validate.js` Stufe 2 entfallen mit.**
+2. **`t1` wird profilabhaengig Pflicht:** `pflicht_wenn: { profil: ['blech',
+   'rohr_rechteck', 'rohr_rund', 'winkel'] }`. Bei I- und U-Profil uebernehmen `tw`/`tf`
+   diese Rolle, bei Vollrund gibt es keine Wanddicke.
+3. **`t2` bleibt, wird aber freiwillig** und bedeutet klar *die Dicke des angeschlossenen
+   Bauteils*. Begruendung: a <= 0,7 x t gilt fuer die **kleinste verbundene** Dicke; das
+   Profil kennt seine eigene, nicht die des Gegenstuecks. **Der Laien-ⓘ muss ehrlich sagen:
+   ohne diese Angabe wird nur die Profildicke herangezogen.**
+4. **`solver.js` bleibt unangetastet** — er macht es bereits richtig.
+5. **Eine Kleinigkeit muss mit:** `profil.js` meldet `msg_endkrater_zu_lang` mit
+   `feld: 'l'` (zweimal, Zeilen 457 und 459). Ohne das Feld zeigt die Meldung ins Leere —
+   sie gehoert auf **`a`**, denn der Endkraterabzug haengt am a-Mass.
+6. **Nachziehen:** `ui.js` ZUORDNUNG (`l` aus dem Bereich *geometrie*), die Laien-ⓘ zu
+   `t1`/`t2`, die Textschluessel `fld_l`/`msg_leff_min`/`msg_l_lang` (pruefen, ob sie noch
+   gebraucht werden), Harness und beide DOM-Smokes. Die Feldzahl steht ueberall als
+   `SCHEMA.length` und nicht als feste 29 — das erspart Sucharbeit.
+
+**Warum nicht der andere Weg (`l` behalten und verdrahten):** Das Rechenmodell ist eine
+**Nahtgruppe in der Fuegeebene**, umgeklappt (Plan 2.3). Ihre Abmessungen *sind* die
+Profilmasse; eine davon unabhaengige Laenge gibt es in diesem Modell nicht. Sie einzubauen
+hiesse, ein Konzept zu erfinden, das die Quellen nicht hergeben. **Bewusst in Kauf
+genommen:** eine Naht, die kuerzer ist als das Bauteil, wird abgebildet, indem man das
+nahtrelevante Mass eingibt (Blech b = 120 statt 200). Die Rechnung stimmt dann, nur die
+Zeichnung zeigt das kleinere Bauteil. **Das gehoert ehrlich in die Liste 2.4** und in den
+Laien-ⓘ.
+
+**BESCHLOSSEN — drei Beispiele hinter „Beispiel laden", als Schritt 2 von N5c-1**
+*(Anregung von Dieter, 2026-07-27; entschieden am selben Tag)*
+Der Knopf `presetSel` steht seit N5a da und meldet „folgt in N7". Die Beispiele kommen
+**nicht vor N5c-1, sondern darin** — die Begründung ist praktisch und geprüft:
+- Ein Beispiel ist nichts als *Auswahlzustand + Feldwerte*. Genau diese Übersetzung ins
+  Format des Solvers entsteht **in N5c-1**. Vorher gebaut, müsste man sie zweimal schreiben.
+- Ob ein Beispiel *fachlich* taugt, sieht man erst, wenn ein Ergebnis erscheint — also
+  ebenfalls erst in N5c-1. (Genau daran sind zwei erste Entwürfe gescheitert, siehe unten.)
+- Danach zahlt es sich sofort aus: **jeder weitere Handy-Test ist zwei Antipper statt rund
+  siebzehn Eingaben.** Für N5c selbst, für N5d, N6b und N8.
+- Es prüft genau die Wege, die von Hand am mühsamsten sind: umlaufende Naht am Hohlprofil
+  und ein Träger mit Flanschen **und** Steg (a_steg/a_flansch, r_ecke, Umfangsrechnung).
+
+Konkret vorgeschlagen. **Diese Zahlen sind vollständig durchgerechnet** — durch
+`profil.baue()` → `solver.rechne()` → `rechenweg.ausErgebnis()`, jeweils **ohne jede
+Warnung**, grün und erfüllt, mit bewusst gestaffelter Ausnutzung:
+
+| Beispiel | Auswahl | Maße | Last | Ergebnis (nachgerechnet) |
+|---|---|---|---|---|
+| **Vierkantrohr** | Welt A · Nachweis · S235 · T-Stoß · umlaufende Kehlnaht · richtungsbezogen · Hohlprofil rechteckig · rundum | b 120 · h 80 · t 6 · r 9 · **a 4** | N = 120 kN | 4 Segmente · **328 mm** · η = 0,359 · grün |
+| **H-Träger** | Welt A · Nachweis · S355 · T-Stoß · Doppelkehlnaht · richtungsbezogen · I-Profil · **nur Steg** | b 200 · h 200 · t_w 9 · t_f 15 (HEB 200) · **a 4** | N = 250 kN | 2 Segmente · **324 mm** · η = 0,626 · grün |
+| **Blech** | Welt A · Nachweis · S235 · Überlappstoß · Doppelkehlnaht · richtungsbezogen · Blech · Flanken | b 80 · t 10 · **a 5** | N = 150 kN | 2 Segmente · **140 mm** · η = 0,842 · grün |
+
+**Zwei Fallen, die beim Nachrechnen aufgeflogen sind — beide bitte beim Bauen beachten:**
+1. **a ≤ 0,7 · t_min und zugleich a ≥ 3 mm** engt stärker ein, als es aussieht. Eine
+   Wanddicke von 4 mm lässt gar keine regelkonforme Kehlnaht zu (a_max 2,8 mm liegt unter
+   a_min 3 mm). Deshalb im Beispiel t = 6 mm statt 4 mm.
+2. **Ein I-Profil, das um die Flansche herum geschweißt wird, warnt IMMER** — die
+   Flanschkante ist nur `t_f` lang (hier 15 mm) und bleibt damit unter der wirksamen
+   Mindestlänge von 30 mm nach EN 1993-1-8. Das ist kein Fehler, sondern die Norm.
+   Deshalb im Beispiel **nur der Steg**. Der Fall „Flansche + Steg" eignet sich später
+   als eigenes **Lehrbeispiel**, das zeigt, dass das Programm ehrlich warnt.
+
+**Der große Beispielkatalog bleibt N7** (Benennung, Sortierung, Dreisprachigkeit, weitere
+Fälle). Hier geht es nur um die drei, die N5c-1 selbst prüfbar machen.
+
+**N5c WIRD GETEILT** — der Umfang unten ist zu gross fuer eine Etappe (Regel 5c: lieber
+teilen als hetzen). Die Nahtstelle liegt dort, wo die Rechnung fertig ist und nur noch die
+Darstellung folgt.
+
+**N5c-1 — „Es rechnet“** *(naechster Bau)*
+1. **Feldbereinigung** (oben beschlossen) — zuerst, weil alles Weitere darauf aufsetzt.
+2. **Drei Beispiele** hinter „Beispiel laden“ (Tabelle unten).
+3. **Uebersetzung Formular → Rechenkern:** aus den flachen Feldwerten das verschachtelte
+   `profil_eingabe = { profil, kanten, masse:{...}, a }` bauen. **Das ist das Kernstueck.**
+4. **„Berechnen“ rechnet wirklich:** `solver.rechne()` nach der bestandenen Pruefung.
+5. **Ergebnis-Kacheln** (Ausnutzung η, massgebender Punkt, gewaehltes a) mit **Ampel**
+   aus `ergebnis.ampel` und `ergebnis.erfuellt`.
+**Am Handy pruefbar:** Beispiel antippen, „Berechnen“, eine Zahl und eine Ampel sehen.
+
+**DREI STOLPERSTELLEN IN SCHRITT 3 — nachgemessen am 2026-07-27, bitte vorher lesen:**
+
+**(a) Das z-Mass muss in der Uebersetzung mitkommen — und ui.js darf es nicht rechnen.**
+`validate.js` leitet das a-Mass aus dem z-Mass ab (`a = z / √2`, Zeile 199) — aber **nur
+fuer seine eigenen Pruefungen**. `profil.baue()` verlangt `e.a` und kennt `z` nicht. Wer
+also nur das z-Mass eintraegt, kommt durch die Pruefung und scheitert danach an
+`msg_profil_a_fehlt`. **Ohne Gegenmassnahme ist das ein Fehler, den kein Anwender versteht.**
+Loesung, die die Regeln einhaelt: `validate.js` bekommt eine Funktion, die die geprueften
+Werte **normiert** zurueckgibt (Zahlen als Zahlen, `a` aus `z` abgeleitet). `ui.js` setzt
+daraus nur noch das Objekt zusammen — **ohne einen einzigen Rechenschritt**, damit die
+Assertion „kein `Math.` in ui.js“ (S29/S30) bestehen bleibt. Die Umrechnung gehoert
+ohnehin dorthin, wo sie schon steht.
+
+**(b) `a_steg` und `a_flansch` muessen durchgereicht werden.**
+`profil.baue()` nimmt beide entgegen und faellt sonst auf `a` zurueck (Zeile 396). Beim
+H-Traeger-Beispiel — Naht **nur am Steg** — ist das der Unterschied zwischen richtig und
+falsch. In `profil_eingabe` gehoeren sie neben `a`.
+
+**(c) Die gesperrten Felder bleiben sonst fuer immer leer — das sieht aus wie ein Fehler.**
+`betaW`, `nu`, `Re`, `a_steg`, `a_flansch` starten leer und gesperrt, weil `ui.js`
+`daten.js` nicht kennen darf (4.10b). Nach dem Rechnen liefert `ergebnis.widerstand` aber
+**genau diese Werte samt Herkunft** — gemessen am Blech-Beispiel:
+`betaW 0,8 · fu 360 N/mm² · gammaM2 1,25 · quelle_betaW „tabelle“ · quelle_fu „tabelle“`.
+**Vorschlag: nach dem Rechnen die gesperrten Felder mit den tatsaechlich verwendeten
+Werten fuellen und die Herkunft dazuschreiben.** Das kostet fast nichts, schliesst eine
+Luecke, die sonst wie ein Programmfehler wirkt, und ist genau die Ehrlichkeit, die der
+Plan verlangt: **zeigen, womit gerechnet wurde.** Der „eigener Wert“-Haken bleibt davon
+unberuehrt — wer ihn setzt, behaelt seinen Wert.
+
+**N5c-2 — „Es erklaert sich“**
+6. **Rechenweg vollstaendig**: `DTNRechenweg.ausErgebnis(ergebnis, eingabe)` liefert
+   10 Abschnitte (gemessen) — Formel im Klartext, eingesetzte Zahlen, Quelle je Schritt.
+7. **Nahtbild-Grafik** aus `schaubild.js` in die vorhandene Karte, Legende dreisprachig.
+8. **Die zwei Haekchenarten optisch getrennt** (4.9, bindend seit N4): Rechenprobe
+   (`haken`, `false` = Programmfehler) und Nachweis (`erfuellt`, `false` = die Naht traegt
+   so nicht). Die Klassen `rw-haken` und `rw-nachweis` stehen bereit.
+9. **Liste 2.4 sichtbar**, dazu Warnungen und ehrliche Luecken (`nicht_geprueft`).
+10. **Zahlformat je Sprache** ueber `rechenweg.rendere(rw, sprache)` — DE/PT Komma, EN Punkt.
+**Am Handy pruefbar:** ein vollstaendiger Nachweis von der Eingabe bis zur Quellenangabe.
+
+**Was der Solver zurueckgibt** (gemessen, erspart dem naechsten Chat das Nachsehen):
+`ok · welt · rechenrichtung · verfahren · modell · nahtart · nahttyp · umklappen ·
+a_abzug · werkstoff · widerstand · schnittgroessen · nahtbild · punkte · massgebend ·
+nachweise · **eta** · **ampel** · **erfuellt** · auslegung · grenzen · nicht_geprueft ·
+fehler · warnungen · hinweise`
 
 **Abzuliefern wie immer:** geänderte Module, `<script src>` an der richtigen Stelle in
-beiden HTMLs, DOM-Smokes erweitert, Harness um eine Sektion **S31**.
+beiden HTMLs, DOM-Smokes erweitert, Harness um eine Sektion **S31** (N5c-1); N5c-2 bekommt
+dann **S32**.
 **Recherche:** nicht nötig.
 
 **Später (nicht V1):** **Normprofil-Katalog** (IPE/HEA/HEB/UPE/UPN/RHS/Rohr, 2.2b Stufe 2),
@@ -1118,7 +1287,7 @@ AWS/US-Normen, EN 1993-1-8:2024 (2. Generation, β_w,mod — Werte noch nicht be
 - **Startdarstellung immer dunkel** (3.1) — schon im `<html>`-Tag.
 - **`style.css`** auf vollen Umfang; **leeres Formulargerüst** mit acht Bereichen.
 
-**N5b (gebaut 2026-07-27, Abnahme steht aus):**
+**N5b (abgenommen 2026-07-27):**
 - **Das Formular wird aus `optionen.js`/`validate.js` erzeugt** — 18 Auswahlgruppen und
   alle 29 Felder, festes Id-Schema, keine zweite Liste (Schnittstelle in **4.10b**).
 - **DIE eine Filterfunktion verdrahtet** (3.4), samt der Brücke zwischen milder Anzeige
@@ -1141,9 +1310,10 @@ AWS/US-Normen, EN 1993-1-8:2024 (2. Generation, β_w,mod — Werte noch nicht be
 | Etappe | Inhalt | Am Handy prüfbar |
 |---|---|---|
 | **N5a** ✅ | *(abgenommen 2026-07-27)* Grundgerüst: beide HTMLs neu, `ui.js`, `style.css` — Kopfzeile mit Marke und Lizenzzeile, Sprachumschalter DE/EN/PT, Theme-Button mit **Start immer dunkel** (3.1), Info-ⓘ, Subbar, Aktionsleiste, leeres Formulargerüst mit acht aufklappbaren Bereichen. Die Zwischen-Statusseite aus N1–N4 ist weg. **Schnittstelle: 4.10.** | Sieht aus wie ein Programm, startet dunkel, drei Sprachen laufen |
-| **N5b** ⬅ | *(gebaut 2026-07-27, Abnahme steht aus)* Eingabeseite: 18 Auswahlgruppen aus `optionen.js` über **die** Filterfunktion, alle 29 Felder aus `validate.js`, Freischalt-Haken, **„eigener Wert"-Haken**, Laien-ⓘ an jedem Feld und jeder Gruppe, „Berechnen" prüft, „Leeren" führt in den Startzustand (3.1). **Schnittstelle: 4.10b.** | Man kann einen Fall wirklich eingeben |
-| **N5c** | Ergebnisseite: Ergebnis-Kacheln, Ampel, Nahtbild-Grafik eingebunden, **Rechenweg aus N4 angezeigt**, Liste 2.4, Warnungen und ehrliche Lücken sichtbar | Ein vollständiger Nachweis von Eingabe bis Ergebnis |
-| **N5d** | Block „Ausführung & Dokumentation" (ISO 5817 + EXC, ehrlich als nicht rechenwirksam beschriftet, 2.7) | Der Block klappt auf und erscheint in der Ausgabe |
+| **N5b** ✅ | *(abgenommen 2026-07-27)* Eingabeseite: 18 Auswahlgruppen aus `optionen.js` über **die** Filterfunktion, alle 29 Felder aus `validate.js`, Freischalt-Haken, **„eigener Wert"-Haken**, Laien-ⓘ an jedem Feld und jeder Gruppe, „Berechnen" prüft, „Leeren" führt in den Startzustand (3.1). **Schnittstelle: 4.10b.** | Man kann einen Fall wirklich eingeben |
+| **N5c-1** ⬅ | *(nächster Bau)* **Feldbereinigung** (`l` entfällt, `t1` profilabhängig, `t2` freiwillig — begründet in 5.1), **drei Beispiele** hinter „Beispiel laden", **Übersetzung Formular → `profil_eingabe`**, „Berechnen" rechnet wirklich, Ergebnis-Kacheln mit Ampel | Beispiel antippen, rechnen, eine Zahl und eine Ampel sehen |
+| **N5c-2** | **Rechenweg aus N4 angezeigt** (10 Abschnitte), Nahtbild-Grafik eingebunden, die zwei Häkchenarten optisch getrennt, Liste 2.4, Warnungen und ehrliche Lücken, Zahlformat je Sprache | Ein vollständiger Nachweis von der Eingabe bis zur Quellenangabe |
+| **N5d** | Block „Ausführung & Dokumentation" (ISO 5817 + EXC, ehrlich als nicht rechenwirksam beschriftet, 2.7) **+ Versionszeile im Info-ⓘ** (siehe 3.6) | Der Block klappt auf und erscheint in der Ausgabe; der Programmstand ist am Handy ablesbar |
 
 **N8 — Assistent (drei Etappen):**
 | Etappe | Inhalt |
@@ -1284,6 +1454,12 @@ in N5b **unverändert**).
 `ui.js`, `style.css`, `i18n_kern.js`, `test_naht.js`, `dom_smoke_voll.js`, `Schweißnaht-1.md`.
 **Unverändert bleiben:** alle Rechenmodule aus N1–N4, `optionen.js`, `validate.js`,
 `i18n_hilfe.js`, `i18n_kerbfall.js` und `dom_smoke_test.js`.
+
+**Von Dieter am 2026-07-27 bestätigt:** Projektordner `/mnt/project/` und GitHub tragen
+genau diesen Stand. Die N5b-Lieferung ist eingespielt, am Handy geprüft und **abgenommen** —
+ohne Nacharbeit. Zusätzlich **gegengeprüft**: die drei Testläufe sind direkt aus dem
+Projektordner grün (**724 / 385 / 386 · 0 Fehler**), `node --check` über alle 16 JS-Dateien
+ist sauber, und die beiden HTMLs unterscheiden sich weiterhin in genau einer Zeile.
 
 **Erste Handlung im neuen Chat:** Vollständigkeit gegen die Tabelle oben prüfen
 (**13 Module**, `style.css`, beide HTMLs, **alle drei** DEV-ONLY-Dateien), Arbeitsordner
@@ -1537,6 +1713,92 @@ Die Rechenmodule N1–N4 bleiben unberührt.
 - **Zwei vermeintliche Fehler waren meine Testeingaben**, nicht der Code: ein erfundener
   Zusatzwerkstoff-Code und ein absurdes Torsionsmoment. `solver.js` hat in beiden Fällen
   ehrlich gemeldet, woran es lag — genau wie vorgesehen.
+
+**Aus der Vorbereitung von N5c (2026-07-27) — beide Punkte inzwischen ENTSCHIEDEN:**
+- **Dieters Anregung: Beispiele für Vierkantrohr und H-Träger.** Antwort nach Nachmessen:
+  **sinnvoll, aber als Schritt 1 von N5c, nicht davor.** Ein Beispiel ist nur
+  *Auswahlzustand + Feldwerte*; die Übersetzung dieser Werte in das Solver-Format entsteht
+  erst in N5c, und ob ein Beispiel fachlich taugt, sieht man erst am Ergebnis. Danach
+  spart es bei jedem weiteren Handy-Test rund siebzehn Eingaben auf zwei Antipper.
+  Der große Beispielkatalog bleibt **N7**. Vorschlag mit gegengerechneten Zahlen in 5.1.
+- **Widerspruch zwischen `validate.js` und `profil.js` gefunden** (belegt, nicht vermutet):
+  `validate.js` verlangt `l` und `t2` als Pflicht, `profil.js` rechnet die Nahtlänge bei
+  geschlossenen Profilen aber selbst aus dem Umfang (Vierkantrohr 100×60, r=6 → 272 mm;
+  H-Träger 200×100 an Flanschen und Steg → 788,8 mm) und kennt dort kein `t2`.
+  **Muss vor dem Bau von N5c entschieden werden**, sonst fragt das Formular Werte ab, die
+  niemand braucht — oder es fehlen welche.
+- **Gute Nachricht dabei:** die Rechenkette selbst ist fertig. `DTNProfil.baue()` →
+  `DTNSolver.rechne()` → `DTNRechenweg.ausErgebnis()` läuft für das Vierkantrohr heute
+  schon vollständig durch (4 Segmente, umlaufend, 10 Rechenweg-Abschnitte, Ampel grün).
+  **N5c muss nichts Neues rechnen — nur übersetzen und anzeigen.**
+
+**Aus dem Gespraech ueber die Zeit NACH V1 (2026-07-27):**
+- Dieter fuehrt die Arbeitsdateien bereits ausserhalb von GitHub mit und laedt sie zum
+  Weiterarbeiten wieder hoch; nach V1 bleibt auf GitHub nur die fertige Version.
+  **Das traegt** — der Verlust ist damit abgedeckt.
+- **Die verbleibende Gefahr ist nicht der Verlust, sondern das Auseinanderdriften:** wird
+  spaeter an der laufenden Version eine Kleinigkeit geradegezogen, ohne das Archiv der
+  Pruefdateien mit anzufassen, prueft der Harness beim naechsten Hochladen einen Stand,
+  den es nicht mehr gibt. Das ist genau der Fehler, gegen den 3.4 und 4.2 gebaut sind:
+  zwei Quellen, die dasselbe behaupten.
+- **Beschlossen: eine sichtbare Versionszeile** (neuer Abschnitt **3.6**). Alle Module
+  tragen laengst eine Kennung, aber das Programm zeigt keine an. Kuenftig steht sie im
+  Info-ⓘ und in jeder Ausgabe, **gebaut aus den Modulkennungen**, nicht von Hand
+  gepflegt. Damit ist in zwei Sekunden am Handy ablesbar, welcher Archivstand zu dem
+  gehoert, was gerade laeuft.
+- **Und die Regel dazu:** das Archiv der Pruefdateien wird wie der Plan mitgefuehrt und
+  am Ende der Entwicklung **nicht abgeraeumt**. Es wird gebraucht, sobald jemand die
+  zweite Generation der EN 1993-1-8 nachzieht, β_w,mod belegt oder eine Werkstofftabelle
+  aktualisiert — also genau dann, wenn sich niemand mehr an die Einzelheiten erinnert.
+
+**Noch beim Nachmessen gefunden (2026-07-27), damit es N5c-1 nicht trifft:**
+- **Das z-Mass ist eine Falle derselben Art wie `l`, nur gefaehrlicher.** `validate.js`
+  rechnet `a = z / √2` — aber nur fuer die eigenen Pruefungen. `profil.baue()` kennt `z`
+  nicht. Wer nur das z-Mass eintraegt, kommt durch die Pruefung und scheitert danach mit
+  `msg_profil_a_fehlt` — ein Fehler, den kein Anwender einordnen kann.
+  **Beschlossen:** die Umrechnung bleibt in `validate.js` und wird von dort **normiert
+  herausgegeben**; `ui.js` setzt nur zusammen und rechnet weiterhin nichts. Damit haelt
+  die Assertion „kein `Math.` in ui.js“.
+- **`a_steg`/`a_flansch` muessen in `profil_eingabe` mit** — sonst rechnet das
+  H-Traeger-Beispiel mit dem falschen a-Mass.
+- **Die gesperrten Tabellenfelder duerfen nicht fuer immer leer bleiben.** `ui.js` darf
+  `daten.js` nicht kennen, also startet das Formular dort leer. Nach dem Rechnen liefert
+  aber `ergebnis.widerstand` genau diese Werte **samt Herkunftsangabe**. Vorschlag in 5.1:
+  sie danach eintragen und die Herkunft dazuschreiben — sonst sieht eine bewusste
+  Zurueckhaltung wie ein Programmfehler aus.
+
+**Entscheidung 2026-07-27 zur Feldbereinigung (Dieter hat sie an Claude gegeben):**
+- **`l` entfällt, `t1` wird profilabhängig, `t2` freiwillig.** Volle Begründung mit
+  Messwerten in 5.1. Kurz: `profil.js` liefert die **Dicke je Segment** mit, und
+  `solver.js` nutzt genau die — `t1`/`t2` sind nur Rückfallebene für einen Weg, den das
+  Formular nie geht. Und `l` speiste in Stufe 2 nur eine gröbere Zweitfassung der
+  Prüfung `l_eff,min = max(6a, 30)`, die der Solver längst je Segment aus der echten
+  Geometrie macht. **Zwei Quellen für dieselbe Prüfung — genau das, was 3.4 verhindern soll.**
+- **Bewusst NICHT gemacht:** `l` behalten und im Solver verdrahten. Das Rechenmodell ist
+  eine Nahtgruppe in der Fügeebene (2.3); ihre Abmessungen *sind* die Profilmaße. Eine
+  davon unabhängige Länge gäbe es dort nicht — sie einzubauen hieße, ein Konzept zu
+  erfinden, das die Quellen nicht hergeben. **Der Preis ist benannt** (Naht kürzer als das
+  Bauteil wird über das nahtrelevante Maß eingegeben) und gehört in die Liste 2.4.
+- **Zwei Beispielzahlen mussten korrigiert werden — Claudes eigener Fehler**, gefunden
+  durch Nachrechnen statt durch Vermuten: Ein Vierkantrohr mit 4 mm Wand lässt gar keine
+  regelkonforme Kehlnaht zu (a_max 2,8 mm liegt unter a_min 3 mm). Und ein I-Profil, das
+  um die Flansche geschweißt wird, warnt **immer**, weil die Flanschkante nur `t_f` lang
+  ist (15 mm < 30 mm wirksame Mindestlänge). Beides ist keine Panne im Programm, sondern
+  die Norm — und beides steht jetzt als Warnung in 5.1, damit es nicht wieder passiert.
+- **N5c wird geteilt** (N5c-1 „Es rechnet", N5c-2 „Es erklärt sich"). Feldbereinigung,
+  Beispiele, Übersetzung ins Solver-Format, Rechnen und Kacheln sind zusammen schon eine
+  volle Etappe; Rechenweg und Grafik kämen sonst gehetzt hinterher.
+
+**Aus der Rückmeldung 2026-07-27 (N5b abgenommen):**
+- N5b von Dieter am Handy geprüft: **keine Fehler festgestellt**, keine Nacharbeit.
+  Projektordner und GitHub sind auf diesem Stand.
+- Damit ist die **Basislinie 724 / 385 / 386** verbindlich — sie darf nur noch wachsen.
+- **Damit ist zum ersten Mal ein Fall wirklich eingebbar**: Auswahl, Felder, Laien-ⓘ,
+  „eigener Wert" und die Prüfung laufen. Was fehlt, ist nur noch das Ergebnis — N5c.
+- **Die Entscheidung „Formular erzeugen statt Markup pflegen" hat sich getragen**: beide
+  HTMLs sind schlank geblieben, der Unterschied ist weiterhin genau eine Zeile, und die
+  89 Optionen stehen nach wie vor nur an einer Stelle. Für N7 (Presets) und N8 (Assistent),
+  die dieselbe Quelle nutzen, ist das die Voraussetzung.
 
 **Aus der Abstimmung 2026-07-27 (vor N5b) — wie das Formular entsteht:**
 - **Frage:** Markup für 18 Gruppen und 29 Felder von Hand in beide HTMLs schreiben, oder
@@ -1909,6 +2171,96 @@ viel (Alu-Werkstoff überlebte den Wechsel auf Welt B); und die Container-Klasse
 saß auf echten Eingabefeldern.
 **Basislinie 679 → 724 Assertions · Smokes 234/235 → 385/386 · i18n-Parität 0.**
 **Nächster Schritt: N5b am Handy prüfen, dann N5c (Ergebnisseite) abstimmen und bauen.**
+**v2.19 (2026-07-27):** **N5b (Eingabeseite) von Dieter am Handy geprüft und ABGENOMMEN** —
+ohne Nacharbeit, keine Fehler festgestellt. Projektordner `/mnt/project/` und GitHub Pages
+tragen diesen Stand; zusätzlich **gegengeprüft**: alle 13 Module, `style.css`, beide HTMLs
+und die drei DEV-ONLY-Dateien liegen vollständig vor, `node --check` über alle 16 JS-Dateien
+ist sauber, die drei Testläufe sind direkt aus dem Projektordner grün und die beiden HTMLs
+unterscheiden sich in genau einer Zeile.
+Plan-Kopf, Bausteintabelle, Etappentabelle 5.2 und Abschnitt 8.1 auf den abgenommenen Stand
+gesetzt; die Vorbedingung „erst N5b prüfen" in 5.1 entfällt. Im Entscheidungslog festgehalten,
+dass sich die Entscheidung *Formular erzeugen statt Markup pflegen* getragen hat — sie ist
+die Voraussetzung dafür, dass N7 (Presets) und N8 (Assistent) dieselbe einzige Optionsquelle
+nutzen können. Code unverändert.
+**Basislinie unverändert und verbindlich: 724 Assertions · Smokes 385/386 · i18n-Parität 0.**
+**Nächster Schritt: N5c (Ergebnisseite) — Einstieg „weiter mit N5c". Auftragsvorschlag in
+Abschnitt 5.1, Umfang vor dem Bau bestätigen. Schnittstellen: `ui.js` in 4.10 + 4.10b,
+`solver.js` in 4.8, `rechenweg.js` in 4.9, `schaubild.js` in 4.7.**
+**v2.20 (2026-07-27):** **Vorbereitung von N5c — zwei Punkte zur Entscheidung eingetragen,
+kein Code geändert.**
+Auf Dieters Anregung geprüft, ob Beispiele für **Vierkantrohr** und **H-Träger** schon jetzt
+sinnvoll sind. Ergebnis nach Nachmessen: **ja, aber als Schritt 1 von N5c, nicht davor** —
+ein Beispiel ist nur Auswahlzustand plus Feldwerte, und genau deren Übersetzung ins
+Solver-Format entsteht erst in N5c; ob ein Beispiel fachlich taugt, zeigt sich erst am
+Ergebnis. Danach spart es bei jedem Handy-Test rund siebzehn Eingaben auf zwei Antipper.
+Drei gegengerechnete Beispiele stehen mit allen Zahlen in **5.1** (Vierkantrohr 100×60×4
+r 6 · H-Träger 200×100 t_w 5,6 t_f 8,5 · Blech 200×80). Der große Beispielkatalog bleibt **N7**.
+Dabei ein **echter Widerspruch** gefunden und dokumentiert: `validate.js` verlangt `l` und
+`t2` als Pflicht, `profil.js` rechnet die Nahtlänge bei geschlossenen Profilen aber selbst
+aus dem Umfang (272 mm bzw. 788,8 mm) und kennt dort kein `t2`. **Vor dem Bau von N5c zu
+entscheiden.** Ebenfalls belegt: der Solver holt sein Nahtbild über das verschachtelte
+`ein.profil_eingabe`, nicht über die flachen Feldwerte — die Übersetzung ist ein Kernstück
+von N5c. **Und die gute Nachricht:** `DTNProfil.baue()` → `DTNSolver.rechne()` →
+`DTNRechenweg.ausErgebnis()` läuft für das Vierkantrohr heute schon vollständig durch
+(4 Segmente, umlaufend, 10 Abschnitte, Ampel grün) — **N5c muss nichts Neues rechnen,
+nur übersetzen und anzeigen.**
+Kopfblock, Abschnitt 5.1 und Entscheidungslog entsprechend erweitert.
+**Basislinie unverändert: 724 Assertions · Smokes 385/386 · i18n-Parität 0.**
+**v2.21 (2026-07-27):** **Der Auftrag für N5c ist ENTSCHIEDEN und ausformuliert — der
+nächste Chat muss nichts mehr abstimmen, nur noch bauen.** Kein Code geändert.
+**N5c wird geteilt:** **N5c-1 „Es rechnet"** (Feldbereinigung, drei Beispiele, Übersetzung
+Formular → `profil_eingabe`, „Berechnen" rechnet wirklich, Ergebnis-Kacheln mit Ampel) und
+**N5c-2 „Es erklärt sich"** (Rechenweg, Nahtbild-Grafik, zwei Häkchenarten getrennt,
+Liste 2.4, Zahlformat je Sprache). Einstieg neu: **„weiter mit N5c-1"**.
+**Feldbereinigung beschlossen und begründet:** `l` entfällt aus dem Feldschema (29 → 28),
+`t1` wird profilabhängig Pflicht (Blech, Rechteckrohr, Rundrohr, Winkel), `t2` wird
+freiwillig als *Dicke des angeschlossenen Bauteils*. Tragender Befund: `profil.js` liefert
+die **Dicke je Segment** mit und `solver.js` nutzt genau die — `t1`/`t2` sind nur
+Rückfallebene, und `l` speiste bloß eine gröbere Zweitfassung der Prüfung
+`l_eff,min = max(6a, 30)`, die der Solver längst aus der echten Geometrie macht.
+`solver.js` bleibt unangetastet. Mit erledigt werden muss: `msg_endkrater_zu_lang` in
+`profil.js` zeigt auf `feld:'l'` und gehört auf `a`.
+**Zwei eigene Beispielzahlen aus v2.20 korrigiert**, gefunden durch Nachrechnen: 4 mm
+Wanddicke lässt keine regelkonforme Kehlnaht zu (a_max 2,8 < a_min 3), und ein I-Profil um
+die Flansche geschweißt warnt immer (Flanschkante nur `t_f` = 15 mm < 30 mm). Die drei
+Beispiele sind jetzt vollständig durchgerechnet, **warnungsfrei**, mit gestaffelter
+Ausnutzung: RHS 120×80×6 → 328 mm, η 0,359 · HEB 200 Steg → 324 mm, η 0,626 ·
+Blech 80×10 → 140 mm, η 0,842.
+Zusätzlich dokumentiert, **was `solver.rechne()` zurückgibt** (25 Schlüssel, u. a. `eta`,
+`ampel`, `erfuellt`, `nicht_geprueft`) — erspart dem nächsten Chat das Nachsehen.
+**Basislinie unverändert: 724 Assertions · Smokes 385/386 · i18n-Parität 0.**
+**v2.22 (2026-07-27):** **Drei weitere Stolperstellen fuer N5c-1 nachgemessen und
+dokumentiert — kein Code geaendert.** Alle drei sind vom selben Typ wie der Befund zu `l`:
+etwas, das im Formular steht, kommt im Rechenkern anders oder gar nicht an.
+**(a) Das z-Mass.** `validate.js` leitet `a = z / √2` ab, aber nur fuer die eigenen
+Pruefungen; `profil.baue()` kennt `z` nicht. Wer nur das z-Mass eintraegt, besteht die
+Pruefung und scheitert danach an `msg_profil_a_fehlt`. Beschlossen: die Umrechnung bleibt
+in `validate.js` und wird **normiert herausgegeben**, `ui.js` setzt nur zusammen — so
+bleibt die Assertion „kein `Math.` in ui.js“ bestehen.
+**(b) `a_steg`/`a_flansch`** muessen in `profil_eingabe` durchgereicht werden, sonst
+rechnet das H-Traeger-Beispiel (Naht nur am Steg) mit dem falschen a-Mass.
+**(c) Die gesperrten Tabellenfelder** (`betaW`, `nu`, `Re`, `a_steg`, `a_flansch`) blieben
+sonst fuer immer leer, weil `ui.js` `daten.js` nicht kennen darf. `ergebnis.widerstand`
+liefert nach dem Rechnen genau diese Werte **samt Herkunft** (gemessen: betaW 0,8 ·
+fu 360 · gammaM2 1,25 · Quelle jeweils „tabelle“). Vorschlag: danach eintragen und die
+Herkunft anzeigen — sonst wirkt bewusste Zurueckhaltung wie ein Fehler.
+Alles drei steht als eigener Block in **5.1** direkt vor dem Auftrag von N5c-2.
+**Basislinie unveraendert: 724 Assertions · Smokes 385/386 · i18n-Paritaet 0.**
+**v2.23 (2026-07-27):** **Neuer Abschnitt 3.6 — Versionszeile.** Kein Code geaendert.
+Beim Nachsehen aufgefallen: alle Module tragen eine Kennung (`daten 0.1.0-N1`,
+`solver 0.1.0-N3`, `ui 0.6.0`), **aber das Programm zeigt keine davon an** — der Info-ⓘ
+nennt bisher nur die Edition. Kuenftig steht dort eine Zeile mit **Programmstand und
+Plan-Version**, gebaut aus den Modulkennungen statt von Hand gepflegt, und **jede Ausgabe**
+(Druck, PDF, Word, `.dts`) traegt sie mit. Eingeplant in **N5d** (Anzeige) und **N11**
+(Ausgaben); eine Assertion prueft, dass Anzeige und geladene Module uebereinstimmen.
+**Der Grund steht dabei:** die Pruefdateien sind DEV-ONLY und liegen nach V1 nur noch im
+Archiv — sie sind aber die einzige Stelle, an der in ausfuehrbarer Form steht, was
+„richtig“ heisst, und werden gebraucht, sobald die zweite Generation der EN 1993-1-8,
+β_w,mod oder eine neue Werkstofftabelle nachgezogen wird. Die Gefahr ist dann nicht der
+Verlust, sondern das **Auseinanderdriften** zwischen laufender Version und Archiv — mit
+einer sichtbaren Versionszeile in zwei Sekunden erkennbar. Als Regel festgehalten: das
+Archiv der Pruefdateien wird wie der Plan mitgefuehrt und am Ende **nicht abgeraeumt**.
+**Basislinie unveraendert: 724 Assertions · Smokes 385/386 · i18n-Paritaet 0.**
 ═══════════════════════════════════════════════════════════════════════════
 Ende Schweißnaht-1.md · DT-ProfiSchweissnaht
 ═══════════════════════════════════════════════════════════════════════════
