@@ -1878,6 +1878,233 @@ for (uiI = 0; uiI < uiCls.length; uiI++) {
 eq(uiOhneCss.length, 0, 'jede in der HTML benutzte Klasse ist in style.css angelegt (' + uiOhneCss.join(',') + ')');
 
 /* ========================================================================= */
+sek('S30 · N5b Eingabeseite — Zuordnung, Beschriftungen, Laien-ⓘ, Filterregel');
+
+var Ui2 = require('./ui.js');
+var Opt2 = require('./optionen.js');
+var Val2 = require('./validate.js');
+var uiSrc2 = fsU.readFileSync(__dirname + '/ui.js', 'utf8');
+
+/* --- ui.js bleibt auch nach N5b fachlogikfrei -------------------------- */
+var s30Verboten = ['DTNSolver', 'DTNNaht', 'DTNProfil', 'DTNRechenweg', 'DTNSchaubild', 'DTNData'];
+var s30Treffer = [];
+for (var s30i = 0; s30i < s30Verboten.length; s30i++) {
+  if (uiSrc2.indexOf(s30Verboten[s30i]) >= 0) s30Treffer.push(s30Verboten[s30i]);
+}
+eq(s30Treffer.length, 0, 'N5b: ui.js ruft weiterhin KEIN Rechenmodul auf (' + s30Treffer.join(',') + ')');
+ok(uiSrc2.indexOf('Math.') < 0, 'N5b: ui.js rechnet weiterhin nichts (kein Math.)');
+ok(uiSrc2.indexOf('DTNOptions') > 0, 'N5b: das Formular kommt aus optionen.js — nicht aus einer zweiten Liste');
+ok(uiSrc2.indexOf('DTNValidate') > 0, 'N5b: die Felder kommen aus validate.js — nicht aus einer zweiten Liste');
+ok(uiSrc2.indexOf('DTNI18nHilfe') > 0, 'N5b: die Laien-ⓘ kommen aus i18n_hilfe.js');
+
+/* --- KEINE Liste doppelt: jede Gruppe und jedes Feld genau einmal ------- */
+var s30G = {}, s30F = {}, s30Doppelt = [], s30Unbekannt = [], s30j, s30q, s30b;
+for (s30i = 0; s30i < Ui2.ZUORDNUNG.length; s30i++) {
+  s30b = Ui2.ZUORDNUNG[s30i];
+  for (s30q = 0; s30q < s30b.gruppen.length; s30q++) {
+    s30j = s30b.gruppen[s30q];
+    if (s30G[s30j]) s30Doppelt.push('Gruppe ' + s30j);
+    s30G[s30j] = s30b.code;
+    if (!Opt2.gruppe(s30j)) s30Unbekannt.push('Gruppe ' + s30j);
+  }
+  for (s30q = 0; s30q < s30b.felder.length; s30q++) {
+    s30j = s30b.felder[s30q];
+    if (s30F[s30j]) s30Doppelt.push('Feld ' + s30j);
+    s30F[s30j] = s30b.code;
+    if (!Val2.feld(s30j)) s30Unbekannt.push('Feld ' + s30j);
+  }
+}
+eq(s30Doppelt.length, 0, 'N5b: nichts ist zweimal zugeordnet (' + s30Doppelt.join(',') + ')');
+eq(s30Unbekannt.length, 0, 'N5b: kein erfundener Code in der Zuordnung (' + s30Unbekannt.join(',') + ')');
+
+var s30FehltG = [], s30FehltF = [];
+for (s30i = 0; s30i < Opt2.GRUPPEN.length; s30i++) {
+  if (!s30G[Opt2.GRUPPEN[s30i].code]) s30FehltG.push(Opt2.GRUPPEN[s30i].code);
+}
+for (s30i = 0; s30i < Val2.SCHEMA.length; s30i++) {
+  if (!s30F[Val2.SCHEMA[s30i].code]) s30FehltF.push(Val2.SCHEMA[s30i].code);
+}
+eq(s30FehltG.length, 0, 'N5b: ALLE ' + Opt2.GRUPPEN.length + ' Auswahlgruppen haben einen Platz (' + s30FehltG.join(',') + ')');
+eq(s30FehltF.length, 0, 'N5b: ALLE ' + Val2.SCHEMA.length + ' Felder haben einen Platz (' + s30FehltF.join(',') + ')');
+
+/* Jeder Bereich der Zuordnung ist ein echter Aufklappbereich aus N5a. */
+var s30Fremd = [];
+for (s30i = 0; s30i < Ui2.ZUORDNUNG.length; s30i++) {
+  if (Ui2.BEREICHE.indexOf(Ui2.ZUORDNUNG[s30i].code) < 0) s30Fremd.push(Ui2.ZUORDNUNG[s30i].code);
+}
+eq(s30Fremd.length, 0, 'N5b: die Zuordnung nutzt nur die acht Bereiche aus N5a (' + s30Fremd.join(',') + ')');
+eq(Ui2.ZUORDNUNG.length, Ui2.BEREICHE.length, 'N5b: jeder der acht Bereiche kommt in der Zuordnung vor');
+
+/* --- Was N5b bewusst NICHT baut: ISO 5817 und EXC bleiben N5d ---------- */
+eq(s30G.iso5817, 'ausfuehrung', 'N5b: ISO 5817 ist dem Block Ausfuehrung zugeordnet');
+eq(s30G.exc, 'ausfuehrung', 'N5b: EXC ist dem Block Ausfuehrung zugeordnet');
+var s30Aus = null;
+for (s30i = 0; s30i < Ui2.ZUORDNUNG.length; s30i++) {
+  if (Ui2.ZUORDNUNG[s30i].code === 'ausfuehrung') s30Aus = Ui2.ZUORDNUNG[s30i];
+}
+eq(s30Aus.etappe, 'N5d', 'N5b: der Block Ausfuehrung ist ausdruecklich auf N5d datiert');
+ok(!!s30Aus.folgt, 'N5b: und sagt das ehrlich mit einem eigenen Text');
+
+var s30Gebaut = 0;
+for (s30i = 0; s30i < Ui2.ZUORDNUNG.length; s30i++) {
+  if (!Ui2.ZUORDNUNG[s30i].etappe) s30Gebaut += Ui2.ZUORDNUNG[s30i].gruppen.length;
+}
+eq(s30Gebaut, 18, 'N5b baut 18 der 20 Gruppen — die zwei restlichen sind datiert (ist ' + s30Gebaut + ')');
+
+/* --- Zusatzbereiche stimmen mit optionen.js ueberein -------------------- */
+var s30Zus = [], s30ZusOpt = [];
+for (s30i = 0; s30i < Ui2.ZUSATZ.length; s30i++) s30Zus.push(Ui2.ZUSATZ[s30i].code);
+for (s30i = 0; s30i < Opt2.ZUSATZBEREICHE.length; s30i++) {
+  if (Opt2.ZUSATZBEREICHE[s30i].code !== 'ausfuehrung') s30ZusOpt.push(Opt2.ZUSATZBEREICHE[s30i].code);
+}
+eq(s30Zus.sort().join(','), s30ZusOpt.sort().join(','),
+   'N5b: die vier Freischalt-Haken sind genau die Zusatzbereiche aus optionen.js');
+var s30ZusAus = 0;
+for (s30i = 0; s30i < Opt2.ZUSATZBEREICHE.length; s30i++) {
+  if (Opt2.ZUSATZBEREICHE[s30i].standard === false) s30ZusAus++;
+}
+eq(s30ZusAus, Opt2.ZUSATZBEREICHE.length, 'N5b: jeder Zusatzbereich ist standardmaessig AUS (Plan 2.6)');
+
+/* --- Beschriftungen: jede Gruppe, jede Option, jedes Feld, jede Einheit - */
+var s30OhneText = [];
+for (s30i = 0; s30i < Opt2.GRUPPEN.length; s30i++) {
+  var s30gr = Opt2.GRUPPEN[s30i];
+  ['de', 'en', 'pt'].forEach(function (l) {
+    if (!Kern.t('grp_' + s30gr.code, l)) s30OhneText.push('grp_' + s30gr.code + '/' + l);
+  });
+  for (s30q = 0; s30q < s30gr.optionen.length; s30q++) {
+    (function (oc) {
+      ['de', 'en', 'pt'].forEach(function (l) {
+        if (!Kern.t('opt_' + s30gr.code + '_' + oc, l)) s30OhneText.push('opt_' + s30gr.code + '_' + oc + '/' + l);
+      });
+    }(s30gr.optionen[s30q].code));
+  }
+}
+var s30Einheiten = {};
+for (s30i = 0; s30i < Val2.SCHEMA.length; s30i++) {
+  (function (f) {
+    ['de', 'en', 'pt'].forEach(function (l) {
+      if (!Kern.t(f.label || ('fld_' + f.code), l)) s30OhneText.push(f.code + '/' + l);
+      if (f.einheit && !Kern.t(f.einheit, l)) s30OhneText.push(f.einheit + '/' + l);
+    });
+    if (f.einheit) s30Einheiten[f.einheit] = 1;
+  }(Val2.SCHEMA[s30i]));
+}
+eq(s30OhneText.length, 0, 'N5b: jede Gruppe, Option, Feldbeschriftung und Einheit ist in DE/EN/PT belegt (' +
+   s30OhneText.slice(0, 6).join(',') + ')');
+ok(Object.keys(s30Einheiten).length >= 4, 'N5b: die Felder fuehren ihre Einheiten mit (' +
+   Object.keys(s30Einheiten).join(', ') + ')');
+
+/* --- Laien-ⓘ an JEDEM Feld und JEDER Gruppe, dreisprachig, vollstaendig - */
+var s30OhneHilfe = [];
+function s30PruefeHilfe(key) {
+  if (!Hilfe.has(key)) { s30OhneHilfe.push(key); return; }
+  ['de', 'en', 'pt'].forEach(function (l) {
+    if (!Hilfe.h(key, l, 'was')) s30OhneHilfe.push(key + '/' + l + '/was');
+  });
+}
+for (s30i = 0; s30i < Opt2.GRUPPEN.length; s30i++) s30PruefeHilfe('grp_' + Opt2.GRUPPEN[s30i].code);
+for (s30i = 0; s30i < Val2.SCHEMA.length; s30i++) s30PruefeHilfe('fld_' + Val2.SCHEMA[s30i].code);
+eq(s30OhneHilfe.length, 0, 'N5b: Laien-ⓘ an allen ' + Opt2.GRUPPEN.length + ' Gruppen und ' +
+   Val2.SCHEMA.length + ' Feldern, dreisprachig (' + s30OhneHilfe.slice(0, 6).join(',') + ')');
+
+/* --- Jeder Textschluessel, den ui.js nennt, existiert auch -------------- */
+var s30KeyRe = /'(ui[A-Za-z0-9_]+|sec_[a-z_]+|zb_[a-z]+|grp_|opt_|fld_)'/g, s30M, s30Keys = [];
+while ((s30M = s30KeyRe.exec(uiSrc2)) !== null) {
+  if (/_$/.test(s30M[1])) continue;                 /* zusammengesetzte Praefixe */
+  if (s30Keys.indexOf(s30M[1]) < 0) s30Keys.push(s30M[1]);
+}
+var s30KeyFehlt = [];
+for (s30i = 0; s30i < s30Keys.length; s30i++) {
+  ['de', 'en', 'pt'].forEach(function (l) {
+    if (!Kern.t(s30Keys[s30i], l)) s30KeyFehlt.push(s30Keys[s30i] + '/' + l);
+  });
+}
+ok(s30Keys.length >= 20, 'N5b: ui.js nennt ' + s30Keys.length + ' feste Textschluessel');
+eq(s30KeyFehlt.length, 0, 'N5b: jeder davon ist in DE/EN/PT belegt (' + s30KeyFehlt.slice(0, 6).join(',') + ')');
+var s30ZusText = [];
+for (s30i = 0; s30i < Ui2.ZUSATZ.length; s30i++) {
+  ['de', 'en', 'pt'].forEach(function (l) {
+    if (!Kern.t(Ui2.ZUSATZ[s30i].label, l)) s30ZusText.push(Ui2.ZUSATZ[s30i].label + '/' + l);
+    if (!Kern.t(Ui2.ZUSATZ[s30i].folgt, l)) s30ZusText.push(Ui2.ZUSATZ[s30i].folgt + '/' + l);
+  });
+}
+eq(s30ZusText.length, 0, 'N5b: die Zusatzbereiche sind dreisprachig beschriftet (' + s30ZusText.join(',') + ')');
+
+/* --- Pflicht-Ids: alles Anklickbare steht in BEIDEN HTMLs -------------- */
+var s30HtmlV = fsU.readFileSync(__dirname + '/DT-ProfiSchweissnaht.html', 'utf8');
+var s30HtmlT = fsU.readFileSync(__dirname + '/DT-ProfiSchweissnaht_Test.html', 'utf8');
+var s30IdFehlt = [];
+for (s30i = 0; s30i < Ui2.IDS.length; s30i++) {
+  if (s30HtmlV.indexOf('id="' + Ui2.IDS[s30i] + '"') < 0) s30IdFehlt.push('voll:' + Ui2.IDS[s30i]);
+  if (s30HtmlT.indexOf('id="' + Ui2.IDS[s30i] + '"') < 0) s30IdFehlt.push('test:' + Ui2.IDS[s30i]);
+}
+eq(s30IdFehlt.length, 0, 'N5b: alle ' + Ui2.IDS.length + ' Pflicht-Ids stehen in beiden HTMLs (' + s30IdFehlt.join(',') + ')');
+for (s30i = 0; s30i < Ui2.BEREICHE.length; s30i++) {
+  ok(s30HtmlV.indexOf('id="host_' + Ui2.BEREICHE[s30i] + '"') > 0,
+     'N5b: der Bereich hat seinen Anker in der HTML: ' + Ui2.BEREICHE[s30i]);
+}
+var s30IdDoppelt = [];
+for (s30i = 0; s30i < Ui2.IDS.length; s30i++) {
+  var s30Anz = (s30HtmlV.match(new RegExp('id="' + Ui2.IDS[s30i] + '"', 'g')) || []).length;
+  if (s30Anz !== 1) s30IdDoppelt.push(Ui2.IDS[s30i] + '(' + s30Anz + 'x)');
+}
+eq(s30IdDoppelt.length, 0, 'N5b: keine Id kommt in der HTML doppelt vor (' + s30IdDoppelt.join(',') + ')');
+
+/* "Berechnen" ist ab N5b verdrahtet und darf nicht mehr als Geruest gelten. */
+var s30Geruest = [];
+for (s30i = 0; s30i < Ui2.GERUEST_BUTTONS.length; s30i++) s30Geruest.push(Ui2.GERUEST_BUTTONS[s30i][0]);
+ok(s30Geruest.indexOf('calcBtn') < 0, 'N5b: "Berechnen" gilt nicht mehr als unverdrahteter Knopf');
+ok(s30Geruest.indexOf('assistBtn') >= 0, 'N5b: der Assistent verweist weiterhin ehrlich auf N8');
+
+/* --- DIE Filterregel: mild beim Anzeigen, streng beim Bereinigen -------
+   Das ist die Regel aus dem N1-Log, und sie ist der Grund, warum ui.js eine
+   weggeraeumte Auswahl zurueckholt, wenn ihr Bezugswert noch offen ist.
+   Faellt dieser Unterschied weg, ist die Rueckholung sinnlos — deshalb wird
+   er hier festgenagelt. */
+var s30Mild = Opt2.codes('nahtart', {});
+ok(s30Mild.indexOf('kehl_umlaufend') >= 0,
+   'N5b: ohne gewaehlte Stossart wird die umlaufende Kehlnaht ANGEBOTEN (milde Regel)');
+var s30Streng = Opt2.bereinige({ nahtart: 'kehl_umlaufend' });
+ok(typeof s30Streng.nahtart === 'undefined',
+   'N5b: die strenge Bereinigung wuerde sie entfernen — genau das faengt ui.js ab');
+var s30Weg = Opt2.bereinige({ welt: 'B', werkstoffgruppe: 'alu', werkstoff: 'AW5083' });
+ok(typeof s30Weg.werkstoffgruppe === 'undefined' && typeof s30Weg.werkstoff === 'undefined',
+   'N5b: eine wirklich unpassende Auswahl faellt weg und wird NICHT zurueckgeholt');
+ok(Opt2.codes('werkstoffgruppe', { welt: 'B' }).indexOf('alu') < 0,
+   'N5b: dass sie unpassend ist, sagt schon die milde Regel — die Unterscheidung traegt');
+
+/* --- Sichtbarkeitsregel: kein Pflichtfeld ohne Platz in dieser Etappe --- */
+var s30Spaet = [];
+for (s30i = 0; s30i < Val2.SCHEMA.length; s30i++) {
+  var s30f = Val2.SCHEMA[s30i];
+  var s30bz = null;
+  for (s30q = 0; s30q < Ui2.ZUORDNUNG.length; s30q++) {
+    if (Ui2.ZUORDNUNG[s30q].felder.indexOf(s30f.code) >= 0) s30bz = Ui2.ZUORDNUNG[s30q];
+  }
+  if (s30bz && s30bz.etappe) s30Spaet.push(s30f.code);
+}
+eq(s30Spaet.length, 0, 'N5b: kein Eingabefeld ist auf eine spaetere Etappe geschoben (' + s30Spaet.join(',') + ')');
+
+/* --- Vollstaendiger Fall: der Auswahlweg fuehrt wirklich ans Ziel ------- */
+var s30Fall = { welt: 'A', rechenrichtung: 'nachweis', werkstoffgruppe: 'stahl',
+                werkstoff: 'S235', stossart: 'ueberlappstoss', nahtart: 'kehl_doppel',
+                nachweisverfahren: 'richtungsbezogen', profil: 'blech',
+                kanten: 'flanken', lasteingabe: 'direkt' };
+var s30Sauber = Opt2.bereinige(s30Fall);
+var s30Pr = Opt2.pruefe(s30Sauber);
+ok(s30Pr.ok, 'N5b: der Beispielweg ist vollstaendig (fehlend: ' + (s30Pr.fehlend.join(',') || 'nichts') + ')');
+var s30Werte = { l: '200', t1: '10', t2: '10', b: '80', a: '5', N: '150000', Q: '0', gammaM2: '1.25' };
+var s30Erg = Val2.pruefe(s30Werte, s30Sauber);
+ok(s30Erg.ok, 'N5b: und die Eingaben dazu gehen sauber durch beide Pruefstufen');
+var s30Fehl = Val2.pruefe({ l: '200', t1: '0.1', t2: '10', b: '80', a: '5', N: '150000', Q: '0' }, s30Sauber);
+ok(!s30Fehl.ok && s30Fehl.fehler.length > 0,
+   'N5b: eine unmoegliche Blechdicke wird ehrlich gemeldet statt still gerechnet');
+var s30MitFeld = 0;
+for (s30i = 0; s30i < s30Fehl.fehler.length; s30i++) if (s30Fehl.fehler[s30i].feld) s30MitFeld++;
+eq(s30MitFeld, s30Fehl.fehler.length, 'N5b: jede Fehlermeldung nennt ihr Feld — sonst waere sie nicht markierbar');
+
+/* ========================================================================= */
 console.log('\n════════════════════════════════════════════');
 console.log(' Assertions: ' + N + '   ·   Fehler: ' + FAIL.length);
 if (FAIL.length) {

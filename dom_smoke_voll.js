@@ -41,8 +41,49 @@ Object.defineProperty(Element.prototype, 'textContent', {
 });
 Object.defineProperty(Element.prototype, 'innerHTML', {
   get: function () { return this._html; },
-  set: function (v) { this._html = String(v); this._text = ''; }
+  set: function (v) {
+    /* Kinder wirklich wegnehmen — sonst faende querySelectorAll spaeter
+       Elemente, die es in der Oberflaeche gar nicht mehr gibt. */
+    for (var k = this.children.length - 1; k >= 0; k--) this.children[k]._entferne();
+    this.children = [];
+    this._html = String(v); this._text = '';
+  }
 });
+
+/* --- Baum: erzeugte Elemente muessen im Bestand ankommen (N5b) ------------
+   ui.js baut das Formular selbst. Ein angehaengtes Element wird deshalb im
+   selben Bestand registriert wie die aus der HTML gelesenen — sonst waere es
+   ueber getElementById/querySelectorAll nicht auffindbar und der Smoke wuerde
+   eine Oberflaeche pruefen, die es so nicht gibt. */
+Element.prototype.appendChild = function (kind) {
+  if (!kind) return kind;
+  this.children.push(kind);
+  kind.parentNode = this;
+  if (this._reg) kind._registriere(this._reg);
+  return kind;
+};
+Element.prototype._registriere = function (reg) {
+  this._reg = reg;
+  reg.elemente.push(this);
+  var i = this.getAttribute('id');
+  if (i && !reg.byId[i]) reg.byId[i] = this;
+  for (var k = 0; k < this.children.length; k++) this.children[k]._registriere(reg);
+};
+Element.prototype._entferne = function () {
+  var reg = this._reg, i;
+  if (reg) {
+    var p = reg.elemente.indexOf(this);
+    if (p >= 0) reg.elemente.splice(p, 1);
+    i = this.getAttribute('id');
+    if (i && reg.byId[i] === this) delete reg.byId[i];
+  }
+  for (var k = 0; k < this.children.length; k++) this.children[k]._entferne();
+  this._reg = null;
+};
+Element.prototype.removeAttribute = function (n) {
+  delete this.attributes[n];
+  if (n === 'class') this.className = '';
+};
 Object.defineProperty(Element.prototype, 'className', {
   get: function () { return Object.keys(this.classList._set).join(' '); },
   set: function (v) {
@@ -81,6 +122,7 @@ Element.prototype.inhalt = function () {
    Elemente ueber Ids und Klassen an, nicht ueber Nachbarschaft. */
 function baueDom(html) {
   var byId = {}, elemente = [];
+  var reg = { byId: byId, elemente: elemente };
   var tagRe = /<([a-zA-Z][a-zA-Z0-9]*)\b([^>]*)>/g, m;
 
   while ((m = tagRe.exec(html)) !== null) {
@@ -91,6 +133,7 @@ function baueDom(html) {
     while ((am = aRe.exec(roh)) !== null) e.setAttribute(am[1].toLowerCase(), am[2]);
     if (/(^|\s)hidden(\s|$|=)/.test(roh)) e.hidden = true;
     if (e.attributes.value) e.value = e.attributes.value;
+    e._reg = reg;
     elemente.push(e);
     var i = e.getAttribute('id');
     if (i && !byId[i]) byId[i] = e;
@@ -210,6 +253,24 @@ function lauf(edition) {
   if (fehler || !s) { return { N: N, FAIL: FAIL }; }
 
   ok(s.sprache() === 'de', 'Startsprache ist Deutsch');
+
+  /* Bild der frisch geoeffneten Seite: Sichtbarkeit jeder Auswahlzeile und
+     jeder Feldzeile. "Leeren" muss spaeter GENAU hierhin zurueckfuehren. */
+  function sichtbarkeitsBild() {
+    var bild = [], q, c;
+    var mods = require('./optionen.js'), vals = require('./validate.js');
+    for (q = 0; q < mods.GRUPPEN.length; q++) {
+      c = d.byId['row_g_' + mods.GRUPPEN[q].code];
+      if (c) bild.push('g:' + mods.GRUPPEN[q].code + '=' + (c.hidden ? 'zu' : 'auf'));
+    }
+    for (q = 0; q < vals.SCHEMA.length; q++) {
+      c = d.byId['row_f_' + vals.SCHEMA[q].code];
+      if (c) bild.push('f:' + vals.SCHEMA[q].code + '=' + (c.hidden ? 'zu' : 'auf'));
+    }
+    return bild.join(' ');
+  }
+  var startBild = sichtbarkeitsBild();
+  ok(startBild.length > 100, 'Startbild der Eingabeseite aufgenommen');
   ok(s.theme() === 'dark', 'START IMMER DUNKEL: die Oberflaeche startet im dunklen Design');
   ok(d.docEl.getAttribute('data-theme') === 'dark', 'data-theme steht nach dem Start auf dark');
   ok(d.docEl.getAttribute('lang') === 'de', 'Dokumentsprache steht auf de');
@@ -281,6 +342,210 @@ function lauf(edition) {
     ok(s.istOffen(code) === vorher, 'zweiter Klick schaltet zurueck: ' + code);
   }
 
+  /* =================================================== 6b) N5b: Eingabeseite
+     Das Formular wird von ui.js aus optionen.js/validate.js ERZEUGT. Hier wird
+     geprueft, dass es wirklich da ist, wirklich anklickbar ist und dass DIE
+     eine Filterfunktion greift (Plan 3.4). ------------------------------- */
+  var Opt = win.DTNOptions, Val = win.DTNValidate;
+
+  ok(s.gebaut() === true, 'N5b: das Formular ist beim Start gebaut');
+
+  /* Jede Gruppe und jedes Feld steht GENAU EINMAL in der Zuordnung. */
+  var zugeordnetG = {}, zugeordnetF = {}, doppeltG = 0, doppeltF = 0, unbekannt = 0;
+  for (i = 0; i < UI.ZUORDNUNG.length; i++) {
+    var bz = UI.ZUORDNUNG[i], q;
+    for (q = 0; q < bz.gruppen.length; q++) {
+      if (zugeordnetG[bz.gruppen[q]]) doppeltG++;
+      zugeordnetG[bz.gruppen[q]] = bz.code;
+      if (!Opt.gruppe(bz.gruppen[q])) unbekannt++;
+    }
+    for (q = 0; q < bz.felder.length; q++) {
+      if (zugeordnetF[bz.felder[q]]) doppeltF++;
+      zugeordnetF[bz.felder[q]] = bz.code;
+      if (!Val.feld(bz.felder[q])) unbekannt++;
+    }
+  }
+  ok(doppeltG === 0 && doppeltF === 0, 'N5b: keine Gruppe und kein Feld ist zweimal zugeordnet');
+  ok(unbekannt === 0, 'N5b: kein unbekannter Code in der Zuordnung');
+  ok(Object.keys(zugeordnetG).length === Opt.GRUPPEN.length,
+     'N5b: ALLE ' + Opt.GRUPPEN.length + ' Auswahlgruppen sind zugeordnet (ist ' +
+     Object.keys(zugeordnetG).length + ')');
+  ok(Object.keys(zugeordnetF).length === Val.SCHEMA.length,
+     'N5b: ALLE ' + Val.SCHEMA.length + ' Felder sind zugeordnet (ist ' +
+     Object.keys(zugeordnetF).length + ')');
+
+  /* Jede in dieser Etappe gebaute Gruppe steht wirklich im DOM — mit Id. */
+  var gebauteGruppen = 0;
+  for (i = 0; i < UI.ZUORDNUNG.length; i++) {
+    var bb = UI.ZUORDNUNG[i];
+    if (bb.etappe) continue;
+    for (var gq = 0; gq < bb.gruppen.length; gq++) {
+      var gc = bb.gruppen[gq];
+      ok(!!d.byId['row_g_' + gc] && !!d.byId['sel_' + gc] && !!d.byId['lbl_g_' + gc] &&
+         !!d.byId['info_g_' + gc],
+         'N5b: Auswahlgruppe vollstaendig erzeugt und anklickbar: ' + gc);
+      gebauteGruppen++;
+    }
+  }
+  ok(gebauteGruppen === 18, 'N5b: 18 Gruppen gebaut, ISO 5817 und EXC bleiben N5d (ist ' +
+     gebauteGruppen + ')');
+  ok(!d.byId['sel_iso5817'] && !d.byId['sel_exc'],
+     'N5b: der Block Ausfuehrung ist NICHT vorweggenommen — er folgt in N5d');
+  ok(/N5d/.test(d.byId.host_ausfuehrung.children.length ? d.alleTexte() : ''),
+     'N5b: der Bereich Ausfuehrung sagt ehrlich, dass er in N5d kommt');
+
+  for (i = 0; i < Val.SCHEMA.length; i++) {
+    var fc = Val.SCHEMA[i].code;
+    ok(!!d.byId['row_f_' + fc] && !!d.byId['fld_' + fc] && !!d.byId['lbl_f_' + fc] &&
+       !!d.byId['info_f_' + fc],
+       'N5b: Feld vollstaendig erzeugt und anklickbar: ' + fc);
+  }
+
+  /* Laien-ⓘ an JEDEM Feld und JEDER Gruppe (Plan, stehende Regel). */
+  var ohneHilfe = [];
+  for (i = 0; i < Opt.GRUPPEN.length; i++) {
+    if (!win.DTNI18nHilfe.has('grp_' + Opt.GRUPPEN[i].code)) ohneHilfe.push(Opt.GRUPPEN[i].code);
+  }
+  for (i = 0; i < Val.SCHEMA.length; i++) {
+    if (!win.DTNI18nHilfe.has('fld_' + Val.SCHEMA[i].code)) ohneHilfe.push(Val.SCHEMA[i].code);
+  }
+  ok(ohneHilfe.length === 0, 'N5b: Laien-ⓘ an jeder Gruppe und jedem Feld (ohne: ' +
+     (ohneHilfe.join(',') || 'keine') + ')');
+
+  /* Der ⓘ-Knopf oeffnet wirklich den Dialog und traegt wirklich Text. */
+  ok(d.byId.hilfeModal.hidden === true, 'N5b: die Laien-Hilfe ist beim Start zu');
+  d.byId.info_f_a.click();
+  ok(d.byId.hilfeModal.hidden === false, 'N5b: der ⓘ-Knopf oeffnet die Laien-Hilfe');
+  ok(d.byId.hilfeWas.inhalt().length > 30, 'N5b: die Laien-Hilfe erklaert "Was ist das"');
+  ok(d.byId.hilfeTipp.inhalt().length > 10, 'N5b: die Laien-Hilfe gibt eine Empfehlung');
+  ok(d.byId.hilfeTitel.inhalt().indexOf('[') < 0, 'N5b: die Laien-Hilfe traegt eine echte Ueberschrift');
+  d.byId.hilfeClose.click();
+  ok(d.byId.hilfeModal.hidden === true, 'N5b: die Laien-Hilfe laesst sich schliessen');
+
+  /* "eigener Wert": vorbelegt und gesperrt, per Haken frei (Plan 3.1). */
+  var ueber = [];
+  for (i = 0; i < Val.SCHEMA.length; i++) if (Val.SCHEMA[i].ueberschreibbar) ueber.push(Val.SCHEMA[i]);
+  ok(ueber.length > 0, 'N5b: es gibt ueberschreibbare Tabellenwerte (ist ' + ueber.length + ')');
+  for (i = 0; i < ueber.length; i++) {
+    ok(!!d.byId['ev_' + ueber[i].code], 'N5b: "eigener Wert"-Haken vorhanden: ' + ueber[i].code);
+    ok(d.byId['fld_' + ueber[i].code].getAttribute('readonly') !== null,
+       'N5b: Tabellenwert ist ohne Haken gesperrt: ' + ueber[i].code);
+  }
+  ok(d.byId.fld_gammaM2.value === '1.25', 'N5b: der Tabellenwert ist vorbelegt (gammaM2 = 1.25)');
+  d.byId.ev_gammaM2.checked = true;
+  d.byId.ev_gammaM2.change();
+  ok(d.byId.fld_gammaM2.getAttribute('readonly') === null,
+     'N5b: der Haken gibt das Feld wirklich frei');
+  d.byId.fld_gammaM2.value = '1.30';
+  d.byId.ev_gammaM2.checked = false;
+  d.byId.ev_gammaM2.change();
+  ok(d.byId.fld_gammaM2.value === '1.25',
+     'N5b: Haken weg → der Tabellenwert steht wieder da, nicht der eigene');
+
+  /* DIE Filterfunktion: eine Auswahl blendet Unsinn sofort aus (Plan 3.4). */
+  function optCodes(gruppe) {
+    var sel = d.byId['sel_' + gruppe], r = [];
+    for (var q = 0; q < sel.children.length; q++) {
+      var v = sel.children[q].getAttribute('value');
+      if (v) r.push(v);
+    }
+    return r;
+  }
+  function waehle(gruppe, wert) {
+    var sel = d.byId['sel_' + gruppe];
+    sel.value = wert; sel.change();
+  }
+
+  ok(optCodes('welt').length === 2, 'N5b: die Bemessungswelt bietet beide Welten an');
+  waehle('welt', 'A');
+  ok(optCodes('werkstoffgruppe').indexOf('alu') >= 0,
+     'N5b: in Welt A ist Aluminium waehlbar');
+  waehle('welt', 'B');
+  ok(optCodes('werkstoffgruppe').indexOf('alu') < 0,
+     'N5b: in Welt B verschwindet Aluminium (es gibt dort keine belegten Tabellenwerte)');
+  ok(d.byId.row_g_lastfall.hidden === false,
+     'N5b: der Lastfall erscheint erst in Welt B (er gehoert dorthin, Plan 2.8)');
+  waehle('welt', 'A');
+  ok(d.byId.row_g_lastfall.hidden === true, 'N5b: in Welt A ist der Lastfall wieder weg');
+
+  /* Strenge Bereinigungsregel: eine nicht mehr begruendbare Auswahl faellt weg. */
+  waehle('werkstoffgruppe', 'alu');
+  waehle('werkstoff', 'AW5083');
+  ok(d.byId.sel_werkstoff.value === 'AW5083', 'N5b: der Aluminiumwerkstoff ist gesetzt');
+  waehle('welt', 'B');
+  ok(d.byId.sel_werkstoffgruppe.value === '' && d.byId.sel_werkstoff.value === '',
+     'N5b: Wechsel auf Welt B raeumt die Alu-Auswahl weg statt sie still stehenzulassen');
+
+  /* Keine Sackgasse: in jeder sichtbaren Gruppe bleibt etwas waehlbar. */
+  var sackgasse = [];
+  for (i = 0; i < Opt.GRUPPEN.length; i++) {
+    var sg = Opt.GRUPPEN[i].code;
+    if (!d.byId['row_g_' + sg] || d.byId['row_g_' + sg].hidden) continue;
+    if (optCodes(sg).length === 0) sackgasse.push(sg);
+  }
+  ok(sackgasse.length === 0, 'N5b: keine sichtbare Gruppe ist eine Sackgasse (' +
+     (sackgasse.join(',') || 'keine') + ')');
+
+  /* Verwandte Regel aus N2b: umlaufende Kehlnaht laesst nur "rundum" uebrig. */
+  waehle('welt', 'A');
+  waehle('nahtart', 'kehl_umlaufend');
+  ok(optCodes('kanten').length === 1 && optCodes('kanten')[0] === 'rundum',
+     'N5b: bei umlaufender Kehlnaht bleibt bei den Kanten nur "rundum"');
+
+  /* Pflichtstern folgt dem Zustand, nicht der Vermutung. */
+  waehle('rechenrichtung', 'auslegung');
+  ok(d.byId.pf_f_a.hidden === true, 'N5b: bei der Auslegung ist das a-Mass keine Pflicht (es wird gesucht)');
+  waehle('rechenrichtung', 'nachweis');
+  ok(d.byId.pf_f_a.hidden === false, 'N5b: beim Nachweis ist das a-Mass Pflicht');
+
+  /* Zusatzbereiche: Haken aus, Inhalt folgt ehrlich benannt (Plan 2.6). */
+  for (i = 0; i < UI.ZUSATZ.length; i++) {
+    var zc = UI.ZUSATZ[i].code;
+    ok(!!d.byId['zus_' + zc], 'N5b: Freischalt-Haken vorhanden: ' + zc);
+    ok(d.byId['zus_' + zc].checked === false, 'N5b: Zusatzbereich startet AUS: ' + zc);
+    ok(d.byId['zusn_' + zc].hidden === true, 'N5b: sein Hinweis ist zunaechst verborgen: ' + zc);
+  }
+  d.byId.zus_ermuedung.checked = true;
+  d.byId.zus_ermuedung.change();
+  ok(d.byId.zusn_ermuedung.hidden === false,
+     'N5b: der Haken schaltet den Zusatzbereich sichtbar frei');
+  ok(s.zustand().ermuedung_aktiv === true,
+     'N5b: der Haken kommt im Zustand an (validate.js liest ihn als ermuedung_aktiv)');
+  d.byId.zus_ermuedung.checked = false;
+  d.byId.zus_ermuedung.change();
+
+  /* Ein vollstaendiger Fall laesst sich wirklich eingeben — das ist das
+     Abnahmekriterium dieser Etappe. */
+  var fall = { welt: 'A', rechenrichtung: 'nachweis', werkstoffgruppe: 'stahl',
+               werkstoff: 'S235', stossart: 'ueberlappstoss', nahtart: 'kehl_doppel',
+               nachweisverfahren: 'richtungsbezogen', profil: 'blech',
+               kanten: 'flanken', lasteingabe: 'direkt' };
+  for (var fk in fall) if (Object.prototype.hasOwnProperty.call(fall, fk)) waehle(fk, fall[fk]);
+  var zst = s.zustand();
+  var fehlendA = Opt.pruefe(zst);
+  ok(fehlendA.ok === true, 'N5b: der Auswahlweg ist vollstaendig begehbar (fehlend: ' +
+     (fehlendA.fehlend.join(',') || 'nichts') + ')');
+
+  var eingaben = { l: '200', t1: '10', t2: '10', b: '80', a: '5', N: '150000', Q: '0' };
+  for (var ek in eingaben) {
+    if (!Object.prototype.hasOwnProperty.call(eingaben, ek)) continue;
+    ok(d.byId['row_f_' + ek].hidden === false, 'N5b: das noetige Feld wird auch gezeigt: ' + ek);
+    d.byId['fld_' + ek].value = eingaben[ek];
+  }
+  var pr = s.pruefen();
+  ok(pr && pr.ok === true, 'N5b: der vollstaendige Fall wird als in Ordnung gemeldet' +
+     (pr && pr.fehler.length ? ' — offen: ' + JSON.stringify(pr.fehler) : ''));
+  ok(/N5c/.test(d.byId.pruefListe.inhalt() + d.alleTexte()),
+     'N5b: und sagt ehrlich, dass das Rechnen in N5c folgt');
+
+  /* Umgekehrt: ein unsinniger Wert wird ehrlich gemeldet, nicht still gerechnet. */
+  d.byId.fld_t1.value = '0.1';
+  pr = s.pruefen();
+  ok(pr && pr.ok === false, 'N5b: eine unmoegliche Blechdicke wird nicht durchgewunken');
+  ok(d.byId.row_f_t1.classList.contains('fehlerhaft'),
+     'N5b: das betroffene Feld wird sichtbar markiert');
+  d.byId.fld_t1.value = '10';
+
   /* ------------------------------------------------------- 7) Leeren ----- */
   d.byId.dtLabel.value = 'Konsole links';
   d.byId.presetSel.value = 'irgendwas';
@@ -294,9 +559,46 @@ function lauf(edition) {
      'Leeren stellt den Startzustand der Bereiche wieder her');
   ok(/geleert/i.test(d.byId.dtMsg.inhalt()), 'Leeren meldet sichtbar, dass alles leer ist');
 
+  /* N5b: "Leeren leert wirklich ALLES" (Plan 3.1) — geprueft wird nicht nur
+     das Bezeichnungsfeld, sondern jedes erzeugte Feld, jede Auswahl und jeder
+     Haken. Ergebnis muss exakt der Zustand der frisch geoeffneten Seite sein. */
+  var restAuswahl = [], restFeld = [], restHaken = [];
+  for (i = 0; i < Opt.GRUPPEN.length; i++) {
+    var rg = d.byId['sel_' + Opt.GRUPPEN[i].code];
+    if (rg && rg.value !== '') restAuswahl.push(Opt.GRUPPEN[i].code);
+  }
+  for (i = 0; i < Val.SCHEMA.length; i++) {
+    var rf = Val.SCHEMA[i], re = d.byId['fld_' + rf.code];
+    if (!re) continue;
+    var soll = (rf.ueberschreibbar && typeof rf.standard !== 'undefined') ? String(rf.standard) : '';
+    if (re.value !== soll) restFeld.push(rf.code + '="' + re.value + '"');
+    var rev = d.byId['ev_' + rf.code];
+    if (rev && rev.checked) restHaken.push(rf.code);
+  }
+  for (i = 0; i < UI.ZUSATZ.length; i++) {
+    if (d.byId['zus_' + UI.ZUSATZ[i].code].checked) restHaken.push(UI.ZUSATZ[i].code);
+  }
+  ok(restAuswahl.length === 0, 'Leeren: keine Auswahl bleibt stehen (' +
+     (restAuswahl.join(',') || 'keine') + ')');
+  ok(restFeld.length === 0, 'Leeren: kein Feld bleibt stehen, Tabellenwerte stehen wieder da (' +
+     (restFeld.join(',') || 'keins') + ')');
+  ok(restHaken.length === 0, 'Leeren: kein Haken bleibt gesetzt (' +
+     (restHaken.join(',') || 'keiner') + ')');
+  ok(d.byId.pruefBox.hidden === true, 'Leeren: der Pruefkasten von vorher ist weg');
+  ok(sichtbarkeitsBild() === startBild,
+     'Leeren: die Oberflaeche steht wieder GENAU wie beim Oeffnen der Seite');
+  ok(Object.keys(s.zustand()).length === 0, 'Leeren: der Zustand ist wirklich leer');
+  ok(Object.keys(s.werte()).length === 4,
+     'Leeren: nur die vier vorbelegten Tabellenwerte stehen im Formular (ist ' +
+     Object.keys(s.werte()).length + ')');
+
   /* ------------------------------- 8) Knoepfe, die noch nicht rechnen ---- */
+  /* "Berechnen" ist ab N5b verdrahtet: es PRUEFT (gerechnet wird in N5c). */
   d.byId.calcBtn.click();
-  ok(/N5c/.test(d.byId.dtMsg.inhalt()), '"Berechnen" sagt ehrlich, dass es erst in N5c verdrahtet wird');
+  ok(d.byId.pruefBox.hidden === false, '"Berechnen" oeffnet den Pruefkasten');
+  ok(d.byId.pruefListe.children.length > 0, '"Berechnen" sagt am leeren Formular, was fehlt');
+  ok(/N5c/.test(d.alleTexte()),
+     '"Berechnen" sagt ehrlich, dass das RECHNEN erst in N5c folgt');
   d.byId.assistBtn.click();
   ok(/N8/.test(d.byId.dtMsg.inhalt()), '"Assistent" verweist ehrlich auf Baustein N8');
   var ausgaben = ['saveBtn', 'loadBtn', 'printBtn', 'rtfBtn'];

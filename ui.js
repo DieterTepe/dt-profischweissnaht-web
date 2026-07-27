@@ -1,14 +1,30 @@
 /* ============================================================================
  * DT-ProfiSchweissnaht · ui.js  (DTNUi)
- * Baustein N5, Etappe N5a — UI-GRUNDGERUEST.
- *   - Sprachumschaltung DE/EN/PT ueber data-i18n / data-i18n-title / data-i18n-ph
- *   - Theme hell/dunkel · START IMMER DUNKEL (Plan 3.1, bindend)
- *   - aufklappbare Bereiche des Formulargeruests
- *   - "Leeren" leert wirklich alle Felder (Plan 3.1)
- *   - Info-Dialog mit Impressum, Editionsweiche (Testbalken / Lizenzzeile)
- * DOM-nah, aber OHNE JEDE FACHLOGIK: dieses Modul rechnet nichts und kennt
- * weder Werkstoffe noch Nahtbilder. Texte kommen ausschliesslich aus
- * i18n_kern.js, Codes bleiben sprachneutral.
+ * Baustein N5 — Etappe N5a (Grundgeruest) + Etappe N5b (EINGABESEITE).
+ *
+ * N5a:  Sprachumschaltung DE/EN/PT · Theme (START IMMER DUNKEL, Plan 3.1) ·
+ *       aufklappbare Bereiche · Leeren · Info-Dialog · Editionsweiche.
+ * N5b:  Das Formular wird AUS DEN MODULEN ERZEUGT, nicht doppelt gepflegt:
+ *         - Auswahlgruppen aus DTNOptions (DIE eine Filterfunktion, Plan 3.4)
+ *         - Eingabefelder aus DTNValidate (Feldschema, zweistufige Pruefung)
+ *         - Laien-ⓘ aus DTNI18nHilfe (Was ist das · Bereich · Empfehlung)
+ *       Jedes erzeugte Element traegt eine FESTE Id (Schema unten) — sonst
+ *       waere es im DOM-Smoke nicht anklickbar (Regel aus N5a).
+ *
+ * DOM-nah, aber OHNE JEDE FACHLOGIK: dieses Modul rechnet nichts, kennt weder
+ * Werkstoffe noch Nahtbilder und ruft KEIN Rechenmodul auf. Erlaubt sind
+ * ausschliesslich die Auswahl-, Feld- und Textquellen (Options/Validate/i18n).
+ * Texte kommen nur aus dem Woerterbuch, Codes bleiben sprachneutral.
+ *
+ * ID-SCHEMA der erzeugten Elemente (der Harness prueft es):
+ *   host_<bereich>     Anker in der HTML       row_g_<gruppe>   Zeile Auswahl
+ *   lbl_g_<gruppe>     Beschriftung            info_g_<gruppe>  Laien-ⓘ
+ *   sel_<gruppe>       das <select>            pf_g_<gruppe>    Pflichtstern
+ *   row_f_<feld>       Zeile Eingabefeld       lbl_f_<feld>     Beschriftung
+ *   info_f_<feld>      Laien-ⓘ                 fld_<feld>       das <input>
+ *   unit_<feld>        Einheit                 pf_f_<feld>      Pflichtstern
+ *   ev_<feld>          "eigener Wert"-Haken    evl_<feld>       dessen Label
+ *   zus_<code>         Freischalt-Haken        zusl_<code>      dessen Label
  * ========================================================================== */
 (function (root, factory) {
   var api = factory();
@@ -18,8 +34,8 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.5.1';
-  var ETAPPE = 'N5a';
+  var VERSION = '0.6.0';
+  var ETAPPE = 'N5b';
   var SPRACHEN = ['de', 'en', 'pt'];
 
   /* Plan 3.1 (bindend): die Oberflaeche startet IMMER im dunklen Design —
@@ -27,13 +43,68 @@
   var START_THEME = 'dark';
   var START_SPRACHE = 'de';
 
-  /* Die aufklappbaren Bereiche der spaeteren Eingabeseite (Reihenfolge = Abfragefolge).
-     Gefuellt werden sie in N5b (Felder), N5c (Ergebnis) und N5d (Ausfuehrung). */
   var BEREICHE = ['grund', 'werkstoff', 'naht', 'geometrie',
                   'lasten', 'beiwerte', 'zusatz', 'ausfuehrung'];
 
   /* Nur dieser eine Bereich ist beim Start offen — Handy zuerst. */
   var BEREICH_START_OFFEN = 'grund';
+
+  /* ------------------------------------------------------------------------
+   * ZUORDNUNG — welche Auswahlgruppe und welches Feld erscheint in welchem
+   * Bereich. Das ist reine Anordnung, KEINE Fachlogik: die Inhalte selbst
+   * (Optionen, Grenzen, Bedingungen) stehen unveraendert in optionen.js und
+   * validate.js. Der Harness prueft, dass JEDE der 20 Gruppen und JEDES der
+   * 29 Felder hier GENAU EINMAL vorkommt und kein unbekannter Code auftaucht.
+   *
+   *   leit          Leitauswahl des Bereichs. Nicht-Pflichtfelder erscheinen
+   *                 erst, wenn sie getroffen ist (sonst stuende die halbe
+   *                 Eingabeseite leer herum — Handy zuerst).
+   *   optional_wenn Bedingung im Format aus optionen.js; gilt fuer die Felder
+   *                 des Bereichs, die keine eigene Bedingung tragen.
+   *   etappe        Bereich wird in dieser Etappe noch NICHT gebaut.
+   * --------------------------------------------------------------------- */
+  var ZUORDNUNG = [
+    { code: 'grund', leit: null,
+      gruppen: ['welt', 'rechenrichtung', 'lasteingabe', 'a_rundung'],
+      felder: [] },
+
+    { code: 'werkstoff', leit: 'werkstoffgruppe',
+      gruppen: ['werkstoffgruppe', 'werkstoff', 'zustand', 'zusatzwerkstoff', 'bw_regelsatz'],
+      felder: [] },
+
+    { code: 'naht', leit: 'nahtart',
+      gruppen: ['stossart', 'nahtart', 'nachweisverfahren', 'nahtguete',
+                'weltb_nahtgruppe', 'lastfall', 'schweissverfahren'],
+      felder: ['a', 'z', 'a_steg', 'a_flansch'] },
+
+    { code: 'geometrie', leit: 'profil',
+      gruppen: ['profil', 'kanten'],
+      felder: ['b', 'h', 'd', 'tw', 'tf', 'r_ecke', 't1', 't2', 'l'] },
+
+    { code: 'lasten', leit: 'lasteingabe',
+      gruppen: [],
+      felder: ['N', 'Q', 'M', 'T', 'Qy', 'Qz', 'My', 'Mz', 'F', 'e'],
+      optional_wenn: { lasteingabe: ['direkt'] } },
+
+    { code: 'beiwerte', leit: 'welt',
+      gruppen: [],
+      felder: ['gammaM2', 'gammaMw', 'betaW', 'S', 'nu', 'Re'] },
+
+    { code: 'zusatz', leit: null, gruppen: [], felder: [], zusatz: true },
+
+    /* ISO 5817 und EXC bekommen in N5d ihren eigenen Block (Plan 2.7). */
+    { code: 'ausfuehrung', leit: null, gruppen: ['iso5817', 'exc'], felder: [],
+      etappe: 'N5d', folgt: 'uiFolgtN5d' }
+  ];
+
+  /* Die vier zuschaltbaren Zusatzbereiche (Plan 2.6) — Haken hier, Inhalt
+     spaeter. Der Rechenkern liest den Haken als "<code>_aktiv" (validate.js). */
+  var ZUSATZ = [
+    { code: 'ermuedung', label: 'zb_ermuedung', folgt: 'uiFolgtN13' },
+    { code: 'thermik',   label: 'zb_thermik',   folgt: 'uiFolgtN9' },
+    { code: 'kosten',    label: 'zb_kosten',    folgt: 'uiFolgtN10' },
+    { code: 'verzug',    label: 'zb_verzug',    folgt: 'uiFolgtN15' }
+  ];
 
   /* Pflicht-Elemente. Der Harness prueft, dass jede Id in BEIDEN HTMLs steht. */
   var IDS = [
@@ -41,7 +112,13 @@
     'themeBtn', 'infoBtn', 'presetSel', 'presetLabel', 'assistBtn', 'calcBtn',
     'resetBtn', 'dtLabel', 'saveBtn', 'loadBtn', 'printBtn', 'rtfBtn', 'dtMsg',
     'formHost', 'geruestNote', 'resultHost', 'grafikHost', 'wegHost',
-    'infoModal', 'infoEdition', 'infoImpressum', 'infoClose', 'footNote'
+    'infoModal', 'infoEdition', 'infoImpressum', 'infoClose', 'footNote',
+    /* N5b */
+    'host_grund', 'host_werkstoff', 'host_naht', 'host_geometrie',
+    'host_lasten', 'host_beiwerte', 'host_zusatz', 'host_ausfuehrung',
+    'pruefBox', 'pruefTitel', 'pruefListe',
+    'hilfeModal', 'hilfeTitel', 'hilfeWasLbl', 'hilfeWas', 'hilfeBereichLbl',
+    'hilfeBereich', 'hilfeTippLbl', 'hilfeTipp', 'hilfeClose'
   ];
 
   /* CSS-Klassen, die style.css tragen muss (leer erlaubt, vorhanden Pflicht). */
@@ -52,12 +129,17 @@
     'platzhalter', 'feld', 'feld-zeile', 'eigener-wert', 'info-i',
     'tiles', 'tile', 'tile-wert', 'ampel', 'rw-zeile', 'rw-formel',
     'rw-werte', 'rw-haken', 'rw-nachweis', 'modal-overlay', 'modal',
-    'status-banner', 'gap-note', 'app-footer'
+    'status-banner', 'gap-note', 'app-footer',
+    /* N5b */
+    'feldgruppe', 'feld-label', 'feld-eingabe', 'feld-einheit', 'pflicht',
+    'gesperrt', 'fehlerhaft', 'zusatz-haken', 'zusatz-note',
+    'pruef-box', 'pruef-ok', 'pruef-fehler', 'pruef-warnung', 'pruef-hinweis',
+    'hilfe-abschnitt', 'hilfe-titel'
   ];
 
-  /* Buttons, die in N5a bewusst noch nicht verdrahtet sind: Id -> ehrliche Meldung. */
+  /* Buttons, die bewusst noch nicht verdrahtet sind: Id -> ehrliche Meldung.
+     "Berechnen" ist ab N5b verdrahtet — es PRUEFT (Rechnen folgt in N5c). */
   var GERUEST_BUTTONS = [
-    ['calcBtn', 'uiFolgtN5c'],
     ['assistBtn', 'uiFolgtN8'],
     ['saveBtn', 'uiFolgtN11'],
     ['loadBtn', 'uiFolgtN11'],
@@ -79,6 +161,11 @@
     return m ? m.t(key, lang) : '[' + key + ']';
   }
 
+  function hilfe(win, key, lang, feld) {
+    var m = win && win.DTNI18nHilfe;
+    return m ? m.h(key, lang, feld) : '';
+  }
+
   function setzeText(e, s) { if (e) e.textContent = s; }
 
   function setzeAttr(e, name, s) { if (e && e.setAttribute) e.setAttribute(name, s); }
@@ -88,21 +175,481 @@
     if (an) e.classList.add(name); else e.classList.remove(name);
   }
 
+  function zeige(e, an) { if (e) e.hidden = !an; }
+
   function istSprache(l) {
     for (var i = 0; i < SPRACHEN.length; i++) if (SPRACHEN[i] === l) return true;
     return false;
+  }
+
+  function istLeer(v) { return v === undefined || v === null || v === ''; }
+
+  /* Bedingungsformat aus optionen.js — hier nur zum Ein-/Ausblenden. */
+  function bedingungPasst(bed, zustand) {
+    if (!bed) return true;
+    for (var k in bed) {
+      if (!Object.prototype.hasOwnProperty.call(bed, k)) continue;
+      var ist = zustand ? zustand[k] : undefined;
+      if (istLeer(ist)) return false;
+      if (bed[k].indexOf(ist) < 0) return false;
+    }
+    return true;
+  }
+
+  function bereichVon(code) {
+    for (var i = 0; i < ZUORDNUNG.length; i++) if (ZUORDNUNG[i].code === code) return ZUORDNUNG[i];
+    return null;
   }
 
   /* ================================================================= start */
   function start(win, doc) {
     if (!win || !doc) return null;
 
+    var Options = win.DTNOptions || null;
+    var Valid = win.DTNValidate || null;
+
     var S = {
       sprache: START_SPRACHE,
       theme: START_THEME,
       offen: {},
+      gebaut: false,
       edition: (win.DT_EDITION === 'test') ? 'test' : 'full'
     };
+
+    /* --------------------------------------------------------- Erzeugen */
+    function neu(tag, klassen, id) {
+      var e = doc.createElement(tag);
+      if (klassen) e.className = klassen;
+      if (id) e.setAttribute('id', id);
+      return e;
+    }
+
+    /* Beschriftung ueber data-i18n, damit die Sprachumschaltung sie mitnimmt. */
+    function beschrifte(e, key) {
+      if (!e) return e;
+      e.setAttribute('data-i18n', key);
+      e.textContent = txt(win, key, S.sprache);
+      return e;
+    }
+
+    function beschrifteTitel(e, key) {
+      if (!e) return e;
+      e.setAttribute('data-i18n-title', key);
+      e.setAttribute('title', txt(win, key, S.sprache));
+      return e;
+    }
+
+    /* ------------------------------------------------ Zeile: Auswahlgruppe */
+    function baueGruppe(g) {
+      var zeile = neu('div', 'feld-zeile', 'row_g_' + g.code);
+
+      var lab = neu('label', 'feld-label', 'lbl_g_' + g.code);
+      lab.setAttribute('for', 'sel_' + g.code);
+      beschrifte(lab, 'grp_' + g.code);
+      zeile.appendChild(lab);
+
+      var stern = neu('span', 'pflicht', 'pf_g_' + g.code);
+      stern.textContent = '*';
+      beschrifteTitel(stern, 'uiPflicht');
+      stern.hidden = !g.pflicht;
+      zeile.appendChild(stern);
+
+      var info = neu('button', 'info-i', 'info_g_' + g.code);
+      info.setAttribute('type', 'button');
+      info.textContent = '\u24D8';
+      beschrifteTitel(info, 'uiInfoTitel');
+      info.addEventListener('click', function () { hilfeZeigen('grp_' + g.code, 'grp_' + g.code); });
+      zeile.appendChild(info);
+
+      var sel = neu('select', 'feld', 'sel_' + g.code);
+      sel.addEventListener('change', function () { aktualisiere(); meldung(''); });
+      zeile.appendChild(sel);
+
+      return zeile;
+    }
+
+    /* Optionen einer Gruppe neu setzen — ausschliesslich ueber DIE
+       Filterfunktion aus optionen.js (Plan 3.4). Der bisherige Wert bleibt,
+       wenn er weiterhin waehlbar ist. */
+    function fuelleSelect(g, liste, wert) {
+      var sel = el(doc, 'sel_' + g.code);
+      if (!sel) return 0;
+      sel.innerHTML = '';
+
+      var leerOpt = doc.createElement('option');
+      leerOpt.setAttribute('value', '');
+      beschrifte(leerOpt, 'uiBitteWaehlen');
+      sel.appendChild(leerOpt);
+
+      var drin = false, i, o, opt;
+      for (i = 0; i < liste.length; i++) {
+        o = liste[i];
+        opt = doc.createElement('option');
+        opt.setAttribute('value', o.code);
+        opt.value = o.code;
+        beschrifte(opt, 'opt_' + g.code + '_' + o.code);
+        sel.appendChild(opt);
+        if (o.code === wert) drin = true;
+      }
+      sel.value = drin ? wert : '';
+      return liste.length;
+    }
+
+    /* ------------------------------------------------------ Zeile: Feld */
+    function baueFeld(f) {
+      var zeile = neu('div', 'feld-zeile', 'row_f_' + f.code);
+
+      var lab = neu('label', 'feld-label', 'lbl_f_' + f.code);
+      lab.setAttribute('for', 'fld_' + f.code);
+      beschrifte(lab, f.label || ('fld_' + f.code));
+      zeile.appendChild(lab);
+
+      var stern = neu('span', 'pflicht', 'pf_f_' + f.code);
+      stern.textContent = '*';
+      beschrifteTitel(stern, 'uiPflicht');
+      stern.hidden = true;
+      zeile.appendChild(stern);
+
+      var info = neu('button', 'info-i', 'info_f_' + f.code);
+      info.setAttribute('type', 'button');
+      info.textContent = '\u24D8';
+      beschrifteTitel(info, 'uiInfoTitel');
+      info.addEventListener('click', function () {
+        hilfeZeigen(f.hilfe || ('fld_' + f.code), f.label || ('fld_' + f.code));
+      });
+      zeile.appendChild(info);
+
+      var box = neu('span', 'feld-eingabe', null);
+
+      var inp = neu('input', 'feld', 'fld_' + f.code);
+      inp.setAttribute('type', 'text');
+      inp.setAttribute('inputmode', 'decimal');
+      inp.addEventListener('change', function () { meldung(''); });
+      box.appendChild(inp);
+
+      if (f.einheit) {
+        var ein = neu('span', 'feld-einheit', 'unit_' + f.code);
+        beschrifte(ein, f.einheit);
+        box.appendChild(ein);
+      }
+      zeile.appendChild(box);
+
+      /* "eigener Wert"-Haken (Plan 3.1): Tabellenwert vorbelegen und sperren,
+         per Haken frei ueberschreibbar. */
+      if (f.ueberschreibbar) {
+        var evl = neu('label', 'eigener-wert', 'evl_' + f.code);
+        var ev = neu('input', null, 'ev_' + f.code);
+        ev.setAttribute('type', 'checkbox');
+        ev.addEventListener('change', function () {
+          eigenerWert(f.code, !!ev.checked);
+          meldung('');
+        });
+        evl.appendChild(ev);
+        var evt = neu('span', null, null);
+        beschrifte(evt, 'uiEigenerWert');
+        evl.appendChild(evt);
+        zeile.appendChild(evl);
+      }
+
+      return zeile;
+    }
+
+    /* Sperren bzw. freigeben. Gesperrte Felder tragen den Standardwert aus
+       dem Feldschema; Werte, die aus einer Tabelle stammen, bleiben leer und
+       werden erst vom Rechenkern gesetzt (N5c) — ui.js kennt sie nicht. */
+    function eigenerWert(code, an) {
+      var inp = el(doc, 'fld_' + code);
+      if (!inp) return false;
+      var f = Valid ? Valid.feld(code) : null;
+      if (an) {
+        if (inp.removeAttribute) inp.removeAttribute('readonly');
+        inp.readOnly = false;
+        klasse(inp, 'gesperrt', false);
+      } else {
+        inp.setAttribute('readonly', 'readonly');
+        inp.readOnly = true;
+        klasse(inp, 'gesperrt', true);
+        inp.value = (f && typeof f.standard !== 'undefined') ? String(f.standard) : '';
+      }
+      return true;
+    }
+
+    /* ------------------------------------------------------ Zusatzbereiche */
+    function baueZusatz(host) {
+      for (var i = 0; i < ZUSATZ.length; i++) {
+        (function (z) {
+          var lab = neu('label', 'zusatz-haken', 'zusl_' + z.code);
+          var box = neu('input', null, 'zus_' + z.code);
+          box.setAttribute('type', 'checkbox');
+          lab.appendChild(box);
+          var t = neu('span', null, null);
+          beschrifte(t, z.label);
+          lab.appendChild(t);
+          host.appendChild(lab);
+
+          var note = neu('div', 'zusatz-note', 'zusn_' + z.code);
+          beschrifte(note, z.folgt);
+          note.hidden = true;
+          host.appendChild(note);
+
+          box.addEventListener('change', function () {
+            note.hidden = !box.checked;
+            meldung('');
+          });
+        }(ZUSATZ[i]));
+      }
+    }
+
+    /* ------------------------------------------------------- Formularbau */
+    function baueFormular() {
+      if (!Options || !Valid) return false;
+      var i, j, b, host, g, f;
+
+      for (i = 0; i < ZUORDNUNG.length; i++) {
+        b = ZUORDNUNG[i];
+        host = el(doc, 'host_' + b.code);
+        if (!host) continue;
+        host.innerHTML = '';
+
+        if (b.etappe) {                      /* noch nicht dran — ehrlich sagen */
+          var p = neu('div', 'platzhalter', null);
+          beschrifte(p, b.folgt);
+          host.appendChild(p);
+          continue;
+        }
+
+        if (b.zusatz) { baueZusatz(host); continue; }
+
+        for (j = 0; j < b.gruppen.length; j++) {
+          g = Options.gruppe(b.gruppen[j]);
+          if (g) host.appendChild(baueGruppe(g));
+        }
+        for (j = 0; j < b.felder.length; j++) {
+          f = Valid.feld(b.felder[j]);
+          if (f) host.appendChild(baueFeld(f));
+        }
+      }
+
+      S.gebaut = true;
+      return true;
+    }
+
+    /* --------------------------------------------------------- Zustand */
+    /* Der Zustand ist das, was die Auswahlgruppen sagen — mehr nicht.
+       Die Zusatzbereiche kommen als "<code>_aktiv" dazu (validate.js liest sie). */
+    function zustand() {
+      var z = {}, i, sel, g;
+      if (!Options) return z;
+      for (i = 0; i < Options.GRUPPEN.length; i++) {
+        g = Options.GRUPPEN[i];
+        sel = el(doc, 'sel_' + g.code);
+        if (sel && !istLeer(sel.value)) z[g.code] = sel.value;
+      }
+      for (i = 0; i < ZUSATZ.length; i++) {
+        var box = el(doc, 'zus_' + ZUSATZ[i].code);
+        if (box && box.checked) z[ZUSATZ[i].code + '_aktiv'] = true;
+      }
+      return z;
+    }
+
+    function werte() {
+      var w = {}, i, inp;
+      if (!Valid) return w;
+      for (i = 0; i < Valid.SCHEMA.length; i++) {
+        inp = el(doc, 'fld_' + Valid.SCHEMA[i].code);
+        if (inp && !istLeer(inp.value)) w[Valid.SCHEMA[i].code] = inp.value;
+      }
+      return w;
+    }
+
+    /* Sichtbarkeitsregel fuer Felder — dokumentiert, eine einzige Regel:
+       1. Pflicht im aktuellen Zustand  -> sichtbar
+       2. Bereich hat optional_wenn     -> nur wenn die Bedingung passt
+       3. Bereich hat eine Leitauswahl  -> nur wenn sie getroffen ist
+       4. sonst                          -> sichtbar */
+    function feldSichtbar(f, b, z) {
+      if (Valid && Valid.istPflicht(f, z)) return true;
+      if (b && b.optional_wenn) return bedingungPasst(b.optional_wenn, z);
+      if (b && b.leit) return !istLeer(z[b.leit]);
+      return true;
+    }
+
+    /* Eine Aenderung oben raeumt unten auf (strenge Regel aus dem N1-Log:
+       eine nicht mehr begruendbare Auswahl faellt weg) und blendet die
+       unpassenden Optionen sofort aus (Plan 3.4). */
+    /* Die strenge Bereinigung aus optionen.js entfernt jede Auswahl, deren
+       Bedingung nicht STRIKT erfuellt ist — auch die, deren Bezugswert noch
+       gar nicht gewaehlt wurde. Am Bildschirm waere das falsch: die Option
+       wurde nach der milden Regel angeboten (N1-Log), der Anwender hat sie
+       angetippt, und sie duerfte ihm nicht unter der Hand wieder verschwinden.
+       Deshalb wird eine so entfernte Auswahl zurueckgeholt, solange die milde
+       Regel sie weiterhin anbietet. Eine wirklich unpassende Auswahl (die
+       milde Regel kennt sie nicht mehr) bleibt entfernt — das ist der Fall,
+       den die strenge Regel treffen soll. */
+    /* Auf welche anderen Auswahlen stuetzt sich diese Gruppe bzw. dieser Wert? */
+    function bezugsschluessel(gruppenCode, wert) {
+      var keys = {}, gr = Options.gruppe(gruppenCode), i, k;
+      if (!gr) return keys;
+      function sammle(bed) {
+        if (!bed) return;
+        for (k in bed) if (Object.prototype.hasOwnProperty.call(bed, k)) keys[k] = 1;
+      }
+      sammle(gr.gilt_wenn); sammle(gr.gilt_nicht_wenn);
+      for (i = 0; i < gr.optionen.length; i++) {
+        if (gr.optionen[i].code !== wert) continue;
+        sammle(gr.optionen[i].gilt_wenn); sammle(gr.optionen[i].gilt_nicht_wenn);
+      }
+      return keys;
+    }
+
+    function bereinigeSchonend(roh) {
+      if (!Options) return roh;
+      var z = Options.bereinige(roh), runde = 0, geaendert = true, i, g, w, keys, k, halt;
+      while (geaendert && runde < 10) {
+        geaendert = false; runde++;
+        for (i = 0; i < Options.GRUPPEN.length; i++) {
+          g = Options.GRUPPEN[i].code;
+          w = roh[g];
+          if (istLeer(w) || !istLeer(z[g])) continue;
+
+          /* Nur zurueckholen, wenn kein Bezugswert GERADE weggefallen ist.
+             Fiel oben etwas weg, ist auch das Darunterliegende nicht mehr
+             begruendbar — dann gilt die strenge Regel. */
+          keys = bezugsschluessel(g, w); halt = false;
+          for (k in keys) {
+            if (!Object.prototype.hasOwnProperty.call(keys, k)) continue;
+            if (!istLeer(roh[k]) && istLeer(z[k])) { halt = true; break; }
+          }
+          if (halt) continue;
+
+          if (!Options.gruppeAktiv(g, z)) continue;
+          if (Options.codes(g, z).indexOf(w) < 0) continue;
+          z[g] = w; geaendert = true;
+        }
+      }
+      return z;
+    }
+
+    function aktualisiere() {
+      if (!S.gebaut || !Options || !Valid) return null;
+      var i, j, b, g, f, sel, roh = zustand();
+      var z = bereinigeSchonend(roh);
+
+      for (i = 0; i < Options.GRUPPEN.length; i++) {
+        g = Options.GRUPPEN[i];
+        sel = el(doc, 'sel_' + g.code);
+        if (!sel) continue;
+        var aktiv = Options.gruppeAktiv(g.code, z);
+        zeige(el(doc, 'row_g_' + g.code), aktiv);
+        if (aktiv) fuelleSelect(g, Options.filter(g.code, z), z[g.code]);
+        else if (!istLeer(sel.value)) { sel.value = ''; }
+        klasse(el(doc, 'row_g_' + g.code), 'fehlerhaft', false);
+      }
+
+      for (i = 0; i < ZUORDNUNG.length; i++) {
+        b = ZUORDNUNG[i];
+        if (b.etappe) continue;
+        for (j = 0; j < b.felder.length; j++) {
+          f = Valid.feld(b.felder[j]);
+          if (!f) continue;
+          zeige(el(doc, 'row_f_' + f.code), feldSichtbar(f, b, z));
+          zeige(el(doc, 'pf_f_' + f.code), Valid.istPflicht(f, z));
+          klasse(el(doc, 'row_f_' + f.code), 'fehlerhaft', false);
+        }
+      }
+      return z;
+    }
+
+    /* Standardwerte in die gesperrten Felder — der Zustand direkt nach dem
+       Oeffnen der Seite. "Leeren" stellt exakt diesen Zustand wieder her. */
+    function vorbelegen() {
+      if (!Valid) return 0;
+      var n = 0;
+      for (var i = 0; i < Valid.SCHEMA.length; i++) {
+        var f = Valid.SCHEMA[i];
+        if (!f.ueberschreibbar) continue;
+        var ev = el(doc, 'ev_' + f.code);
+        if (ev) ev.checked = false;
+        eigenerWert(f.code, false);
+        n++;
+      }
+      return n;
+    }
+
+    /* ------------------------------------------------------------ Pruefen */
+    /* N5b rechnet NICHT. "Berechnen" prueft die Eingaben und sagt ehrlich,
+       was fehlt; das Rechnen selbst folgt in Etappe N5c. */
+    function beschriftungVon(code) {
+      if (Valid && Valid.feld(code)) return txt(win, 'fld_' + code, S.sprache);
+      if (Options && Options.gruppe(code)) return txt(win, 'grp_' + code, S.sprache);
+      return code;
+    }
+
+    function zeileMelden(liste, m, art) {
+      var d = neu('div', art, null);
+      var name = m.feld ? beschriftungVon(m.feld) : '';
+      var text = txt(win, m.code, S.sprache);
+      if (typeof m.grenze !== 'undefined') text = text + ' (' + m.grenze + ')';
+      d.textContent = (name ? name + ': ' : '') + text;
+      liste.appendChild(d);
+      if (m.feld && art === 'pruef-fehler') {
+        klasse(el(doc, 'row_f_' + m.feld), 'fehlerhaft', true);
+        klasse(el(doc, 'row_g_' + m.feld), 'fehlerhaft', true);
+      }
+    }
+
+    function pruefen() {
+      var box = el(doc, 'pruefBox'), liste = el(doc, 'pruefListe');
+      if (!box || !liste || !Valid) return null;
+      var z = aktualisiere() || zustand();
+      var r = Valid.pruefe(werte(), z);
+
+      liste.innerHTML = '';
+      var i;
+      for (i = 0; i < r.fehler.length; i++)    zeileMelden(liste, r.fehler[i], 'pruef-fehler');
+      for (i = 0; i < r.warnungen.length; i++) zeileMelden(liste, r.warnungen[i], 'pruef-warnung');
+      for (i = 0; i < r.hinweise.length; i++)  zeileMelden(liste, r.hinweise[i], 'pruef-hinweis');
+
+      if (r.ok) {
+        var d = neu('div', 'pruef-ok', null);
+        d.textContent = txt(win, 'uiPruefOk', S.sprache);
+        liste.appendChild(d);
+      }
+      box.hidden = false;
+      klasse(box, 'offen', true);
+      setzeText(el(doc, 'pruefTitel'), txt(win, 'uiPruefTitel', S.sprache));
+      meldung(txt(win, r.ok ? 'uiPruefOk' : 'uiPruefFehler', S.sprache));
+      return r;
+    }
+
+    /* ------------------------------------------------------- Laien-Hilfe */
+    function hilfeZeigen(key, titelKey) {
+      var m = el(doc, 'hilfeModal');
+      if (!m) return false;
+      var l = S.sprache;
+      setzeText(el(doc, 'hilfeTitel'), titelKey ? txt(win, titelKey, l) : '');
+      var was = hilfe(win, key, l, 'was');
+      var ber = hilfe(win, key, l, 'bereich');
+      var tip = hilfe(win, key, l, 'tipp');
+      setzeText(el(doc, 'hilfeWas'), was || txt(win, 'uiHilfeLeer', l));
+      setzeText(el(doc, 'hilfeBereich'), ber);
+      setzeText(el(doc, 'hilfeTipp'), tip);
+      zeige(el(doc, 'hilfeBereich'), !!ber);
+      zeige(el(doc, 'hilfeBereichLbl'), !!ber);
+      zeige(el(doc, 'hilfeTipp'), !!tip);
+      zeige(el(doc, 'hilfeTippLbl'), !!tip);
+      m.hidden = false;
+      klasse(m, 'offen', true);
+      return true;
+    }
+
+    function hilfeSchliessen() {
+      var m = el(doc, 'hilfeModal');
+      if (!m) return false;
+      m.hidden = true;
+      klasse(m, 'offen', false);
+      return true;
+    }
 
     /* ---------------------------------------------------------- Sprache */
     function uebersetze() {
@@ -137,6 +684,7 @@
 
       edition();
       bereicheBeschriften();
+      setzeText(el(doc, 'pruefTitel'), txt(win, 'uiPruefTitel', l));
       meldung('');
     }
 
@@ -200,9 +748,6 @@
       }
     }
 
-    /* Die Bereichstitel und -erklaerungen kommen aus dem Woerterbuch. Sie stehen
-       zusaetzlich als data-i18n in der HTML — hier wird nur nachgezogen, damit
-       ein fehlender Schluessel sofort als [code] sichtbar wird. */
     function bereicheBeschriften() {
       for (var i = 0; i < BEREICHE.length; i++) {
         var c = BEREICHE[i];
@@ -212,6 +757,9 @@
     }
 
     /* ------------------------------------------------------------ Leeren */
+    /* Plan 3.1: leert wirklich ALLES — und stellt danach genau den Zustand
+       her, den die frisch geoeffnete Seite hat (Standardwerte in gesperrten
+       Feldern, ein Bereich offen, keine Meldung). */
     function leeren() {
       var i, e, typ, n = 0;
       var ein = alle(doc, 'input');
@@ -227,6 +775,15 @@
       var ta = alle(doc, 'textarea');
       for (i = 0; i < ta.length; i++) { ta[i].value = ''; n++; }
 
+      for (i = 0; i < ZUSATZ.length; i++) zeige(el(doc, 'zusn_' + ZUSATZ[i].code), false);
+      var box = el(doc, 'pruefBox');
+      if (box) { box.hidden = true; klasse(box, 'offen', false); }
+      var liste = el(doc, 'pruefListe');
+      if (liste) liste.innerHTML = '';
+      hilfeSchliessen();
+
+      aktualisiere();
+      vorbelegen();
       bereicheStandard();
       meldung(txt(win, 'uiGeleert', S.sprache));
       return n;
@@ -276,6 +833,15 @@
         });
       }
 
+      b = el(doc, 'hilfeClose');
+      if (b && b.addEventListener) b.addEventListener('click', function () { hilfeSchliessen(); });
+      b = el(doc, 'hilfeModal');
+      if (b && b.addEventListener) {
+        b.addEventListener('click', function (ev) {
+          if (!ev || !ev.target || ev.target === b) hilfeSchliessen();
+        });
+      }
+
       for (i = 0; i < BEREICHE.length; i++) {
         (function (code) {
           var k = el(doc, 'accBtn_' + code);
@@ -285,6 +851,9 @@
 
       b = el(doc, 'resetBtn');
       if (b && b.addEventListener) b.addEventListener('click', function () { leeren(); });
+
+      b = el(doc, 'calcBtn');
+      if (b && b.addEventListener) b.addEventListener('click', function () { pruefen(); });
 
       /* Noch nicht verdrahtete Knoepfe melden das ehrlich, statt still nichts zu tun. */
       for (i = 0; i < GERUEST_BUTTONS.length; i++) {
@@ -304,6 +873,9 @@
 
     /* --------------------------------------------------------------- Lauf */
     setTheme(START_THEME);
+    baueFormular();
+    aktualisiere();
+    vorbelegen();
     bereicheStandard();
     verdrahte();
     uebersetze();
@@ -323,7 +895,17 @@
       leeren: leeren,
       meldung: meldung,
       infoZeigen: infoZeigen,
-      uebersetze: uebersetze
+      uebersetze: uebersetze,
+      /* N5b */
+      gebaut: function () { return S.gebaut; },
+      zustand: zustand,
+      werte: werte,
+      aktualisiere: aktualisiere,
+      vorbelegen: vorbelegen,
+      eigenerWert: eigenerWert,
+      pruefen: pruefen,
+      hilfeZeigen: hilfeZeigen,
+      hilfeSchliessen: hilfeSchliessen
     };
     api.sitzung = sitzung;
     return sitzung;
@@ -338,6 +920,8 @@
     START_SPRACHE: START_SPRACHE,
     BEREICHE: BEREICHE,
     BEREICH_START_OFFEN: BEREICH_START_OFFEN,
+    ZUORDNUNG: ZUORDNUNG,
+    ZUSATZ: ZUSATZ,
     IDS: IDS,
     KLASSEN: KLASSEN,
     GERUEST_BUTTONS: GERUEST_BUTTONS,

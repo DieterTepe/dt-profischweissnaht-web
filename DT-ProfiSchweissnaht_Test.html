@@ -80,7 +80,7 @@
         </button>
         <div class="acc-body" id="accBody_grund" hidden>
           <p class="acc-hint" id="accHint_grund" data-i18n="sec_grund_hint"></p>
-          <div class="platzhalter" data-i18n="uiFolgtN5b"></div>
+          <div class="feldgruppe" id="host_grund"></div>
         </div>
       </section>
 
@@ -91,7 +91,7 @@
         </button>
         <div class="acc-body" id="accBody_werkstoff" hidden>
           <p class="acc-hint" id="accHint_werkstoff" data-i18n="sec_werkstoff_hint"></p>
-          <div class="platzhalter" data-i18n="uiFolgtN5b"></div>
+          <div class="feldgruppe" id="host_werkstoff"></div>
         </div>
       </section>
 
@@ -102,7 +102,7 @@
         </button>
         <div class="acc-body" id="accBody_naht" hidden>
           <p class="acc-hint" id="accHint_naht" data-i18n="sec_naht_hint"></p>
-          <div class="platzhalter" data-i18n="uiFolgtN5b"></div>
+          <div class="feldgruppe" id="host_naht"></div>
         </div>
       </section>
 
@@ -113,7 +113,7 @@
         </button>
         <div class="acc-body" id="accBody_geometrie" hidden>
           <p class="acc-hint" id="accHint_geometrie" data-i18n="sec_geometrie_hint"></p>
-          <div class="platzhalter" data-i18n="uiFolgtN5b"></div>
+          <div class="feldgruppe" id="host_geometrie"></div>
         </div>
       </section>
 
@@ -124,7 +124,7 @@
         </button>
         <div class="acc-body" id="accBody_lasten" hidden>
           <p class="acc-hint" id="accHint_lasten" data-i18n="sec_lasten_hint"></p>
-          <div class="platzhalter" data-i18n="uiFolgtN5b"></div>
+          <div class="feldgruppe" id="host_lasten"></div>
         </div>
       </section>
 
@@ -135,7 +135,7 @@
         </button>
         <div class="acc-body" id="accBody_beiwerte" hidden>
           <p class="acc-hint" id="accHint_beiwerte" data-i18n="sec_beiwerte_hint"></p>
-          <div class="platzhalter" data-i18n="uiFolgtN5b"></div>
+          <div class="feldgruppe" id="host_beiwerte"></div>
         </div>
       </section>
 
@@ -146,7 +146,7 @@
         </button>
         <div class="acc-body" id="accBody_zusatz" hidden>
           <p class="acc-hint" id="accHint_zusatz" data-i18n="sec_zusatz_hint"></p>
-          <div class="platzhalter" data-i18n="uiFolgtN5b"></div>
+          <div class="feldgruppe" id="host_zusatz"></div>
         </div>
       </section>
 
@@ -157,9 +157,14 @@
         </button>
         <div class="acc-body" id="accBody_ausfuehrung" hidden>
           <p class="acc-hint" id="accHint_ausfuehrung" data-i18n="sec_ausfuehrung_hint"></p>
-          <div class="platzhalter" data-i18n="uiFolgtN5b"></div>
+          <div class="feldgruppe" id="host_ausfuehrung"></div>
         </div>
       </section>
+
+      <div class="pruef-box" id="pruefBox" hidden>
+        <h3 id="pruefTitel" data-i18n="uiPruefTitel">Prüfung der Eingaben</h3>
+        <div id="pruefListe"></div>
+      </div>
 
     </div>
   </section>
@@ -221,6 +226,26 @@
     </div>
     <div class="modal-actions">
       <button type="button" class="btn btn-primary" id="infoClose" data-i18n="close">Schließen</button>
+    </div>
+  </div>
+</div>
+
+<!-- Laien-Hilfe: Was ist das · Üblicher Bereich · Empfehlung (Plan 8, i18n_hilfe.js) -->
+<div class="modal-overlay" id="hilfeModal" role="dialog" aria-modal="true" aria-labelledby="hilfeTitel" hidden>
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="hilfeTitel"></h3>
+    </div>
+    <div class="modal-body">
+      <p class="hilfe-titel" id="hilfeWasLbl" data-i18n="uiHilfeWas">Was ist das?</p>
+      <p class="hilfe-abschnitt" id="hilfeWas"></p>
+      <p class="hilfe-titel" id="hilfeBereichLbl" data-i18n="uiHilfeBereich">Üblicher Bereich</p>
+      <p class="hilfe-abschnitt" id="hilfeBereich"></p>
+      <p class="hilfe-titel" id="hilfeTippLbl" data-i18n="uiHilfeTipp">Empfehlung</p>
+      <p class="hilfe-abschnitt" id="hilfeTipp"></p>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-primary" id="hilfeClose" data-i18n="close">Schließen</button>
     </div>
   </div>
 </div>

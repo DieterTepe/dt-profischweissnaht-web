@@ -5,29 +5,30 @@
 
 > **Diese Datei ersetzt `Schweißnaht.md` vollständig.** Sie enthält den Stand nach dem
 > Konzeptgespräch (2026-07-23), nach der abgeschlossenen Recherche (R1–R6), nach der
-> Abstimmung vom **2026-07-24** (alle offenen Fragen aus Abschnitt 0 geklärt) und nach den
-> abgenommenen Bausteinen **N1, N2, N2b, N2c, N3, N4 und N5a** (Stand 2026-07-27).
+> Abstimmung vom **2026-07-24** (alle offenen Fragen aus Abschnitt 0 geklärt), nach den
+> abgenommenen Bausteinen **N1, N2, N2b, N2c, N3, N4 und N5a** und nach der **gebauten,
+> noch nicht abgenommenen Etappe N5b** (Stand 2026-07-27).
 > Sie ist so geschrieben, dass ein **neuer Chat ohne Vorwissen** damit weiterarbeiten kann.
-> Einstieg dort: **„weiter mit N5b"** — dann der Reihenfolge in Kickoff-Punkt 5b folgen.
+> Einstieg dort: **„weiter mit N5c"** — dann der Reihenfolge in Kickoff-Punkt 5b folgen.
 
 ```
-Plan-Version : 2.17 · Stand 2026-07-27
+Plan-Version : 2.18 · Stand 2026-07-27
 Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                N2c (Nahtbild-Grafik), N3 (Spannungen + beide Welten),
-               N4 (Rechenweg) und **N5a (UI-Grundgerüst)** von Dieter am Handy
+               N4 (Rechenweg) und N5a (UI-Grundgerüst) von Dieter am Handy
                geprüft und ABGENOMMEN.
-               Projektordner /mnt/project/ UND GitHub Pages sind auf diesem Stand —
-               von Dieter am 2026-07-27 bestätigt: alle 13 Module, style.css,
-               beide HTMLs und die drei DEV-ONLY-Dateien liegen aktuell vor.
-               → NÄCHSTER SCHRITT: Etappe **N5b** (Eingabeseite) —
-                 Einstieg „weiter mit N5b". Auftragsvorschlag in Abschnitt 5.1;
-                 **Umfang zuerst mit Dieter bestätigen, dann bauen** (Regel 5c).
+               **N5b (Eingabeseite) ist gebaut, gemessen und ausgeliefert —
+               die Abnahme am Handy steht noch aus.**
+               → NÄCHSTER SCHRITT: erst N5b am Handy prüfen. Danach Etappe **N5c**
+                 (Ergebnisseite) — Einstieg „weiter mit N5c". Auftragsvorschlag in
+                 Abschnitt 5.1; **Umfang zuerst mit Dieter bestätigen, dann bauen**
+                 (Regel 5c).
                  Schnittstellen: 4.5 (naht.js), 4.6 (profil.js),
                  4.7 (svglib.js + schaubild.js), 4.8 (solver.js),
-                 4.9 (rechenweg.js), 4.10 (ui.js).
+                 4.9 (rechenweg.js), 4.10 (ui.js — N5a **und N5b**).
                Große Bausteine (N5, N8, N13, N14) werden in ETAPPEN gebaut — Regel in
                Kickoff-Punkt 5c, Etappen in Abschnitt 5.2.
-Basislinie   : 679 Assertions · DOM-Smokes 234 (voll) + 235 (test) · i18n-Parität 0 Abweichungen
+Basislinie   : 724 Assertions · DOM-Smokes 385 (voll) + 386 (test) · i18n-Parität 0 Abweichungen
                (VERBINDLICH. Basislinie darf nur WACHSEN — nie schrumpfen, nie gelockert werden.)
 Dateistand   : siehe Abschnitt 8.1 — dort steht, was fertig ist und was noch fehlt.
 ```
@@ -81,30 +82,31 @@ welche Dateien zu überschreiben sind** → Dieter bestätigt am Handy → erst 
 Schritt. Danach Plan-Kopf (Version/Status/Basislinie) + Changelog pflegen.
 
 **5b) WIEDEREINSTIEG IN EINEM NEUEN CHAT — genau diese Reihenfolge:**
-Einstiegssatz von Dieter: **„weiter mit N5b"**.
+Einstiegssatz von Dieter: **„weiter mit N5c"**.
 1. Diese Datei komplett lesen (`Schweißnaht-1.md`, sie ist die alleinige Grundlage).
 2. Abschnitt **8.1** lesen: was ist fertig, was fehlt.
 3. Abschnitt **4.5** lesen: die fertige Schnittstelle von `naht.js` (N2).
 4. Abschnitt **4.6** lesen: die fertige Schnittstelle von `profil.js` (N2b) — darauf setzen
    die Grafik und N7 (Presets) auf. Fachlicher Hintergrund steht in **2.2b**.
 5. Abschnitt **4.7** lesen: die fertige Schnittstelle von `svglib.js` + `schaubild.js`
-   (N2c) — darauf setzen N5 (UI), N6b (ISO 2553) und N14 (Kerbfallskizzen) auf.
+   (N2c) — **darauf setzt N5c unmittelbar auf** (Nahtbild-Karte), dazu N6b und N14.
 6. Abschnitt **4.8** lesen: die fertige Schnittstelle von `solver.js` (N3).
 7. Abschnitt **4.9** lesen: die fertige Schnittstelle von `rechenweg.js` (N4) — **darauf
    setzt N5c unmittelbar auf.** Wichtig ist dort besonders, dass N5 nur RENDERT und
    die beiden Häkchenarten (Rechenprobe / Nachweis) nicht vermischt.
-8. Abschnitt **4.10** lesen: die Schnittstelle von `ui.js` (N5a) — **darauf setzen N5b,
-   N5c und N5d unmittelbar auf.** Dort steht auch, was `ui.js` bewusst nicht tut.
-9. Abschnitt **5.1** lesen: der Auftragsvorschlag für die nächste Etappe **N5b**
+8. Abschnitt **4.10** lesen: die Schnittstelle von `ui.js` — **beide Teile**, N5a
+   (Grundgerüst) und N5b (Eingabeseite). Dort steht das Id-Schema, die Zuordnung, die
+   Sichtbarkeitsregel und ausdrücklich, was `ui.js` nicht tut.
+9. Abschnitt **5.1** lesen: der Auftragsvorschlag für die nächste Etappe **N5c**
    (**vor dem Bau mit Dieter bestätigen**), und Abschnitt **5.2**: die vier Etappen von N5.
 10. **Vollständigkeit des Projektordners prüfen** (Liste in 8.1): 13 Module, `style.css`,
    beide HTMLs und **alle drei** DEV-ONLY-Dateien. `dom_smoke_test.js` allein läuft nicht,
    sie ruft `dom_smoke_voll.js` auf — fehlt eine davon, zuerst bei Dieter nachfragen.
 11. Arbeitsordner herstellen (Befehl unter Punkt 6 der Kickoff-Liste), dann
    `node test_naht.js`, `node dom_smoke_voll.js`, `node dom_smoke_test.js` laufen lassen
-   und die Basislinie aus dem Plan-Kopf bestätigen (**679 / 234 / 235 · 0 Fehler**),
+   und die Basislinie aus dem Plan-Kopf bestätigen (**724 / 385 / 386 · 0 Fehler**),
    **bevor** etwas gebaut wird. Weicht etwas ab, erst das klären.
-12. Erst dann N5b bauen — Fließband nach Punkt 5 der Kickoff-Liste.
+12. Erst dann N5c bauen — Fließband nach Punkt 5 der Kickoff-Liste.
 
 **5c) GROSSE BAUSTEINE WERDEN VORHER IN ETAPPEN ZERLEGT — BINDEND**
 *(Dieters Festlegung 2026-07-26, Begründung im Entscheidungslog)*
@@ -971,10 +973,71 @@ Titel und Erklärung kommen aus `sec_<code>` und `sec_<code>_hint`.
 **WAS `ui.js` BEWUSST NICHT TUT:**
 - **es rechnet nichts** und ruft **kein** Rechenmodul auf — N5 rendert nur,
 - es kennt **keine** Werkstoffe, Profile, Nahtbilder oder Beiwerte,
-- es baut das Formular **nicht** selbst: das Gerüst steht als Markup in der HTML, damit
-  jeder Knopf einzeln anklickbar und einzeln prüfbar ist,
 - **kein Gating** — das sitzt gebündelt in `report.js` (N11),
 - **keine Registrierung** — Lizenzzeile und Aktivierung kommen in N12.
+
+### 4.10b Was N5b zu `ui.js` hinzugefügt hat (Eingabeseite)
+
+> **Nur erweitern, nicht umbauen.** Das Formular wird **aus den Modulen erzeugt**, nicht
+> als Markup gepflegt (Dieters Entscheidung 2026-07-27, Begründung im Entscheidungslog):
+> `optionen.js` liefert die Auswahlgruppen, `validate.js` die Felder, `i18n_hilfe.js` die
+> Laien-ⓘ. Es gibt **keine zweite Liste** — der Harness prüft das.
+
+**Erlaubt in `ui.js` sind genau drei Fremdmodule:** `DTNOptions`, `DTNValidate` und die
+i18n-Wörterbücher. Die sechs Rechenmodule und `Math.` bleiben verboten (Assertion S30).
+
+**ID-SCHEMA der erzeugten Elemente** — was der Anwender anklickt, hat eine Id, sonst wäre
+es nicht prüfbar (Regel aus N5a):
+```
+host_<bereich>    Anker in der HTML      row_g_<gruppe>  Zeile einer Auswahl
+lbl_g_<gruppe>    Beschriftung           info_g_<gruppe> Laien-ⓘ
+sel_<gruppe>      das <select>           pf_g_<gruppe>   Pflichtstern
+row_f_<feld>      Zeile eines Feldes     lbl_f_<feld>    Beschriftung
+info_f_<feld>     Laien-ⓘ                fld_<feld>      das <input>
+unit_<feld>       Einheit                pf_f_<feld>     Pflichtstern
+ev_<feld>         „eigener Wert"-Haken   evl_<feld>      dessen Label
+zus_<code>        Freischalt-Haken       zusn_<code>     dessen Hinweiszeile
+```
+
+**`ZUORDNUNG`** — reine Anordnung, keine Fachlogik: welche Gruppe und welches Feld in
+welchem der acht Bereiche erscheint. Der Harness prüft, dass **jede der 20 Gruppen und
+jedes der 29 Felder genau einmal** vorkommt und kein unbekannter Code auftaucht.
+Je Bereich zusätzlich `leit` (Leitauswahl), `optional_wenn` (Bedingung im Format aus
+`optionen.js`) und `etappe` (noch nicht gebaut). **N5b baut 18 Gruppen; `iso5817` und
+`exc` tragen `etappe:'N5d'`** und zeigen dort einen ehrlichen Hinweis statt leerer Fläche.
+
+**Sichtbarkeitsregel für Felder — eine einzige, dokumentierte Regel:**
+1. Pflicht im aktuellen Zustand → sichtbar.
+2. sonst: Bereich hat `optional_wenn` → nur wenn die Bedingung passt.
+3. sonst: Bereich hat `leit` → nur wenn diese Auswahl getroffen ist.
+4. sonst → sichtbar.
+
+**Neue Sitzungsfunktionen:** `gebaut()` · `zustand()` (Auswahlwerte + `<code>_aktiv` der
+Zusatzbereiche) · `werte()` (Feldwerte) · `aktualisiere()` · `vorbelegen()` ·
+`eigenerWert(code, an)` · `pruefen()` · `hilfeZeigen(key, titelKey)` · `hilfeSchliessen()`.
+
+**MILDE ANZEIGE, STRENGE BEREINIGUNG — und die Brücke dazwischen (bindend):**
+`optionen.js` zeigt eine Option noch an, solange ihr Bezugswert **nicht entschieden** ist
+(N1-Log), räumt sie beim Bereinigen aber **streng** weg. Beides zusammen hätte bedeutet:
+der Anwender tippt eine angebotene Option an und sie verschwindet sofort wieder.
+`ui.js` überbrückt das mit `bereinigeSchonend()`: eine weggeräumte Auswahl wird
+**zurückgeholt, solange die milde Regel sie weiterhin anbietet** — aber **nicht**, wenn
+einer ihrer Bezugswerte **gerade** weggefallen ist. Damit bleibt die strenge Regel wirksam
+(Welt A + Alu → Welt B löscht beides), ohne die Bedienung zu sabotieren.
+
+**„eigener Wert" (Plan 3.1):** die 9 überschreibbaren Felder starten **gesperrt**; wo ein
+Standardwert im Feldschema steht, ist er vorbelegt (`gammaM2` 1,25 · `gammaMw` 1,25 ·
+`S` 1,5 · `r_ecke` 0). Der Haken gibt frei, der abgehakte Haken stellt den Tabellenwert
+wieder her. Werte, die aus der **Werkstofftabelle** kommen (`betaW`, `nu`, `Re`,
+`a_steg`, `a_flansch`), bleiben leer — `ui.js` darf `daten.js` nicht kennen; gesetzt
+werden sie vom Rechenkern in N5c.
+
+**„Berechnen" ab N5b:** es **prüft** (`validate.js`, beide Stufen) und meldet ehrlich, was
+fehlt — Feld für Feld markiert. **Gerechnet wird nicht**; das sagt der Prüfkasten auch so.
+
+**„Leeren" (Plan 3.1):** leert wirklich alles und stellt danach **exakt den Zustand der
+frisch geöffneten Seite** her. Der DOM-Smoke vergleicht dazu ein vorher aufgenommenes
+Sichtbarkeitsbild — Zeichen für Zeichen.
 
 ---
 
@@ -995,7 +1058,7 @@ Titel und Erklärung kommen aus `sec_<code>` und `sec_<code>_hint`.
 | **N2c** ✅ | **Nahtbild-Grafik** *(abgenommen 2026-07-26)* | `svglib.js` + `schaubild.js`: SVG-Vorschau des Nahtbilds, Segmente farbig nach Gruppe, Schwerpunkt und Achsen, nicht geschweißte Kanten gestrichelt, Ecklücken sichtbar. Zugleich **Auswahl-Skizze** der Profileingabe. **Schnittstelle: Abschnitt 4.7.** |
 | **N3** ✅ | **Spannungen + beide Welten** *(abgenommen 2026-07-26)* | `solver.js`: σ⊥, τ⊥, τ∥ aus N/Q/M/T · Welt A (EC3, beide Verfahren) · Welt B (klassisch, Tabelle + Formel) · **Nachweis UND Auslegung** mit Aufrundung · Ampel. **Schnittstelle: Abschnitt 4.8.** |
 | **N4** ✅ | **Rechenweg** *(abgenommen 2026-07-26)* | `rechenweg.js`: selbstprüfende Schrittliste für N2/N2b/N3, dreisprachig, zweiter Rechenpfad je Schritt, Rechenprobe und Nachweis getrennt. **Schnittstelle: Abschnitt 4.9.** |
-| **N5** ⬅ | **UI-Basis — LAUFEND: N5a ✅ abgenommen, NÄCHSTER SCHRITT N5b (Etappen in 5.2)** | 2 HTMLs, `style.css`, Formular mit aufklappbaren Bereichen und Freischalt-Haken, Ergebnis-Kacheln, Ampel, i18n, Theme (**Start immer dunkel**), Laien-ⓘ, Block „Ausführung & Dokumentation" (ISO 5817 + EXC). **Erster Handy-Test.** |
+| **N5** ⬅ | **UI-Basis — LAUFEND: N5a ✅ abgenommen, N5b gebaut (Abnahme offen), NÄCHSTER SCHRITT N5c (Etappen in 5.2)** | 2 HTMLs, `style.css`, Formular mit aufklappbaren Bereichen und Freischalt-Haken, Ergebnis-Kacheln, Ampel, i18n, Theme (**Start immer dunkel**), Laien-ⓘ, Block „Ausführung & Dokumentation" (ISO 5817 + EXC). **Erster Handy-Test.** |
 | **N6b** | **ISO-2553-Symbolgenerator** | `symbol.js`: Pfeil-/Gegenseite, a- bzw. z-Maß, Länge, Rundumnaht, Baustellennaht. Nutzt `svglib.js` aus N2c. Bewusst **vor** dem Launch — Verkaufsargument. |
 | **N7** | **Presets** | Die 6 Starter als Profil-/Kantendaten auf `profil.js`, **mit Merkmalen für die kontextbezogene Beispielliste** (3.2). |
 | **N8** | **Assistent** | `assistent.js` (DOM-freie Dialoglogik) + Overlay-UI, Button-Einstieg, tabellengestützt aus `optionen.js`, mit Erklärungen/Tipps/Skizzen je Dialog, Übernahme vorhandener Eingaben. |
@@ -1009,60 +1072,62 @@ Titel und Erklärung kommen aus `sec_<code>` und `sec_<code>_hint`.
 | **N15** | **Verzug & Schrumpfung** | `verzug.js` + Panel, klar als **Abschätzung** gekennzeichnet. |
 | **N16** | **Feinschliff + Build** | Presets ausbauen, Wissenstexte, Code-Audit, Bündelung + Obfuskierung (zwei Bündel, Unterschied nur `DT_EDITION`). **→ V1-Launch.** |
 
-### 5.1 Auftragsvorschlag für die nächste Etappe **N5b — Eingabeseite**
+### 5.1 Auftragsvorschlag für die nächste Etappe **N5c — Ergebnisseite**
 
-> **N5a ist abgenommen — N5b kann beginnen, sobald der Umfang steht.**
+> **Vorbedingung: N5b muss am Handy geprüft und abgenommen sein.**
 > **Erst bestätigen, dann bauen** (Regel aus 5.2): Der Umfang unten ist der Vorschlag;
 > Dieter sagt ja oder korrigiert ihn, **bevor** das erste Codezeichen entsteht.
 
-Alles, was N5b braucht, ist fertig und liefert **Codes statt Texte**: `optionen.js` die
-20 Auswahlgruppen samt Verträglichkeitsregeln (**die eine Filterfunktion**, 3.4),
-`validate.js` die 29 Felder mit zweistufiger Prüfung, `i18n_hilfe.js` die Laien-ⓘ-Texte.
-**N5 rechnet nichts — N5 rendert.**
+Alles, was N5c braucht, ist fertig: `solver.js` rechnet (4.8), `rechenweg.js` beschriftet
+(4.9), `schaubild.js` zeichnet (4.7) — alle drei liefern **Codes statt Texte**.
+**N5c rechnet nichts selbst — N5c rendert**, und zwar aus **einem** Aufruf:
+`DTNRechenweg.ausErgebnis(ergebnis, eingabe)` (einmal rechnen, dann beschriften).
 
-**Vorgeschlagener Umfang von N5b:**
-- **Die acht Bereiche aus N5a füllen**: je Bereich die zugehörigen Auswahlgruppen und
-  Felder, gebaut aus `optionen.js`/`validate.js` — **keine Liste im Code doppelt pflegen**.
-- **Die eine Filterfunktion** verdrahten: eine Auswahl blendet unpassende Optionen sofort
-  aus (3.4), beim Bereinigen gilt die strenge Regel aus dem N1-Log.
-- **Freischalt-Haken** an den Zusatzbereichen (standardmäßig aus, 2.6).
-- **„eigener Wert"-Haken überall** (3.1): Tabellenwert vorbelegen und sperren, per Haken
-  frei überschreibbar.
-- **Laien-ⓘ an jedem Feld und jeder Gruppe** (Was ist das · Bereich · Empfehlung),
-  dreisprachig, aus `i18n_hilfe.js`.
-- **„Leeren" leert wirklich alles** — der Rahmen dafür steht in `ui.js` und wird auf die
-  neuen Felder erweitert.
-- **Eingabefehler ehrlich anzeigen** statt still zu rechnen (Meldungscodes aus `validate.js`).
+**Vorgeschlagener Umfang von N5c:**
+- **„Berechnen" führt zu Ende:** Eingaben aus `ui.js` → `solver.js` → `rechenweg.js`.
+  Der Prüfschritt aus N5b bleibt davor stehen; erst wenn er sauber ist, wird gerechnet.
+- **Ergebnis-Kacheln** (σ_v, Grenzwert, Ausnutzung η, gewähltes a) mit **Ampel**.
+- **Nahtbild-Grafik** aus `schaubild.js` in die vorhandene Karte, mit dreisprachiger
+  Legende aus den Legendencodes.
+- **Rechenweg vollständig angezeigt** — 11 Abschnitte, Formel im Klartext, eingesetzte
+  Zahlen, Quelle je Schritt.
+- **Die zwei Häkchenarten optisch getrennt** (Plan 4.9, bindend seit N4): Rechenprobe
+  (`haken`, `false` = Programmfehler) und Nachweis (`erfuellt`, `false` = die Naht trägt
+  so nicht). Die CSS-Klassen `rw-haken` und `rw-nachweis` stehen dafür schon bereit.
+- **Liste 2.4 sichtbar** („was der Rechner NICHT prüft"), dazu Warnungen und ehrliche
+  Lücken.
+- **Zahlformat je Sprache** über `rechenweg.rendere(rw, sprache)` — DE/PT Komma, EN Punkt.
 
-**Am Handy prüfbar:** Man kann einen Fall wirklich eingeben; unsinnige Kombinationen
-erscheinen gar nicht erst.
+**Am Handy prüfbar:** ein vollständiger Nachweis von der Eingabe bis zum Ergebnis.
 
 **Abzuliefern wie immer:** geänderte Module, `<script src>` an der richtigen Stelle in
-beiden HTMLs, DOM-Smokes erweitert, Harness um eine Sektion **S30**.
+beiden HTMLs, DOM-Smokes erweitert, Harness um eine Sektion **S31**.
 **Recherche:** nicht nötig.
 
 **Später (nicht V1):** **Normprofil-Katalog** (IPE/HEA/HEB/UPE/UPN/RHS/Rohr, 2.2b Stufe 2),
 unterbrochene Nähte, Loch-/Schlitznähte, weitere Kerbfälle, FKM-Richtlinie, Kranbau-Regelwerke,
 AWS/US-Normen, EN 1993-1-8:2024 (2. Generation, β_w,mod — Werte noch nicht belegbar).
 
-### 5.1b Was N5a geliefert hat *(abgeschlossen, hier nur noch zum Nachschlagen)*
+### 5.1b Was N5a und N5b geliefert haben *(abgeschlossen, hier nur noch zum Nachschlagen)*
 
+**N5a (abgenommen 2026-07-27):**
 - **Beide HTMLs vollständig neu**, ohne die Zwischen-Statusseite aus N1–N4: Kopfzeile mit
   Marke, Untertitel und Lizenzzeile, Sprachumschalter DE/EN/PT mit Flaggen-SVG,
-  Theme-Knopf, Info-ⓘ mit Impressum, Subbar („Beispiel laden", Assistent, Berechnen,
-  Leeren) und **Aktionsleiste oben** (Bezeichnungsfeld, Speichern, Öffnen, Drucken/PDF,
-  Word) — als Gerüst; verdrahtet wird in N7/N8/N11.
-- **`ui.js` neu** (Schnittstelle in **4.10**): Sprache, Theme, Aufklappbereiche, Leeren,
-  Info-Dialog, Editionsweiche. DOM-nah, ohne jede Fachlogik.
-- **Startdarstellung immer dunkel** (3.1) — schon im `<html>`-Tag, damit nichts aufblitzt.
-- **`style.css`** auf vollen Umfang: Aufklappbereiche, Formularraster, Ergebniskacheln,
-  Ampel, Rechenwegzeilen, Dialog. Noch leere Klassen sind bewusst angelegt.
-- **Leeres Formulargerüst** mit acht aufklappbaren Bereichen.
-- **Unterschied der beiden HTMLs weiterhin genau eine Zeile** (durch Assertion gesichert).
+  Theme-Knopf, Info-ⓘ mit Impressum, Subbar und **Aktionsleiste oben**.
+- **`ui.js` neu**: Sprache, Theme, Aufklappbereiche, Leeren, Info-Dialog, Editionsweiche.
+- **Startdarstellung immer dunkel** (3.1) — schon im `<html>`-Tag.
+- **`style.css`** auf vollen Umfang; **leeres Formulargerüst** mit acht Bereichen.
 
-**Später (nicht V1):** **Normprofil-Katalog** (IPE/HEA/HEB/UPE/UPN/RHS/Rohr, 2.2b Stufe 2),
-unterbrochene Nähte, Loch-/Schlitznähte, weitere Kerbfälle, FKM-Richtlinie, Kranbau-Regelwerke,
-AWS/US-Normen, EN 1993-1-8:2024 (2. Generation, β_w,mod — Werte noch nicht belegbar).
+**N5b (gebaut 2026-07-27, Abnahme steht aus):**
+- **Das Formular wird aus `optionen.js`/`validate.js` erzeugt** — 18 Auswahlgruppen und
+  alle 29 Felder, festes Id-Schema, keine zweite Liste (Schnittstelle in **4.10b**).
+- **DIE eine Filterfunktion verdrahtet** (3.4), samt der Brücke zwischen milder Anzeige
+  und strenger Bereinigung.
+- **„eigener Wert"-Haken** an den 9 überschreibbaren Werten, vorbelegt und gesperrt.
+- **Laien-ⓘ an jeder Gruppe und jedem Feld** als eigener Dialog, dreisprachig.
+- **Freischalt-Haken** der vier Zusatzbereiche, standardmäßig aus.
+- **„Berechnen" prüft** und markiert fehlerhafte Felder; **„Leeren"** führt exakt in den
+  Startzustand zurück.
 
 ### 5.2 Etappenteilung der großen Bausteine *(Regel in Kickoff-Punkt 5c)*
 
@@ -1076,7 +1141,7 @@ AWS/US-Normen, EN 1993-1-8:2024 (2. Generation, β_w,mod — Werte noch nicht be
 | Etappe | Inhalt | Am Handy prüfbar |
 |---|---|---|
 | **N5a** ✅ | *(abgenommen 2026-07-27)* Grundgerüst: beide HTMLs neu, `ui.js`, `style.css` — Kopfzeile mit Marke und Lizenzzeile, Sprachumschalter DE/EN/PT, Theme-Button mit **Start immer dunkel** (3.1), Info-ⓘ, Subbar, Aktionsleiste, leeres Formulargerüst mit acht aufklappbaren Bereichen. Die Zwischen-Statusseite aus N1–N4 ist weg. **Schnittstelle: 4.10.** | Sieht aus wie ein Programm, startet dunkel, drei Sprachen laufen |
-| **N5b** | Eingabeseite: alle Auswahlgruppen aus `optionen.js` über **die** Filterfunktion, alle Felder aus `validate.js`, Freischalt-Haken, **„eigener Wert"-Haken überall**, Laien-ⓘ an jedem Feld, „Leeren" leert wirklich alles (3.1) | Man kann einen Fall wirklich eingeben |
+| **N5b** ⬅ | *(gebaut 2026-07-27, Abnahme steht aus)* Eingabeseite: 18 Auswahlgruppen aus `optionen.js` über **die** Filterfunktion, alle 29 Felder aus `validate.js`, Freischalt-Haken, **„eigener Wert"-Haken**, Laien-ⓘ an jedem Feld und jeder Gruppe, „Berechnen" prüft, „Leeren" führt in den Startzustand (3.1). **Schnittstelle: 4.10b.** | Man kann einen Fall wirklich eingeben |
 | **N5c** | Ergebnisseite: Ergebnis-Kacheln, Ampel, Nahtbild-Grafik eingebunden, **Rechenweg aus N4 angezeigt**, Liste 2.4, Warnungen und ehrliche Lücken sichtbar | Ein vollständiger Nachweis von Eingabe bis Ergebnis |
 | **N5d** | Block „Ausführung & Dokumentation" (ISO 5817 + EXC, ehrlich als nicht rechenwirksam beschriftet, 2.7) | Der Block klappt auf und erscheint in der Ausgabe |
 
@@ -1095,8 +1160,8 @@ AWS/US-Normen, EN 1993-1-8:2024 (2. Generation, β_w,mod — Werte noch nicht be
 | **N14a** | `kerbfall.js`: **Struktur vollständig** (Codes, Kategorien, Anwendungsbedingungen, Verweis auf Skizze) mit den ersten Details — ab hier ist jede Lücke sichtbar statt still |
 | **N14b…** | Füllung in Etappen von je 8–12 Details, jedes mit eigener SVG-Skizze und **2 Quellen**. Hier wird Dieter nach seinen Praxis-Kerbfällen gefragt (Reihenfolge der Füllung) |
 
-**N5a ist mit Dieter abgestimmt und der Auftrag steht ausformuliert in 5.1.**
-N5b bis N5d werden jeweils **vor** ihrem Bau bestätigt.
+**N5a und N5b sind gebaut; der Auftrag für N5c steht ausformuliert in 5.1.**
+N5c und N5d werden jeweils **vor** ihrem Bau bestätigt.
 
 **Nicht geteilt** (einteilig): N6b, N7, N9, N10, N11, N12, N15 — bei N4 hat sich die
 Einschätzung bestätigt.
@@ -1182,14 +1247,14 @@ verdrahtet, Sperr-Overlay in der Testversion, Registrierung + Long-Press-Reset.
 **Referenzdateien (read-only, nur Muster):** `DT-ProfiPassung_Testversion-Orginal.html` ·
 `DT-ProfiPassung.html` · `DT-ProfiPassung_Test.html`
 
-### 8.1 Dateistand nach N5a *(Stand 2026-07-26)*
+### 8.1 Dateistand nach N5b *(Stand 2026-07-27)*
 
 **Produktdateien (13 Module + style.css + 2 HTMLs):**
 | Datei | Stand |
 |---|---|
-| `DT-ProfiSchweissnaht.html` | **N5a VOLLSTÄNDIG NEU** — Voll-Edition (`DT_EDITION='full'`), lädt **13 Module**, Grundgerüst der Oberfläche. Die Zwischen-Statusseite aus N1–N4 ist **entfallen**; es gibt nur noch **ein** Inline-Skript: die Editionsweiche |
-| `DT-ProfiSchweissnaht_Test.html` | **N5a VOLLSTÄNDIG NEU** — Test-Edition, **durch Assertion verifiziert: Unterschied genau eine Zeile** |
-| `ui.js` | **N5a NEU** — Sprache, Theme (Start dunkel), Aufklappbereiche, Leeren, Info-Dialog, Editionsweiche. Schnittstelle in **4.10**. Ohne jede Fachlogik |
+| `DT-ProfiSchweissnaht.html` | **N5b geändert** — Voll-Edition (`DT_EDITION='full'`), lädt 13 Module. Die acht Platzhalter sind zu den Ankern `host_<bereich>` geworden; dazu Prüfkasten und Laien-Hilfe-Dialog |
+| `DT-ProfiSchweissnaht_Test.html` | **N5b geändert** — Test-Edition, **durch Assertion verifiziert: Unterschied genau eine Zeile** |
+| `ui.js` | **N5b stark erweitert** — Formularaufbau aus `optionen.js`/`validate.js`, Filterfunktion, „eigener Wert"-Haken, Laien-ⓘ, Freischalt-Haken, Prüfung. Schnittstelle in **4.10 + 4.10b**. Weiterhin ohne Rechenmodul und ohne `Math.` |
 | `daten.js` | N1, unverändert |
 | `naht.js` | N2, unverändert — Schnittstelle in 4.5 |
 | `profil.js` | N2b, unverändert — Schnittstelle in 4.6 |
@@ -1199,48 +1264,37 @@ verdrahtet, Sperr-Overlay in der Testversion, Registrierung + Long-Press-Reset.
 | `rechenweg.js` | N4, unverändert — Schnittstelle in 4.9 |
 | `optionen.js` | N3, unverändert — 20 Gruppen, 89 Optionen |
 | `validate.js` | N3, unverändert — 29 Felder |
-| `i18n_kern.js` | **N5a erweitert** — 520 → **552 Schlüssel** (8 Bereichstitel + 8 Erklärungen, Dialog-, Leer- und Gerüsttexte) |
-| `i18n_hilfe.js` | N4, unverändert — 64 Laien-ⓘ-Einträge |
+| `i18n_kern.js` | **N5b erweitert** — 552 → **568 Schlüssel** (16 neue Bedientexte; `uiGeruest` auf den N5b-Stand gesetzt) |
+| `i18n_hilfe.js` | N4, unverändert — 64 Laien-ⓘ-Einträge, decken **alle** 20 Gruppen und 29 Felder ab |
 | `i18n_kerbfall.js` | Gerüst, unverändert (Füllung in N14) |
-| `style.css` | **N5a stark gewachsen** — Aktionsleiste, Aufklappbereiche, Formularraster, Ergebniskacheln, Ampel, Rechenwegzeilen (Rechenprobe und Nachweis getrennt), Dialog. Noch leere Klassen sind bewusst angelegt |
+| `style.css` | **N5b gewachsen** — Feldzeilen, Beschriftung/Einheit/Pflichtstern, gesperrte Felder, fehlerhafte Zeilen, Zusatzhaken, Prüfkasten, Hilfetexte; `.feld` auf echten Bedienelementen neutralisiert |
 
 **DEV-ONLY — nur in `/mnt/project/`, NIE ausliefern und nicht auf GitHub nötig:**
-`test_naht.js` (**679 Assertions**, Sektionen S1–S29) · `dom_smoke_voll.js` (**234 Prüfungen**,
-in N5a **neu geschrieben**: Mini-DOM-Shim mit Attributen und `querySelectorAll`, startet
-`ui.js` real) · `dom_smoke_test.js` (**235 Prüfungen**, ruft den Lauf aus `dom_smoke_voll.js`
-auf; in N5a **unverändert**).
+`test_naht.js` (**724 Assertions**, Sektionen S1–S30) · `dom_smoke_voll.js` (**385 Prüfungen**,
+in N5b um `appendChild` samt Registrierung erzeugter Elemente erweitert) ·
+`dom_smoke_test.js` (**386 Prüfungen**, ruft den Lauf aus `dom_smoke_voll.js` auf;
+in N5b **unverändert**).
 ⚠ **Beide Smoke-Dateien müssen im Projektordner liegen** — `dom_smoke_test.js` allein läuft nicht.
 
 **Noch nicht gebaut:** `symbol.js` (N6b) · `assistent.js` (N8) · `thermik.js` (N9) ·
 `kosten.js` (N10) · `report.js` (N11) · `ermuedung.js` (N13) · `kerbfall.js` (N14) ·
 `verzug.js` (N15).
 
-**Von Dieter am 2026-07-27 bestätigt:** Projektordner `/mnt/project/` und GitHub tragen
-genau diesen Stand. Die N5a-Lieferung ist eingespielt, am Handy geprüft und **abgenommen** —
-alles läuft sauber.
-
-**N5a-Lieferung (2026-07-26/27), eingespielt:** `DT-ProfiSchweissnaht.html`,
-`DT-ProfiSchweissnaht_Test.html`, `ui.js` (neu), `style.css`, `i18n_kern.js`,
-`test_naht.js`, `dom_smoke_voll.js`, `Schweißnaht-1.md`.
-**Unverändert bleiben:** alle Rechenmodule aus N1–N4, `i18n_hilfe.js`, `i18n_kerbfall.js`
-und `dom_smoke_test.js`.
+**N5b-Lieferung (2026-07-27):** `DT-ProfiSchweissnaht.html`, `DT-ProfiSchweissnaht_Test.html`,
+`ui.js`, `style.css`, `i18n_kern.js`, `test_naht.js`, `dom_smoke_voll.js`, `Schweißnaht-1.md`.
+**Unverändert bleiben:** alle Rechenmodule aus N1–N4, `optionen.js`, `validate.js`,
+`i18n_hilfe.js`, `i18n_kerbfall.js` und `dom_smoke_test.js`.
 
 **Erste Handlung im neuen Chat:** Vollständigkeit gegen die Tabelle oben prüfen
 (**13 Module**, `style.css`, beide HTMLs, **alle drei** DEV-ONLY-Dateien), Arbeitsordner
 herstellen, die drei Testläufe starten.
-Melden müssen sie **679 / 234 / 235 · 0 Fehler**. Weicht etwas ab, erst das klären —
+Melden müssen sie **724 / 385 / 386 · 0 Fehler**. Weicht etwas ab, erst das klären —
 nicht bauen.
 
-**Ehrlich zur Basislinie:** Mit N5a ist die Zwischen-Statusseite entfallen — damit sind rund
-80 DOM-Smoke-Prüfungen weggefallen, die den *Inhalt* dieser Seite geprüft haben (Nahtbild-,
-Profil-, Grafik-, Spannungs- und Rechenwegkarte). Ersetzt wurden sie durch mehr als 130 neue
-Prüfungen an der echten Oberfläche. Die **Rechenkerne selbst sind dadurch nicht schlechter
-abgesichert**: sie hängen am Harness (679 Assertions), nicht am Smoke. Die Zahl ist trotzdem
-gewachsen: 182 → 234 bzw. 183 → 235.
-
-**Was N5b überschreiben wird** (zur Vorwarnung, nicht als Auftrag): `ui.js` wächst um den
-Formularaufbau, beide HTMLs bekommen die gefüllten Bereiche, `style.css` und
-`i18n_kern.js` wachsen, Harness und DOM-Smokes wachsen mit.
+**Was N5c überschreiben wird** (zur Vorwarnung, nicht als Auftrag): `ui.js` wächst um die
+Ergebnisdarstellung und ruft dort **erstmals** Rechenmodule auf — die Assertion auf
+Fachlogikfreiheit in S29/S30 muss dann bewusst umgestellt werden, statt sie stillschweigend
+zu lockern. `style.css` und `i18n_kern.js` wachsen, Harness und DOM-Smokes wachsen mit.
 Die Rechenmodule N1–N4 bleiben unberührt.
 
 ---
@@ -1483,6 +1537,51 @@ Die Rechenmodule N1–N4 bleiben unberührt.
 - **Zwei vermeintliche Fehler waren meine Testeingaben**, nicht der Code: ein erfundener
   Zusatzwerkstoff-Code und ein absurdes Torsionsmoment. `solver.js` hat in beiden Fällen
   ehrlich gemeldet, woran es lag — genau wie vorgesehen.
+
+**Aus der Abstimmung 2026-07-27 (vor N5b) — wie das Formular entsteht:**
+- **Frage:** Markup für 18 Gruppen und 29 Felder von Hand in beide HTMLs schreiben, oder
+  das Formular aus `optionen.js`/`validate.js` erzeugen?
+- **Entschieden: erzeugen.** Handmarkup hätte die 89 Optionen ein zweites Mal geführt und
+  jede spätere Änderung dreifach nötig gemacht — genau das, was 3.4 und 4.2 verhindern
+  sollen. Dieter hat die Entscheidung an Claude gegeben mit der Auflage „gründlich prüfen".
+- **Preis, bewusst bezahlt:** der Mini-DOM-Shim musste `appendChild` lernen und erzeugte
+  Elemente registrieren. DEV-ONLY, das Produkt berührt es nicht.
+- **Die N5a-Regel bleibt in der Sache erhalten:** *was der Anwender anklickt, bekommt eine
+  Id.* Sie wird jetzt durch ein festes, im Harness geprüftes Id-Schema erfüllt (4.10b)
+  statt durch Handmarkup. Der Grund für die Regel war die Prüfbarkeit, nicht die HTML.
+
+**Aus N5b (2026-07-27) — Festlegungen, die beim Bauen entstanden sind:**
+- **Milde Anzeige und strenge Bereinigung brauchen eine Brücke.** Der Smoke hat es sofort
+  gefunden: `optionen.js` bietet „umlaufende Kehlnaht" an, solange die Stoßart nicht
+  gewählt ist (milde Regel, N1-Log) — `bereinige()` löscht sie im selben Atemzug wieder
+  (strenge Regel). Am Handy hätte der Anwender getippt und die Auswahl wäre verschwunden.
+  `ui.js` holt eine so entfernte Auswahl deshalb zurück, **solange die milde Regel sie
+  weiterhin anbietet**.
+- **Die erste Fassung dieser Rücknahme war zu großzügig** und rettete auch Werte, deren
+  Bezug gerade weggefallen war: Wechsel auf Welt B löschte „Aluminium", ließ aber den
+  Aluminiumwerkstoff stehen. Jetzt gilt: **fiel ein Bezugswert gerade weg, wird nichts
+  zurückgeholt** — die strenge Regel behält dort das letzte Wort. Beide Fälle sind als
+  Assertion und im Smoke festgenagelt.
+- **Eine Sichtbarkeitsregel, nicht zwanzig Sonderfälle.** Nicht-Pflichtfelder erscheinen
+  erst, wenn die Leitauswahl ihres Bereichs getroffen ist (`leit`), bzw. wenn eine
+  ausdrückliche Bedingung passt (`optional_wenn`). Sonst stünde am Handy die halbe
+  Eingabeseite leer herum. Die Regel steht in 4.10b und wird geprüft.
+- **`ui.js` darf `daten.js` nicht kennen** — deshalb bleiben die Tabellenwerte `betaW`,
+  `nu`, `Re`, `a_steg` und `a_flansch` im Formular leer und gesperrt, statt dass die
+  Oberfläche sie errät. Gesetzt werden sie vom Rechenkern in N5c. Nur die vier Werte mit
+  Standard im Feldschema sind vorbelegt (γ_M2, γ_Mw, S, r_ecke).
+- **„Leeren" ist jetzt scharf definiert:** exakt der Zustand der frisch geöffneten Seite.
+  Das ist prüfbar — der Smoke vergleicht ein vorher aufgenommenes Sichtbarkeitsbild — und
+  war vorher nur eine Formulierung.
+- **„Berechnen" prüft, statt zu schweigen.** Ein Knopf, der am leeren Formular nichts tut,
+  wirkt kaputt. Er läuft jetzt durch beide Prüfstufen von `validate.js`, markiert die
+  betroffenen Felder und sagt ausdrücklich, dass das Rechnen in N5c folgt.
+- **Ein Stilfehler, den nur das Nachrechnen fand:** die Klasse `.feld` aus N5a ist ein
+  Container-Stil (`display:grid`) und saß nun auf echten Eingabefeldern. Neutralisiert,
+  bevor es am Handy auffällt.
+- **Für N5c vorgemerkt:** dort ruft `ui.js` **erstmals** Rechenmodule auf. Die Assertion
+  auf Fachlogikfreiheit muss dann **bewusst umgestellt** werden (rendern erlaubt, rechnen
+  weiterhin nicht) — nicht stillschweigend gelockert.
 
 **Aus der Rückmeldung 2026-07-27 (N5a abgenommen):**
 - N5a von Dieter am Handy geprüft: die Oberfläche startet dunkel, die drei Sprachen laufen
@@ -1781,6 +1880,35 @@ Vorbehalt auf **„weiter mit N5b"**. Code unverändert.
 **Basislinie unverändert und verbindlich: 679 Assertions · Smokes 234/235 · i18n-Parität 0.**
 **Nächster Schritt: N5b (Eingabeseite) — Einstieg „weiter mit N5b". Auftragsvorschlag in
 Abschnitt 5.1, Umfang vor dem Bau bestätigen. Schnittstelle von `ui.js` in Abschnitt 4.10.**
+**v2.18 (2026-07-27):** **Baustein N5, Etappe N5b (Eingabeseite) gebaut und ausgeliefert.**
+Vor dem Bau entschieden: **das Formular wird aus `optionen.js`/`validate.js` erzeugt**,
+nicht als Markup gepflegt (Begründung im Entscheidungslog).
+`ui.js` erzeugt jetzt **18 Auswahlgruppen und alle 29 Felder** mit festem, im Harness
+geprüftem Id-Schema; **DIE eine Filterfunktion** ist verdrahtet, dazu „eigener Wert"-Haken
+an den 9 überschreibbaren Werten, **Laien-ⓘ an jeder Gruppe und jedem Feld** als eigener
+Dialog, die vier **Freischalt-Haken** (standardmäßig aus) und ein **Prüfkasten**:
+„Berechnen" läuft durch beide Stufen von `validate.js` und markiert die betroffenen Felder
+— **gerechnet wird nicht, das folgt in N5c**. „Leeren" ist scharf definiert als *exakt der
+Zustand der frisch geöffneten Seite* und wird gegen ein aufgenommenes Sichtbarkeitsbild
+geprüft. `iso5817` und `exc` bleiben ausdrücklich für **N5d** stehen, mit ehrlichem Hinweis
+statt leerer Fläche.
+Beide HTMLs um acht Anker, Prüfkasten und Hilfe-Dialog erweitert — **Unterschied weiterhin
+genau eine Zeile**. `style.css` um Feldzeilen, gesperrte Felder, fehlerhafte Zeilen,
+Zusatzhaken, Prüfkasten und Hilfetexte gewachsen; `i18n_kern.js` auf **568 Schlüssel**.
+`dom_smoke_voll.js` um `appendChild` samt Registrierung erzeugter Elemente erweitert (sonst
+prüfte der Smoke eine Oberfläche, die es so nicht gibt). Neue Harness-Sektion **S30**:
+Zuordnung vollständig und doppelfrei, alle Beschriftungen und Einheiten dreisprachig,
+Laien-ⓘ lückenlos, jeder Textschlüssel aus `ui.js` belegt, Id-Schema in beiden HTMLs,
+und die Filterregel selbst festgenagelt.
+Neuer Abschnitt **4.10b** (Schnittstelle der Eingabeseite), Abschnitt **5.1** neu als
+Auftragsvorschlag für **N5c**, **5.1b** hält N5a und N5b fest; Kickoff-Punkt 5b auf N5c
+umgestellt.
+**Drei echte Fehler beim Bauen gefunden und behoben:** eine gerade getroffene Auswahl
+verschwand durch die strenge Bereinigung wieder; die erste Korrektur rettete umgekehrt zu
+viel (Alu-Werkstoff überlebte den Wechsel auf Welt B); und die Container-Klasse `.feld`
+saß auf echten Eingabefeldern.
+**Basislinie 679 → 724 Assertions · Smokes 234/235 → 385/386 · i18n-Parität 0.**
+**Nächster Schritt: N5b am Handy prüfen, dann N5c (Ergebnisseite) abstimmen und bauen.**
 ═══════════════════════════════════════════════════════════════════════════
 Ende Schweißnaht-1.md · DT-ProfiSchweissnaht
 ═══════════════════════════════════════════════════════════════════════════
