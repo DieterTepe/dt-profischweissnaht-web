@@ -290,13 +290,13 @@
     fld_t2: {
       de: { was: 'Die Dicke des zweiten verbundenen Bauteils. Maßgebend für die Festigkeit ist immer das schwächere Bauteil.',
             bereich: '4 bis 80 mm.',
-            tipp: 'Sind beide Bleche gleich dick, hier denselben Wert eintragen.' },
+            tipp: 'Freiwillig: Bleibt das Feld leer, wird die Dicke je Nahtabschnitt aus dem Profil verwendet. Sind beide Bleche gleich dick, hier denselben Wert eintragen.' },
       en: { was: 'Thickness of the second connected part. The weaker part always governs the strength.',
             bereich: '4 to 80 mm.',
-            tipp: 'If both plates are equal, enter the same value here.' },
+            tipp: 'Optional: if left empty, the thickness of each weld section is taken from the profile. If both plates are equal, enter the same value here.' },
       pt: { was: 'Espessura da segunda peça ligada. A peça mais fraca é sempre determinante.',
             bereich: '4 a 80 mm.',
-            tipp: 'Se as chapas forem iguais, introduza o mesmo valor.' }
+            tipp: 'Facultativo: se ficar vazio, é usada a espessura de cada troço a partir do perfil. Se as chapas forem iguais, introduza o mesmo valor.' }
     },
 
     fld_b: {

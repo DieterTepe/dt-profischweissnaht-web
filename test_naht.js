@@ -201,12 +201,32 @@ var rMin = Valid.pruefe({ a: 2, l: 200, t1: 10, t2: 10, b: 120, N: 1, Q: 0, gamm
 ok(codes(rMin.fehler).indexOf('msg_a_min_ec3') >= 0, 'a = 2 mm verletzt das Mindest-a-Mass nach EN 1993-1-8');
 var rMax = Valid.pruefe({ a: 9, l: 400, t1: 10, t2: 10, b: 120, N: 1, Q: 0, gammaM2: 1.25 }, z1);
 ok(codes(rMax.warnungen).indexOf('msg_a_max') >= 0, 'a > 0,7*t_min wird als Warnung gemeldet');
-var rKurz = Valid.pruefe({ a: 5, l: 35, t1: 10, t2: 10, b: 120, N: 1, Q: 0, gammaM2: 1.25 }, z1);
-ok(codes(rKurz.fehler).indexOf('msg_leff_min') >= 0, 'zu kurze Naht: l_eff < max(6a;30) wird erkannt');
-var rLang = Valid.pruefe({ a: 4, l: 1000, t1: 10, t2: 10, b: 120, N: 1, Q: 0, gammaM2: 1.25 }, z1);
-ok(codes(rLang.warnungen).indexOf('msg_l_lang') >= 0, 'Naht laenger als 150*a: Abminderung wird angemahnt');
-var rGrenze = Valid.pruefe({ a: 4, l: 600, t1: 10, t2: 10, b: 120, N: 1, Q: 0, gammaM2: 1.25 }, z1);
-ok(codes(rGrenze.warnungen).indexOf('msg_l_lang') < 0, 'genau 150*a ist noch nicht abzumindern (Grenzfall)');
+/* ---- FELDBEREINIGUNG N5c-1 (Plan 5.1) --------------------------------
+   Das Feld 'l' ist entfallen. Die beiden Laengenpruefungen sind damit NICHT
+   verschwunden — sie haengen jetzt am Geometrieweg: solver.js fuehrt sie je
+   Segment mit denselben Grenzen an der echten Nahtlaenge aus profil.js.
+   Geprueft wird hier beides: dass das Feld weg ist UND dass die Pruefung
+   noch greift. ----------------------------------------------------------- */
+ok(Valid.feld('l') === null, 'Feld l ist aus dem Schema entfernt (Nahtlaenge kommt aus der Geometrie)');
+eq(Valid.SCHEMA.length, 28, 'das Feldschema hat nach der Bereinigung 28 Felder');
+
+function laengenFall(b, a) {
+  var r = Solver.rechne({
+    welt: 'A', rechenrichtung: 'nachweis', nachweisverfahren: 'richtungsbezogen',
+    werkstoffgruppe: 'stahl', werkstoff: 'S235', nahtart: 'kehl_doppel',
+    profil_eingabe: { profil: 'blech', kanten: 'flanken', b: b, t1: 20, a: a },
+    N: 50000, gammaM2: 1.25
+  });
+  return codes(r.warnungen || []);
+}
+ok(laengenFall(35, 5).indexOf('msg_sv_l_eff_zu_kurz') >= 0,
+   'zu kurze Naht: l_eff < max(6a;30) wird am Nahtbild erkannt');
+ok(laengenFall(1008, 4).indexOf('msg_sv_lange_naht') >= 0,
+   'Naht laenger als 150*a: Abminderung wird am Nahtbild angemahnt');
+ok(laengenFall(608, 4).indexOf('msg_sv_lange_naht') < 0,
+   'genau 150*a ist noch nicht abzumindern (Grenzfall)');
+ok(laengenFall(608, 4).indexOf('msg_sv_l_eff_zu_kurz') < 0,
+   'und der Grenzfall gilt auch nicht faelschlich als zu kurz');
 
 var zAlu = { welt: 'A', rechenrichtung: 'nachweis', werkstoffgruppe: 'alu', werkstoff: 'AW6082',
              zustand: 'T6', zusatzwerkstoff: '5356', stossart: 't_stoss', nahtart: 'kehl_doppel',
@@ -1746,12 +1766,23 @@ eq(uiDoppelt, 0, 'kein Bereichscode doppelt');
 
 /* --- ui.js bleibt fachlogikfrei ---------------------------------------- */
 var uiSrc = fsU.readFileSync(__dirname + '/ui.js', 'utf8');
-var uiVerboten = ['DTNSolver', 'DTNNaht', 'DTNProfil', 'DTNRechenweg', 'DTNSchaubild', 'DTNData'];
+/* N5c-1: ui.js darf GENAU EIN Rechenmodul aufrufen — den Solver. Er holt
+   sich Nahtbild, Profil und Werkstoffkennwerte selbst; ui.js uebergibt nur
+   die uebersetzte Eingabe und zeigt an, was zurueckkommt. Die Grenze wird
+   damit nicht aufgeweicht, sondern GESCHAERFT: aus "kein Rechenmodul" wird
+   "dieses eine". Der Rechenweg kommt in N5c-2 dazu — dann waechst die Liste
+   um genau einen Namen. Geprueft wird der Quelltext als Zeichenkette,
+   Kommentare eingeschlossen. */
+var uiErlaubt  = ['DTNSolver'];
+var uiVerboten = ['DTNNaht', 'DTNProfil', 'DTNRechenweg', 'DTNSchaubild', 'DTNData'];
 var uiTreffer = [];
 for (uiI = 0; uiI < uiVerboten.length; uiI++) {
   if (uiSrc.indexOf(uiVerboten[uiI]) >= 0) uiTreffer.push(uiVerboten[uiI]);
 }
-eq(uiTreffer.length, 0, 'ui.js enthaelt KEINE Fachlogik — es ruft kein Rechenmodul auf (' + uiTreffer.join(',') + ')');
+eq(uiTreffer.length, 0, 'ui.js ruft ausser dem Solver KEIN Rechenmodul auf (' + uiTreffer.join(',') + ')');
+ok(uiSrc.indexOf(uiErlaubt[0]) > 0, 'ui.js ruft den Solver auf — sonst koennte "Berechnen" nicht rechnen');
+ok(uiSrc.indexOf('DTNValidate') > 0 || uiSrc.indexOf('Valid.rechenEingabe') > 0,
+   'und es uebersetzt die Eingabe ueber validate.js, statt selbst umzurechnen');
 ok(uiSrc.indexOf('Math.') < 0, 'ui.js rechnet nichts (kein Math. im Quelltext)');
 ok(uiSrc.indexOf('DTNI18nKern') > 0, 'ui.js holt seine Texte ausschliesslich aus dem Woerterbuch');
 
@@ -1886,7 +1917,7 @@ var Val2 = require('./validate.js');
 var uiSrc2 = fsU.readFileSync(__dirname + '/ui.js', 'utf8');
 
 /* --- ui.js bleibt auch nach N5b fachlogikfrei -------------------------- */
-var s30Verboten = ['DTNSolver', 'DTNNaht', 'DTNProfil', 'DTNRechenweg', 'DTNSchaubild', 'DTNData'];
+var s30Verboten = ['DTNNaht', 'DTNProfil', 'DTNRechenweg', 'DTNSchaubild', 'DTNData'];
 var s30Treffer = [];
 for (var s30i = 0; s30i < s30Verboten.length; s30i++) {
   if (uiSrc2.indexOf(s30Verboten[s30i]) >= 0) s30Treffer.push(s30Verboten[s30i]);
@@ -2103,6 +2134,102 @@ ok(!s30Fehl.ok && s30Fehl.fehler.length > 0,
 var s30MitFeld = 0;
 for (s30i = 0; s30i < s30Fehl.fehler.length; s30i++) if (s30Fehl.fehler[s30i].feld) s30MitFeld++;
 eq(s30MitFeld, s30Fehl.fehler.length, 'N5b: jede Fehlermeldung nennt ihr Feld — sonst waere sie nicht markierbar');
+
+/* ========================================================================= */
+sek('S31 · N5c-1 Beispiele — vollstaendig, rechenbar und nachgerechnet');
+
+/* Die drei Beispiele stehen als DATEN in optionen.js (nicht in ui.js — dort
+   duerfte weder ein Werkstoff noch ein Profil stehen, Plan 4.10). Geprueft
+   wird dreierlei: die Struktur, die Vollstaendigkeit des Auswahlwegs und —
+   am wichtigsten — dass die versprochenen Zahlen wirklich herauskommen.
+   Ein Beispiel, das warnt oder nicht traegt, waere als Einstieg wertlos. */
+
+var S31_MASSE = ['b', 'h', 'd', 'tw', 'tf', 't1', 'r_ecke'];
+var S31_SOLL = {
+  rhs:     { n_seg: 4, l: 328, eta: 0.359 },
+  traeger: { n_seg: 2, l: 324, eta: 0.626 },
+  blech:   { n_seg: 2, l: 140, eta: 0.842 }
+};
+
+eq(Options.BEISPIELE.length, 3, 'N5c-1: es gibt genau drei Beispiele');
+ok(typeof Options.beispiel === 'function', 'N5c-1: und einen benannten Zugriff darauf');
+ok(Options.beispiel('gibtesnicht') === null,
+   'N5c-1: ein unbekanntes Beispiel liefert null, keinen Notbehelf');
+
+var s31i, s31j;
+for (s31i = 0; s31i < Options.BEISPIELE.length; s31i++) {
+  (function (bsp) {
+    var wo = 'N5c-1 [' + bsp.code + ']: ';
+    var k;
+
+    /* --- Struktur: kein erfundener Code darf sich einschleichen --------- */
+    var unbekannt = [];
+    for (var g in bsp.auswahl) {
+      if (!Object.prototype.hasOwnProperty.call(bsp.auswahl, g)) continue;
+      var gr = Options.gruppe(g);
+      if (!gr) { unbekannt.push(g); continue; }
+      var da = false;
+      for (var o = 0; o < gr.optionen.length; o++) if (gr.optionen[o].code === bsp.auswahl[g]) da = true;
+      if (!da) unbekannt.push(g + '=' + bsp.auswahl[g]);
+    }
+    eq(unbekannt.length, 0, wo + 'jede Auswahl gibt es wirklich in optionen.js (' + unbekannt.join(',') + ')');
+
+    var fehltFeld = [];
+    for (var fk in bsp.felder) {
+      if (!Object.prototype.hasOwnProperty.call(bsp.felder, fk)) continue;
+      if (!Valid.feld(fk)) fehltFeld.push(fk);
+    }
+    eq(fehltFeld.length, 0, wo + 'jedes Feld gibt es im Schema (' + fehltFeld.join(',') + ')');
+
+    /* --- Der Auswahlweg ist vollstaendig, ohne Rest -------------------- */
+    var pa = Options.pruefe(bsp.auswahl);
+    ok(pa.ok, wo + 'der Auswahlweg ist vollstaendig (fehlend: ' + (pa.fehlend.join(',') || 'nichts') + ')');
+
+    /* --- Beispiel + Standardvorbelegung = pruefbarer Eingabesatz ------- */
+    var werte = Valid.standardwerte(bsp.auswahl);
+    for (k in bsp.felder) if (Object.prototype.hasOwnProperty.call(bsp.felder, k)) werte[k] = bsp.felder[k];
+    var pv = Valid.pruefe(werte, bsp.auswahl);
+    ok(pv.ok, wo + 'mit den vorbelegten Standardwerten besteht es beide Pruefstufen' +
+       (pv.ok ? '' : ' — offen: ' + JSON.stringify(pv.fehler)));
+
+    /* --- Und jetzt das Entscheidende: die versprochenen Zahlen --------- */
+    var pe = { profil: bsp.auswahl.profil, kanten: bsp.auswahl.kanten, a: bsp.felder.a };
+    for (var m = 0; m < S31_MASSE.length; m++) {
+      if (typeof bsp.felder[S31_MASSE[m]] === 'number') pe[S31_MASSE[m]] = bsp.felder[S31_MASSE[m]];
+    }
+    var ein = { profil_eingabe: pe };
+    for (k in bsp.auswahl) if (Object.prototype.hasOwnProperty.call(bsp.auswahl, k)) ein[k] = bsp.auswahl[k];
+    for (k in werte) if (Object.prototype.hasOwnProperty.call(werte, k) && S31_MASSE.indexOf(k) < 0) ein[k] = werte[k];
+
+    var erg = Solver.rechne(ein);
+    var soll = S31_SOLL[bsp.code];
+    ok(erg.ok, wo + 'die Rechenkette laeuft durch');
+    eq(erg.nahtbild.n_seg, soll.n_seg, wo + 'Zahl der Nahtabschnitte');
+    ok(Math.abs(erg.nahtbild.l_ges - soll.l) < 0.05, wo + 'Nahtlaenge ' + soll.l + ' mm (ist ' +
+       (Math.round(erg.nahtbild.l_ges * 100) / 100) + ')');
+    ok(Math.abs(erg.eta - soll.eta) < 0.0005, wo + 'Ausnutzung ' + soll.eta + ' (ist ' +
+       (Math.round(erg.eta * 1000) / 1000) + ')');
+    ok(erg.erfuellt === true && erg.ampel === 'gruen', wo + 'der Nachweis ist erfuellt, die Ampel gruen');
+    eq(erg.warnungen.length, 0, wo + 'und es steht KEINE Warnung daneben — ein Beispiel muss sauber sein');
+  }(Options.BEISPIELE[s31i]));
+}
+
+/* Die Ausnutzung ist bewusst gestaffelt: wer die drei durchklickt, sieht
+   einmal reichlich Reserve und einmal, wie es eng wird. */
+ok(S31_SOLL.rhs.eta < S31_SOLL.traeger.eta && S31_SOLL.traeger.eta < S31_SOLL.blech.eta,
+   'N5c-1: die drei Beispiele sind in der Ausnutzung gestaffelt');
+
+/* Dreisprachigkeit der Beispielnamen — sonst stuende die Liste auf EN leer. */
+var s31Fehlt = [];
+for (s31i = 0; s31i < Options.BEISPIELE.length; s31i++) {
+  var s31nm = Options.BEISPIELE[s31i].name;
+  for (s31j = 0; s31j < 3; s31j++) {
+    var s31lg = ['de', 'en', 'pt'][s31j];
+    var s31t = Kern.t(s31nm, s31lg);
+    if (!s31t || /^\[/.test(s31t)) s31Fehlt.push(s31nm + '/' + s31lg);
+  }
+}
+eq(s31Fehlt.length, 0, 'N5c-1: jeder Beispielname ist dreisprachig belegt (' + s31Fehlt.join(',') + ')');
 
 /* ========================================================================= */
 console.log('\n════════════════════════════════════════════');

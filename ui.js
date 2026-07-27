@@ -35,7 +35,7 @@
   'use strict';
 
   var VERSION = '0.6.0';
-  var ETAPPE = 'N5b';
+  var ETAPPE = 'N5c-1';
   var SPRACHEN = ['de', 'en', 'pt'];
 
   /* Plan 3.1 (bindend): die Oberflaeche startet IMMER im dunklen Design —
@@ -79,7 +79,7 @@
 
     { code: 'geometrie', leit: 'profil',
       gruppen: ['profil', 'kanten'],
-      felder: ['b', 'h', 'd', 'tw', 'tf', 'r_ecke', 't1', 't2', 'l'] },
+      felder: ['b', 'h', 'd', 'tw', 'tf', 'r_ecke', 't1', 't2'] },
 
     { code: 'lasten', leit: 'lasteingabe',
       gruppen: [],
@@ -134,7 +134,9 @@
     'feldgruppe', 'feld-label', 'feld-eingabe', 'feld-einheit', 'pflicht',
     'gesperrt', 'fehlerhaft', 'zusatz-haken', 'zusatz-note',
     'pruef-box', 'pruef-ok', 'pruef-fehler', 'pruef-warnung', 'pruef-hinweis',
-    'hilfe-abschnitt', 'hilfe-titel'
+    'hilfe-abschnitt', 'hilfe-titel',
+    /* N5c-1 */
+    'tile-k', 'erg-box'
   ];
 
   /* Buttons, die bewusst noch nicht verdrahtet sind: Id -> ehrliche Meldung.
@@ -576,6 +578,78 @@
       return n;
     }
 
+    /* ------------------------------------------------------- Beispiele */
+    /* N5c-1, Plan 5.1. Die Daten stehen in optionen.js — ui.js kennt weder
+       Werkstoffe noch Profile, es traegt nur ein, was dort steht. */
+    function beispieleFuellen() {
+      var sel = el(doc, 'presetSel');
+      if (!sel || !Options || !Options.BEISPIELE) return 0;
+      var vorher = sel.value;
+      sel.innerHTML = '';
+
+      var leerOpt = doc.createElement('option');
+      leerOpt.setAttribute('value', '');
+      beschrifte(leerOpt, 'bspWaehlen');
+      sel.appendChild(leerOpt);
+
+      for (var i = 0; i < Options.BEISPIELE.length; i++) {
+        var b = Options.BEISPIELE[i];
+        var opt = doc.createElement('option');
+        opt.setAttribute('value', b.code);
+        opt.value = b.code;
+        beschrifte(opt, b.name);
+        sel.appendChild(opt);
+      }
+      sel.value = vorher || '';
+      return Options.BEISPIELE.length;
+    }
+
+    /* Plan 3.5, sinngemaess: ERST ALLES LEEREN, DANN LADEN — nie duerfen
+       Reste einer frueheren Eingabe in einer neuen Rechnung stehenbleiben. */
+    function beispielLaden(code) {
+      if (!Options || !Valid) return null;
+      var b = Options.beispiel(code);
+      if (!b) return null;
+
+      leeren();
+
+      var i, g, sel, wert;
+      /* Die Gruppen in ihrer eigenen Reihenfolge setzen: sie ist zugleich die
+         Abhaengigkeitsreihenfolge (erst stossart, dann nahtart …). Nach jeder
+         Auswahl neu filtern, sonst gaebe es die naechste Option noch nicht. */
+      for (i = 0; i < Options.GRUPPEN.length; i++) {
+        g = Options.GRUPPEN[i].code;
+        if (!Object.prototype.hasOwnProperty.call(b.auswahl, g)) continue;
+        sel = el(doc, 'sel_' + g);
+        if (!sel) continue;
+        sel.value = b.auswahl[g];
+        aktualisiere();
+      }
+
+      /* Felder eintragen. Ein ueberschreibbarer Wert (z. B. der Eckradius)
+         ist gesperrt vorbelegt — dafuer wird der "eigener Wert"-Haken
+         mitgesetzt, sonst faende der Anwender seinen Wert gleich wieder
+         ueberschrieben. */
+      for (var k in b.felder) {
+        if (!Object.prototype.hasOwnProperty.call(b.felder, k)) continue;
+        var f = Valid.feld(k);
+        if (!f) continue;
+        if (f.ueberschreibbar) {
+          var ev = el(doc, 'ev_' + k);
+          if (ev) ev.checked = true;
+          eigenerWert(k, true);
+        }
+        var inp = el(doc, 'fld_' + k);
+        if (inp) inp.value = String(b.felder[k]);
+      }
+
+      aktualisiere();
+      sel = el(doc, 'presetSel');
+      if (sel) sel.value = code;
+      meldung(txt(win, 'uiBeispiel', S.sprache) + ' ' + txt(win, b.name, S.sprache));
+      return code;
+    }
+
     /* ------------------------------------------------------------ Pruefen */
     /* N5b rechnet NICHT. "Berechnen" prueft die Eingaben und sagt ehrlich,
        was fehlt; das Rechnen selbst folgt in Etappe N5c. */
@@ -620,6 +694,170 @@
       setzeText(el(doc, 'pruefTitel'), txt(win, 'uiPruefTitel', S.sprache));
       meldung(txt(win, r.ok ? 'uiPruefOk' : 'uiPruefFehler', S.sprache));
       return r;
+    }
+
+    /* ------------------------------------------------------------ Rechnen */
+    /* N5c-1, Plan 5.1. Ab hier ruft ui.js GENAU EIN Rechenmodul auf:
+       DTNSolver. Alles andere bleibt verboten (Nahtbild, Profil, Werkstoff-
+       tabelle, Rechenweg, Grafik) — der Solver holt sich das selbst. ui.js
+       uebergibt die uebersetzte Eingabe und zeigt an, was zurueckkommt;
+       gerechnet wird hier nichts. Der Rechenweg kommt in N5c-2 dazu. */
+
+    /* Zahlausgabe fuers Auge: DE und PT mit Komma, EN mit Punkt.
+       Vorlaeufig und bewusst klein gehalten — in N5c-2 uebernimmt das
+       Zahlformat des Rechenwegs, damit es nur EINE Fassung davon gibt. */
+    function zahlText(x, nk) {
+      if (typeof x !== 'number' || !isFinite(x)) return '–';
+      var s = x.toFixed(typeof nk === 'number' ? nk : 2);
+      return (S.sprache === 'en') ? s : s.replace('.', ',');
+    }
+
+    function kachel(host, key, wert, einheitKey) {
+      var t = neu('div', 'tile', null);
+      var k = neu('div', 'tile-k', null);
+      beschrifte(k, key);
+      t.appendChild(k);
+      var v = neu('div', 'tile-wert', null);
+      v.textContent = wert + (einheitKey ? ' ' + txt(win, einheitKey, S.sprache) : '');
+      t.appendChild(v);
+      host.appendChild(t);
+      return t;
+    }
+
+    /* Der Platzhalter aus der HTML wird nur AUS- und EINGEBLENDET, nie
+       zerstoert und neu gebaut — sonst gaebe es seine Id zweimal. Das
+       Erzeugte lebt in einem eigenen Behaelter darunter. */
+    function ergBox() {
+      var b = el(doc, 'ergBox');
+      if (b) return b;
+      var host = el(doc, 'resultHost');
+      if (!host) return null;
+      b = neu('div', 'erg-box', 'ergBox');
+      host.appendChild(b);
+      return b;
+    }
+
+    function ergebnisLeeren() {
+      var b = ergBox();
+      if (b) b.innerHTML = '';
+      zeige(el(doc, 'resultIdle'), true);
+      return !!b;
+    }
+
+    /* Die gesperrten Tabellenfelder mit den Werten fuellen, mit denen
+       WIRKLICH gerechnet wurde — samt Herkunft. Sonst blieben sie fuer immer
+       leer, und bewusste Zurueckhaltung saehe aus wie ein Fehler.
+       Zugeordnet wird ueber den Feldnamen, nicht ueber Fachwissen; ein per
+       Haken gesetzter eigener Wert bleibt unangetastet (Plan 3.1). */
+    function gesperrteFuellen(erg) {
+      if (!Valid || !erg || !erg.widerstand) return 0;
+      var n = 0;
+      for (var i = 0; i < Valid.SCHEMA.length; i++) {
+        var f = Valid.SCHEMA[i];
+        if (!f.ueberschreibbar) continue;
+        var ev = el(doc, 'ev_' + f.code);
+        if (ev && ev.checked) continue;
+        var wert = erg.widerstand[f.code];
+        if (typeof wert !== 'number' || !isFinite(wert)) continue;
+        var inp = el(doc, 'fld_' + f.code);
+        if (!inp) continue;
+        inp.value = zahlText(wert, typeof f.dez === 'number' ? f.dez : 2);
+        var q = erg.widerstand['quelle_' + f.code];
+        if (q) setzeAttr(inp, 'title', txt(win, 'uiQuelle_' + q, S.sprache));
+        n++;
+      }
+      return n;
+    }
+
+    function ergebnisZeigen(erg) {
+      var host = ergBox();
+      if (!host) return false;
+      host.innerHTML = '';
+      zeige(el(doc, 'resultIdle'), false);
+
+      /* Kein halbes Ergebnis: geht es nicht, wird gesagt warum — ohne Zahlen. */
+      if (!erg || erg.ok !== true) {
+        var kopf = neu('div', 'status-banner', null);
+        beschrifte(kopf, 'uiRechnenFehler');
+        host.appendChild(kopf);
+        var fl = (erg && erg.fehler) || [];
+        for (var fi = 0; fi < fl.length; fi++) {
+          var z = neu('div', 'pruef-fehler', null);
+          z.textContent = txt(win, fl[fi].code || fl[fi], S.sprache);
+          host.appendChild(z);
+        }
+        return false;
+      }
+
+      /* Ampel aus dem Ergebnis — nicht selbst hergeleitet. */
+      var amp = neu('div', 'ampel ' + (erg.ampel || 'gelb'), 'ergAmpel');
+      beschrifte(amp, erg.erfuellt ? 'erg_erfuellt' : 'erg_nicht_erfuellt');
+      host.appendChild(amp);
+
+      var tiles = neu('div', 'tiles', 'ergKacheln');
+      host.appendChild(tiles);
+
+      var mg = erg.massgebend || {};
+      kachel(tiles, 'erg_eta', zahlText(erg.eta, 3), null);
+      kachel(tiles, 'erg_sigma_v', zahlText(mg.sigma_v, 1), 'unit_Nmm2');
+      kachel(tiles, 'erg_rd', zahlText(erg.widerstand && erg.widerstand.R_d, 1), 'unit_Nmm2');
+      kachel(tiles, 'erg_a',
+             zahlText((erg.auslegung && erg.auslegung.a_gewaehlt) || (erg.nahtbild && erg.nahtbild.a) ||
+                      (erg.schnittgroessen && erg.schnittgroessen.a) || S.letztesA, 1), 'unit_mm');
+      kachel(tiles, 'erg_l', zahlText(erg.nahtbild && erg.nahtbild.l_ges, 1), 'unit_mm');
+      kachel(tiles, 'erg_punkt',
+             zahlText(mg.y, 1) + ' | ' + zahlText(mg.z, 1), 'unit_mm');
+
+      /* Womit gerechnet wurde — sichtbar, nicht nur im Rechenweg. */
+      if (erg.widerstand) {
+        var gm = neu('div', 'gap-note', 'ergGerechnetMit');
+        gm.textContent = txt(win, 'uiGerechnetMit', S.sprache) + ' ' +
+          'β_w = ' + zahlText(erg.widerstand.betaW, 2) + ' · ' +
+          'f_u = ' + zahlText(erg.widerstand.fu, 0) + ' ' + txt(win, 'unit_Nmm2', S.sprache) + ' · ' +
+          'γ_M2 = ' + zahlText(erg.widerstand.gammaM2, 2);
+        host.appendChild(gm);
+      }
+
+      /* Warnungen und Hinweise des Rechenkerns gehoeren sichtbar hierher —
+         ein Ergebnis ohne seine Warnung waere ein stilles Ergebnis. */
+      var i, zeile;
+      for (i = 0; i < (erg.warnungen || []).length; i++) {
+        zeile = neu('div', 'pruef-warnung', null);
+        zeile.textContent = txt(win, erg.warnungen[i].code || erg.warnungen[i], S.sprache);
+        host.appendChild(zeile);
+      }
+      for (i = 0; i < (erg.hinweise || []).length; i++) {
+        zeile = neu('div', 'pruef-hinweis', null);
+        zeile.textContent = txt(win, erg.hinweise[i].code || erg.hinweise[i], S.sprache);
+        host.appendChild(zeile);
+      }
+      return true;
+    }
+
+    /* "Berechnen": erst pruefen, dann rechnen. Nie rechnen, was die Pruefung
+       nicht bestanden hat — sonst entstuende ein Ergebnis auf unsicherem
+       Grund (Plan 3.1/3.4). */
+    function rechnen() {
+      var r = pruefen();
+      if (!r || r.ok !== true) { ergebnisLeeren(); return null; }
+
+      var Rechner = win.DTNSolver;
+      if (!Rechner || typeof Rechner.rechne !== 'function') {
+        meldung(txt(win, 'uiKeinRechenkern', S.sprache));
+        ergebnisLeeren();
+        return null;
+      }
+      if (!Valid || typeof Valid.rechenEingabe !== 'function') return null;
+
+      var ue = Valid.rechenEingabe(werte(), zustand());
+      S.letztesA = ue.eingabe.a;
+      var erg = Rechner.rechne(ue.eingabe);
+
+      ergebnisZeigen(erg);
+      if (erg && erg.ok) gesperrteFuellen(erg);
+      meldung(txt(win, (erg && erg.ok) ? 'uiGerechnet' : 'uiRechnenFehler', S.sprache));
+      S.letztesErgebnis = erg;
+      return erg;
     }
 
     /* ------------------------------------------------------- Laien-Hilfe */
@@ -692,6 +930,11 @@
       if (!istSprache(l)) return S.sprache;
       S.sprache = l;
       uebersetze();
+      /* Die Zahlen in den Ergebnis-Kacheln tragen kein data-i18n — sie sind
+         Werte, keine Texte. Das Zahlformat haengt aber an der Sprache
+         (Komma bzw. Punkt), also wird das Ergebnis neu gesetzt. Sonst
+         stuende nach dem Umschalten ein deutsches Komma auf Englisch. */
+      if (S.letztesErgebnis) ergebnisZeigen(S.letztesErgebnis);
       return S.sprache;
     }
 
@@ -785,6 +1028,8 @@
       aktualisiere();
       vorbelegen();
       bereicheStandard();
+      ergebnisLeeren();
+      S.letztesErgebnis = null;
       meldung(txt(win, 'uiGeleert', S.sprache));
       return n;
     }
@@ -853,7 +1098,7 @@
       if (b && b.addEventListener) b.addEventListener('click', function () { leeren(); });
 
       b = el(doc, 'calcBtn');
-      if (b && b.addEventListener) b.addEventListener('click', function () { pruefen(); });
+      if (b && b.addEventListener) b.addEventListener('click', function () { rechnen(); });
 
       /* Noch nicht verdrahtete Knoepfe melden das ehrlich, statt still nichts zu tun. */
       for (i = 0; i < GERUEST_BUTTONS.length; i++) {
@@ -867,13 +1112,19 @@
 
       b = el(doc, 'presetSel');
       if (b && b.addEventListener) {
-        b.addEventListener('change', function () { meldung(txt(win, 'uiFolgtN7', S.sprache)); });
+        b.addEventListener('change', function () {
+          var sel = el(doc, 'presetSel');
+          var wahl = sel ? sel.value : '';
+          if (istLeer(wahl)) return;
+          beispielLaden(wahl);
+        });
       }
     }
 
     /* --------------------------------------------------------------- Lauf */
     setTheme(START_THEME);
     baueFormular();
+    beispieleFuellen();
     aktualisiere();
     vorbelegen();
     bereicheStandard();
@@ -905,7 +1156,13 @@
       eigenerWert: eigenerWert,
       pruefen: pruefen,
       hilfeZeigen: hilfeZeigen,
-      hilfeSchliessen: hilfeSchliessen
+      hilfeSchliessen: hilfeSchliessen,
+      /* N5c-1 */
+      beispiele: function () { return (Options && Options.BEISPIELE) ? Options.BEISPIELE.slice() : []; },
+      beispielLaden: beispielLaden,
+      rechnen: rechnen,
+      ergebnisLeeren: ergebnisLeeren,
+      ergebnis: function () { return S.letztesErgebnis || null; }
     };
     api.sitzung = sitzung;
     return sitzung;

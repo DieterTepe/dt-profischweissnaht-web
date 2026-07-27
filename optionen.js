@@ -229,6 +229,59 @@
   ];
 
   /* --------------------------------------------------------------------- */
+  /* BEISPIELE (N5c-1, Plan 5.1) — reine Daten: Auswahlzustand + Feldwerte.  */
+  /*                                                                        */
+  /* Sie stehen hier und nicht in ui.js, weil ui.js weder Werkstoffe noch    */
+  /* Profile kennen darf (Plan 4.10). Ein Beispiel ist nichts anderes als    */
+  /* eine Menge von Auswahlcodes aus dieser Datei plus ein paar Zahlen.      */
+  /*                                                                        */
+  /* Alle drei sind durch profil.baue() -> solver.rechne() nachgerechnet     */
+  /* und WARNUNGSFREI, mit bewusst gestaffelter Ausnutzung:                  */
+  /*   rhs   4 Segmente · 328 mm · eta 0,359                                 */
+  /*   traeger 2 Segmente · 324 mm · eta 0,626                               */
+  /*   blech 2 Segmente · 140 mm · eta 0,842                                 */
+  /*                                                                        */
+  /* Zwei Fallen stecken in den Zahlen (Plan 5.1, beide nachgerechnet):      */
+  /*   - 4 mm Wanddicke laesst gar keine regelkonforme Kehlnaht zu           */
+  /*     (a_max 2,8 < a_min 3) -> deshalb t1 = 6 mm beim Hohlprofil.         */
+  /*   - ein I-Profil um die FLANSCHE geschweisst warnt immer, weil die      */
+  /*     Flanschkante nur t_f lang ist -> deshalb nur der Steg.              */
+  /*                                                                        */
+  /* Der grosse Beispielkatalog mit Merkmalen (Plan 3.2) bleibt N7 und       */
+  /* waechst auf genau dieser Struktur weiter.                               */
+  /* --------------------------------------------------------------------- */
+  var BEISPIELE = [
+    { code: 'rhs', name: 'bsp_rhs',
+      auswahl: { welt: 'A', rechenrichtung: 'nachweis', lasteingabe: 'direkt',
+                 werkstoffgruppe: 'stahl', werkstoff: 'S235',
+                 stossart: 't_stoss', nahtart: 'kehl_umlaufend',
+                 nachweisverfahren: 'richtungsbezogen',
+                 profil: 'rohr_rechteck', kanten: 'rundum' },
+      felder: { b: 120, h: 80, t1: 6, r_ecke: 9, a: 4, N: 120000, Q: 0 } },
+
+    { code: 'traeger', name: 'bsp_traeger',
+      auswahl: { welt: 'A', rechenrichtung: 'nachweis', lasteingabe: 'direkt',
+                 werkstoffgruppe: 'stahl', werkstoff: 'S355',
+                 stossart: 't_stoss', nahtart: 'kehl_doppel',
+                 nachweisverfahren: 'richtungsbezogen',
+                 profil: 'i_profil', kanten: 'steg' },
+      felder: { b: 200, h: 200, tw: 9, tf: 15, a: 4, N: 250000, Q: 0 } },
+
+    { code: 'blech', name: 'bsp_blech',
+      auswahl: { welt: 'A', rechenrichtung: 'nachweis', lasteingabe: 'direkt',
+                 werkstoffgruppe: 'stahl', werkstoff: 'S235',
+                 stossart: 'ueberlappstoss', nahtart: 'kehl_doppel',
+                 nachweisverfahren: 'richtungsbezogen',
+                 profil: 'blech', kanten: 'flanken' },
+      felder: { b: 80, t1: 10, a: 5, N: 150000, Q: 0 } }
+  ];
+
+  function beispiel(code) {
+    for (var i = 0; i < BEISPIELE.length; i++) if (BEISPIELE[i].code === code) return BEISPIELE[i];
+    return null;
+  }
+
+  /* --------------------------------------------------------------------- */
   /* Bedingungspruefung                                                     */
   /* --------------------------------------------------------------------- */
 
@@ -393,6 +446,8 @@
     VERSION: VERSION,
     GRUPPEN: GRUPPEN,
     ZUSATZBEREICHE: ZUSATZBEREICHE,
+    BEISPIELE: BEISPIELE,
+    beispiel: beispiel,
     KEHL: KEHL,
     STUMPF_VOLL: STUMPF_VOLL,
     STUMPF_TEIL: STUMPF_TEIL,

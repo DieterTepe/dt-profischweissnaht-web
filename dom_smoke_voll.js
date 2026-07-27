@@ -304,7 +304,10 @@ function lauf(edition) {
   ok(/Info/.test(d.byId.infoBtn.getAttribute('title') || ''), 'DE: Info-Knopf hat einen Titel');
   ok(/ohne Gew/.test(d.byId.footNote.inhalt()), 'DE: der Produkt-Disclaimer steht in der Fusszeile');
   ok(/Dreierwalde/.test(d.byId.footImpressum.inhalt()), 'das Impressum steht in der Fusszeile');
-  ok(/N5b/.test(d.byId.geruestNote.inhalt()), 'die Karte sagt ehrlich, dass die Felder erst in N5b kommen');
+  ok(/N5c-2/.test(d.byId.geruestNote.inhalt()),
+     'die Karte sagt ehrlich, was noch fehlt: Rechenweg und Grafik folgen in N5c-2');
+  ok(/rechnet/.test(d.byId.geruestNote.inhalt()),
+     'und ebenso ehrlich, dass "Berechnen" jetzt wirklich rechnet');
   ok(d.byId.resultIdle.inhalt().length > 20, 'Ergebniskarte traegt einen Leertext');
   ok(d.byId.vizIdle.inhalt().length > 20, 'Nahtbildkarte traegt einen Leertext');
   ok(d.byId.pathIdle.inhalt().length > 20, 'Rechenwegkarte traegt einen Leertext');
@@ -526,7 +529,7 @@ function lauf(edition) {
   ok(fehlendA.ok === true, 'N5b: der Auswahlweg ist vollstaendig begehbar (fehlend: ' +
      (fehlendA.fehlend.join(',') || 'nichts') + ')');
 
-  var eingaben = { l: '200', t1: '10', t2: '10', b: '80', a: '5', N: '150000', Q: '0' };
+  var eingaben = { t1: '10', t2: '10', b: '80', a: '5', N: '150000', Q: '0' };
   for (var ek in eingaben) {
     if (!Object.prototype.hasOwnProperty.call(eingaben, ek)) continue;
     ok(d.byId['row_f_' + ek].hidden === false, 'N5b: das noetige Feld wird auch gezeigt: ' + ek);
@@ -537,6 +540,24 @@ function lauf(edition) {
      (pr && pr.fehler.length ? ' — offen: ' + JSON.stringify(pr.fehler) : ''));
   ok(/N5c/.test(d.byId.pruefListe.inhalt() + d.alleTexte()),
      'N5b: und sagt ehrlich, dass das Rechnen in N5c folgt');
+
+  /* ---- FELDBEREINIGUNG N5c-1 (Plan 5.1) -------------------------------
+     'l' ist entfallen, 't1' ist nur noch profilabhaengig Pflicht und 't2'
+     ist freiwillig. Das wird an der echten Oberflaeche geprueft, nicht nur
+     am Schema. */
+  ok(!d.byId.fld_l, 'N5c-1: das Feld Nahtlaenge erscheint nicht mehr im Formular');
+  ok(!d.byId.row_f_l, 'N5c-1: und auch seine Feldzeile ist verschwunden');
+  d.byId.fld_t2.value = '';
+  pr = s.pruefen();
+  ok(pr && pr.ok === true,
+     'N5c-1: t2 darf leer bleiben — die Dicke kommt sonst je Segment aus dem Profil');
+  d.byId.fld_t1.value = '';
+  pr = s.pruefen();
+  ok(pr && pr.ok === false, 'N5c-1: t1 bleibt beim Blech Pflicht und wird eingefordert');
+  ok(d.byId.row_f_t1.classList.contains('fehlerhaft'),
+     'N5c-1: und die fehlende Blechdicke wird sichtbar markiert');
+  d.byId.fld_t1.value = '10';
+  d.byId.fld_t2.value = '10';
 
   /* Umgekehrt: ein unsinniger Wert wird ehrlich gemeldet, nicht still gerechnet. */
   d.byId.fld_t1.value = '0.1';
@@ -607,8 +628,93 @@ function lauf(edition) {
     ok(/N11/.test(d.byId.dtMsg.inhalt()),
        'Ausgabeknopf verweist ehrlich auf Baustein N11: ' + ausgaben[i]);
   }
-  d.byId.presetSel.change();
-  ok(/N7/.test(d.byId.dtMsg.inhalt()), 'Beispielauswahl verweist ehrlich auf Baustein N7');
+  /* ---- BEISPIELE N5c-1 (Plan 5.1) ------------------------------------
+     Die Beispielauswahl ist jetzt verdrahtet. Geprueft wird, dass die Liste
+     steht, dass ein Beispiel wirklich Auswahl UND Felder fuellt, dass vorher
+     geleert wird und dass der geladene Fall die Pruefung besteht. */
+  ok(d.byId.presetSel.children.length === 4,
+     'N5c-1: die Beispielliste hat einen Platzhalter und drei Beispiele');
+  ok(s.beispiele().length === 3, 'N5c-1: und die Sitzung kennt genau diese drei');
+
+  d.byId.dtLabel.value = 'Rest aus einer alten Rechnung';
+  s.beispielLaden('rhs');
+  ok(d.byId.dtLabel.value === '',
+     'N5c-1: vor dem Laden wird wirklich alles geleert (Plan 3.5)');
+  var bz = s.zustand();
+  ok(bz.profil === 'rohr_rechteck' && bz.kanten === 'rundum',
+     'N5c-1: das Beispiel setzt Profil und Kantenauswahl');
+  ok(bz.werkstoff === 'S235' && bz.nahtart === 'kehl_umlaufend',
+     'N5c-1: und die uebrigen Auswahlen dazu');
+  ok(d.byId.fld_b.value === '120' && d.byId.fld_t1.value === '6' && d.byId.fld_N.value === '120000',
+     'N5c-1: die Feldwerte stehen im Formular');
+  ok(d.byId.ev_r_ecke.checked === true && d.byId.fld_r_ecke.value === '9',
+     'N5c-1: der Eckradius kommt mit gesetztem "eigener Wert"-Haken, sonst waere er gleich wieder 0');
+  var bpr = s.pruefen();
+  ok(bpr && bpr.ok === true, 'N5c-1: das geladene Beispiel besteht die Pruefung' +
+     (bpr && bpr.fehler.length ? ' — offen: ' + JSON.stringify(bpr.fehler) : ''));
+
+  var bsp3 = ['rhs', 'traeger', 'blech'];
+  for (i = 0; i < bsp3.length; i++) {
+    s.beispielLaden(bsp3[i]);
+    ok(s.pruefen().ok === true, 'N5c-1: Beispiel ist vollstaendig und rechenbar: ' + bsp3[i]);
+  }
+  s.leeren();
+
+  /* ---- RECHNEN UND ERGEBNIS N5c-1 (Plan 5.1, Schritte 4 und 5) --------
+     Das ist das Abnahmekriterium dieser Etappe: Beispiel antippen,
+     "Berechnen", eine Zahl und eine Ampel sehen. Geprueft wird an der
+     echten Oberflaeche, nicht an einer nachgebauten. */
+  ok(d.byId.resultIdle && d.byId.resultIdle.hidden !== true,
+     'N5c-1: vor dem Rechnen steht im Ergebnisbereich der ehrliche Hinweis "noch kein Ergebnis"');
+
+  s.beispielLaden('blech');
+  var erg = s.rechnen();
+  ok(erg && erg.ok === true, 'N5c-1: "Berechnen" rechnet wirklich und liefert ein Ergebnis');
+  ok(d.byId.resultIdle.hidden === true, 'N5c-1: der Platzhalter im Ergebnisbereich ist danach ausgeblendet');
+  ok(!!d.byId.ergAmpel, 'N5c-1: es gibt eine Ampel');
+  ok(d.byId.ergAmpel.classList.contains('gruen'),
+     'N5c-1: und sie steht beim Blech-Beispiel auf gruen');
+  ok(!!d.byId.ergKacheln && d.byId.ergKacheln.children.length === 6,
+     'N5c-1: es stehen sechs Ergebnis-Kacheln da');
+  ok(Math.abs(erg.eta - 0.842) < 0.0005,
+     'N5c-1: die angezeigte Ausnutzung ist die nachgerechnete (eta 0,842)');
+  ok(/0,842/.test(d.alleTexte()),
+     'N5c-1: und sie steht auf Deutsch mit Dezimalkomma in der Kachel');
+  ok(!!d.byId.ergGerechnetMit && /0,8/.test(d.byId.ergGerechnetMit.inhalt()),
+     'N5c-1: es ist sichtbar, womit gerechnet wurde (beta_w aus der Tabelle)');
+  ok(d.byId.fld_betaW.value !== '',
+     'N5c-1: das gesperrte Tabellenfeld ist danach gefuellt statt fuer immer leer');
+  ok((d.byId.fld_betaW.getAttribute('title') || '') !== '',
+     'N5c-1: und traegt die Herkunft des Wertes');
+
+  /* Sprache umschalten: die Kacheln muessen mitgehen. */
+  s.setSprache('en');
+  ok(/0\.842/.test(d.alleTexte()), 'N5c-1: auf Englisch steht dort ein Dezimalpunkt');
+  s.setSprache('de');
+
+  /* Ein Fall, der NICHT traegt, ist ein ehrliches Ergebnis — kein Fehler.
+     Dieselbe Naht mit dem kleinstmoeglichen a-Mass. */
+  d.byId.fld_a.value = '3';
+  var ergEng = s.rechnen();
+  ok(ergEng && ergEng.ok === true, 'N5c-1: auch der knappe Fall wird gerechnet');
+  ok(ergEng.eta > 0.842, 'N5c-1: ein kleineres a-Mass fuehrt zu hoeherer Ausnutzung');
+  ok(!!d.byId.ergAmpel, 'N5c-1: und es gibt weiterhin eine Ampel dazu');
+
+  /* Unvollstaendige Eingabe: es wird NICHT still gerechnet. */
+  d.byId.fld_b.value = '';
+  var ergLeer = s.rechnen();
+  ok(ergLeer === null, 'N5c-1: bei unvollstaendiger Eingabe wird nicht gerechnet');
+  ok(d.byId.resultIdle.hidden === false && d.byId.ergBox.children.length === 0,
+     'N5c-1: und es steht keine alte Zahl mehr da');
+
+  /* "Leeren" raeumt auch das Ergebnis weg (Plan 3.1). */
+  s.beispielLaden('rhs');
+  s.rechnen();
+  s.leeren();
+  ok(d.byId.resultIdle.hidden === false && d.byId.ergBox.children.length === 0,
+     'N5c-1: "Leeren" raeumt auch das Ergebnis weg');
+  ok(s.ergebnis() === null, 'N5c-1: und die Sitzung haelt kein altes Ergebnis fest');
+
 
   /* ------------------------------------------------------- 9) Theme ----- */
   ok(d.byId.infoModal.hidden === true, 'der Info-Dialog ist beim Start zu');

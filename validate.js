@@ -33,12 +33,25 @@
       label: 'fld_a',  hilfe: 'fld_a',  pflicht_wenn: { rechenrichtung: ['nachweis'] } },
     { code: 'z',  typ: 'zahl', einheit: 'unit_mm',   min: 0.7,  max: 71,   dez: 1,
       label: 'fld_z',  hilfe: 'fld_z',  pflicht: false },
-    { code: 'l',  typ: 'zahl', einheit: 'unit_mm',   min: 1,    max: 100000, dez: 0,
-      label: 'fld_l',  hilfe: 'fld_l',  pflicht: true },
+    /* ---- FELDBEREINIGUNG N5c-1 (Plan 5.1) -----------------------------
+       Das Feld 'l' ist ENTFALLEN. Die Nahtlaenge ergibt sich aus Profil und
+       Kantenauswahl (profil.js liefert Segmente samt Laenge und Dicke); die
+       Pruefungen l_eff >= max(6a; 30) und l <= 150*a fuehrt solver.js JE
+       SEGMENT an der echten Geometrie. Eine zweite, groebere Fassung
+       derselben Pruefung waere genau die Doppelquelle, die Plan 3.4
+       verhindern soll.  Ehrlich benannter Preis: eine Naht, die kuerzer ist
+       als das Bauteil, wird ueber das nahtrelevante Mass eingegeben.
+
+       t1 ist NUR dort Pflicht, wo das gewaehlte Profil es braucht
+       (Blech-, Wand- bzw. Schenkeldicke). Bei I- und U-Profil treten tw/tf
+       an seine Stelle.
+       t2 ist FREIWILLIG: die Dicke des angeschlossenen Bauteils. Bleibt es
+       leer, arbeitet solver.js mit der Dicke je Segment aus profil.js. ---- */
     { code: 't1', typ: 'zahl', einheit: 'unit_mm',   min: 0.5,  max: 200,  dez: 1,
-      label: 'fld_t1', hilfe: 'fld_t1', pflicht: true },
+      label: 'fld_t1', hilfe: 'fld_t1',
+      pflicht_wenn: { profil: ['blech', 'rohr_rechteck', 'rohr_rund', 'winkel'] } },
     { code: 't2', typ: 'zahl', einheit: 'unit_mm',   min: 0.5,  max: 200,  dez: 1,
-      label: 'fld_t2', hilfe: 'fld_t2', pflicht: true },
+      label: 'fld_t2', hilfe: 'fld_t2', pflicht: false },
 
     /* ---- Profilmasse (N2b, 2.2b) — Pflicht genau dort, wo das gewaehlte
            Profil den Wert braucht. t1 dient zugleich als Blech-, Wand- bzw.
@@ -216,12 +229,10 @@
       warnungen.push(meldung('t1', 'msg_t_min_ec3'));
     }
 
-    if (typeof v.l === 'number' && typeof a === 'number' && a > 0) {
-      var leff = v.l - 2 * a;
-      var leffMin = Math.max(6 * a, 30);
-      if (leff < leffMin) fehler.push(meldung('l', 'msg_leff_min', { grenze: Math.round(leffMin * 10) / 10 }));
-      if (v.l > 150 * a) warnungen.push(meldung('l', 'msg_l_lang', { grenze: Math.round(150 * a) }));
-    }
+    /* Die Laengenpruefungen (l_eff >= max(6a; 30) und l <= 150*a) stehen
+       nicht mehr hier: solver.js fuehrt sie JE SEGMENT an der Geometrie aus
+       profil.js — dieselben Grenzen, aber an der echten Nahtlaenge statt an
+       einem zweiten, von Hand eingegebenen Mass (Plan 5.1, N5c-1). */
 
     /* Dickenstufe gegen die Werkstofftabelle */
     if (Data && z.werkstoff && typeof tmax === 'number') {
@@ -268,6 +279,67 @@
     };
   }
 
+  /* --------------------------------------------------------------------- */
+  /* N5c-1 (Plan 5.1): UEBERSETZUNG FORMULAR -> RECHENKERN                  */
+  /*                                                                        */
+  /* Das Formular liefert flache Zeichenketten, der Rechenkern erwartet      */
+  /* Zahlen und ein verschachteltes profil_eingabe. Beides wird HIER         */
+  /* zusammengesetzt und nicht in ui.js — aus zwei Gruenden:                 */
+  /*   1. Das a-Mass wird aus dem z-Mass abgeleitet (a = z / sqrt(2)). Diese */
+  /*      Umrechnung stand ohnehin schon hier (Stufe 2); ui.js darf nicht    */
+  /*      rechnen (Plan 4.10).                                              */
+  /*   2. Welches Feld eine Abmessung ist und welches eine Last, weiss das   */
+  /*      Feldschema — ui.js soll es nicht ein zweites Mal wissen.           */
+  /* --------------------------------------------------------------------- */
+
+  /* Reine Geometrie: wandert in profil_eingabe. 'a' und 't1' stehen dort UND
+     flach, weil der Rechenkern beide Stellen auswertet (a-Mass je Segment
+     bzw. t_min als Rueckfallebene). */
+  var PROFIL_FELDER = ['b', 'h', 'd', 'tw', 'tf', 'r_ecke', 't1', 'a', 'a_steg', 'a_flansch'];
+  var NUR_PROFIL    = ['b', 'h', 'd', 'tw', 'tf', 'r_ecke', 'a_steg', 'a_flansch'];
+
+  /* Geprueft und normiert: Zahlen als Zahlen, a aus z abgeleitet, wenn noetig. */
+  function normiert(werte, zustand) {
+    var s1 = stufe1(werte, zustand);
+    var w = {}, k;
+    for (k in s1.zahlen) if (Object.prototype.hasOwnProperty.call(s1.zahlen, k)) w[k] = s1.zahlen[k];
+
+    var ausZ = false;
+    if (typeof w.a !== 'number' && typeof w.z === 'number') {
+      w.a = w.z / Math.SQRT2;
+      ausZ = true;
+    }
+    return { ok: s1.ok, fehler: s1.fehler, werte: w, a_aus_z: ausZ };
+  }
+
+  /* Fertige Eingabe fuer den Rechenkern. Sprachneutral, ohne DOM, ohne
+     Kenntnis des Solvers — es entsteht nur ein einfaches Objekt. */
+  function rechenEingabe(werte, zustand) {
+    var n = normiert(werte, zustand);
+    var w = n.werte, z = zustand || {}, ein = {}, pe = {}, k, i;
+
+    for (k in z) if (Object.prototype.hasOwnProperty.call(z, k)) ein[k] = z[k];
+
+    pe.profil = z.profil;
+    pe.kanten = z.kanten;
+    for (i = 0; i < PROFIL_FELDER.length; i++) {
+      if (typeof w[PROFIL_FELDER[i]] === 'number') pe[PROFIL_FELDER[i]] = w[PROFIL_FELDER[i]];
+    }
+    ein.profil_eingabe = pe;
+
+    /* Alles Uebrige flach: Lasten, Beiwerte, a, t1, t2. Die reinen
+       Abmessungen bleiben aussen vor — sie stehen schon in profil_eingabe,
+       und der Rechenkern kennt sie dort. 'z' entfaellt: daraus ist a
+       geworden, und zwei Wege zum selben Mass waeren eine Doppelquelle. */
+    for (k in w) {
+      if (!Object.prototype.hasOwnProperty.call(w, k)) continue;
+      if (k === 'z' || NUR_PROFIL.indexOf(k) >= 0) continue;
+      ein[k] = w[k];
+    }
+
+    return { ok: n.ok, fehler: n.fehler, eingabe: ein, a_aus_z: n.a_aus_z };
+  }
+
   /* Standardwerte fuer die Vorbelegung des Formulars (nie ueberschreibend). */
   function standardwerte(zustand) {
     var o = {};
@@ -305,6 +377,9 @@
     stufe1: stufe1,
     stufe2: stufe2,
     pruefe: pruefe,
+    PROFIL_FELDER: PROFIL_FELDER,
+    normiert: normiert,
+    rechenEingabe: rechenEingabe,
     standardwerte: standardwerte,
     sichtbareFelder: sichtbareFelder,
     leer: leer

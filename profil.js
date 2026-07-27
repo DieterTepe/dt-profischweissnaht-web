@@ -454,9 +454,9 @@
         var aAnfang = aFuer(seg[0], a, aSteg, aFlansch);
         var aEnde = aFuer(seg[seg.length - 1], a, aSteg, aFlansch);
         var rest = kuerzeAnfang(seg, aAnfang);
-        if (!seg.length || rest > 0) { fehler.push({ code: 'msg_endkrater_zu_lang', feld: 'l' }); return raus(); }
+        if (!seg.length || rest > 0) { fehler.push({ code: 'msg_endkrater_zu_lang', feld: 'a' }); return raus(); }
         rest = kuerzeEnde(seg, aEnde);
-        if (!seg.length || rest > 0) { fehler.push({ code: 'msg_endkrater_zu_lang', feld: 'l' }); return raus(); }
+        if (!seg.length || rest > 0) { fehler.push({ code: 'msg_endkrater_zu_lang', feld: 'a' }); return raus(); }
         abzug += aAnfang + aEnde;
       }
     }

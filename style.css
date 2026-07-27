@@ -257,7 +257,7 @@ input.feld,select.feld{display:block; width:100%; margin:0}
 /* ---------- Ergebniskacheln und Ampel (N5c) ---------- */
 .tiles{display:grid; gap:8px; grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
 .tile{padding:10px 12px; border-radius:10px; background:var(--card2); border:1px solid var(--line)}
-.tile .k{font-size:var(--f0); color:var(--muted)}
+.tile .tile-k{font-size:var(--f0); color:var(--muted)}
 .tile-wert{font-size:var(--f2); font-weight:700; font-variant-numeric:tabular-nums}
 .ampel{
   display:inline-flex; align-items:center; gap:8px; padding:8px 12px;
@@ -268,6 +268,7 @@ input.feld,select.feld{display:block; width:100%; margin:0}
 .ampel.gelb{color:var(--warn)}
 .ampel.rot{color:var(--bad)}
 .status-banner.idle{border-left:4px solid var(--line); color:var(--muted)}
+.erg-box{display:grid; gap:10px}
 
 /* ---------- Rechenwegzeilen (N5c) ---------- */
 .rw-zeile{padding:9px 0; border-bottom:1px solid var(--line)}
