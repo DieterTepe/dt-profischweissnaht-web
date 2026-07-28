@@ -737,10 +737,28 @@ function lauf(edition) {
   ok(e2 && e2.ok === true, 'N5c-2: das Beispiel rechnet weiterhin durch');
 
   ok(d.byId.pathIdle.hidden === true, 'N5c-2: der Platzhalter im Rechenweg ist ausgeblendet');
-  ok(!!d.byId.wegBox && d.byId.wegBox.children.length > 20,
+  ok(!!d.byId.wegBox && d.byId.wegBox.children.length > 3,
      'N5c-2: der Rechenweg ist wirklich gefuellt');
-  ok(zaehleKlasse(d.byId.wegBox, 'rw-abschnitt') >= 10,
-     'N5c-2: es sind alle zehn Abschnitte da');
+  ok(zaehleKlasse(d.byId.wegBox, 'acc') === 11,
+     'N5c-2: zehn klappbare Abschnitte plus der Detailbereich darueber');
+
+  /* ---- KLAPPBAR (Rueckmeldung Dieter, wie im Schwesterprogramm) -------
+     Beim Start ZU — aber nur die Einzelschritte. Bilanz und die ehrlichen
+     Luecken muessen ohne Antippen sichtbar sein. */
+  ok(d.byId.accBody_weg_detail.hidden === true,
+     'N5c-2: der Rechenweg steht beim ersten Anzeigen zugeklappt');
+  ok(!!d.byId.rwBilanz && !!d.byId.rwLuecken,
+     'N5c-2: Bilanz und ehrliche Luecken bleiben trotzdem sichtbar');
+  ok(d.byId.accBtn_weg_detail.getAttribute('aria-expanded') === 'false',
+     'N5c-2: und der Zustand steht auch fuer Vorleseprogramme dran');
+  d.byId.accBtn_weg_detail.click();
+  ok(d.byId.accBody_weg_detail.hidden === false, 'N5c-2: Antippen klappt ihn auf');
+  ok(/\u25BE/.test(d.byId.accCaret_weg_detail.inhalt()), 'N5c-2: das Dreieck dreht sich mit');
+  ok(d.byId.accBody_weg_rw_ab_eingaben.hidden === false,
+     'N5c-2: die Abschnitte darin sind dann offen — nicht zehnmal tippen muessen');
+  d.byId.accBtn_weg_rw_ab_eingaben.click();
+  ok(d.byId.accBody_weg_rw_ab_eingaben.hidden === true,
+     'N5c-2: ein einzelner Abschnitt laesst sich fuer sich zuklappen');
   var rwRoh = s.rechenweg();
   ok(rwRoh && rwRoh.abschnitte.length === 10, 'N5c-2: und die Sitzung haelt den Rechenweg fest');
 
@@ -779,8 +797,10 @@ function lauf(edition) {
   s.rechnen();
   ok(/250\.000|250000/.test(d.alleTexte()), 'N5c-2: grosse Zahlen erscheinen im Rechenweg');
   s.setSprache('en');
-  ok(zaehleKlasse(d.byId.wegBox, 'rw-abschnitt') >= 10,
+  ok(zaehleKlasse(d.byId.wegBox, 'acc') === 11,
      'N5c-2: nach dem Sprachwechsel steht der Rechenweg weiterhin vollstaendig da');
+  ok(d.byId.accBody_weg_detail.hidden === false,
+     'N5c-2: und bleibt aufgeklappt, wer ihn aufgeklappt hatte');
   ok(/Verifications|Self-checks/.test(d.alleTexte()),
      'N5c-2: und ist auf Englisch beschriftet');
   s.setSprache('de');

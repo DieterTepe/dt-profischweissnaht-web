@@ -903,6 +903,38 @@
       return b;
     }
 
+    /* Ein Klappbereich, gebaut wie die statischen aus N5a — gleiche Klassen,
+       gleiche Mechanik (schalte/umschalten), gleiches Aussehen. Es gibt
+       damit nur EINE Klappmechanik im Programm, nicht zwei.
+       Der Rechenweg im Schwesterprogramm klappt genauso. */
+    function klappBereich(host, code, titel, hinweis, offen) {
+      var sec = neu('section', 'acc', 'acc_' + code);
+      var kopf = neu('button', 'acc-head', 'accBtn_' + code);
+      setzeAttr(kopf, 'type', 'button');
+      setzeAttr(kopf, 'aria-controls', 'accBody_' + code);
+      var car = neu('span', 'acc-caret', 'accCaret_' + code);
+      setzeAttr(car, 'aria-hidden', 'true');
+      car.textContent = '\u25B8';
+      kopf.appendChild(car);
+      var tit = neu('span', 'acc-titel', 'accTitel_' + code);
+      tit.textContent = titel;
+      kopf.appendChild(tit);
+      sec.appendChild(kopf);
+
+      var korp = neu('div', 'acc-body', 'accBody_' + code);
+      if (hinweis) {
+        var h = neu('p', 'acc-hint', 'accHint_' + code);
+        h.textContent = hinweis;
+        korp.appendChild(h);
+      }
+      sec.appendChild(korp);
+      host.appendChild(sec);
+
+      if (kopf.addEventListener) kopf.addEventListener('click', function () { umschalten(code); });
+      schalte(code, !!offen);
+      return korp;
+    }
+
     function zeile(host, klassen, text) {
       if (!text && text !== 0) return null;
       var d = neu('div', klassen, null);
@@ -945,12 +977,47 @@
       var r = Rw.rendere(roh, S.sprache);
       S.letzterWeg = roh;
 
-      var i, j, ab, s, kopf, blatt;
+      /* ZUERST das Wichtige, IMMER sichtbar: Bilanz der Selbstpruefung und
+         die ehrlichen Luecken. Was der Anwender wissen MUSS, verschwindet
+         nicht hinter einer Klappe — nur die 36 Einzelschritte tun das. */
+      var bil = neu('div', 'rw-bilanz', 'rwBilanz');
+      bil.textContent =
+        txt(win, 'rwProben', S.sprache) + ' ' + r.n_haken_ok + '/' + r.n_haken + ' \u00b7 ' +
+        txt(win, 'rwNachweise', S.sprache) + ' ' + r.n_nachweise_ok + '/' + r.n_nachweise;
+      host.appendChild(bil);
+
+      var i, j, ab, s, blatt;
+      if ((roh.nicht_geprueft || []).length) {
+        var lk = neu('div', 'rw-abschnitt', 'rwLuecken');
+        beschrifte(lk, 'rwNichtGeprueft');
+        host.appendChild(lk);
+        for (i = 0; i < roh.nicht_geprueft.length; i++) {
+          zeile(host, 'gap-note', '\u00b7 ' + txt(win, roh.nicht_geprueft[i], S.sprache));
+        }
+      }
+      for (i = 0; i < (roh.warnungen || []).length; i++) {
+        zeile(host, 'pruef-warnung', txt(win, roh.warnungen[i].code || roh.warnungen[i], S.sprache));
+      }
+
+      /* Und jetzt der Rechenweg selbst — aufklappbar, beim Start ZU.
+         Er ist lang (zehn Abschnitte, meist ueber dreissig Schritte); am
+         Handy stuende sonst zwischen Ergebnis und Seitenende eine Wand. */
+      var nSchritte = 0;
+      for (i = 0; i < r.abschnitte.length; i++) nSchritte += r.abschnitte[i].schritte.length;
+      var detail = klappBereich(
+        host, 'weg_detail',
+        txt(win, 'rwDetail', S.sprache),
+        r.abschnitte.length + ' ' + txt(win, 'rwAbschnitte', S.sprache) + ' \u00b7 ' +
+          nSchritte + ' ' + txt(win, 'rwSchritte', S.sprache),
+        S.wegDetailOffen === true);
+      if (!detail) return true;
+
       for (i = 0; i < r.abschnitte.length; i++) {
         ab = r.abschnitte[i];
-        kopf = neu('div', 'rw-abschnitt', null);
-        kopf.textContent = ab.titel;
-        host.appendChild(kopf);
+        /* Jeder Abschnitt fuer sich klappbar, beim Aufklappen des Ganzen
+           aber offen — wer sucht, soll nicht zehnmal tippen muessen. */
+        var korp = klappBereich(detail, 'weg_' + ab.code, ab.titel, null,
+                                S.offen['weg_' + ab.code] !== false);
 
         for (j = 0; j < ab.schritte.length; j++) {
           s = ab.schritte[j];
@@ -967,30 +1034,8 @@
           haekchen(blatt, s);
           zeile(blatt, 'rw-quelle', s.quelle);
           zeile(blatt, 'rw-quelle', s.hinweis);
-          host.appendChild(blatt);
+          korp.appendChild(blatt);
         }
-      }
-
-      /* Selbstpruefung sichtbar: wie viele Rechenproben und wie viele
-         Nachweise, und ob sie aufgehen. */
-      var bil = neu('div', 'rw-bilanz', 'rwBilanz');
-      bil.textContent =
-        txt(win, 'rwProben', S.sprache) + ' ' + r.n_haken_ok + '/' + r.n_haken + ' · ' +
-        txt(win, 'rwNachweise', S.sprache) + ' ' + r.n_nachweise_ok + '/' + r.n_nachweise;
-      host.appendChild(bil);
-
-      /* LISTE 2.4 — was bewusst NICHT geprueft wurde. Sie gehoert sichtbar
-         hierher: eine stille Luecke waere schlimmer als eine benannte. */
-      if ((roh.nicht_geprueft || []).length) {
-        var lk = neu('div', 'rw-abschnitt', 'rwLuecken');
-        beschrifte(lk, 'rwNichtGeprueft');
-        host.appendChild(lk);
-        for (i = 0; i < roh.nicht_geprueft.length; i++) {
-          zeile(host, 'gap-note', '· ' + txt(win, roh.nicht_geprueft[i], S.sprache));
-        }
-      }
-      for (i = 0; i < (roh.warnungen || []).length; i++) {
-        zeile(host, 'pruef-warnung', txt(win, roh.warnungen[i].code || roh.warnungen[i], S.sprache));
       }
       return true;
     }
@@ -1160,7 +1205,13 @@
 
     function istOffen(code) { return !!S.offen[code]; }
 
-    function umschalten(code) { return schalte(code, !S.offen[code]); }
+    function umschalten(code) {
+      var r = schalte(code, !S.offen[code]);
+      /* Der Zustand des Rechenwegs ueberlebt Sprachwechsel und Neurechnen —
+         wer ihn aufgeklappt hat, findet ihn danach wieder aufgeklappt. */
+      if (code === 'weg_detail') S.wegDetailOffen = !!S.offen[code];
+      return r;
+    }
 
     function bereicheStandard() {
       for (var i = 0; i < BEREICHE.length; i++) {
