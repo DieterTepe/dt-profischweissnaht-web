@@ -13,7 +13,7 @@
 > Einstieg dort: **„weiter mit N5d"** — dann der Reihenfolge in Kickoff-Punkt 5b folgen.
 
 ```
-Plan-Version : 2.27 · Stand 2026-07-28
+Plan-Version : 2.28 · Stand 2026-07-28
 Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                N2c (Nahtbild-Grafik), N3 (Spannungen + beide Welten),
                N4 (Rechenweg), N5a (UI-Grundgerüst), N5b (Eingabeseite) und
@@ -23,7 +23,11 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                gegengeprüft: alle 13 Module, style.css, beide HTMLs und die drei
                DEV-ONLY-Dateien liegen aktuell vor, die drei Testläufe sind direkt
                aus dem Projektordner grün.
-               → NÄCHSTER SCHRITT: Etappe **N5d** — Einstieg „weiter mit N5d".
+               → NÄCHSTER SCHRITT: **N5c-3 („Nahtzug statt Segment") — ein FEHLER
+                 im Rechenkern, gefunden von Dieter beim Prüfen am 2026-07-28.**
+                 Auftrag in 5.1. **Vor N5d zu erledigen** — er macht I- und
+                 U-Profile mit umlaufender Naht unbenutzbar.
+                 Danach erst Etappe **N5d**.
                  Inhalt: Block „Ausführung & Dokumentation" (ISO 5817 + EXC,
                  ehrlich als nicht rechenwirksam beschriftet, Abschnitt 2.7)
                  **+ Versionszeile im Info-ⓘ (Abschnitt 3.6)**.
@@ -128,7 +132,8 @@ Einstiegssatz von Dieter: **„weiter mit N5d"**.
    Steht im Kopfblock eine andere Basislinie als gemessen, ist eine der beiden Seiten alt —
    dann NICHT bauen, sondern erst mit Dieter klären. (Genau das ist am 2026-07-28
    passiert: der Ordner lieferte eine drei Etappen alte Plandatei zu neuem Code.)
-12. Erst dann **N5d** bauen — Fließband nach Punkt 5 der Kickoff-Liste.
+12. Erst dann **N5c-3** bauen (der Fehlerbefund in 5.1 — **hat Vorrang vor N5d**),
+    danach **N5d** — Fließband nach Punkt 5 der Kickoff-Liste.
     **Der Umfang von N5d ist mit Dieter abzustimmen** (5.1); bei „Ausführung &
     Dokumentation" zählt seine Praxissicht.
 
@@ -1191,7 +1196,7 @@ eigene Erklärtexte im Titel. Der DOM-Smoke **zählt** sie getrennt.
 | **N2c** ✅ | **Nahtbild-Grafik** *(abgenommen 2026-07-26)* | `svglib.js` + `schaubild.js`: SVG-Vorschau des Nahtbilds, Segmente farbig nach Gruppe, Schwerpunkt und Achsen, nicht geschweißte Kanten gestrichelt, Ecklücken sichtbar. Zugleich **Auswahl-Skizze** der Profileingabe. **Schnittstelle: Abschnitt 4.7.** |
 | **N3** ✅ | **Spannungen + beide Welten** *(abgenommen 2026-07-26)* | `solver.js`: σ⊥, τ⊥, τ∥ aus N/Q/M/T · Welt A (EC3, beide Verfahren) · Welt B (klassisch, Tabelle + Formel) · **Nachweis UND Auslegung** mit Aufrundung · Ampel. **Schnittstelle: Abschnitt 4.8.** |
 | **N4** ✅ | **Rechenweg** *(abgenommen 2026-07-26)* | `rechenweg.js`: selbstprüfende Schrittliste für N2/N2b/N3, dreisprachig, zweiter Rechenpfad je Schritt, Rechenprobe und Nachweis getrennt. **Schnittstelle: Abschnitt 4.9.** |
-| **N5** ⬅ | **UI-Basis — LAUFEND: N5a ✅, N5b ✅ und N5c ✅ abgenommen, NÄCHSTER SCHRITT N5d (Etappen in 5.2)** | 2 HTMLs, `style.css`, Formular mit aufklappbaren Bereichen und Freischalt-Haken, Ergebnis-Kacheln, Ampel, i18n, Theme (**Start immer dunkel**), Laien-ⓘ, Block „Ausführung & Dokumentation" (ISO 5817 + EXC). **Erster Handy-Test.** |
+| **N5** ⬅ | **UI-Basis — LAUFEND: N5a ✅, N5b ✅, N5c-1 ✅ und N5c-2 ✅ abgenommen, NÄCHSTER SCHRITT N5c-3 (Fehler, 5.1-0), danach N5d (Etappen in 5.2)** | 2 HTMLs, `style.css`, Formular mit aufklappbaren Bereichen und Freischalt-Haken, Ergebnis-Kacheln, Ampel, i18n, Theme (**Start immer dunkel**), Laien-ⓘ, Block „Ausführung & Dokumentation" (ISO 5817 + EXC). **Erster Handy-Test.** |
 | **N6b** | **ISO-2553-Symbolgenerator** | `symbol.js`: Pfeil-/Gegenseite, a- bzw. z-Maß, Länge, Rundumnaht, Baustellennaht. Nutzt `svglib.js` aus N2c. Bewusst **vor** dem Launch — Verkaufsargument. |
 | **N7** | **Presets** | Die 6 Starter als Profil-/Kantendaten auf `profil.js`, **mit Merkmalen für die kontextbezogene Beispielliste** (3.2). |
 | **N8** | **Assistent** | `assistent.js` (DOM-freie Dialoglogik) + Overlay-UI, Button-Einstieg, tabellengestützt aus `optionen.js`, mit Erklärungen/Tipps/Skizzen je Dialog, Übernahme vorhandener Eingaben. |
@@ -1205,7 +1210,83 @@ eigene Erklärtexte im Titel. Der DOM-Smoke **zählt** sie getrennt.
 | **N15** | **Verzug & Schrumpfung** | `verzug.js` + Panel, klar als **Abschätzung** gekennzeichnet. |
 | **N16** | **Feinschliff + Build** | Presets ausbauen, Wissenstexte, Code-Audit, Bündelung + Obfuskierung (zwei Bündel, Unterschied nur `DT_EDITION`). **→ V1-Launch.** |
 
-### 5.1 Auftrag für die nächste Etappe **N5d**
+### 5.1 Auftrag: zuerst **N5c-3**, danach **N5d**
+
+---
+
+#### 5.1-0 · N5c-3 — „Nahtzug statt Segment" **(FEHLER, hat Vorrang)**
+
+> **Gefunden von Dieter am 2026-07-28 beim Prüfen von N5c-2.** Kein Schönheitsfehler:
+> **jedes I- und U-Profil mit umlaufender Naht fällt durch**, unabhängig von den Maßen.
+
+**Was passiert.** Die Prüfung `l_eff ≥ max(6·a ; 30 mm)` läuft **je geometrischem
+Segment**. Bei Profilen mit Flansch sind die Flanschkanten aber nur **`t_f` lang** — und
+`t_f` ist bei keinem Normprofil ≥ 30 mm. Nachgemessen am 2026-07-28:
+
+| Fall | Segmente | Naht gesamt | als „zu kurz" gewertet | Ampel | Rechenweg |
+|---|---|---|---|---|---|
+| I-Profil 200×200, rundum, a 4 | 12 | **1182 mm** | 4 × **15 mm** (= `t_f`) | grün, η 0,083 | ✗ nicht erfüllt |
+| U-Profil 80×160, rundum, a 4 | 8 | **626 mm** | 2 × **10 mm** (= `t_f`) | grün, η 0,157 | ✗ nicht erfüllt |
+| U-Profil 100×200, rundum, a 5 | 8 | **782 mm** | 2 × **14 mm** (= `t_f`) | grün, η 0,100 | ✗ nicht erfüllt |
+| RHS 120×80×6, rundum, a 4 | 4 | 328 mm | keine | grün, η 0,299 | ✓ erfüllt |
+
+**Dieters Einwand, und er trifft zu:** Um die Prüfung zu bestehen, müsste der Flansch
+dicker als 30 mm sein. **Dann würde kein einziges Normbauteil passen.**
+
+**Warum es falsch ist.** EN 1993-1-8 §4.5.1(2) spricht von **einer Kehlnaht**, deren
+wirksame Länge zu klein ist. Gemeint sind kurze, **freistehende** Nähte, bei denen Anfang
+und Ende die Tragfähigkeit aufzehren. Beim umlaufend geschweißten I-Profil liegt aber
+**eine einzige durchlaufende Naht von 1182 mm** vor — sie geht nur um Ecken. Ein 15-mm-Stück
+mittendrin ist keine 15-mm-Naht. Die Prüfung sitzt auf der **falschen Ebene**.
+
+**Zweiter Befund, beim Messen aufgefallen — genauso wichtig:**
+Das Programm zeigt **gleichzeitig** grüne Ampel (`erfuellt: true`) **und** im Rechenweg
+`rw_s_l_eff` → **✗ Nachweis NICHT erfüllt** (`nachweis_ok: false`). Zwei Antworten auf
+dieselbe Frage auf einem Bildschirm. **Das muss mit derselben Etappe zusammengeführt
+werden** — egal wie die Längenprüfung am Ende eingestuft wird.
+
+**Warum es durchgerutscht ist — ehrlich festgehalten:** Es war bekannt. In `optionen.js`
+steht als Begründung zur Beispielwahl, ein I-Profil um die Flansche geschweißt warne immer,
+*„deshalb nur der Steg"*. Der Fall wurde **umgangen statt gelöst**. Die drei Beispiele sind
+deshalb sauber — der erste realistische Griff daneben nicht.
+**Lehre für künftige Etappen: Wenn ein Beispiel gewählt wird, um einem Verhalten
+auszuweichen, ist das ein Fehlerbefund und gehört hierher — nicht in einen Kommentar.**
+
+**So ist es zu reparieren.** Die Prüfung gehört **je durchlaufendem NAHTZUG**, nicht je
+Segment:
+
+- `umlaufend = true` → **ein** Zug, Gesamtlänge (I-Profil oben: 1182 mm) → besteht
+- getrennte Züge (z. B. „nur Steg": zwei Nähte à 170 mm) → **jeder Zug für sich** → besteht
+- wirklich kurze, freistehende Nähte → werden **weiterhin gefangen**. Das ist der Sinn der
+  Regel und darf nicht verlorengehen.
+- **`l_eff = l − 2·a` ebenso je Zug**, nicht an jeder Ecke erneut — sonst kostet jede Ecke
+  ein weiteres `2·a`, was genauso falsch ist.
+
+**Zu entscheiden (mit Dieter, er ist der Fachmann):** Ist die Längenprüfung ein **Nachweis**
+(✗ = die Naht trägt so nicht) oder eine **Warnung**? Beides ist vertretbar — aber Ampel und
+Rechenweg müssen danach **dasselbe** sagen.
+
+**Betroffen:** `solver.js` (die Prüfung), ggf. `profil.js` (muss die Zugehörigkeit zum
+Nahtzug herausgeben — `umlaufend` gibt es schon), `rechenweg.js` (Einstufung und Text),
+`test_naht.js`, `dom_smoke_voll.js`.
+
+**Prüfanker für den Harness — vorher gemessen, müssen nachher stimmen:**
+
+- I-Profil 200×200, rundum, a 4 → **kein** „zu kurz" mehr, Naht 1182 mm, Rechenweg erfüllt
+- U-Profil 80×160, rundum, a 4 → **kein** „zu kurz" mehr, Naht 626 mm
+- I-Profil „nur Steg" (Beispiel `traeger`) → unverändert 2 Segmente/324 mm/η 0,626
+- RHS 120×80×6 rundum (Beispiel `rhs`) → unverändert 4 Segmente/328 mm/η 0,359
+- **Gegenprobe, damit die Regel nicht verlorengeht:** Blech, Flanken, t 20, b 35, a 5 →
+  muss **weiterhin** „zu kurz" melden (Einzelnaht, 35 mm, Grenze 30 mm nach Abzug)
+- Ampel und `rw.nachweis_ok` müssen in **allen** Fällen dasselbe sagen
+
+**Erwarteter Beleg am Handy:** Ein H-Träger und ein U-Profil, umlaufend geschweißt, rechnen
+durch — ohne roten Nachweis, der keiner ist.
+
+---
+
+#### 5.1-1 · N5d *(erst nach N5c-3)*
+
 
 > **N5c IST GEBAUT UND ABGENOMMEN (2026-07-28).** Was unten ab „Auftrag für N5c-1" steht,
 > ist damit **erledigt** und bleibt nur noch als Begründung stehen — dort ist nachlesbar,
@@ -1437,7 +1518,8 @@ AWS/US-Normen, EN 1993-1-8:2024 (2. Generation, β_w,mod — Werte noch nicht be
 | **N5b** ✅ | *(abgenommen 2026-07-27)* Eingabeseite: 18 Auswahlgruppen aus `optionen.js` über **die** Filterfunktion, alle 29 Felder aus `validate.js`, Freischalt-Haken, **„eigener Wert"-Haken**, Laien-ⓘ an jedem Feld und jeder Gruppe, „Berechnen" prüft, „Leeren" führt in den Startzustand (3.1). **Schnittstelle: 4.10b.** | Man kann einen Fall wirklich eingeben |
 | **N5c-1** ✅ | *(abgenommen 2026-07-28)* **Feldbereinigung** (`l` entfällt, `t1` profilabhängig, `t2` freiwillig — begründet in 5.1), **drei Beispiele** hinter „Beispiel laden", **Übersetzung Formular → `profil_eingabe`**, „Berechnen" rechnet wirklich, Ergebnis-Kacheln mit Ampel. **Schnittstelle: 4.10c.** | Beispiel antippen, rechnen, eine Zahl und eine Ampel sehen |
 | **N5c-2** ✅ | *(abgenommen 2026-07-28)* **Rechenweg aus N4 angezeigt** (10 Abschnitte, seit der Abnahme **aufklappbar**), Nahtbild-Grafik eingebunden, die zwei Häkchenarten optisch getrennt, Liste 2.4, Warnungen und ehrliche Lücken, Zahlformat je Sprache aus `rechenweg.zahl()`. **Schnittstelle: 4.10c.** | Ein vollständiger Nachweis von der Eingabe bis zur Quellenangabe |
-| **N5d** ⬅ | *(nächster Bau — Umfang vor dem Bau mit Dieter abstimmen)* Block „Ausführung & Dokumentation" (ISO 5817 + EXC, ehrlich als nicht rechenwirksam beschriftet, 2.7) **+ Versionszeile im Info-ⓘ** (siehe 3.6, **mit dem Befund zu den drei fehlenden Kennungen**) | Der Block klappt auf und erscheint in der Ausgabe; der Programmstand ist am Handy ablesbar |
+| **N5c-3** ⬅ | *(FEHLER, hat Vorrang — Auftrag in 5.1-0)* **„Nahtzug statt Segment":** die Prüfung `l_eff ≥ max(6a; 30)` läuft je Segment statt je durchlaufendem Nahtzug — dadurch fällt **jedes I- und U-Profil mit umlaufender Naht** durch, weil die Flanschkante nur `t_f` lang ist. Dazu: Ampel und Rechenweg widersprechen sich | Ein H-Träger und ein U-Profil, umlaufend geschweißt, rechnen durch — ohne roten Nachweis, der keiner ist |
+| **N5d** | *(nach N5c-3 — Umfang vor dem Bau mit Dieter abstimmen)* Block „Ausführung & Dokumentation" (ISO 5817 + EXC, ehrlich als nicht rechenwirksam beschriftet, 2.7) **+ Versionszeile im Info-ⓘ** (siehe 3.6, **mit dem Befund zu den drei fehlenden Kennungen**) | Der Block klappt auf und erscheint in der Ausgabe; der Programmstand ist am Handy ablesbar |
 
 **N8 — Assistent (drei Etappen):**
 | Etappe | Inhalt |
@@ -1661,6 +1743,11 @@ will. Also: Vorschriften und Wegweiser bleiben hier, die Erzählung wandert.
   und mit Ablösetermin versehen** — so geschehen beim Zahlformat (N5c-1 → N5c-2).
 - **Ehrliche Lücken gehören sichtbar** (2.4): Was bewusst nicht geprüft wurde, steht ohne
   Antippen da — auch nicht hinter einer Klappe.
+- **Ein Beispiel darf nie gewählt werden, um einem Verhalten auszuweichen.** Passiert das,
+  ist es ein **Fehlerbefund** und gehört in den Plan — nicht in einen Quelltextkommentar.
+  So ist der Segment-Fehler aus N5c-3 acht Tage lang unentdeckt geblieben (5.1-0).
+- **Ampel und Rechenweg müssen dasselbe sagen.** Ein grünes Ergebnis neben einem roten
+  Nachweis ist immer ein Fehler, egal welche Seite recht hat.
 - **Token-Pause: 4 Stunden.**
 
 ---
@@ -1728,6 +1815,21 @@ Schwesterprogramm) — gebaut mit der vorhandenen Klappmechanik aus N5a, ohne ne
 Bilanz und Liste 2.4 bleiben ohne Antippen sichtbar. Plandatei vollständig auf den
 N5c-Stand gebracht (Kopfblock, Kickoff, 3.6, 4.10c, 5.1, 5.2, 8.1, Log, Changelog).
 **822 Assertions · Smokes 440/441 → 448/449 · i18n-Parität 0.**
+
+**v2.28 (2026-07-28):** **Fehlerbefund von Dieter beim Prüfen — neue Etappe N5c-3
+(„Nahtzug statt Segment"), sie hat Vorrang vor N5d.** Die Prüfung
+`l_eff ≥ max(6·a; 30 mm)` läuft **je geometrischem Segment** statt je durchlaufendem
+Nahtzug. Bei Profilen mit Flansch ist die Flanschkante nur `t_f` lang — **jedes I- und
+U-Profil mit umlaufender Naht fällt dadurch durch**, unabhängig von den Maßen (nachgemessen:
+I 200×200 → 4 × 15 mm bei 1182 mm Gesamtnaht · U 80×160 → 2 × 10 mm bei 626 mm ·
+U 100×200 → 2 × 14 mm bei 782 mm). Dieters Einwand trifft zu: der Flansch müsste dicker als
+30 mm sein, dann passt kein Normbauteil mehr. **Zweiter Befund beim Messen:** Ampel grün
+und Rechenweg „✗ nicht erfüllt" **gleichzeitig**. Beides in 5.1-0 mit Messwerten,
+Begründung (EN 1993-1-8 §4.5.1(2) meint kurze *freistehende* Nähte), Reparaturvorschlag und
+Prüfankern festgehalten — samt der Gegenprobe, dass wirklich kurze Einzelnähte weiterhin
+gefangen werden. **Ehrlich vermerkt:** der Fall war bekannt und wurde bei der Beispielwahl
+umgangen statt gelöst; die Lehre daraus steht in 9.2. Kein Code geändert.
+**Basislinie unverändert: 822 Assertions · Smokes 448/449 · i18n-Parität 0.**
 
 **v2.27 (2026-07-28):** **Entscheidungslog und Changelog nach `Schweißnaht-Historie.md`
 ausgelagert.** Kein Code geändert, keine Zeile Inhalt verloren — zeichengenau geprüft.
