@@ -304,10 +304,10 @@ function lauf(edition) {
   ok(/Info/.test(d.byId.infoBtn.getAttribute('title') || ''), 'DE: Info-Knopf hat einen Titel');
   ok(/ohne Gew/.test(d.byId.footNote.inhalt()), 'DE: der Produkt-Disclaimer steht in der Fusszeile');
   ok(/Dreierwalde/.test(d.byId.footImpressum.inhalt()), 'das Impressum steht in der Fusszeile');
-  ok(/N5c-2/.test(d.byId.geruestNote.inhalt()),
-     'die Karte sagt ehrlich, was noch fehlt: Rechenweg und Grafik folgen in N5c-2');
-  ok(/rechnet/.test(d.byId.geruestNote.inhalt()),
-     'und ebenso ehrlich, dass "Berechnen" jetzt wirklich rechnet');
+  ok(/N5d/.test(d.byId.geruestNote.inhalt()),
+     'die Karte sagt ehrlich, was noch fehlt: der Block Ausfuehrung folgt in N5d');
+  ok(/Rechenweg/.test(d.byId.geruestNote.inhalt()),
+     'und ebenso ehrlich, dass Ergebnis, Nahtbild und Rechenweg jetzt da sind');
   ok(d.byId.resultIdle.inhalt().length > 20, 'Ergebniskarte traegt einen Leertext');
   ok(d.byId.vizIdle.inhalt().length > 20, 'Nahtbildkarte traegt einen Leertext');
   ok(d.byId.pathIdle.inhalt().length > 20, 'Rechenwegkarte traegt einen Leertext');
@@ -538,8 +538,8 @@ function lauf(edition) {
   var pr = s.pruefen();
   ok(pr && pr.ok === true, 'N5b: der vollstaendige Fall wird als in Ordnung gemeldet' +
      (pr && pr.fehler.length ? ' — offen: ' + JSON.stringify(pr.fehler) : ''));
-  ok(/N5c/.test(d.byId.pruefListe.inhalt() + d.alleTexte()),
-     'N5b: und sagt ehrlich, dass das Rechnen in N5c folgt');
+  ok(/es wurde gerechnet/.test(d.byId.pruefListe.inhalt() + d.alleTexte()),
+     'N5b/N5c: der Pruefkasten sagt, dass danach wirklich gerechnet wurde');
 
   /* ---- FELDBEREINIGUNG N5c-1 (Plan 5.1) -------------------------------
      'l' ist entfallen, 't1' ist nur noch profilabhaengig Pflicht und 't2'
@@ -618,8 +618,8 @@ function lauf(edition) {
   d.byId.calcBtn.click();
   ok(d.byId.pruefBox.hidden === false, '"Berechnen" oeffnet den Pruefkasten');
   ok(d.byId.pruefListe.children.length > 0, '"Berechnen" sagt am leeren Formular, was fehlt');
-  ok(/N5c/.test(d.alleTexte()),
-     '"Berechnen" sagt ehrlich, dass das RECHNEN erst in N5c folgt');
+  ok(d.byId.resultIdle.hidden === false,
+     '"Berechnen" am leeren Formular rechnet NICHT — der Ergebnisbereich bleibt leer');
   d.byId.assistBtn.click();
   ok(/N8/.test(d.byId.dtMsg.inhalt()), '"Assistent" verweist ehrlich auf Baustein N8');
   var ausgaben = ['saveBtn', 'loadBtn', 'printBtn', 'rtfBtn'];
@@ -714,6 +714,85 @@ function lauf(edition) {
   ok(d.byId.resultIdle.hidden === false && d.byId.ergBox.children.length === 0,
      'N5c-1: "Leeren" raeumt auch das Ergebnis weg');
   ok(s.ergebnis() === null, 'N5c-1: und die Sitzung haelt kein altes Ergebnis fest');
+
+  /* ---- RECHENWEG UND GRAFIK N5c-2 (Plan 5.1, Schritte 6-10) -----------
+     Abnahmekriterium: ein vollstaendiger Nachweis von der Eingabe bis zur
+     Quellenangabe. Geprueft wird an der erzeugten Oberflaeche. */
+
+  /* Zaehlt Elemente einer Klasse im erzeugten Baum — die Haekchen haben
+     keine Ids, ihre TRENNUNG ist aber der Kern von Plan 4.9. */
+  function zaehleKlasse(wurzel, name) {
+    var n = 0;
+    if (!wurzel) return 0;
+    var kl = String(wurzel.className || '').split(' ');
+    for (var i = 0; i < kl.length; i++) if (kl[i] === name) n++;
+    for (var j = 0; j < (wurzel.children || []).length; j++) {
+      n += zaehleKlasse(wurzel.children[j], name);
+    }
+    return n;
+  }
+
+  s.beispielLaden('blech');
+  var e2 = s.rechnen();
+  ok(e2 && e2.ok === true, 'N5c-2: das Beispiel rechnet weiterhin durch');
+
+  ok(d.byId.pathIdle.hidden === true, 'N5c-2: der Platzhalter im Rechenweg ist ausgeblendet');
+  ok(!!d.byId.wegBox && d.byId.wegBox.children.length > 20,
+     'N5c-2: der Rechenweg ist wirklich gefuellt');
+  ok(zaehleKlasse(d.byId.wegBox, 'rw-abschnitt') >= 10,
+     'N5c-2: es sind alle zehn Abschnitte da');
+  var rwRoh = s.rechenweg();
+  ok(rwRoh && rwRoh.abschnitte.length === 10, 'N5c-2: und die Sitzung haelt den Rechenweg fest');
+
+  /* DIE ZWEI HAEKCHENARTEN — der eigentliche Punkt von Schritt 8. */
+  var nHaken = zaehleKlasse(d.byId.wegBox, 'rw-haken');
+  var nNachw = zaehleKlasse(d.byId.wegBox, 'rw-nachweis');
+  ok(nHaken > 0, 'N5c-2: Rechenproben sind als solche ausgezeichnet (' + nHaken + ')');
+  ok(nNachw > 0, 'N5c-2: Nachweise sind als solche ausgezeichnet (' + nNachw + ')');
+  ok(nHaken !== nNachw || nHaken === 0,
+     'N5c-2: die zwei Haekchenarten sind wirklich getrennt, nicht dieselbe Klasse');
+  /* Nachgemessen: rechenweg.js bildet die Summenzeile der Selbstpruefung
+     erst NACH dem Zaehlen und zaehlt sie bewusst nicht mit ("sie zaehlt sich
+     selbst nicht mit"). Angezeigt wird sie sehr wohl — deshalb genau ein
+     Haekchen mehr als gezaehlte Proben. Kein Fehler, sondern Absicht. */
+  ok(nHaken === rwRoh.n_haken + 1,
+     'N5c-2: jede Rechenprobe wird angezeigt, dazu die Summenzeile (' +
+     nHaken + ' = ' + rwRoh.n_haken + ' + 1)');
+  ok(nNachw === rwRoh.n_nachweise,
+     'N5c-2: und jeder Nachweis wird angezeigt (' + nNachw + '/' + rwRoh.n_nachweise + ')');
+  ok(!!d.byId.rwBilanz && /21\/21/.test(d.byId.rwBilanz.inhalt()),
+     'N5c-2: die Bilanz der Rechenproben steht sichtbar da');
+
+  /* LISTE 2.4 — ehrliche Luecken. */
+  ok(!!d.byId.rwLuecken, 'N5c-2: die Liste der bewusst nicht geprueften Punkte ist sichtbar');
+  ok(/Bewusst nicht/.test(d.alleTexte()), 'N5c-2: und auf Deutsch beschriftet');
+
+  /* NAHTBILD-GRAFIK. */
+  ok(d.byId.vizIdle.hidden === true, 'N5c-2: der Platzhalter der Grafik ist ausgeblendet');
+  ok(!!d.byId.grafikSvg && /<svg/.test(d.byId.grafikSvg.innerHTML),
+     'N5c-2: es steht wirklich ein SVG in der Karte');
+  ok(!!d.byId.grafikLegende && d.byId.grafikLegende.children.length >= 2,
+     'N5c-2: mit Legende darunter');
+
+  /* Zahlformat: seit N5c-2 kommt es aus dem Rechenweg — mit Tausenderpunkt. */
+  s.beispielLaden('traeger');
+  s.rechnen();
+  ok(/250\.000|250000/.test(d.alleTexte()), 'N5c-2: grosse Zahlen erscheinen im Rechenweg');
+  s.setSprache('en');
+  ok(zaehleKlasse(d.byId.wegBox, 'rw-abschnitt') >= 10,
+     'N5c-2: nach dem Sprachwechsel steht der Rechenweg weiterhin vollstaendig da');
+  ok(/Verifications|Self-checks/.test(d.alleTexte()),
+     'N5c-2: und ist auf Englisch beschriftet');
+  s.setSprache('de');
+
+  /* Leeren raeumt auch Rechenweg und Grafik. */
+  s.leeren();
+  ok(d.byId.pathIdle.hidden === false && d.byId.wegBox.children.length === 0,
+     'N5c-2: "Leeren" raeumt den Rechenweg weg');
+  ok(d.byId.vizIdle.hidden === false && d.byId.grafikBox.children.length === 0,
+     'N5c-2: und die Grafik ebenso');
+  ok(s.rechenweg() === null, 'N5c-2: die Sitzung haelt keinen alten Rechenweg fest');
+
 
 
   /* ------------------------------------------------------- 9) Theme ----- */

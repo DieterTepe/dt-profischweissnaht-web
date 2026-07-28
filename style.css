@@ -285,6 +285,22 @@ input.feld,select.feld{display:block; width:100%; margin:0}
   font-size:var(--f0); font-weight:600; border:1px solid currentColor; color:var(--ok);
 }
 .rw-nachweis.fehl{color:var(--warn)}
+.rw-abschnitt{margin:14px 0 4px; font-size:var(--f1); font-weight:700; color:var(--muted);
+  text-transform:uppercase; letter-spacing:.04em}
+.rw-abschnitt:first-child{margin-top:0}
+.rw-bilanz{margin-top:14px; padding-top:10px; border-top:1px solid var(--line);
+  font-size:var(--f0); font-variant-numeric:tabular-nums}
+.weg-box{display:block}
+
+/* ---------- Nahtbild-Grafik (N5c-2) ---------- */
+.grafik-box{display:grid; gap:10px}
+.grafik-svg{width:100%; overflow:auto}
+.grafik-svg svg{width:100%; height:auto; display:block}
+.grafik-legende{display:grid; gap:6px}
+.legende-eintrag{display:flex; align-items:center; gap:8px; font-size:var(--f0)}
+.legende-punkt{width:12px; height:12px; border-radius:3px; flex:0 0 auto;
+  border:1px solid var(--line)}
+.legende-text{color:var(--muted)}
 
 /* ---------- Dialog ---------- */
 .modal-overlay{

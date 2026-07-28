@@ -35,7 +35,7 @@
   'use strict';
 
   var VERSION = '0.6.0';
-  var ETAPPE = 'N5c-1';
+  var ETAPPE = 'N5c-2';
   var SPRACHEN = ['de', 'en', 'pt'];
 
   /* Plan 3.1 (bindend): die Oberflaeche startet IMMER im dunklen Design —
@@ -136,7 +136,10 @@
     'pruef-box', 'pruef-ok', 'pruef-fehler', 'pruef-warnung', 'pruef-hinweis',
     'hilfe-abschnitt', 'hilfe-titel',
     /* N5c-1 */
-    'tile-k', 'erg-box'
+    'tile-k', 'erg-box',
+    /* N5c-2 */
+    'weg-box', 'grafik-box', 'grafik-svg', 'grafik-legende',
+    'legende-eintrag', 'legende-punkt', 'legende-text', 'rw-abschnitt', 'rw-bilanz'
   ];
 
   /* Buttons, die bewusst noch nicht verdrahtet sind: Id -> ehrliche Meldung.
@@ -703,13 +706,16 @@
        uebergibt die uebersetzte Eingabe und zeigt an, was zurueckkommt;
        gerechnet wird hier nichts. Der Rechenweg kommt in N5c-2 dazu. */
 
-    /* Zahlausgabe fuers Auge: DE und PT mit Komma, EN mit Punkt.
-       Vorlaeufig und bewusst klein gehalten — in N5c-2 uebernimmt das
-       Zahlformat des Rechenwegs, damit es nur EINE Fassung davon gibt. */
+    /* Zahlausgabe fuers Auge. Seit N5c-2 gibt es davon nur noch EINE
+       Fassung: die des Rechenwegs (DE/PT Komma, EN Punkt, Tausenderpunkt).
+       Die Notloesung aus N5c-1 ist damit abgeloest; der Zweig ohne Modul
+       bleibt nur, damit die Kacheln auch ohne Rechenweg lesbar waeren. */
     function zahlText(x, nk) {
       if (typeof x !== 'number' || !isFinite(x)) return '–';
-      var s = x.toFixed(typeof nk === 'number' ? nk : 2);
-      return (S.sprache === 'en') ? s : s.replace('.', ',');
+      var stellen = (typeof nk === 'number') ? nk : 2;
+      var Rw = win.DTNRechenweg;
+      if (Rw && typeof Rw.zahl === 'function') return Rw.zahl(x, stellen, S.sprache);
+      return x.toFixed(stellen);
     }
 
     function kachel(host, key, wert, einheitKey) {
@@ -741,6 +747,14 @@
       var b = ergBox();
       if (b) b.innerHTML = '';
       zeige(el(doc, 'resultIdle'), true);
+      var w = wegBox();
+      if (w) w.innerHTML = '';
+      zeige(el(doc, 'pathIdle'), true);
+      var g = grafikBox();
+      if (g) g.innerHTML = '';
+      zeige(el(doc, 'vizIdle'), true);
+      S.letzteEingabe = null;
+      S.letzterWeg = null;
       return !!b;
     }
 
@@ -853,11 +867,170 @@
       S.letztesA = ue.eingabe.a;
       var erg = Rechner.rechne(ue.eingabe);
 
+      S.letzteEingabe = ue.eingabe;
       ergebnisZeigen(erg);
+      rechenwegZeigen(erg, ue.eingabe);
+      grafikZeigen(ue.eingabe);
       if (erg && erg.ok) gesperrteFuellen(erg);
       meldung(txt(win, (erg && erg.ok) ? 'uiGerechnet' : 'uiRechnenFehler', S.sprache));
       S.letztesErgebnis = erg;
       return erg;
+    }
+
+    /* --------------------------------------------------- Rechenweg (N5c-2) */
+    /* Plan 5.1, Schritte 6 bis 10. Ab hier sind DREI Anzeige-Aufrufe erlaubt:
+       der Solver rechnet, der Rechenweg beschriftet, das Schaubild zeichnet.
+       Alle drei liefern Fertiges — hier wird nichts nachgerechnet und nichts
+       nachformatiert. */
+
+    function wegBox() {
+      var b = el(doc, 'wegBox');
+      if (b) return b;
+      var host = el(doc, 'wegHost');
+      if (!host) return null;
+      b = neu('div', 'weg-box', 'wegBox');
+      host.appendChild(b);
+      return b;
+    }
+
+    function grafikBox() {
+      var b = el(doc, 'grafikBox');
+      if (b) return b;
+      var host = el(doc, 'grafikHost');
+      if (!host) return null;
+      b = neu('div', 'grafik-box', 'grafikBox');
+      host.appendChild(b);
+      return b;
+    }
+
+    function zeile(host, klassen, text) {
+      if (!text && text !== 0) return null;
+      var d = neu('div', klassen, null);
+      d.textContent = text;
+      host.appendChild(d);
+      return d;
+    }
+
+    /* DIE ZWEI HAEKCHENARTEN — nie vermischen (Plan 4.9, bindend seit N4).
+       Ein falscher Haken heisst: das Programm rechnet falsch.
+       Ein nicht erfuellter Nachweis heisst: die Naht traegt so nicht.
+       Deshalb zwei verschiedene Klassen und zwei verschiedene Zeichen. */
+    function haekchen(host, s) {
+      if (s.haken !== null && typeof s.haken !== 'undefined') {
+        var h = neu('span', 'rw-haken' + (s.haken ? '' : ' fehl'), null);
+        h.textContent = s.haken_zeichen || (s.haken ? '✓' : '✗');
+        setzeAttr(h, 'title', txt(win, 'rwProbeTitel', S.sprache));
+        host.appendChild(h);
+      }
+      if (s.erfuellt !== null && typeof s.erfuellt !== 'undefined') {
+        var n = neu('span', 'rw-nachweis' + (s.erfuellt ? '' : ' fehl'), null);
+        n.textContent = (s.erfuellt_zeichen || '') + ' ' + (s.erfuellt_text || '');
+        setzeAttr(n, 'title', txt(win, 'rwNachweisTitel', S.sprache));
+        host.appendChild(n);
+      }
+    }
+
+    function rechenwegZeigen(erg, ein) {
+      var host = wegBox();
+      if (!host) return false;
+      host.innerHTML = '';
+      zeige(el(doc, 'pathIdle'), false);
+
+      var Rw = win.DTNRechenweg;
+      if (!Rw || !erg || erg.ok !== true) {
+        zeige(el(doc, 'pathIdle'), true);
+        return false;
+      }
+      var roh = Rw.ausErgebnis(erg, ein);
+      var r = Rw.rendere(roh, S.sprache);
+      S.letzterWeg = roh;
+
+      var i, j, ab, s, kopf, blatt;
+      for (i = 0; i < r.abschnitte.length; i++) {
+        ab = r.abschnitte[i];
+        kopf = neu('div', 'rw-abschnitt', null);
+        kopf.textContent = ab.titel;
+        host.appendChild(kopf);
+
+        for (j = 0; j < ab.schritte.length; j++) {
+          s = ab.schritte[j];
+          blatt = neu('div', 'rw-zeile', null);
+          zeile(blatt, 'rw-titel', s.nr + '. ' + s.titel);
+          zeile(blatt, 'rw-formel', s.formel);
+          zeile(blatt, 'rw-werte', s.eingesetzt);
+          zeile(blatt, 'rw-werte', s.ergebnis);
+          zeile(blatt, 'rw-werte', s.wert_text);
+          for (var li = 0; li < (s.liste || []).length; li++) {
+            zeile(blatt, 'rw-werte', '· ' + s.liste[li]);
+          }
+          zeile(blatt, 'rw-werte', s.probe);
+          haekchen(blatt, s);
+          zeile(blatt, 'rw-quelle', s.quelle);
+          zeile(blatt, 'rw-quelle', s.hinweis);
+          host.appendChild(blatt);
+        }
+      }
+
+      /* Selbstpruefung sichtbar: wie viele Rechenproben und wie viele
+         Nachweise, und ob sie aufgehen. */
+      var bil = neu('div', 'rw-bilanz', 'rwBilanz');
+      bil.textContent =
+        txt(win, 'rwProben', S.sprache) + ' ' + r.n_haken_ok + '/' + r.n_haken + ' · ' +
+        txt(win, 'rwNachweise', S.sprache) + ' ' + r.n_nachweise_ok + '/' + r.n_nachweise;
+      host.appendChild(bil);
+
+      /* LISTE 2.4 — was bewusst NICHT geprueft wurde. Sie gehoert sichtbar
+         hierher: eine stille Luecke waere schlimmer als eine benannte. */
+      if ((roh.nicht_geprueft || []).length) {
+        var lk = neu('div', 'rw-abschnitt', 'rwLuecken');
+        beschrifte(lk, 'rwNichtGeprueft');
+        host.appendChild(lk);
+        for (i = 0; i < roh.nicht_geprueft.length; i++) {
+          zeile(host, 'gap-note', '· ' + txt(win, roh.nicht_geprueft[i], S.sprache));
+        }
+      }
+      for (i = 0; i < (roh.warnungen || []).length; i++) {
+        zeile(host, 'pruef-warnung', txt(win, roh.warnungen[i].code || roh.warnungen[i], S.sprache));
+      }
+      return true;
+    }
+
+    /* ------------------------------------------------ Nahtbild-Grafik (N5c-2) */
+    function grafikZeigen(ein) {
+      var host = grafikBox();
+      if (!host) return false;
+      host.innerHTML = '';
+      zeige(el(doc, 'vizIdle'), false);
+
+      var Sb = win.DTNSchaubild;
+      if (!Sb || !ein || !ein.profil_eingabe) { zeige(el(doc, 'vizIdle'), true); return false; }
+
+      var bild = Sb.ausProfil(ein.profil_eingabe, { sprache: S.sprache });
+      if (!bild || !bild.ok || !bild.svg) {
+        zeige(el(doc, 'vizIdle'), true);
+        return false;
+      }
+      var rahmen = neu('div', 'grafik-svg', 'grafikSvg');
+      rahmen.innerHTML = bild.svg;
+      host.appendChild(rahmen);
+
+      /* Legende dreisprachig — die Codes kommen aus dem Schaubild, die
+         Beschriftung aus dem Woerterbuch. */
+      var leg = neu('div', 'grafik-legende', 'grafikLegende');
+      for (var i = 0; i < (bild.legende || []).length; i++) {
+        var e = bild.legende[i];
+        var p = neu('div', 'legende-eintrag', null);
+        var punkt = neu('span', 'legende-punkt', null);
+        punkt.setAttribute('style', 'background:' + (e.farbe || 'currentColor'));
+        p.appendChild(punkt);
+        var b = neu('span', 'legende-text', null);
+        b.textContent = txt(win, e.code, S.sprache) +
+          (typeof e.l === 'number' ? ' · ' + zahlText(e.l, 0) + ' ' + txt(win, 'unit_mm', S.sprache) : '');
+        p.appendChild(b);
+        leg.appendChild(p);
+      }
+      host.appendChild(leg);
+      return true;
     }
 
     /* ------------------------------------------------------- Laien-Hilfe */
@@ -934,7 +1107,11 @@
          Werte, keine Texte. Das Zahlformat haengt aber an der Sprache
          (Komma bzw. Punkt), also wird das Ergebnis neu gesetzt. Sonst
          stuende nach dem Umschalten ein deutsches Komma auf Englisch. */
-      if (S.letztesErgebnis) ergebnisZeigen(S.letztesErgebnis);
+      if (S.letztesErgebnis) {
+        ergebnisZeigen(S.letztesErgebnis);
+        rechenwegZeigen(S.letztesErgebnis, S.letzteEingabe);
+        grafikZeigen(S.letzteEingabe);
+      }
       return S.sprache;
     }
 
@@ -1162,7 +1339,8 @@
       beispielLaden: beispielLaden,
       rechnen: rechnen,
       ergebnisLeeren: ergebnisLeeren,
-      ergebnis: function () { return S.letztesErgebnis || null; }
+      ergebnis: function () { return S.letztesErgebnis || null; },
+      rechenweg: function () { return S.letzterWeg || null; }
     };
     api.sitzung = sitzung;
     return sitzung;

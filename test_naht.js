@@ -1773,14 +1773,21 @@ var uiSrc = fsU.readFileSync(__dirname + '/ui.js', 'utf8');
    "dieses eine". Der Rechenweg kommt in N5c-2 dazu — dann waechst die Liste
    um genau einen Namen. Geprueft wird der Quelltext als Zeichenkette,
    Kommentare eingeschlossen. */
-var uiErlaubt  = ['DTNSolver'];
-var uiVerboten = ['DTNNaht', 'DTNProfil', 'DTNRechenweg', 'DTNSchaubild', 'DTNData'];
+var uiErlaubt  = ['DTNSolver', 'DTNRechenweg', 'DTNSchaubild'];
+var uiVerboten = ['DTNNaht', 'DTNProfil', 'DTNData'];
 var uiTreffer = [];
 for (uiI = 0; uiI < uiVerboten.length; uiI++) {
   if (uiSrc.indexOf(uiVerboten[uiI]) >= 0) uiTreffer.push(uiVerboten[uiI]);
 }
 eq(uiTreffer.length, 0, 'ui.js ruft ausser dem Solver KEIN Rechenmodul auf (' + uiTreffer.join(',') + ')');
-ok(uiSrc.indexOf(uiErlaubt[0]) > 0, 'ui.js ruft den Solver auf — sonst koennte "Berechnen" nicht rechnen');
+for (uiI = 0; uiI < uiErlaubt.length; uiI++) {
+  ok(uiSrc.indexOf(uiErlaubt[uiI]) > 0,
+     'ui.js ruft dieses erlaubte Anzeigemodul auf: ' + uiErlaubt[uiI]);
+}
+/* Die drei Erlaubten rechnen den Nachweis NICHT noch einmal: der Solver
+   rechnet, der Rechenweg beschriftet, das Schaubild zeichnet. Deshalb darf
+   ui.js weiterhin keine eigene Rechnung enthalten — das prueft der Test auf
+   'Math.' gleich darunter. */
 ok(uiSrc.indexOf('DTNValidate') > 0 || uiSrc.indexOf('Valid.rechenEingabe') > 0,
    'und es uebersetzt die Eingabe ueber validate.js, statt selbst umzurechnen');
 ok(uiSrc.indexOf('Math.') < 0, 'ui.js rechnet nichts (kein Math. im Quelltext)');
@@ -1917,7 +1924,7 @@ var Val2 = require('./validate.js');
 var uiSrc2 = fsU.readFileSync(__dirname + '/ui.js', 'utf8');
 
 /* --- ui.js bleibt auch nach N5b fachlogikfrei -------------------------- */
-var s30Verboten = ['DTNNaht', 'DTNProfil', 'DTNRechenweg', 'DTNSchaubild', 'DTNData'];
+var s30Verboten = ['DTNNaht', 'DTNProfil', 'DTNData'];
 var s30Treffer = [];
 for (var s30i = 0; s30i < s30Verboten.length; s30i++) {
   if (uiSrc2.indexOf(s30Verboten[s30i]) >= 0) s30Treffer.push(s30Verboten[s30i]);
@@ -2230,6 +2237,99 @@ for (s31i = 0; s31i < Options.BEISPIELE.length; s31i++) {
   }
 }
 eq(s31Fehlt.length, 0, 'N5c-1: jeder Beispielname ist dreisprachig belegt (' + s31Fehlt.join(',') + ')');
+
+/* ========================================================================= */
+sek('S32 · N5c-2 Rechenweg und Nahtbild — vollstaendig, dreisprachig, getrennte Haken');
+
+/* N5c-2 zeigt an, was N5c-1 gerechnet hat. Geprueft wird deshalb nicht das
+   Rechnen (das steht in S26-S28), sondern die Vollstaendigkeit und
+   Uebersetzbarkeit der Darstellung — und die Trennung der zwei Haekchenarten
+   nach Plan 4.9, die inhaltlich das Wichtigste an dieser Etappe ist. */
+
+var S32_SPR = ['de', 'en', 'pt'];
+var s32i, s32j, s32k;
+
+for (s32i = 0; s32i < Options.BEISPIELE.length; s32i++) {
+  (function (bsp) {
+    var wo = 'N5c-2 [' + bsp.code + ']: ';
+    var w = Valid.standardwerte(bsp.auswahl), k;
+    for (k in bsp.felder) if (Object.prototype.hasOwnProperty.call(bsp.felder, k)) w[k] = bsp.felder[k];
+    var ein = Valid.rechenEingabe(w, bsp.auswahl).eingabe;
+    var erg = Solver.rechne(ein);
+    var roh = Weg.ausErgebnis(erg, ein);
+
+    ok(roh.ok === true, wo + 'der Rechenweg entsteht');
+    eq(roh.abschnitte.length, 10, wo + 'er hat zehn Abschnitte');
+
+    /* --- Die zwei Haekchenarten sind zwei verschiedene Dinge ------------ */
+    ok(roh.n_haken > 0, wo + 'es gibt Rechenproben (' + roh.n_haken + ')');
+    ok(roh.n_nachweise > 0, wo + 'und davon getrennt Nachweise (' + roh.n_nachweise + ')');
+    ok(roh.n_haken_ok === roh.n_haken,
+       wo + 'ALLE Rechenproben gehen auf — sonst rechnet das Programm falsch');
+    ok(roh.selbstpruefung_ok === true, wo + 'und die Selbstpruefung sagt das auch');
+
+    /* Die Summenzeile zaehlt sich selbst nicht mit (so gebaut in
+       rechenweg.js). Genau ein Schritt mehr traegt einen Haken, als
+       gezaehlt werden — festgehalten, damit die Anzeige nicht eines Tages
+       still danebenliegt. */
+    var mitHaken = 0, mitNw = 0;
+    for (s32j = 0; s32j < roh.schritte.length; s32j++) {
+      if (roh.schritte[s32j].haken !== null && typeof roh.schritte[s32j].haken !== 'undefined') mitHaken++;
+      if (roh.schritte[s32j].erfuellt !== null && typeof roh.schritte[s32j].erfuellt !== 'undefined') mitNw++;
+    }
+    eq(mitHaken, roh.n_haken + 1, wo + 'angezeigte Haken = gezaehlte Proben + Summenzeile');
+    eq(mitNw, roh.n_nachweise, wo + 'angezeigte Nachweise = gezaehlte Nachweise');
+
+    /* --- Liste 2.4: die ehrlichen Luecken ------------------------------ */
+    ok(roh.nicht_geprueft.length > 0,
+       wo + 'es wird benannt, was bewusst NICHT geprueft wurde (' + roh.nicht_geprueft.length + ')');
+
+    /* --- Dreisprachig, ohne Platzhalter --------------------------------- */
+    for (s32j = 0; s32j < S32_SPR.length; s32j++) {
+      (function (lg) {
+        var r = Weg.rendere(roh, lg);
+        var offen = [];
+        for (var a = 0; a < r.abschnitte.length; a++) {
+          if (/^\[/.test(r.abschnitte[a].titel || '')) offen.push(r.abschnitte[a].code);
+          for (var t = 0; t < r.abschnitte[a].schritte.length; t++) {
+            var s = r.abschnitte[a].schritte[t];
+            if (/^\[/.test(s.titel || '')) offen.push(s.titel);
+            if (/^\[/.test(s.quelle || '')) offen.push(s.quelle);
+          }
+        }
+        eq(offen.length, 0, wo + lg + ': kein unuebersetzter Platzhalter (' + offen.slice(0, 3).join(',') + ')');
+      }(S32_SPR[s32j]));
+    }
+
+    /* --- Nahtbild-Grafik ------------------------------------------------ */
+    var bild = Bild.ausProfil(ein.profil_eingabe, { sprache: 'de' });
+    ok(bild.ok === true, wo + 'das Nahtbild wird gezeichnet');
+    ok(typeof bild.svg === 'string' && bild.svg.indexOf('<svg') >= 0, wo + 'und ist wirklich ein SVG');
+    eq(bild.n_seg, erg.nahtbild.n_seg, wo + 'es zeigt so viele Abschnitte, wie gerechnet wurden');
+    ok(bild.legende.length > 0, wo + 'mit Legende');
+
+    var legOffen = [];
+    for (s32k = 0; s32k < bild.legende.length; s32k++) {
+      for (var lj = 0; lj < S32_SPR.length; lj++) {
+        var lt = Kern.t(bild.legende[s32k].code, S32_SPR[lj]);
+        if (!lt || /^\[/.test(lt)) legOffen.push(bild.legende[s32k].code + '/' + S32_SPR[lj]);
+      }
+    }
+    eq(legOffen.length, 0, wo + 'jeder Legendeneintrag ist dreisprachig belegt (' + legOffen.join(',') + ')');
+  }(Options.BEISPIELE[s32i]));
+}
+
+/* --- Das Zahlformat kommt aus EINER Quelle (Plan 3.4) ------------------- */
+ok(Weg.zahl(1234.5678, 2, 'de') === '1.234,57', 'N5c-2: DE-Zahlformat mit Komma und Tausenderpunkt');
+ok(Weg.zahl(1234.5678, 2, 'en') === '1,234.57', 'N5c-2: EN-Zahlformat mit Punkt');
+ok(Weg.zahl(1234.5678, 2, 'pt') === Weg.zahl(1234.5678, 2, 'de'), 'N5c-2: PT rechnet wie DE mit Komma');
+
+/* --- ui.js formatiert NICHT mehr selbst -------------------------------- */
+var s32Ui = fsU.readFileSync('ui.js', 'utf8');
+ok(s32Ui.indexOf('Rw.zahl') > 0 || s32Ui.indexOf('.zahl(') > 0,
+   'N5c-2: ui.js holt das Zahlformat beim Rechenweg — die Notloesung aus N5c-1 ist abgeloest');
+ok(s32Ui.indexOf('rw-haken') > 0 && s32Ui.indexOf('rw-nachweis') > 0,
+   'N5c-2: ui.js kennt beide Haekchenklassen und haelt sie auseinander');
 
 /* ========================================================================= */
 console.log('\n════════════════════════════════════════════');
