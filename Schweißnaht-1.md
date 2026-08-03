@@ -6,36 +6,38 @@
 > **Diese Datei ersetzt `Schweißnaht.md` vollständig.** Sie enthält den Stand nach dem
 > Konzeptgespräch (2026-07-23), nach der abgeschlossenen Recherche (R1–R6), nach der
 > Abstimmung vom **2026-07-24** (alle offenen Fragen aus Abschnitt 0 geklärt) und nach den
-> abgenommenen Bausteinen **N1, N2, N2b, N2c, N3, N4, N5a, N5b und N5c** (Stand 2026-08-03).
+> abgenommenen Bausteinen **N1, N2, N2b, N2c, N3, N4, N5a, N5b und N5c (alle drei
+> Etappen, einschließlich N5c-3)** — Stand 2026-08-03.
 > Sie ist so geschrieben, dass ein **neuer Chat ohne Vorwissen** damit weiterarbeiten kann.
 > **Das WARUM steht in `Schweißnaht-Historie.md`** (Entscheidungslog + Changelog im
 > Volltext) — dort nachschlagen, bevor etwas geändert wird, das falsch aussieht.
 > Einstieg dort: **„weiter mit N5d"** — dann der Reihenfolge in Kickoff-Punkt 5b folgen.
 
 ```
-Plan-Version : 2.29 · Stand 2026-08-03
+Plan-Version : 2.31 · Stand 2026-08-03
 Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                N2c (Nahtbild-Grafik), N3 (Spannungen + beide Welten),
                N4 (Rechenweg), N5a (UI-Grundgerüst), N5b (Eingabeseite) und
-               **N5c (N5c-1 „Es rechnet" + N5c-2 „Es erklärt sich")**
-               von Dieter am Handy geprüft und ABGENOMMEN.
-               **N5c-3 („Nahtzug statt Segment") ist GEBAUT und GRÜN
-               ausgeliefert (2026-08-03) — die Abnahme am Handy steht noch aus.**
-               → NÄCHSTER SCHRITT, ZWEI MÖGLICHKEITEN — zuerst klären, welche:
-                 (a) **N5c-3 ist noch NICHT abgenommen** → Dieter prüft erst am
-                     Handy: ein H-Träger und ein U-Profil, umlaufend geschweißt,
-                     müssen ohne roten Nachweis durchrechnen (Beleg in 5.1-0).
-                     Meldet er Nacharbeit, hat sie Vorrang vor N5d.
-                 (b) **N5c-3 ist abgenommen** → Etappe **N5d**.
-                 Inhalt N5d: Block „Ausführung & Dokumentation" (ISO 5817 + EXC,
+               **N5c vollständig — N5c-1 „Es rechnet", N5c-2 „Es erklärt sich"
+               und N5c-3 „Nahtzug statt Segment"** — von Dieter am Handy
+               geprüft und ABGENOMMEN.
+               **Baustein N5 hat damit nur noch eine offene Etappe: N5d.**
+               Projektordner /mnt/project/ ist auf diesem Stand — am 2026-08-03
+               gegengeprüft: Vollständigkeit gegen 8.1, alle drei Testläufe
+               direkt aus dem Ordner grün, beide HTMLs unterscheiden sich in
+               genau einer Zeile, und die sieben gelieferten Dateien sind
+               byteweise identisch angekommen.
+               → NÄCHSTER SCHRITT: Etappe **N5d** — Einstieg „weiter mit N5d".
+                 Inhalt: Block „Ausführung & Dokumentation" (ISO 5817 + EXC,
                  ehrlich als nicht rechenwirksam beschriftet, Abschnitt 2.7)
                  **+ Versionszeile im Info-ⓘ (Abschnitt 3.6)**.
                  ⚠️ VOR der Versionszeile nachzurüsten: **i18n_kern.js,
                  i18n_hilfe.js und i18n_kerbfall.js haben keine `VERSION`** —
                  nachgemessen am 2026-07-28, siehe 3.6.
-                 Der Umfang von N5d ist vor dem Bau mit Dieter abzustimmen;
-                 bei Punkt 1 zählt seine Praxissicht, welche Angaben wirklich
-                 hingehören und welche nur Papier wären. Auftrag in 5.1-1.
+                 **Der Umfang ist am 2026-08-03 ABGESTIMMT und steht
+                 ausformuliert in 5.1-1** — samt Aufnahmekriterium und der
+                 Liste dessen, was bewusst draußen bleibt. Offen ist dort nur
+                 noch EINE Ja/Nein-Frage (Freitextfeld WPS-Nummer).
                  Schnittstellen: 4.5 (naht.js), 4.6 (profil.js),
                  4.7 (svglib.js + schaubild.js), 4.8 (solver.js),
                  4.9 (rechenweg.js), 4.10 / 4.10b / 4.10c (ui.js).
@@ -137,10 +139,12 @@ Einstiegssatz von Dieter: **„weiter mit N5d"**.
    2026-07-28 lag eine drei Etappen alte Plandatei im Ordner, am 2026-08-03 eine elf
    Versionen alte (v2.17, Basislinie 679/234/235) zu Code auf Stand N5c-2. Beide Male
    war dieser Abgleich die einzige Stelle, die es gemerkt hat.
-12. **Zuerst klären, ob N5c-3 am Handy abgenommen ist** (Kopfblock, Fall a/b).
-    Ist es das, wird **N5d** gebaut — Fließband nach Punkt 5 der Kickoff-Liste.
-    **Der Umfang von N5d ist mit Dieter abzustimmen** (5.1-1); bei „Ausführung &
-    Dokumentation" zählt seine Praxissicht.
+12. Erst dann **N5d** bauen — Fließband nach Punkt 5 der Kickoff-Liste.
+    **Der Umfang von N5d ist VOR dem Bau mit Dieter abzustimmen** (5.1-1); bei
+    „Ausführung & Dokumentation" zählt seine Praxissicht, welche Angaben wirklich
+    hingehören und welche nur Papier wären. **Zuerst** bekommen `i18n_kern.js`,
+    `i18n_hilfe.js` und `i18n_kerbfall.js` ihre `VERSION` (3.6) — sonst hätte die
+    Versionszeile drei stille Löcher.
 
 **5c) GROSSE BAUSTEINE WERDEN VORHER IN ETAPPEN ZERLEGT — BINDEND**
 *(Dieters Festlegung 2026-07-26, Begründung im Entscheidungslog)*
@@ -1219,7 +1223,7 @@ eigene Erklärtexte im Titel. Der DOM-Smoke **zählt** sie getrennt.
 | **N2c** ✅ | **Nahtbild-Grafik** *(abgenommen 2026-07-26)* | `svglib.js` + `schaubild.js`: SVG-Vorschau des Nahtbilds, Segmente farbig nach Gruppe, Schwerpunkt und Achsen, nicht geschweißte Kanten gestrichelt, Ecklücken sichtbar. Zugleich **Auswahl-Skizze** der Profileingabe. **Schnittstelle: Abschnitt 4.7.** |
 | **N3** ✅ | **Spannungen + beide Welten** *(abgenommen 2026-07-26)* | `solver.js`: σ⊥, τ⊥, τ∥ aus N/Q/M/T · Welt A (EC3, beide Verfahren) · Welt B (klassisch, Tabelle + Formel) · **Nachweis UND Auslegung** mit Aufrundung · Ampel. **Schnittstelle: Abschnitt 4.8.** |
 | **N4** ✅ | **Rechenweg** *(abgenommen 2026-07-26)* | `rechenweg.js`: selbstprüfende Schrittliste für N2/N2b/N3, dreisprachig, zweiter Rechenpfad je Schritt, Rechenprobe und Nachweis getrennt. **Schnittstelle: Abschnitt 4.9.** |
-| **N5** ⬅ | **UI-Basis — LAUFEND: N5a ✅, N5b ✅, N5c-1 ✅ und N5c-2 ✅ abgenommen · N5c-3 ✅ gebaut (Abnahme offen, 5.1-0) · NÄCHSTER SCHRITT N5d (Etappen in 5.2)** | 2 HTMLs, `style.css`, Formular mit aufklappbaren Bereichen und Freischalt-Haken, Ergebnis-Kacheln, Ampel, i18n, Theme (**Start immer dunkel**), Laien-ⓘ, Block „Ausführung & Dokumentation" (ISO 5817 + EXC). **Erster Handy-Test.** |
+| **N5** ⬅ | **UI-Basis — LAUFEND: N5a ✅, N5b ✅, N5c-1 ✅, N5c-2 ✅ und N5c-3 ✅ alle abgenommen · EINZIGE OFFENE ETAPPE: N5d (Auftrag in 5.1-1, Etappen in 5.2)** | 2 HTMLs, `style.css`, Formular mit aufklappbaren Bereichen und Freischalt-Haken, Ergebnis-Kacheln, Ampel, i18n, Theme (**Start immer dunkel**), Laien-ⓘ, Block „Ausführung & Dokumentation" (ISO 5817 + EXC). **Erster Handy-Test.** |
 | **N6b** | **ISO-2553-Symbolgenerator** | `symbol.js`: Pfeil-/Gegenseite, a- bzw. z-Maß, Länge, Rundumnaht, Baustellennaht. Nutzt `svglib.js` aus N2c. Bewusst **vor** dem Launch — Verkaufsargument. |
 | **N7** | **Presets** | Die 6 Starter als Profil-/Kantendaten auf `profil.js`, **mit Merkmalen für die kontextbezogene Beispielliste** (3.2). |
 | **N8** | **Assistent** | `assistent.js` (DOM-freie Dialoglogik) + Overlay-UI, Button-Einstieg, tabellengestützt aus `optionen.js`, mit Erklärungen/Tipps/Skizzen je Dialog, Übernahme vorhandener Eingaben. |
@@ -1233,13 +1237,14 @@ eigene Erklärtexte im Titel. Der DOM-Smoke **zählt** sie getrennt.
 | **N15** | **Verzug & Schrumpfung** | `verzug.js` + Panel, klar als **Abschätzung** gekennzeichnet. |
 | **N16** | **Feinschliff + Build** | Presets ausbauen, Wissenstexte, Code-Audit, Bündelung + Obfuskierung (zwei Bündel, Unterschied nur `DT_EDITION`). **→ V1-Launch.** |
 
-### 5.1 Auftrag: **N5d** *(N5c-3 ist gebaut — 5.1-0 nur noch als Begründung)*
+### 5.1 Auftrag: **N5d** *(N5c-3 ist abgenommen — 5.1-0 nur noch als Begründung)*
 
 ---
 
-#### 5.1-0 · N5c-3 — „Nahtzug statt Segment" **(GEBAUT 2026-08-03, Abnahme offen)**
+#### 5.1-0 · N5c-3 — „Nahtzug statt Segment" **(ERLEDIGT UND ABGENOMMEN 2026-08-03)**
 
-> ✅ **ERLEDIGT und grün ausgeliefert am 2026-08-03.** Was unten steht, ist die
+> ✅ **Gebaut, grün ausgeliefert und von Dieter am Handy ABGENOMMEN — 2026-08-03,
+> ohne Nacharbeit.** Was unten steht, ist die
 > Fehlerbeschreibung von 2026-07-28 — sie bleibt stehen, weil dort **nachlesbar ist,
 > warum** die Prüfung heute auf der Nahtzug-Ebene läuft und warum die Längenprüfung eine
 > Warnung ist. **Gebaut wird daraus nichts mehr.**
@@ -1270,7 +1275,8 @@ eigene Erklärtexte im Titel. Der DOM-Smoke **zählt** sie getrennt.
 >    Das ist die strengere Annahme und genau das bisherige Verhalten.
 >
 > **Basislinie 822 → 874 Assertions · Smokes 448/449 → 463/464 · i18n-Parität 0.**
-> **Offen: die Abnahme am Handy** — Beleg siehe „Erwarteter Beleg" unten.
+> **Nichts offen.** Der Beleg unten ist am Handy erbracht: die umlaufend geschweißten
+> Profile rechnen durch, die Gegenprobe warnt weiterhin.
 
 **Der Befund vom 2026-07-28 (Begründung, nicht mehr Auftrag):**
 
@@ -1353,20 +1359,65 @@ durch — ohne roten Nachweis, der keiner ist.
 > **warum** die Feldbereinigung so entschieden wurde und mit welchen Zahlen die drei
 > Beispiele belegt sind. Gebaut wird daraus nichts mehr.
 >
-> **Der Auftrag für N5d ist NICHT vorentschieden** — anders als bei N5c-1. Er hat zwei
-> Teile:
->
-> **1. Block „Ausführung & Dokumentation"** (ISO 5817 Bewertungsgruppen + EXC nach
-> EN 1090-2, ehrlich als **nicht rechenwirksam** beschriftet, Abschnitt 2.7).
-> **Hier zählt Dieters Praxissicht:** welche Angaben wirklich hingehören und welche nur
-> Papier wären. **Vor dem Bau abstimmen.**
->
-> **2. Versionszeile im Info-ⓘ** (Abschnitt 3.6). ⚠️ **Zuerst nachrüsten:**
-> `i18n_kern.js`, `i18n_hilfe.js` und `i18n_kerbfall.js` haben **keine `VERSION`** —
-> am 2026-07-28 nachgemessen. Eine Zeile aus den Modulkennungen hätte sonst drei stille
-> Löcher.
->
-> Erwarteter Beleg: der Block klappt auf, und der Programmstand ist am Handy ablesbar.
+> **Der Umfang ist am 2026-08-03 mit Dieter abgestimmt** (Vorüberlegung am Ende des
+> N5c-3-Chats). Er hat zwei Teile.
+
+**Vorlauf — was bereits im Code liegt** *(am 2026-08-03 nachgesehen, spart Arbeit)*:
+`optionen.js` enthält die Gruppen **`iso5817`** (B/C/D) und **`exc`** (EXC1–EXC4) fertig,
+beide bereits mit `rechenwirksam: false`. Die Laien-ⓘ dazu stehen dreisprachig in
+`i18n_hilfe.js` (`grp_iso5817`, `grp_exc`). `ZUSATZBEREICHE` kennt den Bereich
+**`ausfuehrung`** (standardmäßig aus). **Es fehlt keine Datengrundlage — es fehlt die
+Verdrahtung und die ehrliche Beschriftung.**
+
+**1. Block „Ausführung & Dokumentation" — der abgestimmte Umfang:**
+
+- **Die zwei vorhandenen Auswahlfelder anzeigen**, im Bereich `ausfuehrung`, sauber
+  getrennt vom Rechenteil (2.7). Ehrliche Beschriftung: **nicht rechenwirksam**.
+- **EXC schlägt die Bewertungsgruppe vor** *(Dieter, 2026-08-03)*: EN 1090-2 verknüpft
+  beides (grob EXC2 → C, EXC3/EXC4 → B). Der Vorschlag wird **vorgeschlagen, nicht
+  erzwungen** — überschreibbar wie jeder Tabellenwert, **mit sichtbarer Herkunft**.
+  Eine Verträglichkeitsregel nach 3.4, keine Rechnung.
+- **Sichtbarer Hinweis zur Ermüdung** *(Dieter, 2026-08-03)*: die Bewertungsgruppe zählt
+  beim Ermüdungsnachweis sehr wohl, weil die Kerbfälle eine Qualität voraussetzen (2.7).
+  In V1 **nur als Hinweis — keine Scheinrechnung.** Die echte Kopplung kommt mit N13/N14.
+- **Die Angaben laufen als Anforderungszeile in die Ausgaben** (Druck/PDF/Word/`.dts`
+  vollständig erst mit N11).
+
+**BEWUSST NICHT in V1 — und das AUFNAHMEKRITERIUM dahinter** *(Dieters Festlegung
+2026-08-03, sie gilt über N5d hinaus)*:
+
+> **Aufgenommen wird, was stabil ist und der Rechnung eine Aussage gibt.**
+> B/C/D und EXC1–4 sind zusammen sieben Codes, seit Jahrzehnten unverändert, und sie
+> tragen den Ermüdungsteil. **Draußen bleibt, was gepflegt werden müsste.**
+> Dieters Satz dazu: *eine Schweißnaht soll nach vielen Normen hergestellt werden — eine
+> Qualitätssicherung soll das Programm aber nicht sein, denn die Sachen ändern sich zu
+> schnell.* Genau die schnelllebigen Teile bleiben deshalb außen vor:
+
+- **Prüfumfang / ZfP** (VT, PT, MT, UT, RT mit Prozentsätzen je EXC) — hängt an Ausgabe
+  und Nahtart, wäre eine zu pflegende Tabelle.
+- **Nahtvorbereitung** nach EN ISO 9692-1 — *wichtiges Thema* (Dieter), aber ein
+  Geometriekatalog. Gehört fachlich zum Zeichnungssymbol, also frühestens zu **N6b**.
+- **Toleranzklassen** nach EN ISO 13920 — *wichtiges Thema* (Dieter), aber Fertigungs-,
+  nicht Nachweisseite; Tabellenwerte, die gepflegt werden müssten.
+- **Herstellerqualifikation** (EN 1090-1, EN ISO 3834), WPS-/WPQR-Angaben.
+
+> **Diese vier Punkte gehören als benannte Lücken in die Liste 2.4** — sichtbar, ohne
+> Antippen. Dann steht im Programm selbst, dass es kein QS-System ist. Das ist ehrlicher,
+> als sie halb aufzunehmen. **Diese Zeile ist Teil des Auftrags, nicht optional.**
+
+**2. Versionszeile im Info-ⓘ** (Abschnitt 3.6) — unstrittig. ⚠️ **Zuerst nachrüsten:**
+`i18n_kern.js`, `i18n_hilfe.js` und `i18n_kerbfall.js` haben **keine `VERSION`** —
+am 2026-07-28 nachgemessen. Eine Zeile aus den Modulkennungen hätte sonst drei stille
+Löcher.
+
+**Erwarteter Beleg am Handy:** Der Block klappt auf; EXC anzutippen füllt die
+Bewertungsgruppe mit sichtbarer Herkunft und lässt sie überschreibbar; der Ermüdungshinweis
+und die vier ehrlichen Lücken stehen ohne Antippen da; der Programmstand ist ablesbar.
+
+**Noch in einem Satz zu bestätigen, bevor gebaut wird:** ob ein freies Textfeld für die
+**Schweißanweisung / WPS-Nummer** mit hineinsoll. Es kostet keine Pflege (kein Tabellenwert)
+und erscheint nur in der Ausgabe — aber es ist der erste Schritt Richtung Dokumentenverwaltung.
+**Vorschlag: weglassen**, solange N11 die Ausgaben noch nicht gebaut hat.
 
 ---
 
@@ -1578,7 +1629,7 @@ AWS/US-Normen, EN 1993-1-8:2024 (2. Generation, β_w,mod — Werte noch nicht be
 | **N5b** ✅ | *(abgenommen 2026-07-27)* Eingabeseite: 18 Auswahlgruppen aus `optionen.js` über **die** Filterfunktion, alle 29 Felder aus `validate.js`, Freischalt-Haken, **„eigener Wert"-Haken**, Laien-ⓘ an jedem Feld und jeder Gruppe, „Berechnen" prüft, „Leeren" führt in den Startzustand (3.1). **Schnittstelle: 4.10b.** | Man kann einen Fall wirklich eingeben |
 | **N5c-1** ✅ | *(abgenommen 2026-07-28)* **Feldbereinigung** (`l` entfällt, `t1` profilabhängig, `t2` freiwillig — begründet in 5.1), **drei Beispiele** hinter „Beispiel laden", **Übersetzung Formular → `profil_eingabe`**, „Berechnen" rechnet wirklich, Ergebnis-Kacheln mit Ampel. **Schnittstelle: 4.10c.** | Beispiel antippen, rechnen, eine Zahl und eine Ampel sehen |
 | **N5c-2** ✅ | *(abgenommen 2026-07-28)* **Rechenweg aus N4 angezeigt** (10 Abschnitte, seit der Abnahme **aufklappbar**), Nahtbild-Grafik eingebunden, die zwei Häkchenarten optisch getrennt, Liste 2.4, Warnungen und ehrliche Lücken, Zahlformat je Sprache aus `rechenweg.zahl()`. **Schnittstelle: 4.10c.** | Ein vollständiger Nachweis von der Eingabe bis zur Quellenangabe |
-| **N5c-3** ✅ | *(gebaut und grün geliefert 2026-08-03, **Abnahme am Handy offen** — Ergebnis in 5.1-0)* **„Nahtzug statt Segment":** die Prüfung `l_eff ≥ max(6a; 30)` lief je Segment statt je durchlaufendem Nahtzug — dadurch fiel **jedes I- und U-Profil mit umlaufender Naht** durch, weil die Flanschkante nur `t_f` lang ist. Dazu zusammengeführt: Ampel und Rechenweg widersprachen sich. Die Längenprüfung ist jetzt eine **Warnung** | Ein H-Träger und ein U-Profil, umlaufend geschweißt, rechnen durch — ohne roten Nachweis, der keiner ist |
+| **N5c-3** ✅ | *(gebaut, geliefert und **abgenommen 2026-08-03**, ohne Nacharbeit — Ergebnis in 5.1-0)* **„Nahtzug statt Segment":** die Prüfung `l_eff ≥ max(6a; 30)` lief je Segment statt je durchlaufendem Nahtzug — dadurch fiel **jedes I- und U-Profil mit umlaufender Naht** durch, weil die Flanschkante nur `t_f` lang ist. Dazu zusammengeführt: Ampel und Rechenweg widersprachen sich. Die Längenprüfung ist jetzt eine **Warnung** | Ein H-Träger und ein U-Profil, umlaufend geschweißt, rechnen durch — ohne roten Nachweis, der keiner ist |
 | **N5d** ⬅ | *(nächster Bau — Umfang vor dem Bau mit Dieter abstimmen)* Block „Ausführung & Dokumentation" (ISO 5817 + EXC, ehrlich als nicht rechenwirksam beschriftet, 2.7) **+ Versionszeile im Info-ⓘ** (siehe 3.6, **mit dem Befund zu den drei fehlenden Kennungen**) | Der Block klappt auf und erscheint in der Ausgabe; der Programmstand ist am Handy ablesbar |
 
 **N8 — Assistent (drei Etappen):**
@@ -1733,12 +1784,13 @@ Klappmechanik: `ui.js`, `i18n_kern.js`, `dom_smoke_voll.js`.
 **`profil.js` musste nicht angefasst werden** — die Zugehörigkeit zum Nahtzug gab es dort
 seit N2b als `info[i].raupe`; sie wurde nur nie benutzt.
 
-**Stand 2026-08-03:** Die N5c-Lieferungen (N5c-1, N5c-2, Klappmechanik) sind eingespielt,
-am Handy geprüft und **abgenommen**. **N5c-3 ist geliefert, aber noch NICHT am Handy
-abgenommen** — das ist die erste Frage im nächsten Chat.
-Gemessen wurde zuletzt: die drei Testläufe grün (**874 / 463 / 464 · 0 Fehler**),
-`node --check` über alle 16 JS-Dateien sauber, die beiden HTMLs unterscheiden sich weiterhin
-in genau einer Zeile.
+**Von Dieter am 2026-08-03 bestätigt:** Der Projektordner `/mnt/project/` trägt genau
+diesen Stand. **Alle N5c-Lieferungen — N5c-1, N5c-2, Klappmechanik und N5c-3 — sind
+eingespielt, am Handy geprüft und ABGENOMMEN**, N5c-3 ohne Nacharbeit.
+Zusätzlich **gegengeprüft, direkt aus dem Projektordner**: Vollständigkeit gegen die
+Tabelle oben, die drei Testläufe grün (**874 / 463 / 464 · 0 Fehler**), `node --check` über
+alle 16 JS-Dateien sauber, die beiden HTMLs unterscheiden sich in genau einer Zeile, und die
+sieben gelieferten Dateien sind **byteweise identisch** angekommen.
 ⚠️ **Beim Austausch sind schon Dateien verlorengegangen oder veraltet** — einmal `style.css`
 und `test_naht.js`, **zweimal die Plandatei** (2026-07-28 und 2026-08-03, letztere elf
 Versionen alt). Deshalb ist die Vollständigkeitsprüfung gegen die Tabelle oben keine
@@ -1825,6 +1877,10 @@ will. Also: Vorschriften und Wegweiser bleiben hier, die Erzählung wandert.
 - **Plandatei und Code werden bei JEDEM Wiedereinstieg gegeneinander gemessen**
   (Kickoff-Punkt 11): Basislinie im Kopfblock gegen die drei Testläufe. Weichen sie ab,
   ist eine Seite alt — **nicht bauen, erst klären**. Zweimal war genau das der Fall.
+- **Aufnahmekriterium für Normangaben ohne Rechenwirkung** (Dieter, 2026-08-03, 5.1-1):
+  **aufgenommen wird, was stabil ist und der Rechnung eine Aussage gibt** — draußen
+  bleibt, was gepflegt werden müsste. Das Programm ist ein Nachweisprogramm, **keine
+  Qualitätssicherung**. Was draußen bleibt, gehört als benannte Lücke in die Liste 2.4.
 - **Token-Pause: 4 Stunden.**
 
 ---
@@ -1857,6 +1913,8 @@ Die Blöcke stehen dort in dieser Reihenfolge; jeder nennt Datum und Baustein:
 - Aus der Abnahme von N5c-2 (2026-07-28)
 - Zum Verfahren (2026-07-28)
 - Aus N5c-3 „Nahtzug statt Segment" (2026-08-03)
+- Aus der Rückmeldung 2026-08-03 (N5c-3 abgenommen)
+- Aus der Abstimmung 2026-08-03 (vor N5d)
 - Aus der Rückmeldung 2026-07-27 (N5a abgenommen)
 - Aus N5a (2026-07-26)
 - Aus der Rückmeldung 2026-07-26 (N2c abgenommen)
@@ -1873,30 +1931,6 @@ Changelog — **die vollständige Fassung ab v1.0 steht in `Schweißnaht-Histori
 
 Hier stehen nur die letzten drei Einträge. Wer wissen will, wie eine Entscheidung
 zustande kam, findet die Kette dort — lückenlos ab der Erstfassung vom 2026-07-23.
-
-**v2.27 (2026-07-28):** **Entscheidungslog und Changelog nach `Schweißnaht-Historie.md`
-ausgelagert.** Kein Code geändert, keine Zeile Inhalt verloren — zeichengenau geprüft.
-In dieser Datei bleiben: die bindenden Festlegungen (9.2), die Warnung, vor jeder
-„Korrektur" erst die Historie zu lesen (9.1), ein Wegweiser über alle Blöcke (9.3) und die
-letzten drei Changelog-Einträge. Grund: die beiden Teile waren **45 % dieser Datei** und
-wurden in jedem Chat mitgelesen, obwohl von 160 Log-Einträgen nur 13 eine Verpflichtung
-tragen. **Die Historie ist anhängend, nicht pflegend** — sie kann deshalb nicht veralten.
-**Basislinie unverändert: 822 Assertions · Smokes 448/449 · i18n-Parität 0.**
-
-**v2.28 (2026-07-28):** **Fehlerbefund von Dieter beim Prüfen — neue Etappe N5c-3
-(„Nahtzug statt Segment"), sie hat Vorrang vor N5d.** Die Prüfung
-`l_eff ≥ max(6·a; 30 mm)` läuft **je geometrischem Segment** statt je durchlaufendem
-Nahtzug. Bei Profilen mit Flansch ist die Flanschkante nur `t_f` lang — **jedes I- und
-U-Profil mit umlaufender Naht fällt dadurch durch**, unabhängig von den Maßen (nachgemessen:
-I 200×200 → 4 × 15 mm bei 1182 mm Gesamtnaht · U 80×160 → 2 × 10 mm bei 626 mm ·
-U 100×200 → 2 × 14 mm bei 782 mm). Dieters Einwand trifft zu: der Flansch müsste dicker als
-30 mm sein, dann passt kein Normbauteil mehr. **Zweiter Befund beim Messen:** Ampel grün
-und Rechenweg „✗ nicht erfüllt" **gleichzeitig**. Beides in 5.1-0 mit Messwerten,
-Begründung (EN 1993-1-8 §4.5.1(2) meint kurze *freistehende* Nähte), Reparaturvorschlag und
-Prüfankern festgehalten — samt der Gegenprobe, dass wirklich kurze Einzelnähte weiterhin
-gefangen werden. **Ehrlich vermerkt:** der Fall war bekannt und wurde bei der Beispielwahl
-umgangen statt gelöst; die Lehre daraus steht in 9.2. Kein Code geändert.
-**Basislinie unverändert: 822 Assertions · Smokes 448/449 · i18n-Parität 0.**
 
 **v2.29 (2026-08-03):** **Etappe N5c-3 („Nahtzug statt Segment") gebaut und grün
 ausgeliefert** — der Fehlerbefund aus v2.28 ist repariert. Die Prüfung
@@ -1919,6 +1953,36 @@ blieben unberührt. **Plandatei vollständig nachgezogen** (Kopfblock, Kickoff 5
 Plandatei (v2.17) zu neuem Code lag — gefunden allein durch den Basislinien-Abgleich.
 **Basislinie 822 → 874 Assertions · Smokes 448/449 → 463/464 · i18n-Parität 0.**
 **Nächster Schritt: N5c-3 am Handy abnehmen, dann N5d — Einstieg „weiter mit N5d".**
+
+**v2.30 (2026-08-03):** **Etappe N5c-3 von Dieter am Handy geprüft und ABGENOMMEN —
+ohne Nacharbeit.** Damit ist Baustein N5 bis auf N5d fertig. Der Projektordner wurde
+gegengeprüft: Vollständigkeit gegen 8.1, die drei Testläufe direkt aus dem Ordner grün,
+beide HTMLs mit genau einer Zeile Unterschied, und die sieben gelieferten Dateien
+byteweise identisch angekommen. Plandatei auf den abgenommenen Stand gesetzt (Kopfblock,
+Kickoff-Punkt 12, Bausteintabelle, 5.1, 5.2, 8.1, Wegweiser 9.3); die Fallunterscheidung
+„abgenommen ja/nein" im Kopfblock entfällt, der Einstieg lautet ohne Vorbehalt
+**„weiter mit N5d"**. Im Changelog dieser Datei ist v2.27 herausgerollt — er steht
+vollständig in der Historie. **Code unverändert.**
+**Basislinie unverändert und verbindlich: 874 Assertions · Smokes 463/464 · i18n-Parität 0.**
+**Nächster Schritt: N5d — Umfang vor dem Bau abstimmen (5.1-1), vorher die drei
+fehlenden `VERSION`-Kennungen nachrüsten (3.6).**
+
+**v2.31 (2026-08-03):** **Umfang von N5d abgestimmt und in 5.1-1 ausformuliert** — noch im
+N5c-3-Chat, damit er einen Chatwechsel überlebt. Aufgenommen: die zwei bereits in
+`optionen.js` vorhandenen Gruppen (`iso5817`, `exc`) anzeigen, **EXC schlägt die
+Bewertungsgruppe vor** (überschreibbar, mit sichtbarer Herkunft, Regel nach 3.4), sichtbarer
+**Ermüdungshinweis ohne Scheinrechnung**, Anforderungszeile in den Ausgaben. Bewusst
+draußen: Prüfumfang/ZfP, Nahtvorbereitung (EN ISO 9692-1, gehört zu N6b), Toleranzklassen
+(EN ISO 13920) und Herstellerqualifikation — sie kommen als **benannte Lücken in die
+Liste 2.4**, damit im Programm selbst steht, dass es kein QS-System ist. Dahinter das neue
+**Aufnahmekriterium** (jetzt bindend in 9.2): *aufgenommen wird, was stabil ist und der
+Rechnung eine Aussage gibt; draußen bleibt, was gepflegt werden müsste.* Festgehalten ist
+auch der **Vorlauf**: die Datengrundlage für den Block liegt komplett vor, es fehlt nur die
+Verdrahtung. Offen bleibt eine einzige Ja/Nein-Frage (Freitextfeld WPS-Nummer, Vorschlag:
+weglassen). Im Changelog dieser Datei ist v2.28 herausgerollt — Volltext in der Historie.
+**Code unverändert.**
+**Basislinie unverändert und verbindlich: 874 Assertions · Smokes 463/464 · i18n-Parität 0.**
+**Nächster Schritt: N5d — Einstieg „weiter mit N5d". Auftrag vollständig in 5.1-1.**
 
 ═══════════════════════════════════════════════════════════════════════════
 Ende Schweißnaht-1.md · DT-ProfiSchweissnaht

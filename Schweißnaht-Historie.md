@@ -1016,6 +1016,87 @@ unberührt. Plandatei vollständig nachgezogen.
 **Basislinie 822 → 874 Assertions · Smokes 448/449 → 463/464 · i18n-Parität 0.**
 **Nächster Schritt: N5c-3 am Handy abnehmen, dann N5d — Einstieg „weiter mit N5d".**
 
+
+---
+
+**Aus der Rückmeldung 2026-08-03 (N5c-3 abgenommen):**
+
+- **N5c-3 ist ohne Nacharbeit durchgegangen.** Dieter hat am Handy geprüft, was in 5.1-0
+  als Beleg gefordert war: umlaufend geschweißte Profile rechnen durch, die Gegenprobe
+  mit der wirklich zu kurzen Naht warnt weiterhin. Damit ist Baustein N5 bis auf N5d fertig.
+- **Die Warnung statt des Nachweises hat sich im Gebrauch bewährt** — die angebotene
+  Rückfallebene „gelbe Ampel" wurde nicht gebraucht. Sie bleibt als Möglichkeit in 5.1-0
+  vermerkt, falls sich das später ändert.
+- **Der Ordnerabgleich ist zur festen Handlung geworden.** Nach dem Einspielen wurde
+  nicht nur gemessen, sondern auch **byteweise verglichen**, ob die gelieferten Dateien
+  unverändert angekommen sind. Nach zwei Verlusten und zwei veralteten Plandateien in
+  sechs Tagen ist das die billigste Versicherung im ganzen Projekt: sieben Vergleiche,
+  ein Befehl.
+- **Was das über den Zuschnitt der Etappe sagt:** N5c-3 war die erste Etappe, die als
+  reine *Reparatur* geplant wurde — mit vorher gemessenen Prüfankern statt mit einem
+  Funktionsumfang. Das hat gut funktioniert: der Umfang war von Anfang an begrenzt, die
+  Abnahme brauchte keine Diskussion, weil die Zahlen schon im Plan standen.
+
+**v2.30 (2026-08-03):** **Etappe N5c-3 von Dieter am Handy geprüft und ABGENOMMEN —
+ohne Nacharbeit.** Damit ist Baustein N5 bis auf N5d fertig. Der Projektordner wurde
+gegengeprüft: Vollständigkeit gegen 8.1, die drei Testläufe direkt aus dem Ordner grün
+(874 / 463 / 464 · 0 Fehler), beide HTMLs mit genau einer Zeile Unterschied, und die sieben
+gelieferten Dateien byteweise identisch angekommen. Plandatei auf den abgenommenen Stand
+gesetzt (Kopfblock, Kickoff-Punkt 12, Bausteintabelle, 5.1, 5.2, 8.1, Wegweiser 9.3); die
+Fallunterscheidung „abgenommen ja/nein" entfällt, der Einstieg lautet ohne Vorbehalt
+**„weiter mit N5d"**. **Code unverändert.**
+**Basislinie unverändert und verbindlich: 874 Assertions · Smokes 463/464 · i18n-Parität 0.**
+**Nächster Schritt: N5d — Umfang vor dem Bau abstimmen (5.1-1), vorher die drei
+fehlenden `VERSION`-Kennungen nachrüsten (3.6).**
+
+
+---
+
+**Aus der Abstimmung 2026-08-03 (vor N5d):**
+
+- **Dieters Sorge, wörtlich:** *„Ich bin mir wirklich nicht sicher, wie weit wir überhaupt
+  in diese Sachen eingehen sollten. Nahtvorbereitung ist ein wichtiges Thema,
+  Toleranzklassen auch — es soll ja alles so sein, dass eine Schweißnaht nach vielen
+  Normen hergestellt wird. Aber eine Qualitätssicherung soll das sicher alles nicht sein,
+  denn die Sachen ändern sich auch zu schnell."* Daraus ist das **Aufnahmekriterium**
+  entstanden (9.2): aufgenommen wird, was **stabil** ist und der Rechnung eine Aussage
+  gibt — draußen bleibt, was **gepflegt werden müsste**.
+- **Warum das trennscharf ist:** B/C/D und EXC1–4 sind zusammen sieben Codes und seit
+  Jahrzehnten unverändert; sie tragen zudem den Ermüdungsteil. Prüfumfänge,
+  Nahtvorbereitungsformen und Toleranztabellen sind dagegen genau die Stellen, an denen
+  eine Normausgabe etwas verschiebt. Das Kriterium trennt also nicht nach *wichtig* —
+  Nahtvorbereitung ist wichtig —, sondern nach *pflegebedürftig*.
+- **Der entscheidende Zusatz: was draußen bleibt, wird BENANNT.** Prüfumfang,
+  Nahtvorbereitung, Toleranzen und Herstellerqualifikation kommen als ehrliche Lücken in
+  die Liste 2.4. Damit sagt das Programm selbst, dass es kein QS-System ist. Halb
+  aufnehmen wäre die schlechtere Lösung gewesen: es hätte Vollständigkeit vorgetäuscht,
+  wo keine ist.
+- **EXC schlägt die Bewertungsgruppe vor, erzwingt sie nicht** (Dieter zugestimmt).
+  EN 1090-2 verknüpft beides; für den Laien ist der Vorschlag eine echte Hilfe. Er bleibt
+  überschreibbar wie jeder Tabellenwert und trägt seine Herkunft sichtbar — dieselbe
+  Bauform wie bei β_w und γ_M2, also **keine neue Mechanik**.
+- **Die Bewertungsgruppe und die Ermüdung** bleiben in V1 durch einen *Hinweis* verbunden,
+  nicht durch eine Rechnung. Die Kerbfälle setzen eine Qualität voraus — das gehört gesagt,
+  aber die Kopplung selbst gehört zu N13/N14. Eine Scheinrechnung wäre der schlimmere
+  Fehler als eine offene Stelle.
+- **Zum Verfahren:** Diese Abstimmung lief bewusst noch im alten Chat, mit dem letzten
+  Fünftel des Kontingents. Ein Umfang, der nur im Gesprächsverlauf steht, überlebt keinen
+  Chatwechsel — er stand deshalb binnen weniger Minuten in 5.1-1. Das ist Kickoff-Punkt 5c
+  in seiner billigsten Form: **reden, solange der Kontext noch da ist; schreiben, bevor er
+  weg ist.**
+
+**v2.31 (2026-08-03):** **Umfang von N5d abgestimmt und in 5.1-1 ausformuliert.**
+Aufgenommen: die zwei bereits in `optionen.js` vorhandenen Gruppen (`iso5817`, `exc`)
+anzeigen, **EXC schlägt die Bewertungsgruppe vor** (überschreibbar, mit sichtbarer
+Herkunft), sichtbarer **Ermüdungshinweis ohne Scheinrechnung**, Anforderungszeile in den
+Ausgaben. Bewusst draußen: Prüfumfang/ZfP, Nahtvorbereitung (gehört zu N6b),
+Toleranzklassen und Herstellerqualifikation — als **benannte Lücken in die Liste 2.4**.
+Neues bindendes **Aufnahmekriterium** in 9.2. Vorlauf festgehalten: die Datengrundlage für
+den Block liegt komplett vor, es fehlt nur die Verdrahtung. Offen: eine Ja/Nein-Frage
+(Freitextfeld WPS-Nummer, Vorschlag: weglassen). **Code unverändert.**
+**Basislinie unverändert und verbindlich: 874 Assertions · Smokes 463/464 · i18n-Parität 0.**
+**Nächster Schritt: N5d — Einstieg „weiter mit N5d".**
+
 ═══════════════════════════════════════════════════════════════════════════
 Ende Schweißnaht-Historie.md · DT-ProfiSchweissnaht
 ═══════════════════════════════════════════════════════════════════════════
