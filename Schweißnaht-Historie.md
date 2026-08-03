@@ -1097,6 +1097,78 @@ den Block liegt komplett vor, es fehlt nur die Verdrahtung. Offen: eine Ja/Nein-
 **Basislinie unverändert und verbindlich: 874 Assertions · Smokes 463/464 · i18n-Parität 0.**
 **Nächster Schritt: N5d — Einstieg „weiter mit N5d".**
 
+
+---
+
+**Aus N5d (2026-08-03) — Ausführung & Dokumentation, Versionszeile, Vorschlag statt Zwang:**
+
+- **Die Reihenfolge war der halbe Bau.** Zuerst die drei fehlenden `VERSION`-Kennungen,
+  dann die Zeile, die sie anzeigt. Andersherum hätte die Zeile drei Löcher gehabt —
+  ausgerechnet in den Dateien, die sich am häufigsten ändern. Der Befund stand seit dem
+  2026-07-28 im Plan (3.6) und war deshalb in fünf Minuten erledigt.
+- **Die Versionszeile liest die Module, statt eine Liste zu führen.** `ui.js` geht über die
+  `DTN…`-Namen am Fenster und fragt jedes Modul selbst nach `NAME` und `VERSION`. Eine
+  gepflegte Modulliste wäre genau das gewesen, wogegen die Zeile gebaut wurde: eine zweite
+  Stelle, die auseinanderdriftet. Ein Modul ohne Kennung würde sichtbar als „ohne Kennung"
+  gezählt — die ehrliche Lücke ist eingebaut, nicht nachträglich geprüft.
+- **Der Nebeneffekt ist der eigentliche Gewinn:** Weil die Zeile aus den geladenen Modulen
+  kommt, zeigt sie am Handy sofort, wenn eine Datei beim Austausch nicht angekommen ist.
+  Nach zwei verlorenen Dateien und zwei veralteten Plandateien in sechs Tagen ist das die
+  zweite billige Versicherung neben dem byteweisen Vergleich.
+- **„Vorschlag statt Zwang" hat eine Bauform bekommen, die es schon gab.** EXC füllt die
+  Bewertungsgruppe genauso, wie ein Tabellenwert ein gesperrtes Feld füllt: gesetzt,
+  sichtbar begründet, überschreibbar — und wer seine eigene Wahl wieder leert, bekommt den
+  Vorschlag zurück. Es musste keine neue Mechanik erfunden werden, nur dieselbe auf eine
+  Auswahl statt auf ein Feld angewendet. Der Merker sitzt in `S.manuell`,
+  `istSelbstGewaehlt()` macht ihn prüfbar.
+- **Die Karte lebt in `optionen.js`, nicht in `ui.js`** — und das ist jetzt messbar: der
+  Harness prüft, dass die Zeichenkette `EXC` im Quelltext der Oberfläche überhaupt nicht
+  vorkommt und der Gruppencode `iso5817` dort **genau einmal** steht, in der reinen
+  Anordnung. Die erste Fassung dieser Prüfung war zu scharf („der Code darf gar nicht
+  vorkommen") und schlug an der `ZUORDNUNG` an — das ist aber Anordnung, kein Fachwissen.
+  **Gelernt:** eine Prüfung, die Anordnung und Logik nicht unterscheidet, verbietet das
+  Falsche.
+- **Die vier Lücken brauchten keine neue Leitung.** Sie stehen in `daten.js`
+  (`NICHT_GEPRUEFT`, 10 → 14) und liefen von dort ohne eine einzige geänderte Zeile durch
+  `solver.js`, `rechenweg.js` und die Anzeige bis in die Liste 2.4. Die Vorwarnung in 8.1
+  hatte `validate.js` erwartet und `daten.js` nicht genannt — die Leitung war besser gebaut
+  als die Vorwarnung wusste. **Eine Quelle je Sache zahlt sich zwei Etappen später aus.**
+- **Was die Vorwarnung sonst noch verfehlt hat:** `validate.js` musste gar nicht angefasst
+  werden (die zwei Auswahlen sind Gruppen, keine Felder), dafür `i18n_kerbfall.js`
+  (Kennung). Die Liste in 8.1 ist eine Erwartung, keine Zusage — sie wird nachgeführt,
+  nicht verteidigt.
+- **Drei alte Assertions mussten umgestellt werden**, nicht gelockert: „der Block ist
+  ausdrücklich auf N5d datiert" wurde zu „der Block ist nicht mehr datiert — er wird
+  gebaut", „18 von 20 Gruppen" zu „alle 20". Gleiche Anzahl, andere Wahrheit. Eine
+  Assertion, die einen Bauzustand festhält, gehört mit diesem Zustand fortgeschrieben —
+  **gestrichen wird sie nie**, sonst schrumpft die Basislinie durch die Hintertür.
+- **Der Block selbst brauchte keine neue CSS-Zeile.** Er nutzt `.feld-zeile` und
+  `.gap-note` aus N5a/N5b; nur die zwei Zeilen des Info-Dialogs bekamen eigene Klassen.
+  Das ist dasselbe Muster wie bei der Klappmechanik in N5c-2 — ein Zeichen, dass das
+  Grundgerüst trägt.
+
+**v2.32 (2026-08-03):** **Etappe N5d („Ausführung & Dokumentation" + Versionszeile) gebaut
+und grün ausgeliefert.** Zuerst die drei fehlenden `VERSION`-Kennungen nachgerüstet
+(`i18n_kern.js`, `i18n_hilfe.js`, `i18n_kerbfall.js` → `0.1.0-N1`): **alle 13 Module sind
+gekennzeichnet**. Die **Versionszeile im Info-ⓘ** (`infoVersion` + `infoModule`) wird aus
+den geladenen Modulen gebaut, nicht aus einer Liste; einzige Handzahl ist `PLAN` in
+`ui.js`. Der **Block „Ausführung & Dokumentation"** ist verdrahtet: `iso5817` und `exc` mit
+Laien-ⓘ, ehrlich als nicht rechenwirksam beschriftet; **EXC schlägt die Bewertungsgruppe
+vor** (EXC1→D, EXC2→C, EXC3→B, EXC4→B nach EN 1090-2), mit sichtbarer Herkunft und
+überschreibbar. Dazu **Ermüdungshinweis ohne Scheinrechnung**, **Anforderungszeile im
+Ergebnis** und die **vier benannten Lücken** in Liste 2.4 (`daten.js` 10 → 14 Punkte).
+**Dieters Entscheidung zur letzten offenen Frage: das Freitextfeld WPS-Nummer bleibt weg**,
+solange N11 die Ausgaben nicht gebaut hat. Neu: Harness-Sektion **S34**, N5d-Durchklick im
+DOM-Smoke, Planabschnitt **4.10d**, zwei Festlegungen in 9.2 („Vorschlag ist kein Zwang",
+„die Versionszeile liest die Module"). Geändert: `daten.js`, `optionen.js`, `ui.js`,
+`i18n_kern.js`, `i18n_hilfe.js`, `i18n_kerbfall.js`, `style.css`, beide HTMLs,
+`test_naht.js`, `dom_smoke_voll.js` — die Rechenmodule `naht.js`, `profil.js`, `svglib.js`,
+`schaubild.js`, `solver.js`, `rechenweg.js` sowie `validate.js` und `dom_smoke_test.js`
+blieben unberührt. Plandatei vollständig nachgezogen (v2.32).
+**Basislinie 874 → 984 Assertions · Smokes 463/464 → 513/514 · i18n-Parität 0.**
+**Nächster Schritt: N5d am Handy abnehmen, dann N6b — Einstieg „weiter mit N6b".**
+
+
 ═══════════════════════════════════════════════════════════════════════════
 Ende Schweißnaht-Historie.md · DT-ProfiSchweissnaht
 ═══════════════════════════════════════════════════════════════════════════

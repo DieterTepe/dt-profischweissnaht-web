@@ -12,6 +12,7 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
+  var VERSION = '0.1.0-N1';
   var SPRACHEN = ['de', 'en', 'pt'];
 
   var D = {
@@ -554,6 +555,25 @@
     ng_anschlusssteifigkeit:  { de: 'Anschlusssteifigkeit (gelenkig / starr)', en: 'Joint stiffness (pinned / rigid)', pt: 'Rigidez da ligação (rotulada / rígida)' },
     ng_terrassenbruch:        { de: 'Terrassenbruch bei Zug in Dickenrichtung (Z-Güten)', en: 'Lamellar tearing under through-thickness tension (Z grades)', pt: 'Rotura lamelar sob tração na direção da espessura (qualidades Z)' },
 
+    /* N5d — bewusst nicht aufgenommen und deshalb BENANNT (Plan 5.1-1). */
+    ng_pruefumfang_zfp:       { de: 'Prüfumfang und zerstörungsfreie Prüfung (VT, PT, MT, UT, RT)', en: 'Extent of testing and non-destructive testing (VT, PT, MT, UT, RT)', pt: 'Extensão dos ensaios e ensaios não destrutivos (VT, PT, MT, UT, RT)' },
+    ng_nahtvorbereitung:      { de: 'Nahtvorbereitung und Fugenform (EN ISO 9692-1)', en: 'Weld preparation and joint geometry (EN ISO 9692-1)', pt: 'Preparação da junta e geometria do chanfro (EN ISO 9692-1)' },
+    ng_toleranzen:            { de: 'Toleranzklassen für Maß- und Formabweichungen (EN ISO 13920)', en: 'Tolerance classes for dimensional and shape deviations (EN ISO 13920)', pt: 'Classes de tolerância para desvios dimensionais e de forma (EN ISO 13920)' },
+    ng_herstellerqualifikation: { de: 'Herstellerqualifikation und Schweißanweisung (EN 1090-1, EN ISO 3834, WPS/WPQR)', en: 'Manufacturer qualification and welding procedure (EN 1090-1, EN ISO 3834, WPS/WPQR)', pt: 'Qualificação do fabricante e especificação do procedimento (EN 1090-1, EN ISO 3834, WPS/WPQR)' },
+
+    /* ---- N5d · Block "Ausfuehrung und Dokumentation" (Plan 2.7 / 5.1-1) ---- */
+    ausf_nicht_rechenwirksam: { de: 'Diese beiden Angaben gehen NICHT in die Spannungsrechnung ein. Sie sind Anforderungen an die Ausführung und erscheinen in den Ausgaben.', en: 'Neither entry enters the stress calculation. They are execution requirements and appear in the outputs.', pt: 'Nenhuma destas indicações entra no cálculo de tensões. São requisitos de execução e aparecem nos resultados.' },
+    ausf_erm_hinweis:         { de: 'Beim Ermüdungsnachweis ist die Bewertungsgruppe sehr wohl maßgebend — die Kerbfälle setzen eine bestimmte Ausführungsqualität voraus. Hier ist das nur ein Hinweis: es wird nichts damit gerechnet. Die Kopplung kommt mit dem Ermüdungsmodul.', en: 'For fatigue the quality level does matter — detail categories presuppose a given execution quality. Here this is a note only; nothing is calculated from it. The link comes with the fatigue module.', pt: 'Na fadiga o nível de qualidade é determinante — as categorias de detalhe pressupõem uma dada qualidade de execução. Aqui é apenas uma nota: nada é calculado a partir dela. A ligação virá com o módulo de fadiga.' },
+    ausf_vorschlag_aus_exc:   { de: 'Vorschlag aus der Ausführungsklasse nach EN 1090-2 — überschreibbar.', en: 'Proposed from the execution class to EN 1090-2 — can be overridden.', pt: 'Proposta a partir da classe de execução segundo a EN 1090-2 — pode ser alterada.' },
+    ausf_eigene_wahl:         { de: 'Selbst gewählt — der Vorschlag aus der Ausführungsklasse ist damit überschrieben.', en: 'Chosen manually — the proposal from the execution class is overridden.', pt: 'Escolha própria — a proposta da classe de execução foi substituída.' },
+    ausf_anforderung:         { de: 'Ausführungsanforderung (nicht rechenwirksam):', en: 'Execution requirement (not part of the calculation):', pt: 'Requisito de execução (não entra no cálculo):' },
+
+    /* ---- N5d · Versionszeile im Info-ⓘ (Plan 3.6) ---- */
+    uiVersionStand:           { de: 'Programmstand', en: 'Program status', pt: 'Estado do programa' },
+    uiVersionPlan:            { de: 'Plan', en: 'Plan', pt: 'Plano' },
+    uiVersionModule:          { de: 'Module', en: 'modules', pt: 'módulos' },
+    uiVersionOhne:            { de: 'ohne Kennung', en: 'without identifier', pt: 'sem identificação' },
+
     /* ---------- Lücken-Texte (ehrliche Hinweise) ---------- */
     lk_rho_haz_nur_band:            { de: 'ρhaz: die Einzelwerte der EN 1999-1-1 Tab. 3.2 sind geschützt – frei belegbar ist nur ein Wertebereich. Angesetzt wird der konservative untere Wert; über „eigener Wert" überschreibbar.', en: 'ρhaz: the individual values of EN 1999-1-1 Table 3.2 are protected – only a range is publicly verifiable. The conservative lower value is used; overridable via "own value".', pt: 'ρhaz: os valores individuais da Tab. 3.2 da EN 1999-1-1 são protegidos – só é verificável um intervalo. Usa-se o valor inferior conservativo; substituível por "valor próprio".' },
     lk_fo_fu_und_rho_nur_band:      { de: 'Festigkeits- und ρhaz-Werte dieses Zustands sind nur über eine Quelle bzw. als Bereich belegt.', en: 'Strength and ρhaz values for this temper are supported by only one source or as a range.', pt: 'Os valores de resistência e ρhaz deste estado só têm uma fonte ou são um intervalo.' },
@@ -831,5 +851,5 @@
     return r;
   }
 
-  return { NAME: 'kern', SPRACHEN: SPRACHEN, dict: D, t: t, has: has, keys: keys };
+  return { NAME: 'kern', VERSION: VERSION, SPRACHEN: SPRACHEN, dict: D, t: t, has: has, keys: keys };
 }));

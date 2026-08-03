@@ -371,7 +371,11 @@
   var NICHT_GEPRUEFT = [
     'grundwerkstoff', 'beulen_stabilitaet', 'verbindungsmittel', 'steifigkeit_verformung',
     'ausfuehrung_aufsicht', 'werkstoffzulassung', 'lastannahmen', 'sproedbruch',
-    'anschlusssteifigkeit', 'terrassenbruch'
+    'anschlusssteifigkeit', 'terrassenbruch',
+    /* N5d (Plan 5.1-1): bewusst NICHT aufgenommen, weil es gepflegt werden
+       muesste — das Programm ist ein Nachweisprogramm, keine Qualitaets-
+       sicherung. Was draussen bleibt, wird BENANNT statt verschwiegen. */
+    'pruefumfang_zfp', 'nahtvorbereitung', 'toleranzen', 'herstellerqualifikation'
   ];
 
   /* --------------------------------------------------------------------- */

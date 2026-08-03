@@ -1,6 +1,7 @@
 /* ============================================================================
  * DT-ProfiSchweissnaht · ui.js  (DTNUi)
- * Baustein N5 — Etappe N5a (Grundgeruest) + Etappe N5b (EINGABESEITE).
+ * Baustein N5 — Etappen N5a (Grundgeruest), N5b (Eingabeseite),
+ * N5c (Ergebnisseite) und N5d (Ausfuehrung und Dokumentation + Versionszeile).
  *
  * N5a:  Sprachumschaltung DE/EN/PT · Theme (START IMMER DUNKEL, Plan 3.1) ·
  *       aufklappbare Bereiche · Leeren · Info-Dialog · Editionsweiche.
@@ -34,8 +35,12 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.6.0';
-  var ETAPPE = 'N5c-2';
+  var VERSION = '0.7.0';
+  var ETAPPE = 'N5d';
+  /* Plan-Version, die zu diesem Stand gehoert. Sie ist die EINZIGE von Hand
+     gepflegte Zahl der Versionszeile — alles andere kommt aus den geladenen
+     Modulen selbst (Plan 3.6). */
+  var PLAN = '2.32';
   var SPRACHEN = ['de', 'en', 'pt'];
 
   /* Plan 3.1 (bindend): die Oberflaeche startet IMMER im dunklen Design —
@@ -92,9 +97,16 @@
 
     { code: 'zusatz', leit: null, gruppen: [], felder: [], zusatz: true },
 
-    /* ISO 5817 und EXC bekommen in N5d ihren eigenen Block (Plan 2.7). */
+    /* N5d: der Block "Ausfuehrung und Dokumentation" (Plan 2.7 / 5.1-1).
+       hinweise    = i18n-Codes, die als Hinweiszeile unter dem Block stehen —
+                     ehrliche Beschriftung und Ermuedungshinweis, beide OHNE
+                     Antippen sichtbar.
+       anforderung = die Auswahlen dieses Bereichs erscheinen nach dem Rechnen
+                     als Anforderungszeile im Ergebnis (vollstaendig in allen
+                     Ausgaben erst mit N11). */
     { code: 'ausfuehrung', leit: null, gruppen: ['iso5817', 'exc'], felder: [],
-      etappe: 'N5d', folgt: 'uiFolgtN5d' }
+      anforderung: true,
+      hinweise: ['ausf_nicht_rechenwirksam', 'ausf_erm_hinweis'] }
   ];
 
   /* Die vier zuschaltbaren Zusatzbereiche (Plan 2.6) — Haken hier, Inhalt
@@ -118,7 +130,9 @@
     'host_lasten', 'host_beiwerte', 'host_zusatz', 'host_ausfuehrung',
     'pruefBox', 'pruefTitel', 'pruefListe',
     'hilfeModal', 'hilfeTitel', 'hilfeWasLbl', 'hilfeWas', 'hilfeBereichLbl',
-    'hilfeBereich', 'hilfeTippLbl', 'hilfeTipp', 'hilfeClose'
+    'hilfeBereich', 'hilfeTippLbl', 'hilfeTipp', 'hilfeClose',
+    /* N5d */
+    'infoVersion', 'infoModule'
   ];
 
   /* CSS-Klassen, die style.css tragen muss (leer erlaubt, vorhanden Pflicht). */
@@ -139,7 +153,9 @@
     'tile-k', 'erg-box',
     /* N5c-2 */
     'weg-box', 'grafik-box', 'grafik-svg', 'grafik-legende',
-    'legende-eintrag', 'legende-punkt', 'legende-text', 'rw-abschnitt', 'rw-bilanz'
+    'legende-eintrag', 'legende-punkt', 'legende-text', 'rw-abschnitt', 'rw-bilanz',
+    /* N5d */
+    'info-version', 'info-module'
   ];
 
   /* Buttons, die bewusst noch nicht verdrahtet sind: Id -> ehrliche Meldung.
@@ -218,6 +234,10 @@
       theme: START_THEME,
       offen: {},
       gebaut: false,
+      /* N5d: welche Vorschlagsziele hat der Anwender SELBST gesetzt? Solange
+         hier nichts steht, gilt der Vorschlag; danach gilt seine Wahl. Genau
+         die Bauform des "eigener Wert"-Hakens, nur fuer eine Auswahl. */
+      manuell: {},
       edition: (win.DT_EDITION === 'test') ? 'test' : 'full'
     };
 
@@ -267,7 +287,14 @@
       zeile.appendChild(info);
 
       var sel = neu('select', 'feld', 'sel_' + g.code);
-      sel.addEventListener('change', function () { aktualisiere(); meldung(''); });
+      sel.addEventListener('change', function () {
+        /* N5d: Wer ein Vorschlagsziel selbst anfasst, hat die Wahl getroffen.
+           Leert er es wieder, greift der Vorschlag erneut. */
+        if (Options && Options.istVorschlagsZiel(g.code)) {
+          S.manuell[g.code] = !istLeer(sel.value);
+        }
+        aktualisiere(); meldung('');
+      });
       zeile.appendChild(sel);
 
       return zeile;
@@ -427,11 +454,25 @@
 
         for (j = 0; j < b.gruppen.length; j++) {
           g = Options.gruppe(b.gruppen[j]);
-          if (g) host.appendChild(baueGruppe(g));
+          if (!g) continue;
+          host.appendChild(baueGruppe(g));
+          /* N5d: Ein vorgeschlagener Wert sagt, WOHER er kommt — sonst waere
+             er ein stiller Wert. Die Zeile steht direkt unter der Auswahl. */
+          if (Options.istVorschlagsZiel(g.code)) {
+            var hk = neu('div', 'gap-note', 'herk_' + g.code);
+            hk.hidden = true;
+            host.appendChild(hk);
+          }
         }
         for (j = 0; j < b.felder.length; j++) {
           f = Valid.feld(b.felder[j]);
           if (f) host.appendChild(baueFeld(f));
+        }
+        /* N5d: ehrliche Beschriftung und Ermuedungshinweis — ohne Antippen. */
+        for (j = 0; j < (b.hinweise || []).length; j++) {
+          var hw = neu('div', 'gap-note', 'hinw_' + b.code + '_' + j);
+          beschrifte(hw, b.hinweise[j]);
+          host.appendChild(hw);
         }
       }
 
@@ -562,7 +603,59 @@
           klasse(el(doc, 'row_f_' + f.code), 'fehlerhaft', false);
         }
       }
+      vorschlaegeAnwenden(z);
       return z;
+    }
+
+    /* ------------------------------------------------------------------
+     * N5d — VORSCHLAG STATT ZWANG (Plan 5.1-1)
+     * Welche Auswahl welche andere vorschlaegt, weiss ALLEIN optionen.js.
+     * Hier steht nur: nachfragen, eintragen, Herkunft anschreiben — und
+     * die Wahl des Anwenders nicht ueberfahren.
+     * ---------------------------------------------------------------- */
+    function vorschlaegeAnwenden(z) {
+      if (!Options || !Options.VORSCHLAEGE) return z;
+      for (var i = 0; i < Options.VORSCHLAEGE.length; i++) {
+        var ziel = Options.VORSCHLAEGE[i].ziel;
+        var sel = el(doc, 'sel_' + ziel);
+        var note = el(doc, 'herk_' + ziel);
+        if (!sel) continue;
+        var v = Options.vorschlag(ziel, z);
+
+        if (S.manuell[ziel] && !istLeer(sel.value)) {
+          if (note) { beschrifte(note, 'ausf_eigene_wahl'); zeige(note, !!v); }
+          continue;
+        }
+        S.manuell[ziel] = false;
+        if (v) {
+          if (sel.value !== v.wert) sel.value = v.wert;
+          z[ziel] = v.wert;
+          if (note) { beschrifte(note, v.hinweis); zeige(note, true); }
+        } else if (note) {
+          zeige(note, false);
+        }
+      }
+      return z;
+    }
+
+    /* Die Anforderungszeile: was in den Ausgaben steht, ohne dass es in die
+       Rechnung eingeht. Reine Anordnung — die Texte kommen aus dem
+       Woerterbuch, die Codes aus der ZUORDNUNG. */
+    function anforderungText() {
+      if (!Options) return '';
+      var z = zustand(), teile = [], i, j, b, code, wert;
+      for (i = 0; i < ZUORDNUNG.length; i++) {
+        b = ZUORDNUNG[i];
+        if (!b.anforderung) continue;
+        for (j = 0; j < b.gruppen.length; j++) {
+          code = b.gruppen[j];
+          wert = z[code];
+          if (istLeer(wert)) continue;
+          teile.push(txt(win, 'grp_' + code, S.sprache) + ' ' +
+                     txt(win, 'opt_' + code + '_' + wert, S.sprache));
+        }
+      }
+      return teile.join(' \u00b7 ');
     }
 
     /* Standardwerte in die gesperrten Felder — der Zustand direkt nach dem
@@ -830,6 +923,16 @@
           'f_u = ' + zahlText(erg.widerstand.fu, 0) + ' ' + txt(win, 'unit_Nmm2', S.sprache) + ' · ' +
           'γ_M2 = ' + zahlText(erg.widerstand.gammaM2, 2);
         host.appendChild(gm);
+      }
+
+      /* N5d: die Ausfuehrungsanforderung steht beim Ergebnis — ehrlich als
+         nicht rechenwirksam beschriftet. Vollstaendig in Druck/PDF/Word und
+         in der .dts-Datei erst mit N11. */
+      var anf = anforderungText();
+      if (anf) {
+        var az = neu('div', 'gap-note', 'ergAnforderung');
+        az.textContent = txt(win, 'ausf_anforderung', S.sprache) + ' ' + anf;
+        host.appendChild(az);
       }
 
       /* Warnungen und Hinweise des Rechenkerns gehoeren sichtbar hierher —
@@ -1139,6 +1242,7 @@
       }
 
       edition();
+      versionZeigen();
       bereicheBeschriften();
       setzeText(el(doc, 'pruefTitel'), txt(win, 'uiPruefTitel', l));
       meldung('');
@@ -1247,6 +1351,7 @@
       for (i = 0; i < ta.length; i++) { ta[i].value = ''; n++; }
 
       for (i = 0; i < ZUSATZ.length; i++) zeige(el(doc, 'zusn_' + ZUSATZ[i].code), false);
+      S.manuell = {};
       var box = el(doc, 'pruefBox');
       if (box) { box.hidden = true; klasse(box, 'offen', false); }
       var liste = el(doc, 'pruefListe');
@@ -1267,6 +1372,55 @@
       var m = el(doc, 'dtMsg');
       if (m) m.textContent = s || '';
       return s || '';
+    }
+
+    /* ------------------------------------------------------------------
+     * N5d — VERSIONSZEILE (Plan 3.6)
+     * Sie wird aus den GELADENEN Modulen gebaut, nicht von Hand gepflegt:
+     * jedes Modul haengt unter seinem eigenen Namen am Fenster und traegt
+     * seine Kennung selbst. Deshalb steht hier keine Modulliste — eine
+     * zweite Liste waere die naechste Stelle, die auseinanderdriftet.
+     * Ein Modul ohne Kennung wird SICHTBAR als Luecke gezaehlt.
+     * ---------------------------------------------------------------- */
+    function moduleKennungen() {
+      var r = [], k, m, name, ver;
+      for (k in win) {
+        if (!k || k.indexOf('DTN') !== 0) continue;
+        try { m = win[k]; } catch (e) { m = null; }
+        if (!m || typeof m !== 'object') continue;
+        name = (typeof m.NAME === 'string' && m.NAME) ? m.NAME : k.substring(3).toLowerCase();
+        ver = (typeof m.VERSION === 'string' && m.VERSION) ? m.VERSION : null;
+        r.push({ schluessel: k, name: name, version: ver });
+      }
+      r.sort(function (a, b) { return a.name < b.name ? -1 : (a.name > b.name ? 1 : 0); });
+      return r;
+    }
+
+    function versionInfo() {
+      var mods = moduleKennungen(), ohne = 0;
+      for (var i = 0; i < mods.length; i++) if (!mods[i].version) ohne++;
+      return { stand: ETAPPE, plan: PLAN, ui: VERSION,
+               module: mods, n: mods.length, ohne: ohne };
+    }
+
+    function versionZeigen() {
+      var v = versionInfo(), l = S.sprache, i, t = [];
+      var kopf = el(doc, 'infoVersion');
+      if (kopf) {
+        var s1 = txt(win, 'uiVersionStand', l) + ' ' + v.stand + ' \u00b7 ' +
+                 txt(win, 'uiVersionPlan', l) + ' ' + v.plan + ' \u00b7 ' +
+                 v.n + ' ' + txt(win, 'uiVersionModule', l);
+        if (v.ohne) s1 += ' \u00b7 ' + v.ohne + ' ' + txt(win, 'uiVersionOhne', l);
+        kopf.textContent = s1;
+      }
+      var liste = el(doc, 'infoModule');
+      if (liste) {
+        for (i = 0; i < v.module.length; i++) {
+          t.push(v.module[i].name + ' ' + (v.module[i].version || '?'));
+        }
+        liste.textContent = t.join(' \u00b7 ');
+      }
+      return v;
     }
 
     /* -------------------------------------------------------- Info-Dialog */
@@ -1391,7 +1545,11 @@
       rechnen: rechnen,
       ergebnisLeeren: ergebnisLeeren,
       ergebnis: function () { return S.letztesErgebnis || null; },
-      rechenweg: function () { return S.letzterWeg || null; }
+      rechenweg: function () { return S.letzterWeg || null; },
+      /* N5d */
+      version: versionInfo,
+      anforderung: anforderungText,
+      istSelbstGewaehlt: function (code) { return S.manuell[code] === true; }
     };
     api.sitzung = sitzung;
     return sitzung;

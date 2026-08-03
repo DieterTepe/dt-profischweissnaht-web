@@ -321,3 +321,8 @@ input.feld,select.feld{display:block; width:100%; margin:0}
 .info-edition{font-weight:600; color:var(--akzent)}
 .impressum{color:var(--muted)}
 .app-footer .norm{color:var(--fg); font-weight:600}
+
+/* --- N5d: Versionszeile im Info-Dialog (Plan 3.6) ------------------------- */
+.info-version{font-size:.86rem;color:var(--muted);margin:.2rem 0 0}
+.info-module{font-size:.74rem;color:var(--muted);opacity:.85;line-height:1.5;
+             word-break:break-word;margin:.15rem 0 .4rem}

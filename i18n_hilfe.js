@@ -14,6 +14,7 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
+  var VERSION = '0.1.0-N1';
   var SPRACHEN = ['de', 'en', 'pt'];
   var FELDER = ['was', 'bereich', 'tipp'];
 
@@ -216,13 +217,13 @@
     grp_iso5817: {
       de: { was: 'Die zulässige Größe von Unregelmäßigkeiten wie Einbrandkerben oder Poren. Eine Ausführungsanforderung, keine Rechengröße.',
             bereich: 'B (hoch), C (mittel), D (niedrig).',
-            tipp: 'B ist die übliche Forderung bei dynamischer Beanspruchung. Für den Ermüdungsnachweis ist die Bewertungsgruppe wichtig, weil die Kerbfälle eine bestimmte Qualität voraussetzen.' },
+            tipp: 'B ist die übliche Forderung bei dynamischer Beanspruchung. Für den Ermüdungsnachweis ist die Bewertungsgruppe wichtig, weil die Kerbfälle eine bestimmte Qualität voraussetzen. Wählen Sie eine Ausführungsklasse, schlägt das Programm die dazu passende Bewertungsgruppe vor (EN 1090-2) — der Vorschlag bleibt überschreibbar.' },
       en: { was: 'The permitted size of imperfections such as undercut or porosity. An execution requirement, not a calculation quantity.',
             bereich: 'B (stringent), C (intermediate), D (moderate).',
-            tipp: 'B is the usual requirement for dynamic loading. The quality level matters for fatigue because detail categories presuppose a given quality.' },
+            tipp: 'B is the usual requirement for dynamic loading. The quality level matters for fatigue because detail categories presuppose a given quality. If you choose an execution class, the program proposes the matching quality level (EN 1090-2) — the proposal can be overridden.' },
       pt: { was: 'A dimensão admissível de imperfeições como mordeduras ou poros. É um requisito de execução, não uma grandeza de cálculo.',
             bereich: 'B (exigente), C (intermédio), D (moderado).',
-            tipp: 'B é o requisito usual em carga dinâmica. O nível importa para a fadiga, pois as categorias de detalhe pressupõem uma dada qualidade.' }
+            tipp: 'B é o requisito usual em carga dinâmica. O nível importa para a fadiga, pois as categorias de detalhe pressupõem uma dada qualidade. Ao escolher uma classe de execução, o programa propõe o nível correspondente (EN 1090-2) — a proposta pode ser alterada.' }
     },
 
     grp_exc: {
@@ -816,5 +817,5 @@
     return r;
   }
 
-  return { NAME: 'hilfe', SPRACHEN: SPRACHEN, FELDER: FELDER, dict: H, h: h, has: has, keys: keys };
+  return { NAME: 'hilfe', VERSION: VERSION, SPRACHEN: SPRACHEN, FELDER: FELDER, dict: H, h: h, has: has, keys: keys };
 }));

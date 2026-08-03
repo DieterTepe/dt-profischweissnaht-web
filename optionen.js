@@ -276,6 +276,54 @@
       felder: { b: 80, t1: 10, a: 5, N: 150000, Q: 0 } }
   ];
 
+  /* --------------------------------------------------------------------- */
+  /* VORSCHLAEGE (N5d, Plan 5.1-1) — eine Auswahl schlaegt eine andere vor.  */
+  /*                                                                        */
+  /* EN 1090-2 verknuepft Ausfuehrungsklasse und Bewertungsgruppe. Der Wert  */
+  /* wird VORGESCHLAGEN, nicht erzwungen: er ist ueberschreibbar wie jeder   */
+  /* Tabellenwert und traegt seine Herkunft sichtbar (Plan 3.4). Das ist     */
+  /* eine Vertraeglichkeitsregel, KEINE Rechnung — beide Gruppen bleiben     */
+  /* rechenwirksam:false.                                                    */
+  /*                                                                        */
+  /* Die Karte steht hier und nicht in ui.js, weil die Oberflaeche kein      */
+  /* Fachwissen tragen darf (Plan 4.10). ui.js fragt nur nach.               */
+  /* --------------------------------------------------------------------- */
+  var VORSCHLAEGE = [
+    { ziel: 'iso5817', quelle: 'exc', norm: 'EN 1090-2',
+      hinweis: 'ausf_vorschlag_aus_exc',
+      karte: { EXC1: 'D', EXC2: 'C', EXC3: 'B', EXC4: 'B' } }
+  ];
+
+  function istVorschlagsZiel(code) {
+    for (var i = 0; i < VORSCHLAEGE.length; i++) if (VORSCHLAEGE[i].ziel === code) return true;
+    return false;
+  }
+
+  /* Gibt {wert, quelle, norm, hinweis} zurueck oder null, wenn die Quell-
+     auswahl noch nicht getroffen ist. Der Vorschlag wird zusaetzlich gegen
+     die Optionsliste des Ziels geprueft — eine Karte, die auf einen nicht
+     vorhandenen Code zeigt, waere ein stiller Fehler. */
+  function vorschlag(zielCode, zustand) {
+    var z = zustand || {};
+    for (var i = 0; i < VORSCHLAEGE.length; i++) {
+      var v = VORSCHLAEGE[i];
+      if (v.ziel !== zielCode) continue;
+      var q = z[v.quelle];
+      if (istLeer(q)) return null;
+      var w = Object.prototype.hasOwnProperty.call(v.karte, q) ? v.karte[q] : null;
+      if (w === null) return null;
+      var g = gruppe(v.ziel);
+      if (!g) return null;
+      for (var j = 0; j < g.optionen.length; j++) {
+        if (g.optionen[j].code === w) {
+          return { wert: w, quelle: v.quelle, norm: v.norm, hinweis: v.hinweis };
+        }
+      }
+      return null;
+    }
+    return null;
+  }
+
   function beispiel(code) {
     for (var i = 0; i < BEISPIELE.length; i++) if (BEISPIELE[i].code === code) return BEISPIELE[i];
     return null;
@@ -448,6 +496,9 @@
     ZUSATZBEREICHE: ZUSATZBEREICHE,
     BEISPIELE: BEISPIELE,
     beispiel: beispiel,
+    VORSCHLAEGE: VORSCHLAEGE,
+    vorschlag: vorschlag,
+    istVorschlagsZiel: istVorschlagsZiel,
     KEHL: KEHL,
     STUMPF_VOLL: STUMPF_VOLL,
     STUMPF_TEIL: STUMPF_TEIL,

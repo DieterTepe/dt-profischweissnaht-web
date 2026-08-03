@@ -390,10 +390,10 @@ function lauf(edition) {
       gebauteGruppen++;
     }
   }
-  ok(gebauteGruppen === 18, 'N5b: 18 Gruppen gebaut, ISO 5817 und EXC bleiben N5d (ist ' +
+  ok(gebauteGruppen === 20, 'N5d: alle 20 Gruppen gebaut, auch ISO 5817 und EXC (ist ' +
      gebauteGruppen + ')');
-  ok(!d.byId['sel_iso5817'] && !d.byId['sel_exc'],
-     'N5b: der Block Ausfuehrung ist NICHT vorweggenommen — er folgt in N5d');
+  ok(!!d.byId['sel_iso5817'] && !!d.byId['sel_exc'],
+     'N5d: der Block Ausfuehrung steht jetzt wirklich auf der Seite');
   ok(/N5d/.test(d.byId.host_ausfuehrung.children.length ? d.alleTexte() : ''),
      'N5b: der Bereich Ausfuehrung sagt ehrlich, dass er in N5d kommt');
 
@@ -891,6 +891,136 @@ function lauf(edition) {
   ok(s.rechenweg() === null, 'N5c-2: die Sitzung haelt keinen alten Rechenweg fest');
 
 
+
+  /* ---- N5d · AUSFUEHRUNG UND DOKUMENTATION (Plan 2.7 / 5.1-1) ----------
+     Der Block ist ab hier wirklich verdrahtet. Geprueft wird an der echten
+     Oberflaeche: die zwei Auswahlen stehen da, die Ausfuehrungsklasse
+     schlaegt die Bewertungsgruppe vor, die eigene Wahl schlaegt den
+     Vorschlag — und beide Faelle sagen sichtbar, woher der Wert kommt. */
+  s.leeren();
+  s.schalte('ausfuehrung', true);
+  ok(s.istOffen('ausfuehrung'), 'N5d: der Block Ausfuehrung klappt auf');
+  ok(!!d.byId.sel_iso5817 && !!d.byId.lbl_g_iso5817 && !!d.byId.info_g_iso5817,
+     'N5d: die Bewertungsgruppe steht mit Beschriftung und Laien-ⓘ da');
+  ok(!!d.byId.sel_exc && !!d.byId.lbl_g_exc && !!d.byId.info_g_exc,
+     'N5d: die Ausfuehrungsklasse ebenso');
+  ok(d.byId.pf_g_iso5817.hidden === true && d.byId.pf_g_exc.hidden === true,
+     'N5d: beide sind freiwillig — kein Pflichtstern');
+  ok(!!d.byId.hinw_ausfuehrung_0 && !!d.byId.hinw_ausfuehrung_1,
+     'N5d: beide Hinweiszeilen stehen im Block');
+  ok(d.byId.hinw_ausfuehrung_0.hidden !== true && d.byId.hinw_ausfuehrung_1.hidden !== true,
+     'N5d: sie stehen OHNE Antippen da — eine Luecke hinter einer Klappe waere eine stille Luecke');
+  ok(/NICHT/.test(d.byId.hinw_ausfuehrung_0.inhalt()),
+     'N5d: die erste Zeile sagt ehrlich, dass nichts davon in die Spannungsrechnung geht');
+  ok(/Ermüdung/.test(d.byId.hinw_ausfuehrung_1.inhalt()),
+     'N5d: die zweite nennt die Ermuedung — als Hinweis, nicht als Rechnung');
+  ok(!!d.byId.herk_iso5817 && d.byId.herk_iso5817.hidden === true,
+     'N5d: die Herkunftszeile ist angelegt, bleibt ohne Vorschlag aber weg');
+
+  d.byId.sel_exc.value = 'EXC2';
+  d.byId.sel_exc.change();
+  ok(d.byId.sel_iso5817.value === 'C',
+     'N5d: EXC2 schlaegt die Bewertungsgruppe C vor (EN 1090-2)');
+  ok(d.byId.herk_iso5817.hidden === false && /Vorschlag/.test(d.byId.herk_iso5817.inhalt()),
+     'N5d: und die Herkunft steht sichtbar darunter — kein stiller Wert');
+  ok(s.zustand().iso5817 === 'C', 'N5d: der Vorschlag steht auch im Zustand der Sitzung');
+  ok(s.istSelbstGewaehlt('iso5817') === false,
+     'N5d: er gilt als Vorschlag, nicht als eigene Wahl');
+
+  d.byId.sel_exc.value = 'EXC3';
+  d.byId.sel_exc.change();
+  ok(d.byId.sel_iso5817.value === 'B', 'N5d: EXC3 schlaegt B vor — der Vorschlag zieht mit');
+
+  /* Vorgeschlagen, nicht erzwungen: die eigene Wahl gewinnt. */
+  d.byId.sel_iso5817.value = 'D';
+  d.byId.sel_iso5817.change();
+  ok(d.byId.sel_iso5817.value === 'D', 'N5d: die eigene Wahl bleibt stehen');
+  ok(s.istSelbstGewaehlt('iso5817') === true, 'N5d: sie ist als eigene Wahl gemerkt');
+  ok(/gewählt/.test(d.byId.herk_iso5817.inhalt()),
+     'N5d: und die Zeile sagt jetzt, dass der Vorschlag ueberschrieben wurde');
+  d.byId.sel_exc.value = 'EXC2';
+  d.byId.sel_exc.change();
+  ok(d.byId.sel_iso5817.value === 'D',
+     'N5d: ein neuer Vorschlag ueberfaehrt die eigene Wahl NICHT');
+
+  /* Geleert kehrt der Vorschlag zurueck — genau die Bauform des
+     "eigener Wert"-Hakens bei den Tabellenwerten. */
+  d.byId.sel_iso5817.value = '';
+  d.byId.sel_iso5817.change();
+  ok(d.byId.sel_iso5817.value === 'C',
+     'N5d: nach dem Leeren der eigenen Wahl greift der Vorschlag wieder (C zu EXC2)');
+  ok(s.istSelbstGewaehlt('iso5817') === false, 'N5d: und der Merker ist zurueckgesetzt');
+
+  /* Die Anforderungszeile im Ergebnis (vollstaendig in den Ausgaben mit N11). */
+  s.beispielLaden('blech');
+  s.schalte('ausfuehrung', true);
+  d.byId.sel_exc.value = 'EXC2';
+  d.byId.sel_exc.change();
+  var n5dErg = s.rechnen();
+  ok(n5dErg && n5dErg.ok === true,
+     'N5d: der Fall rechnet mit gesetzter Ausfuehrungsanforderung unveraendert durch');
+  ok(Math.abs(n5dErg.eta - 0.842) < 0.0005,
+     'N5d: und liefert dieselbe Ausnutzung wie ohne sie — nichts davon ist rechenwirksam');
+  ok(!!d.byId.ergAnforderung, 'N5d: die Anforderungszeile steht im Ergebnis');
+  ok(/EXC2/.test(d.byId.ergAnforderung.inhalt()),
+     'N5d: sie nennt die Ausfuehrungsklasse');
+  ok(/ISO 5817/.test(d.byId.ergAnforderung.inhalt()),
+     'N5d: und die Bewertungsgruppe mit ihrer Norm');
+  ok(/nicht rechenwirksam/.test(d.byId.ergAnforderung.inhalt()),
+     'N5d: ehrlich beschriftet — die Zeile ist Anforderung, kein Rechenwert');
+
+  /* Die vier bewusst offenen Punkte stehen in der Liste 2.4 (2.4 / 5.1-1). */
+  var n5dSeite = d.alleTexte();
+  ok(/9692/.test(n5dSeite), 'N5d: die Luecke Nahtvorbereitung ist auf der Seite benannt');
+  ok(/13920/.test(n5dSeite), 'N5d: die Luecke Toleranzklassen ebenso');
+  ok(/3834/.test(n5dSeite), 'N5d: die Luecke Herstellerqualifikation ebenso');
+  ok(/VT, PT, MT, UT, RT/.test(n5dSeite), 'N5d: der Pruefumfang ebenso');
+  ok(d.byId.rwLuecken && d.byId.rwLuecken.hidden !== true,
+     'N5d: die Liste 2.4 steht ohne Antippen da');
+
+  /* Versionszeile im Info-ⓘ (Plan 3.6) — aus den geladenen Modulen gebaut. */
+  d.byId.infoBtn.click();
+  var n5dVz = d.byId.infoVersion.inhalt();
+  ok(/N5d/.test(n5dVz), 'N5d: der Info-Dialog nennt den Programmstand');
+  ok(/2\.32/.test(n5dVz), 'N5d: und die Planversion');
+  var n5dInfo = s.version();
+  ok(n5dInfo.n === 13,
+     'N5d: die Zeile wird aus allen 13 geladenen Modulen gebaut (ist ' + n5dInfo.n + ')');
+  ok(n5dInfo.ohne === 0,
+     'N5d: kein Modul ohne Kennung — die drei Loecher aus 3.6 sind zu');
+  var n5dMl = d.byId.infoModule.inhalt();
+  ok(n5dMl.indexOf('?') < 0, 'N5d: und in der Modulzeile steht kein Fragezeichen');
+  var n5dAbw = [];
+  for (i = 0; i < n5dInfo.module.length; i++) {
+    var n5dM = win[n5dInfo.module[i].schluessel];
+    if (!n5dM || n5dM.VERSION !== n5dInfo.module[i].version) n5dAbw.push(n5dInfo.module[i].name + ' (Modul)');
+    if (n5dMl.indexOf(n5dInfo.module[i].name + ' ' + n5dInfo.module[i].version) < 0) {
+      n5dAbw.push(n5dInfo.module[i].name + ' (Anzeige)');
+    }
+  }
+  ok(n5dAbw.length === 0,
+     'N5d: JEDE angezeigte Kennung stimmt mit dem geladenen Modul ueberein (Plan 3.6)' +
+     (n5dAbw.length ? ' — Abweichung: ' + n5dAbw.join(', ') : ''));
+  ok(/kern 0\.1\.0/.test(n5dMl) && /hilfe 0\.1\.0/.test(n5dMl) && /kerbfall 0\.1\.0/.test(n5dMl),
+     'N5d: auch die drei nachgeruesteten i18n-Module erscheinen mit Kennung');
+  ok(/ui 0\.7\.0/.test(n5dMl), 'N5d: und die Oberflaeche selbst');
+  d.byId.infoClose.click();
+
+  /* Dreisprachig ist auch der neue Block. */
+  s.setSprache('en');
+  ok(/Program status/.test(d.byId.infoVersion.inhalt()), 'N5d: EN — die Versionszeile ist uebersetzt');
+  ok(/execution requirement/i.test(d.byId.hinw_ausfuehrung_0.inhalt()),
+     'N5d: EN — die ehrliche Beschriftung ist uebersetzt');
+  s.setSprache('pt');
+  ok(/Estado do programa/.test(d.byId.infoVersion.inhalt()), 'N5d: PT — ebenso');
+  ok(/fadiga/.test(d.byId.hinw_ausfuehrung_1.inhalt()), 'N5d: PT — auch der Ermuedungshinweis');
+  s.setSprache('de');
+
+  s.leeren();
+  ok(d.byId.sel_iso5817.value === '' && d.byId.sel_exc.value === '',
+     'N5d: "Leeren" raeumt auch den Block Ausfuehrung');
+  ok(d.byId.herk_iso5817.hidden === true, 'N5d: und die Herkunftszeile verschwindet mit');
+  ok(s.istSelbstGewaehlt('iso5817') === false, 'N5d: der Merker der eigenen Wahl ebenso');
 
   /* ------------------------------------------------------- 9) Theme ----- */
   ok(d.byId.infoModal.hidden === true, 'der Info-Dialog ist beim Start zu');

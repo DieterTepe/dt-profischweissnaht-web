@@ -38,7 +38,8 @@ eq(Data.werkstoffeDerGruppe('alu').length, 3, '3 Aluminiumlegierungen');
 eq(Data.ISO5817.length, 3, 'ISO 5817: B/C/D');
 eq(Data.EXC.length, 4, 'EXC1..EXC4');
 eq(Data.VERFAHREN.length, 5, '5 Schweissverfahren');
-eq(Data.NICHT_GEPRUEFT.length, 10, 'Liste "nicht geprueft" mit 10 Punkten (2.4)');
+eq(Data.NICHT_GEPRUEFT.length, 14,
+   'Liste "nicht geprueft" mit 14 Punkten (2.4) — N5d hat die vier benannten Luecken ergaenzt');
 
 /* ========================================================================= */
 sek('S2 · Werkstoffkennwerte (Tabellenwerte sind massgeblich)');
@@ -318,7 +319,7 @@ var ngOhne = 0;
 for (i = 0; i < Data.NICHT_GEPRUEFT.length; i++) {
   if (!Kern.has('ng_' + Data.NICHT_GEPRUEFT[i])) { ngOhne++; console.log('    ohne Text: ng_' + Data.NICHT_GEPRUEFT[i]); }
 }
-eq(ngOhne, 0, 'alle 10 Punkte der Liste "nicht geprueft" sind uebersetzt');
+eq(ngOhne, 0, 'alle 14 Punkte der Liste "nicht geprueft" sind uebersetzt');
 
 var zbOhne = 0;
 for (i = 0; i < Options.ZUSATZBEREICHE.length; i++) {
@@ -1418,9 +1419,9 @@ ok(svQz.eta >= svQz.nachweise[0].eta && svQz.eta >= svQz.nachweise[1].eta,
    'der ausgewiesene Ausnutzungsgrad ist der groesste aller Einzelnachweise');
 
 /* --- Liste "was NICHT geprueft wird" liegt im Ergebnis (2.4) ---------- */
-eq(svQz.nicht_geprueft.length, 10, 'die Liste 2.4 mit 10 Punkten steht im Ergebnis');
+eq(svQz.nicht_geprueft.length, 14, 'die Liste 2.4 mit 14 Punkten steht im Ergebnis');
 svQz.nicht_geprueft.push('probe');
-eq(Solver.rechne(svEin({ N: 200000 })).nicht_geprueft.length, 10,
+eq(Solver.rechne(svEin({ N: 200000 })).nicht_geprueft.length, 14,
    'die Liste ist eine Kopie — sie kann von aussen nicht verbogen werden');
 
 /* --- Selbstpruefung von naht.js wird durchgereicht -------------------- */
@@ -1658,8 +1659,8 @@ ok(!!rwSchritt(rwStd, 'rw_s_kontrolle_polar'), 'Selbstpruefung Ip = Iy + Iz steh
 ok(!!rwSchritt(rwStd, 'rw_s_kontrolle_haupt'), 'Selbstpruefung Hauptachsen steht im Rechenweg');
 ok(rwSchritt(rwStd, 'rw_s_kontrolle_gesamt').haken === true, 'die Gesamtzeile zaehlt alle Haekchen');
 ok(!!rwSchritt(rwStd, 'rw_s_nicht_geprueft'), 'die Liste 2.4 steht im Rechenweg');
-eq(rwSchritt(rwStd, 'rw_s_nicht_geprueft').liste.length, 10,
-   'die Liste 2.4 traegt alle 10 Punkte');
+eq(rwSchritt(rwStd, 'rw_s_nicht_geprueft').liste.length, 14,
+   'die Liste 2.4 traegt alle 14 Punkte');
 eq(rwSchritt(rwStd, 'rw_s_flaeche').probe, 'rw_p_flaeche',
    'die Nahtflaeche nennt ihren zweiten Rechenpfad');
 eq(rwSchritt(rwStd, 'rw_s_widerstand').quelle, 'qu_ec3_1_8',
@@ -1973,21 +1974,21 @@ for (s30i = 0; s30i < Ui2.ZUORDNUNG.length; s30i++) {
 eq(s30Fremd.length, 0, 'N5b: die Zuordnung nutzt nur die acht Bereiche aus N5a (' + s30Fremd.join(',') + ')');
 eq(Ui2.ZUORDNUNG.length, Ui2.BEREICHE.length, 'N5b: jeder der acht Bereiche kommt in der Zuordnung vor');
 
-/* --- Was N5b bewusst NICHT baut: ISO 5817 und EXC bleiben N5d ---------- */
+/* --- Der Block Ausfuehrung: in N5b datiert, seit N5d gebaut ------------ */
 eq(s30G.iso5817, 'ausfuehrung', 'N5b: ISO 5817 ist dem Block Ausfuehrung zugeordnet');
 eq(s30G.exc, 'ausfuehrung', 'N5b: EXC ist dem Block Ausfuehrung zugeordnet');
 var s30Aus = null;
 for (s30i = 0; s30i < Ui2.ZUORDNUNG.length; s30i++) {
   if (Ui2.ZUORDNUNG[s30i].code === 'ausfuehrung') s30Aus = Ui2.ZUORDNUNG[s30i];
 }
-eq(s30Aus.etappe, 'N5d', 'N5b: der Block Ausfuehrung ist ausdruecklich auf N5d datiert');
-ok(!!s30Aus.folgt, 'N5b: und sagt das ehrlich mit einem eigenen Text');
+ok(!s30Aus.etappe, 'N5d: der Block Ausfuehrung ist nicht mehr datiert — er wird gebaut');
+ok(!!s30Aus.anforderung, 'N5d: seine Auswahlen laufen als Anforderungszeile in die Ausgaben');
 
 var s30Gebaut = 0;
 for (s30i = 0; s30i < Ui2.ZUORDNUNG.length; s30i++) {
   if (!Ui2.ZUORDNUNG[s30i].etappe) s30Gebaut += Ui2.ZUORDNUNG[s30i].gruppen.length;
 }
-eq(s30Gebaut, 18, 'N5b baut 18 der 20 Gruppen — die zwei restlichen sind datiert (ist ' + s30Gebaut + ')');
+eq(s30Gebaut, 20, 'N5d: alle 20 Gruppen werden gebaut — keine ist mehr datiert (ist ' + s30Gebaut + ')');
 
 /* --- Zusatzbereiche stimmen mit optionen.js ueberein -------------------- */
 var s30Zus = [], s30ZusOpt = [];
@@ -2463,6 +2464,127 @@ var s33Trg = s33Rechne({ profil: 'i_profil', kanten: 'steg', b: 200, h: 200, tw:
 eq(s33Trg.erg.grenzen.n_zuege, 2,
    'N5c-3: "nur Steg" bleibt zwei getrennte Zuege — jeder fuer sich geprueft');
 ok(!s33Kurz(s33Trg.erg), 'N5c-3: und beide bestehen ihre Mindestlaenge');
+
+/* ========================================================================= */
+sek('S34 · N5d Ausfuehrung und Dokumentation + Versionszeile');
+
+var Ui34  = require('./ui.js');
+var Opt34 = require('./optionen.js');
+var ui34Src = fsU.readFileSync(__dirname + '/ui.js', 'utf8');
+
+/* --- 1) Modulkennungen: die drei Loecher aus 3.6 sind zu ---------------- */
+var s34Module = [
+  ['daten', Data], ['optionen', Options], ['validate', Valid], ['naht', Naht],
+  ['profil', Profil], ['svglib', Svg], ['schaubild', Bild], ['solver', Solver],
+  ['rechenweg', Weg], ['ui', Ui34],
+  ['i18n_kern', Kern], ['i18n_hilfe', Hilfe], ['i18n_kerbfall', Kerb]
+];
+eq(s34Module.length, 13, 'N5d: 13 Module gehoeren zum Programm');
+var s34OhneVersion = [];
+for (var s34i = 0; s34i < s34Module.length; s34i++) {
+  var s34m = s34Module[s34i][1];
+  if (!s34m || typeof s34m.VERSION !== 'string' || !s34m.VERSION) s34OhneVersion.push(s34Module[s34i][0]);
+}
+eq(s34OhneVersion.length, 0,
+   'N5d: JEDES der 13 Module traegt eine VERSION — die drei Loecher aus 3.6 sind zu' +
+   (s34OhneVersion.length ? ' (offen: ' + s34OhneVersion.join(', ') + ')' : ''));
+eq(Kern.VERSION, '0.1.0-N1', 'N5d: i18n_kern.js hat jetzt eine Kennung');
+eq(Hilfe.VERSION, '0.1.0-N1', 'N5d: i18n_hilfe.js hat jetzt eine Kennung');
+eq(Kerb.VERSION, '0.1.0-N1', 'N5d: i18n_kerbfall.js hat jetzt eine Kennung');
+eq(Ui34.ETAPPE, 'N5d', 'N5d: ui.js nennt seinen Stand');
+ok(!!Ui34.VERSION && Ui34.VERSION !== '0.6.0', 'N5d: die ui-Kennung ist mitgewachsen');
+
+/* --- 2) EXC schlaegt die Bewertungsgruppe vor (5.1-1) ------------------- */
+ok(Opt34.istVorschlagsZiel('iso5817'), 'N5d: die Bewertungsgruppe ist ein Vorschlagsziel');
+ok(!Opt34.istVorschlagsZiel('exc'), 'N5d: die Ausfuehrungsklasse selbst wird nie vorgeschlagen');
+ok(!Opt34.istVorschlagsZiel('werkstoff'), 'N5d: sonst schlaegt nichts etwas vor');
+var s34Karte = [['EXC1', 'D'], ['EXC2', 'C'], ['EXC3', 'B'], ['EXC4', 'B']];
+for (s34i = 0; s34i < s34Karte.length; s34i++) {
+  var s34v = Opt34.vorschlag('iso5817', { exc: s34Karte[s34i][0] });
+  ok(!!s34v, 'N5d: ' + s34Karte[s34i][0] + ' liefert einen Vorschlag');
+  eq(s34v.wert, s34Karte[s34i][1],
+     'N5d: ' + s34Karte[s34i][0] + ' schlaegt Bewertungsgruppe ' + s34Karte[s34i][1] + ' vor (EN 1090-2)');
+  eq(s34v.norm, 'EN 1090-2', 'N5d: der Vorschlag nennt seine Herkunft');
+  ok(Kern.has(s34v.hinweis), 'N5d: und traegt einen Text, der die Herkunft ausspricht');
+}
+eq(Opt34.vorschlag('iso5817', {}), null,
+   'N5d: ohne Ausfuehrungsklasse wird nichts vorgeschlagen — kein stiller Wert');
+eq(Opt34.vorschlag('iso5817', { exc: 'EXC9' }), null,
+   'N5d: ein unbekannter Code erzeugt keinen erfundenen Vorschlag');
+eq(Opt34.vorschlag('exc', { exc: 'EXC2' }), null, 'N5d: fuer die Quelle selbst gibt es keinen Vorschlag');
+var s34Iso = Opt34.gruppe('iso5817'), s34Exc = Opt34.gruppe('exc');
+ok(s34Iso.rechenwirksam === false && s34Exc.rechenwirksam === false,
+   'N5d: beide Gruppen bleiben ausdruecklich NICHT rechenwirksam');
+var s34IsoCodes = [];
+for (s34i = 0; s34i < s34Iso.optionen.length; s34i++) s34IsoCodes.push(s34Iso.optionen[s34i].code);
+for (s34i = 0; s34i < s34Karte.length; s34i++) {
+  ok(s34IsoCodes.indexOf(s34Karte[s34i][1]) >= 0,
+     'N5d: der Vorschlag ' + s34Karte[s34i][1] + ' zeigt auf eine wirklich vorhandene Option');
+}
+for (s34i = 0; s34i < s34Exc.optionen.length; s34i++) {
+  ok(!!Opt34.vorschlag('iso5817', { exc: s34Exc.optionen[s34i].code }),
+     'N5d: die Karte deckt ' + s34Exc.optionen[s34i].code + ' ab — keine Luecke');
+}
+
+/* --- 3) Das Fachwissen steht NICHT in der Oberflaeche ------------------- */
+ok(ui34Src.indexOf('EXC') < 0,
+   'N5d: die Karte EXC -> Bewertungsgruppe steht in optionen.js, nicht in ui.js');
+var s34Nennungen = ui34Src.split('iso5817').length - 1;
+eq(s34Nennungen, 1,
+   'N5d: ui.js nennt den Gruppencode genau EINMAL — in der reinen Anordnung, nirgends in der Logik');
+ok(ui34Src.indexOf('Options.vorschlag') > 0, 'N5d: es fragt die Optionsquelle');
+
+/* --- 4) Der Block ist verdrahtet und sagt, was er nicht ist ------------- */
+var s34Aus = null;
+for (s34i = 0; s34i < Ui34.ZUORDNUNG.length; s34i++) {
+  if (Ui34.ZUORDNUNG[s34i].code === 'ausfuehrung') s34Aus = Ui34.ZUORDNUNG[s34i];
+}
+ok(!!s34Aus, 'N5d: der Bereich Ausfuehrung steht in der Zuordnung');
+eq(s34Aus.gruppen.length, 2, 'N5d: er traegt genau die zwei Auswahlen');
+eq(s34Aus.hinweise.length, 2, 'N5d: und zwei Hinweiszeilen ohne Antippen');
+eq(s34Aus.hinweise[0], 'ausf_nicht_rechenwirksam', 'N5d: die erste sagt ehrlich: nicht rechenwirksam');
+eq(s34Aus.hinweise[1], 'ausf_erm_hinweis', 'N5d: die zweite nennt die Ermuedung — als Hinweis, nicht als Rechnung');
+var s34Texte = ['ausf_nicht_rechenwirksam', 'ausf_erm_hinweis', 'ausf_vorschlag_aus_exc',
+                'ausf_eigene_wahl', 'ausf_anforderung',
+                'uiVersionStand', 'uiVersionPlan', 'uiVersionModule', 'uiVersionOhne'];
+var s34Spr = ['de', 'en', 'pt'], s34j;
+for (s34i = 0; s34i < s34Texte.length; s34i++) {
+  ok(Kern.has(s34Texte[s34i]), 'N5d: Text ' + s34Texte[s34i] + ' ist angelegt');
+  for (s34j = 0; s34j < s34Spr.length; s34j++) {
+    ok(!!Kern.t(s34Texte[s34i], s34Spr[s34j]),
+       'N5d: ' + s34Texte[s34i] + ' ist in ' + s34Spr[s34j].toUpperCase() + ' belegt');
+  }
+}
+ok(Kern.t('ausf_erm_hinweis', 'de').indexOf('Hinweis') > 0,
+   'N5d: der Ermuedungstext sagt selbst, dass er nur ein Hinweis ist');
+
+/* --- 5) Die vier bewusst offenen Punkte sind BENANNT (2.4) -------------- */
+var s34Luecken = ['pruefumfang_zfp', 'nahtvorbereitung', 'toleranzen', 'herstellerqualifikation'];
+for (s34i = 0; s34i < s34Luecken.length; s34i++) {
+  ok(Data.NICHT_GEPRUEFT.indexOf(s34Luecken[s34i]) >= 0,
+     'N5d: ' + s34Luecken[s34i] + ' steht als benannte Luecke in der Liste 2.4');
+  for (s34j = 0; s34j < s34Spr.length; s34j++) {
+    ok(!!Kern.t('ng_' + s34Luecken[s34i], s34Spr[s34j]),
+       'N5d: die Luecke ' + s34Luecken[s34i] + ' ist in ' + s34Spr[s34j].toUpperCase() + ' benannt');
+  }
+}
+ok(Kern.t('ng_nahtvorbereitung', 'de').indexOf('9692') > 0,
+   'N5d: die Luecke Nahtvorbereitung nennt die Norm, die sie regeln wuerde');
+ok(Kern.t('ng_toleranzen', 'de').indexOf('13920') > 0,
+   'N5d: die Luecke Toleranzen nennt EN ISO 13920');
+/* Die Liste kommt durch den ganzen Rechenweg hindurch — ohne eine zweite Quelle. */
+var s34Rw = Weg.ausErgebnis(Solver.rechne(svEin({ N: 200000 })), svEin({ N: 200000 }));
+for (s34i = 0; s34i < s34Luecken.length; s34i++) {
+  ok(s34Rw.nicht_geprueft.indexOf('ng_' + s34Luecken[s34i]) >= 0,
+     'N5d: ' + s34Luecken[s34i] + ' erscheint im Rechenweg — eine Quelle, kein zweiter Weg');
+}
+
+/* --- 6) Die Versionszeile hat alles, was sie braucht -------------------- */
+ok(ui34Src.indexOf('PLAN') > 0, 'N5d: die Planversion steht als einzige Handzahl in ui.js');
+ok(Ui34.IDS.indexOf('infoVersion') >= 0, 'N5d: die Versionszeile hat eine Id');
+ok(Ui34.IDS.indexOf('infoModule') >= 0, 'N5d: die Modulkennungen haben eine Id');
+ok(Ui34.KLASSEN.indexOf('info-version') >= 0, 'N5d: und style.css traegt ihre Klasse');
+ok(Ui34.KLASSEN.indexOf('info-module') >= 0, 'N5d: ebenso fuer die Modulzeile');
 
 /* ========================================================================= */
 console.log('\n════════════════════════════════════════════');
