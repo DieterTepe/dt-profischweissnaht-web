@@ -2332,6 +2332,139 @@ ok(s32Ui.indexOf('rw-haken') > 0 && s32Ui.indexOf('rw-nachweis') > 0,
    'N5c-2: ui.js kennt beide Haekchenklassen und haelt sie auseinander');
 
 /* ========================================================================= */
+sek('S33 · N5c-3 Nahtzug statt Segment — Laengenpruefung auf der richtigen Ebene');
+
+/* DER FEHLER, den diese Sektion festnagelt (Plan 5.1-0, gefunden 2026-07-28):
+   Die Pruefung l >= max(6a; 30 mm) lief JE SEGMENT. Bei I- und U-Profilen ist
+   die Flanschkante aber nur t_f lang, und t_f erreicht bei keinem Normprofil
+   30 mm. Folge: jedes umlaufend geschweisste I- und U-Profil fiel durch,
+   unabhaengig von den Massen — um zu bestehen, haette der Flansch dicker als
+   30 mm sein muessen. Jetzt laeuft die Pruefung je durchlaufendem NAHTZUG.
+   Die Masse unten sind die aus dem Plan (I 200x200 = HEB-200-Geometrie). */
+
+function s33Rechne(pe, extra) {
+  var ein = { welt: 'A', rechenrichtung: 'nachweis', nachweisverfahren: 'richtungsbezogen',
+              werkstoffgruppe: 'stahl', werkstoff: 'S235', nahtart: 'kehl_doppel',
+              profil_eingabe: pe, N: 50000, gammaM2: 1.25 }, k;
+  for (k in (extra || {})) if (Object.prototype.hasOwnProperty.call(extra, k)) ein[k] = extra[k];
+  var erg = Solver.rechne(ein);
+  return { ein: ein, erg: erg, rw: erg.ok ? Weg.ausErgebnis(erg, ein) : null };
+}
+function s33Kurz(erg) { return svHat(erg.warnungen, 'msg_sv_l_eff_zu_kurz'); }
+
+var S33_FAELLE = [
+  { name: 'I-Profil 200x200 rundum a4',
+    pe: { profil: 'i_profil', kanten: 'rundum', b: 200, h: 200, tw: 9, tf: 15, a: 4 },
+    n_seg: 12, zuege: 1, l: 1182 },
+  { name: 'U-Profil 80x160 rundum a4',
+    pe: { profil: 'u_profil', kanten: 'rundum', b: 80, h: 160, tw: 7, tf: 10, a: 4 },
+    n_seg: 8, zuege: 1, l: 626 },
+  { name: 'U-Profil 100x200 rundum a5',
+    pe: { profil: 'u_profil', kanten: 'rundum', b: 100, h: 200, tw: 9, tf: 14, a: 5 },
+    n_seg: 8, zuege: 1, l: 782 }
+];
+
+var s33i, s33f, s33r;
+for (s33i = 0; s33i < S33_FAELLE.length; s33i++) {
+  s33f = S33_FAELLE[s33i];
+  s33r = s33Rechne(s33f.pe);
+  ok(s33r.erg.ok, 'N5c-3 [' + s33f.name + ']: rechnet ueberhaupt durch');
+  eq(s33r.erg.nahtbild.n_seg, s33f.n_seg,
+     'N5c-3 [' + s33f.name + ']: die Segmentzahl ist unveraendert');
+  eq(Math.round(s33r.erg.nahtbild.l_ges), s33f.l,
+     'N5c-3 [' + s33f.name + ']: die Nahtlaenge ist unveraendert');
+  eq(s33r.erg.grenzen.n_zuege, s33f.zuege,
+     'N5c-3 [' + s33f.name + ']: umlaufend geschweisst ist EIN Nahtzug, nicht ' + s33f.n_seg);
+  ok(!s33Kurz(s33r.erg),
+     'N5c-3 [' + s33f.name + ']: gilt nicht mehr als zu kurz — das war der Fehler');
+  ok(s33r.erg.grenzen.je_zug[0].l >= s33r.erg.grenzen.je_zug[0].l_eff_min,
+     'N5c-3 [' + s33f.name + ']: der Zug haelt seine Mindestlaenge (' +
+     s33r.erg.grenzen.je_zug[0].l.toFixed(0) + ' >= ' +
+     s33r.erg.grenzen.je_zug[0].l_eff_min.toFixed(0) + ' mm)');
+  ok(s33r.rw.nachweis_ok === true,
+     'N5c-3 [' + s33f.name + ']: und der Rechenweg meldet keinen falschen roten Nachweis');
+  ok(s33r.erg.erfuellt === s33r.rw.nachweis_ok,
+     'N5c-3 [' + s33f.name + ']: Ampel und Rechenweg sagen dasselbe');
+}
+
+/* --- DIE GEGENPROBE: die Regel darf nicht verlorengehen ----------------- */
+var s33Geg = s33Rechne({ profil: 'blech', kanten: 'flanken', b: 35, t1: 20, a: 5 });
+ok(s33Geg.erg.ok, 'N5c-3 Gegenprobe: Blech 35 mm, Flanken, a 5 rechnet durch');
+eq(s33Geg.erg.grenzen.n_zuege, 2,
+   'N5c-3 Gegenprobe: zwei getrennte Flankennaehte sind zwei Zuege');
+ok(s33Kurz(s33Geg.erg),
+   'N5c-3 Gegenprobe: die wirklich zu kurze Einzelnaht wird WEITERHIN gefangen');
+ok(s33Geg.erg.grenzen.je_zug[0].l < s33Geg.erg.grenzen.je_zug[0].l_eff_min,
+   'N5c-3 Gegenprobe: 35 mm minus 2 x 5 mm Endkrater = 25 mm < 30 mm');
+
+var s33Eine = s33Rechne({ profil: 'blech', kanten: 'eine_flanke', b: 25, t1: 20, a: 4 });
+ok(s33Kurz(s33Eine.erg),
+   'N5c-3: auch eine einzelne freistehende Kurznaht bleibt gefangen');
+
+/* --- Freier Segmentmodus: ohne Raupenangabe bleibt es streng ------------ */
+var s33Frei = Solver.rechne(svEin({ N: 1000,
+  segmente: [ Naht.linie(-50, -10, -50, 10, 5), Naht.linie(50, -10, 50, 10, 5) ] }));
+eq(s33Frei.grenzen.n_zuege, 2,
+   'N5c-3: ohne Raupenangabe ist jedes Segment ein eigener Zug (strengere Annahme)');
+ok(s33Kurz(s33Frei),
+   'N5c-3: und die Kurznahtwarnung des freien Modus bleibt unveraendert');
+
+/* --- Der Endkraterabzug greift je Zug, nicht an jeder Ecke -------------- */
+var s33Fl = Profil.baue({ profil: 'i_profil', kanten: 'flansche',
+                          b: 200, h: 200, tw: 9, tf: 15, a: 4 });
+ok(s33Fl.ok, 'N5c-3: I-Profil, nur Flansche geschweisst, baut sich');
+eq(s33Fl.raupen, 2, 'N5c-3: das sind zwei offene Zuege');
+eq(Math.round(s33Fl.endkrater_abzug), 2 * 2 * 4,
+   'N5c-3: abgezogen wird 2a JE ZUG (2 x 8 mm) — nicht 2a an jeder Ecke');
+var s33Ru = Profil.baue({ profil: 'i_profil', kanten: 'rundum',
+                          b: 200, h: 200, tw: 9, tf: 15, a: 4 });
+eq(s33Ru.endkrater_abzug, 0,
+   'N5c-3: der umlaufende Zug hat kein freies Ende und damit keinen Abzug');
+
+/* --- beta_Lw bleibt BEWUSST je Segment (benannte Entscheidung, Plan 9.2) - */
+ok(!svHat(s33Rechne(S33_FAELLE[0].pe).erg.warnungen, 'msg_sv_lange_naht'),
+   'N5c-3: der 1182-mm-Zug loest KEINE Langnaht-Abminderung aus — beta_Lw zielt ' +
+   'auf lange Laschenanschluesse und bleibt deshalb je Segment');
+
+/* --- Ampel und Rechenweg: der zweite Befund aus 5.1-0 ------------------- */
+/* Vorher zeigte das Programm gleichzeitig gruene Ampel und "Nachweis nicht
+   erfuellt". Die Laengenpruefung ist nach Dieters Entscheidung (2026-08-03)
+   eine WARNUNG — sie traegt deshalb keinen Nachweis-Haken mehr. */
+var s33Schritt = null, s33s;
+for (s33s = 0; s33s < s33Geg.rw.schritte.length; s33s++) {
+  if (s33Geg.rw.schritte[s33s].code === 'rw_s_l_eff') s33Schritt = s33Geg.rw.schritte[s33s];
+}
+ok(!!s33Schritt, 'N5c-3: der Laengenschritt steht weiterhin im Rechenweg');
+ok(s33Schritt.erfuellt === null,
+   'N5c-3: er traegt KEINEN Nachweis-Haken mehr — sonst kaeme der Widerspruch zurueck');
+eq(s33Schritt.hinweis, 'msg_sv_l_eff_zu_kurz',
+   'N5c-3: stattdessen traegt er den Warntext, der die Norm ausspricht');
+ok(s33Geg.erg.erfuellt === s33Geg.rw.nachweis_ok,
+   'N5c-3: auch im Warnfall sagen Ampel und Rechenweg dasselbe');
+
+/* --- Die neuen Texte sind dreisprachig belegt --------------------------- */
+var s33Codes = ['msg_sv_l_eff_zu_kurz', 'msg_sv_l_eff_je_zug'];
+var s33c, s33Spr = ['de', 'en', 'pt'];
+for (s33c = 0; s33c < s33Codes.length; s33c++) {
+  ok(Solver.CODES.warnungen.concat(Solver.CODES.hinweise).indexOf(s33Codes[s33c]) >= 0,
+     'N5c-3: ' + s33Codes[s33c] + ' steht im Codeverzeichnis des Solvers');
+  for (s33s = 0; s33s < s33Spr.length; s33s++) {
+    ok(!!Kern.t(s33Codes[s33c], s33Spr[s33s]),
+       'N5c-3: ' + s33Codes[s33c] + ' ist in ' + s33Spr[s33s].toUpperCase() + ' belegt');
+  }
+}
+ok(Kern.t('msg_sv_l_eff_zu_kurz', 'de').indexOf('4.5.1') > 0,
+   'N5c-3: der Warntext nennt die Fundstelle EN 1993-1-8 §4.5.1(2)');
+ok(svHat(s33Rechne(S33_FAELLE[0].pe).erg.hinweise, 'msg_sv_l_eff_je_zug'),
+   'N5c-3: bei mehrsegmentigen Zuegen wird die Pruefebene ehrlich benannt');
+
+/* --- "Nur Steg" bleibt, was es war -------------------------------------- */
+var s33Trg = s33Rechne({ profil: 'i_profil', kanten: 'steg', b: 200, h: 200, tw: 9, tf: 15, a: 4 });
+eq(s33Trg.erg.grenzen.n_zuege, 2,
+   'N5c-3: "nur Steg" bleibt zwei getrennte Zuege — jeder fuer sich geprueft');
+ok(!s33Kurz(s33Trg.erg), 'N5c-3: und beide bestehen ihre Mindestlaenge');
+
+/* ========================================================================= */
 console.log('\n════════════════════════════════════════════');
 console.log(' Assertions: ' + N + '   ·   Fehler: ' + FAIL.length);
 if (FAIL.length) {

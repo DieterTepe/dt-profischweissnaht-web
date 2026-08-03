@@ -682,13 +682,21 @@
     /* ================= H · Grenzen ===================================== */
     S.ab('rw_ab_grenzen');
     var GR = erg.grenzen, js2 = GR.je_segment || [];
-    var aKlein = null, aGross = null, aMaxKlein = null, lKurz = null, lEffMax = null;
+    var aKlein = null, aGross = null, aMaxKlein = null;
     for (i = 0; i < js2.length; i++) {
       if (aKlein === null || js2[i].a < aKlein) aKlein = js2[i].a;
       if (aGross === null || js2[i].a > aGross) aGross = js2[i].a;
       if (istZahl(js2[i].a_max) && (aMaxKlein === null || js2[i].a_max < aMaxKlein)) aMaxKlein = js2[i].a_max;
-      if (lKurz === null || js2[i].l < lKurz) lKurz = js2[i].l;
-      if (lEffMax === null || js2[i].l_eff_min > lEffMax) lEffMax = js2[i].l_eff_min;
+    }
+
+    /* Die Mindestlaenge gehoert je NAHTZUG, nicht je Segment (Plan 5.1-0).
+       Gezeigt wird der Zug mit dem KLEINSTEN Abstand zu seiner Grenze — der
+       entscheidet. */
+    var jz = GR.je_zug || [], zugEng = null, zugKurz = false;
+    for (i = 0; i < jz.length; i++) {
+      if (jz[i].zu_kurz) zugKurz = true;
+      if (zugEng === null ||
+          (jz[i].l - jz[i].l_eff_min) < (zugEng.l - zugEng.l_eff_min)) zugEng = jz[i];
     }
 
     S.add({ code: 'rw_s_a_min',
@@ -712,16 +720,21 @@
             hinweis: (istZahl(aGross) && istZahl(aMaxKlein) && aGross > aMaxKlein + 1e-9)
                      ? 'msg_sv_a_ueber_amax' : null });
 
+    /* BEWUSST KEIN Nachweis-Haken (erfuellt bleibt null), sondern eine
+       WARNUNG — Dieters fachliche Entscheidung vom 2026-08-03, Plan 5.1-0.
+       Grund fuer die Festlegung ueberhaupt: vorher sagte die Ampel gruen und
+       diese Zeile gleichzeitig "Nachweis nicht erfuellt". Zwei Antworten auf
+       dieselbe Frage. Wer hier einen Haken nachruestet, holt den Widerspruch
+       zurueck (Plan 9.2). Der Warntext traegt die volle Aussage. */
     S.add({ code: 'rw_s_l_eff',
-            formel: 'l \u2265 max(6\u00b7a ; 30 mm)',
+            formel: 'l_Zug \u2265 max(6\u00b7a ; 30 mm)',
             vorlage: '{0} \u2265 {1} mm',
-            werte: [{ v: lKurz, nk: 1 }, { v: lEffMax, nk: 1 }],
-            ergebnis: lEffMax, einheit: 'unit_mm', nk: 1,
+            werte: [{ v: zugEng ? zugEng.l : null, nk: 1 },
+                    { v: zugEng ? zugEng.l_eff_min : null, nk: 1 }],
+            ergebnis: zugEng ? zugEng.l_eff_min : null, einheit: 'unit_mm', nk: 1,
             quelle: 'qu_ec3_1_8',
-            erfuellt: (istZahl(lKurz) && istZahl(lEffMax))
-                   ? (lKurz >= lEffMax - 1e-9) : null,
-            hinweis: (istZahl(lKurz) && istZahl(lEffMax) && lKurz < lEffMax - 1e-9)
-                     ? 'msg_sv_l_eff_zu_kurz' : null });
+            erfuellt: null,
+            hinweis: zugKurz ? 'msg_sv_l_eff_zu_kurz' : 'msg_sv_l_eff_je_zug' });
 
     if (GR.lange_naht && istZahl(GR.beta_Lw)) {
       S.add({ code: 'rw_s_beta_lw',

@@ -6,29 +6,28 @@
 > **Diese Datei ersetzt `Schweißnaht.md` vollständig.** Sie enthält den Stand nach dem
 > Konzeptgespräch (2026-07-23), nach der abgeschlossenen Recherche (R1–R6), nach der
 > Abstimmung vom **2026-07-24** (alle offenen Fragen aus Abschnitt 0 geklärt) und nach den
-> abgenommenen Bausteinen **N1, N2, N2b, N2c, N3, N4, N5a, N5b und N5c** (Stand 2026-07-28).
+> abgenommenen Bausteinen **N1, N2, N2b, N2c, N3, N4, N5a, N5b und N5c** (Stand 2026-08-03).
 > Sie ist so geschrieben, dass ein **neuer Chat ohne Vorwissen** damit weiterarbeiten kann.
 > **Das WARUM steht in `Schweißnaht-Historie.md`** (Entscheidungslog + Changelog im
 > Volltext) — dort nachschlagen, bevor etwas geändert wird, das falsch aussieht.
 > Einstieg dort: **„weiter mit N5d"** — dann der Reihenfolge in Kickoff-Punkt 5b folgen.
 
 ```
-Plan-Version : 2.28 · Stand 2026-07-28
+Plan-Version : 2.29 · Stand 2026-08-03
 Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                N2c (Nahtbild-Grafik), N3 (Spannungen + beide Welten),
                N4 (Rechenweg), N5a (UI-Grundgerüst), N5b (Eingabeseite) und
                **N5c (N5c-1 „Es rechnet" + N5c-2 „Es erklärt sich")**
                von Dieter am Handy geprüft und ABGENOMMEN.
-               Projektordner /mnt/project/ ist auf diesem Stand — am 2026-07-28
-               gegengeprüft: alle 13 Module, style.css, beide HTMLs und die drei
-               DEV-ONLY-Dateien liegen aktuell vor, die drei Testläufe sind direkt
-               aus dem Projektordner grün.
-               → NÄCHSTER SCHRITT: **N5c-3 („Nahtzug statt Segment") — ein FEHLER
-                 im Rechenkern, gefunden von Dieter beim Prüfen am 2026-07-28.**
-                 Auftrag in 5.1. **Vor N5d zu erledigen** — er macht I- und
-                 U-Profile mit umlaufender Naht unbenutzbar.
-                 Danach erst Etappe **N5d**.
-                 Inhalt: Block „Ausführung & Dokumentation" (ISO 5817 + EXC,
+               **N5c-3 („Nahtzug statt Segment") ist GEBAUT und GRÜN
+               ausgeliefert (2026-08-03) — die Abnahme am Handy steht noch aus.**
+               → NÄCHSTER SCHRITT, ZWEI MÖGLICHKEITEN — zuerst klären, welche:
+                 (a) **N5c-3 ist noch NICHT abgenommen** → Dieter prüft erst am
+                     Handy: ein H-Träger und ein U-Profil, umlaufend geschweißt,
+                     müssen ohne roten Nachweis durchrechnen (Beleg in 5.1-0).
+                     Meldet er Nacharbeit, hat sie Vorrang vor N5d.
+                 (b) **N5c-3 ist abgenommen** → Etappe **N5d**.
+                 Inhalt N5d: Block „Ausführung & Dokumentation" (ISO 5817 + EXC,
                  ehrlich als nicht rechenwirksam beschriftet, Abschnitt 2.7)
                  **+ Versionszeile im Info-ⓘ (Abschnitt 3.6)**.
                  ⚠️ VOR der Versionszeile nachzurüsten: **i18n_kern.js,
@@ -36,15 +35,19 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                  nachgemessen am 2026-07-28, siehe 3.6.
                  Der Umfang von N5d ist vor dem Bau mit Dieter abzustimmen;
                  bei Punkt 1 zählt seine Praxissicht, welche Angaben wirklich
-                 hingehören und welche nur Papier wären.
+                 hingehören und welche nur Papier wären. Auftrag in 5.1-1.
                  Schnittstellen: 4.5 (naht.js), 4.6 (profil.js),
                  4.7 (svglib.js + schaubild.js), 4.8 (solver.js),
                  4.9 (rechenweg.js), 4.10 / 4.10b / 4.10c (ui.js).
                Große Bausteine (N5, N8, N13, N14) werden in ETAPPEN gebaut — Regel in
                Kickoff-Punkt 5c, Etappen in Abschnitt 5.2.
-Basislinie   : 822 Assertions · DOM-Smokes 448 (voll) + 449 (test) · i18n-Parität 0 Abweichungen
+Basislinie   : 874 Assertions · DOM-Smokes 463 (voll) + 464 (test) · i18n-Parität 0 Abweichungen
                (VERBINDLICH. Basislinie darf nur WACHSEN — nie schrumpfen, nie gelockert werden.)
 Dateistand   : siehe Abschnitt 8.1 — dort steht, was fertig ist und was noch fehlt.
+⚠️ SYNC       : Am 2026-08-03 lag im Projektordner eine **elf Versionen alte**
+               Plandatei (v2.17) zu neuem Code. Gefunden hat es allein der
+               Abgleich „Basislinie im Kopf gegen Basislinie gemessen"
+               (Kickoff-Punkt 11). Diesen Abgleich NIE überspringen.
 ```
 
 ═══════════════════════════════════════════════════════════════════════════
@@ -126,15 +129,17 @@ Einstiegssatz von Dieter: **„weiter mit N5d"**.
    schon zweimal Dateien verlorengegangen, beide Male hat diese Prüfung es gefunden.
 11. Arbeitsordner herstellen (Befehl unter Punkt 6 der Kickoff-Liste), dann
    `node test_naht.js`, `node dom_smoke_voll.js`, `node dom_smoke_test.js` laufen lassen
-   und die Basislinie aus dem Plan-Kopf bestätigen (**822 / 448 / 449 · 0 Fehler**),
+   und die Basislinie aus dem Plan-Kopf bestätigen (**874 / 463 / 464 · 0 Fehler**),
    **bevor** etwas gebaut wird. Weicht etwas ab, erst das klären.
    ⚠️ **Diese drei Läufe sind zugleich die Probe, ob Plandatei und Code zusammenpassen.**
    Steht im Kopfblock eine andere Basislinie als gemessen, ist eine der beiden Seiten alt —
-   dann NICHT bauen, sondern erst mit Dieter klären. (Genau das ist am 2026-07-28
-   passiert: der Ordner lieferte eine drei Etappen alte Plandatei zu neuem Code.)
-12. Erst dann **N5c-3** bauen (der Fehlerbefund in 5.1 — **hat Vorrang vor N5d**),
-    danach **N5d** — Fließband nach Punkt 5 der Kickoff-Liste.
-    **Der Umfang von N5d ist mit Dieter abzustimmen** (5.1); bei „Ausführung &
+   dann NICHT bauen, sondern erst mit Dieter klären. **Das ist zweimal passiert:** am
+   2026-07-28 lag eine drei Etappen alte Plandatei im Ordner, am 2026-08-03 eine elf
+   Versionen alte (v2.17, Basislinie 679/234/235) zu Code auf Stand N5c-2. Beide Male
+   war dieser Abgleich die einzige Stelle, die es gemerkt hat.
+12. **Zuerst klären, ob N5c-3 am Handy abgenommen ist** (Kopfblock, Fall a/b).
+    Ist es das, wird **N5d** gebaut — Fließband nach Punkt 5 der Kickoff-Liste.
+    **Der Umfang von N5d ist mit Dieter abzustimmen** (5.1-1); bei „Ausführung &
     Dokumentation" zählt seine Praxissicht.
 
 **5c) GROSSE BAUSTEINE WERDEN VORHER IN ETAPPEN ZERLEGT — BINDEND**
@@ -880,7 +885,8 @@ falsche Zahl sucht, findet sie nicht. Durch Assertions abgesichert.
 `massgebend` (der Punkt, der entscheidet) · `nachweise[]` (je Nachweis `code`, `ist`,
 `grenze`, `eta`, `erfuellt`) · `eta` · `ampel` (`gruen`|`gelb`|`rot`) · `erfuellt` ·
 `auslegung{a_erf, a_gewaehlt, a_bezug, faktor, stufe, rundung, iterationen,
-je_segment[], eta_mit_gewaehlt}` · `grenzen{a_min, je_segment[], verletzt[], beta_Lw}` ·
+je_segment[], eta_mit_gewaehlt}` ·
+`grenzen{a_min, je_segment[], je_zug[], n_zuege, mehrsegmentig, verletzt[], beta_Lw}` ·
 `nicht_geprueft[]` (die Liste 2.4 als **Kopie**) · `fehler` · `warnungen` · `hinweise`.
 **Bei einem Fehler ist `ok:false` und es gibt KEINE Zahlen** — kein stiller Teilwert.
 
@@ -903,6 +909,22 @@ nicht, gibt es eine sichtbare Warnung statt eines stillen Ergebnisses.
 `msg_sv_querkraft_mittelwert`, `msg_sv_weltb_ohne_faktor3`, `msg_sv_alu_wez`,
 `msg_sv_umlaufend_aus_profil` …). **Ergebnisgrößen** (`DTNSolver.GROESSEN`, 16 Stück)
 tragen je Code + Einheitsschlüssel, Beschriftung `sv_<code>`.
+
+**DIE PRÜFEBENEN — SEIT N5c-3 GETRENNT (nicht wieder zusammenlegen):**
+| Prüfung | Ebene | warum |
+|---|---|---|
+| `a ≥ a_min`, `a ≤ 0,7·t` | **je Segment** | a und t sind Segmenteigenschaften |
+| `l ≥ max(6·a; 30 mm)` | **je Nahtzug** | EN 1993-1-8 §4.5.1(2) meint eine kurze, freistehende Naht. Eine umlaufende Naht ist EIN Zug, auch um zwölf Ecken — ein 15-mm-Stück mittendrin ist keine 15-mm-Naht |
+| `β_Lw` (lange Naht) | **je Segment** | zielt auf lange Laschenanschlüsse; auf Zug-Ebene würde jeder umlaufende Profilzug sie fälschlich auslösen |
+
+Die Zugehörigkeit kommt aus `info[i].raupe` (von `profil.js`). **Fehlt sie** — freier
+Segmentmodus —, ist jedes Segment ein eigener Zug: die strengere Annahme.
+`grenzen.je_zug[]` führt je Zug `{index, n_seg, segmente[], l, a, l_eff_min, geschlossen,
+zu_kurz}`. Der Endkraterabzug `2·a` sitzt **schon in `profil.js`** und greift dort je
+offenem Zug — im Solver darf er **nicht noch einmal** abgezogen werden.
+**Die Längenprüfung ist eine WARNUNG, kein Nachweis** (Dieter, 2026-08-03): sie färbt die
+Ampel nicht und trägt im Rechenweg keinen Haken. Wer ihr einen gibt, holt den Widerspruch
+„grüne Ampel neben rotem Nachweis" zurück.
 
 **WAS `solver.js` BEWUSST NICHT TUT:**
 - **keine Texte** — nur sprachneutrale Codes (N4/N5 beschriften),
@@ -944,7 +966,8 @@ tragen je Code + Einheitsschlüssel, Beschriftung `sv_<code>`.
 **ZWEI HÄKCHENARTEN — NIE VERMISCHEN (Festlegung aus N4):**
 - **`haken`** ist die **Rechenprobe**: ein zweiter, unabhängiger Rechenpfad. `false` heißt
   **Programmfehler**.
-- **`erfuellt`** ist der **Nachweis**: a ≥ a_min, a ≤ a_max, η ≤ 1, l ≥ l_eff. `false` heißt
+- **`erfuellt`** ist der **Nachweis**: a ≥ a_min, a ≤ a_max, η ≤ 1. *(Die Mindestlänge
+  gehört seit N5c-3 NICHT mehr dazu — sie ist eine Warnung, 5.1-0.)* `false` heißt
   **die Naht trägt so nicht** — das ist ein normales, ehrliches Ergebnis, kein Fehler.
 - Im Gesamtergebnis: `selbstpruefung_ok` (alle Rechenproben) und `nachweis_ok` (alle
   Nachweise) sind **getrennte Felder**. Die Oberfläche muss sie auch **optisch** trennen,
@@ -1196,7 +1219,7 @@ eigene Erklärtexte im Titel. Der DOM-Smoke **zählt** sie getrennt.
 | **N2c** ✅ | **Nahtbild-Grafik** *(abgenommen 2026-07-26)* | `svglib.js` + `schaubild.js`: SVG-Vorschau des Nahtbilds, Segmente farbig nach Gruppe, Schwerpunkt und Achsen, nicht geschweißte Kanten gestrichelt, Ecklücken sichtbar. Zugleich **Auswahl-Skizze** der Profileingabe. **Schnittstelle: Abschnitt 4.7.** |
 | **N3** ✅ | **Spannungen + beide Welten** *(abgenommen 2026-07-26)* | `solver.js`: σ⊥, τ⊥, τ∥ aus N/Q/M/T · Welt A (EC3, beide Verfahren) · Welt B (klassisch, Tabelle + Formel) · **Nachweis UND Auslegung** mit Aufrundung · Ampel. **Schnittstelle: Abschnitt 4.8.** |
 | **N4** ✅ | **Rechenweg** *(abgenommen 2026-07-26)* | `rechenweg.js`: selbstprüfende Schrittliste für N2/N2b/N3, dreisprachig, zweiter Rechenpfad je Schritt, Rechenprobe und Nachweis getrennt. **Schnittstelle: Abschnitt 4.9.** |
-| **N5** ⬅ | **UI-Basis — LAUFEND: N5a ✅, N5b ✅, N5c-1 ✅ und N5c-2 ✅ abgenommen, NÄCHSTER SCHRITT N5c-3 (Fehler, 5.1-0), danach N5d (Etappen in 5.2)** | 2 HTMLs, `style.css`, Formular mit aufklappbaren Bereichen und Freischalt-Haken, Ergebnis-Kacheln, Ampel, i18n, Theme (**Start immer dunkel**), Laien-ⓘ, Block „Ausführung & Dokumentation" (ISO 5817 + EXC). **Erster Handy-Test.** |
+| **N5** ⬅ | **UI-Basis — LAUFEND: N5a ✅, N5b ✅, N5c-1 ✅ und N5c-2 ✅ abgenommen · N5c-3 ✅ gebaut (Abnahme offen, 5.1-0) · NÄCHSTER SCHRITT N5d (Etappen in 5.2)** | 2 HTMLs, `style.css`, Formular mit aufklappbaren Bereichen und Freischalt-Haken, Ergebnis-Kacheln, Ampel, i18n, Theme (**Start immer dunkel**), Laien-ⓘ, Block „Ausführung & Dokumentation" (ISO 5817 + EXC). **Erster Handy-Test.** |
 | **N6b** | **ISO-2553-Symbolgenerator** | `symbol.js`: Pfeil-/Gegenseite, a- bzw. z-Maß, Länge, Rundumnaht, Baustellennaht. Nutzt `svglib.js` aus N2c. Bewusst **vor** dem Launch — Verkaufsargument. |
 | **N7** | **Presets** | Die 6 Starter als Profil-/Kantendaten auf `profil.js`, **mit Merkmalen für die kontextbezogene Beispielliste** (3.2). |
 | **N8** | **Assistent** | `assistent.js` (DOM-freie Dialoglogik) + Overlay-UI, Button-Einstieg, tabellengestützt aus `optionen.js`, mit Erklärungen/Tipps/Skizzen je Dialog, Übernahme vorhandener Eingaben. |
@@ -1210,11 +1233,46 @@ eigene Erklärtexte im Titel. Der DOM-Smoke **zählt** sie getrennt.
 | **N15** | **Verzug & Schrumpfung** | `verzug.js` + Panel, klar als **Abschätzung** gekennzeichnet. |
 | **N16** | **Feinschliff + Build** | Presets ausbauen, Wissenstexte, Code-Audit, Bündelung + Obfuskierung (zwei Bündel, Unterschied nur `DT_EDITION`). **→ V1-Launch.** |
 
-### 5.1 Auftrag: zuerst **N5c-3**, danach **N5d**
+### 5.1 Auftrag: **N5d** *(N5c-3 ist gebaut — 5.1-0 nur noch als Begründung)*
 
 ---
 
-#### 5.1-0 · N5c-3 — „Nahtzug statt Segment" **(FEHLER, hat Vorrang)**
+#### 5.1-0 · N5c-3 — „Nahtzug statt Segment" **(GEBAUT 2026-08-03, Abnahme offen)**
+
+> ✅ **ERLEDIGT und grün ausgeliefert am 2026-08-03.** Was unten steht, ist die
+> Fehlerbeschreibung von 2026-07-28 — sie bleibt stehen, weil dort **nachlesbar ist,
+> warum** die Prüfung heute auf der Nahtzug-Ebene läuft und warum die Längenprüfung eine
+> Warnung ist. **Gebaut wird daraus nichts mehr.**
+>
+> **Was geliefert wurde:**
+> - `solver.js`: neue Funktion `nahtzuege(segmente, info)` gruppiert die Segmente über
+>   `info[i].raupe` aus `profil.js`. Die Prüfung `l ≥ max(6·a; 30 mm)` läuft seither
+>   **je durchlaufendem Zug**. Neu im Ergebnis: `grenzen.je_zug[]`, `grenzen.n_zuege`,
+>   `grenzen.mehrsegmentig`; `je_segment[]` trägt statt `l_eff_min` jetzt `zug`.
+> - `rechenweg.js`: Schritt `rw_s_l_eff` rechnet aus `je_zug` und trägt **`erfuellt: null`**
+>   — kein Nachweis-Haken mehr, sondern der Warntext.
+> - `i18n_kern.js`: `msg_sv_l_eff_zu_kurz` neu formuliert (nennt EN 1993-1-8 §4.5.1(2) und
+>   sagt, dass das Ergebnis nur rechnerisch gilt), neuer Hinweis `msg_sv_l_eff_je_zug`.
+> - `test_naht.js`: Sektion **S33** mit allen Prüfankern von unten · `dom_smoke_voll.js`:
+>   H-Träger und Gegenprobe an der echten Oberfläche.
+>
+> **Dieters Entscheidung vom 2026-08-03 zur offenen Frage:** Die Längenprüfung ist eine
+> **WARNUNG**, kein Nachweis. Die Ampel bleibt bei η. Damit das ehrlich bleibt, trägt der
+> Warntext die volle Aussage der Norm und steht **ohne Aufklappen** im Ergebniskasten.
+> *Falls sich das im Gebrauch als zu freundlich erweist: die Ampel kennt auch **gelb** —
+> das bliebe Warnung statt Nachweis. Angeboten, nicht entschieden.*
+>
+> **Zwei benannte Entscheidungen (damit sie niemand „korrigiert"):**
+> 1. **β_Lw bleibt je Segment.** Auf Zug-Ebene umgestellt, würde ein umlaufender
+>    1182-mm-Zug die Langnaht-Abminderung auslösen — die zielt auf lange
+>    Laschenanschlüsse, nicht auf eine Naht, die um Ecken geht.
+> 2. **Ohne Raupenangabe ist jedes Segment ein eigener Zug** (freier Segmentmodus).
+>    Das ist die strengere Annahme und genau das bisherige Verhalten.
+>
+> **Basislinie 822 → 874 Assertions · Smokes 448/449 → 463/464 · i18n-Parität 0.**
+> **Offen: die Abnahme am Handy** — Beleg siehe „Erwarteter Beleg" unten.
+
+**Der Befund vom 2026-07-28 (Begründung, nicht mehr Auftrag):**
 
 > **Gefunden von Dieter am 2026-07-28 beim Prüfen von N5c-2.** Kein Schönheitsfehler:
 > **jedes I- und U-Profil mit umlaufender Naht fällt durch**, unabhängig von den Maßen.
@@ -1270,7 +1328,9 @@ Rechenweg müssen danach **dasselbe** sagen.
 Nahtzug herausgeben — `umlaufend` gibt es schon), `rechenweg.js` (Einstufung und Text),
 `test_naht.js`, `dom_smoke_voll.js`.
 
-**Prüfanker für den Harness — vorher gemessen, müssen nachher stimmen:**
+**Prüfanker für den Harness — vorher gemessen, nachher bestätigt** *(alle in S33, grün am
+2026-08-03; die Profilmaße dazu: I 200×200 mit t_w 9 / t_f 15, U 80×160 mit t_w 7 / t_f 10,
+U 100×200 mit t_w 9 / t_f 14 — ohne sie kommen die Längen unten nicht heraus)*:
 
 - I-Profil 200×200, rundum, a 4 → **kein** „zu kurz" mehr, Naht 1182 mm, Rechenweg erfüllt
 - U-Profil 80×160, rundum, a 4 → **kein** „zu kurz" mehr, Naht 626 mm
@@ -1285,7 +1345,7 @@ durch — ohne roten Nachweis, der keiner ist.
 
 ---
 
-#### 5.1-1 · N5d *(erst nach N5c-3)*
+#### 5.1-1 · N5d — **der nächste Auftrag** *(Umfang vor dem Bau abstimmen)*
 
 
 > **N5c IST GEBAUT UND ABGENOMMEN (2026-07-28).** Was unten ab „Auftrag für N5c-1" steht,
@@ -1518,8 +1578,8 @@ AWS/US-Normen, EN 1993-1-8:2024 (2. Generation, β_w,mod — Werte noch nicht be
 | **N5b** ✅ | *(abgenommen 2026-07-27)* Eingabeseite: 18 Auswahlgruppen aus `optionen.js` über **die** Filterfunktion, alle 29 Felder aus `validate.js`, Freischalt-Haken, **„eigener Wert"-Haken**, Laien-ⓘ an jedem Feld und jeder Gruppe, „Berechnen" prüft, „Leeren" führt in den Startzustand (3.1). **Schnittstelle: 4.10b.** | Man kann einen Fall wirklich eingeben |
 | **N5c-1** ✅ | *(abgenommen 2026-07-28)* **Feldbereinigung** (`l` entfällt, `t1` profilabhängig, `t2` freiwillig — begründet in 5.1), **drei Beispiele** hinter „Beispiel laden", **Übersetzung Formular → `profil_eingabe`**, „Berechnen" rechnet wirklich, Ergebnis-Kacheln mit Ampel. **Schnittstelle: 4.10c.** | Beispiel antippen, rechnen, eine Zahl und eine Ampel sehen |
 | **N5c-2** ✅ | *(abgenommen 2026-07-28)* **Rechenweg aus N4 angezeigt** (10 Abschnitte, seit der Abnahme **aufklappbar**), Nahtbild-Grafik eingebunden, die zwei Häkchenarten optisch getrennt, Liste 2.4, Warnungen und ehrliche Lücken, Zahlformat je Sprache aus `rechenweg.zahl()`. **Schnittstelle: 4.10c.** | Ein vollständiger Nachweis von der Eingabe bis zur Quellenangabe |
-| **N5c-3** ⬅ | *(FEHLER, hat Vorrang — Auftrag in 5.1-0)* **„Nahtzug statt Segment":** die Prüfung `l_eff ≥ max(6a; 30)` läuft je Segment statt je durchlaufendem Nahtzug — dadurch fällt **jedes I- und U-Profil mit umlaufender Naht** durch, weil die Flanschkante nur `t_f` lang ist. Dazu: Ampel und Rechenweg widersprechen sich | Ein H-Träger und ein U-Profil, umlaufend geschweißt, rechnen durch — ohne roten Nachweis, der keiner ist |
-| **N5d** | *(nach N5c-3 — Umfang vor dem Bau mit Dieter abstimmen)* Block „Ausführung & Dokumentation" (ISO 5817 + EXC, ehrlich als nicht rechenwirksam beschriftet, 2.7) **+ Versionszeile im Info-ⓘ** (siehe 3.6, **mit dem Befund zu den drei fehlenden Kennungen**) | Der Block klappt auf und erscheint in der Ausgabe; der Programmstand ist am Handy ablesbar |
+| **N5c-3** ✅ | *(gebaut und grün geliefert 2026-08-03, **Abnahme am Handy offen** — Ergebnis in 5.1-0)* **„Nahtzug statt Segment":** die Prüfung `l_eff ≥ max(6a; 30)` lief je Segment statt je durchlaufendem Nahtzug — dadurch fiel **jedes I- und U-Profil mit umlaufender Naht** durch, weil die Flanschkante nur `t_f` lang ist. Dazu zusammengeführt: Ampel und Rechenweg widersprachen sich. Die Längenprüfung ist jetzt eine **Warnung** | Ein H-Träger und ein U-Profil, umlaufend geschweißt, rechnen durch — ohne roten Nachweis, der keiner ist |
+| **N5d** ⬅ | *(nächster Bau — Umfang vor dem Bau mit Dieter abstimmen)* Block „Ausführung & Dokumentation" (ISO 5817 + EXC, ehrlich als nicht rechenwirksam beschriftet, 2.7) **+ Versionszeile im Info-ⓘ** (siehe 3.6, **mit dem Befund zu den drei fehlenden Kennungen**) | Der Block klappt auf und erscheint in der Ausgabe; der Programmstand ist am Handy ablesbar |
 
 **N8 — Assistent (drei Etappen):**
 | Etappe | Inhalt |
@@ -1536,8 +1596,8 @@ AWS/US-Normen, EN 1993-1-8:2024 (2. Generation, β_w,mod — Werte noch nicht be
 | **N14a** | `kerbfall.js`: **Struktur vollständig** (Codes, Kategorien, Anwendungsbedingungen, Verweis auf Skizze) mit den ersten Details — ab hier ist jede Lücke sichtbar statt still |
 | **N14b…** | Füllung in Etappen von je 8–12 Details, jedes mit eigener SVG-Skizze und **2 Quellen**. Hier wird Dieter nach seinen Praxis-Kerbfällen gefragt (Reihenfolge der Füllung) |
 
-**N5a und N5b sind gebaut; der Auftrag für N5c steht ausformuliert in 5.1.**
-N5c und N5d werden jeweils **vor** ihrem Bau bestätigt.
+**N5a, N5b und N5c (alle drei Etappen) sind gebaut; der Auftrag für N5d steht in 5.1-1
+und ist als einziger noch NICHT vorentschieden — er wird vor dem Bau bestätigt.**
 
 **Nicht geteilt** (einteilig): N6b, N7, N9, N10, N11, N12, N15 — bei N4 hat sich die
 Einschätzung bestätigt.
@@ -1626,7 +1686,7 @@ Volltext (ab 2026-07-28 ausgelagert). **Nur bei Bedarf lesen**, Regel in Abschni
 **Referenzdateien (read-only, nur Muster):** `DT-ProfiPassung_Testversion-Orginal.html` ·
 `DT-ProfiPassung.html` · `DT-ProfiPassung_Test.html`
 
-### 8.1 Dateistand nach N5c *(Stand 2026-07-28)*
+### 8.1 Dateistand nach N5c-3 *(Stand 2026-08-03)*
 
 **Produktdateien (13 Module + style.css + 2 HTMLs):**
 | Datei | Stand |
@@ -1639,21 +1699,22 @@ Volltext (ab 2026-07-28 ausgelagert). **Nur bei Bedarf lesen**, Regel in Abschni
 | `profil.js` | **N5c-1 minimal geändert** — `msg_endkrater_zu_lang` zeigt auf Feld `a` statt auf das entfallene `l`; sonst N2b, Schnittstelle in 4.6 |
 | `svglib.js` | N2c, unverändert — Schnittstelle in 4.7 |
 | `schaubild.js` | N2c, unverändert — Schnittstelle in 4.7 |
-| `solver.js` | N3, unverändert — Schnittstelle in 4.8 |
-| `rechenweg.js` | N4, unverändert — Schnittstelle in 4.9 |
+| `solver.js` | **N5c-3 geändert** — `nahtzuege()` neu, Längenprüfung je Nahtzug, `grenzen.je_zug[]` / `n_zuege` / `mehrsegmentig` neu, Hinweiscode `msg_sv_l_eff_je_zug`. Sonst N3, Schnittstelle in 4.8 |
+| `rechenweg.js` | **N5c-3 geändert** — Schritt `rw_s_l_eff` rechnet aus `je_zug` und ist eine **Warnung ohne Nachweis-Haken**. Sonst N4, Schnittstelle in 4.9 |
 | `optionen.js` | **N5c-1 erweitert** — 20 Gruppen, 89 Optionen (unverändert) **+ `BEISPIELE` (3) und `beispiel()`** |
 | `validate.js` | **N5c-1 geändert** — **28 Felder** (`l` entfallen), `t1` profilabhängig Pflicht, `t2` freiwillig, Längenprüfungen in den Solver verlegt; **neu `normiert()` und `rechenEingabe()`** |
-| `i18n_kern.js` | **N5c erweitert** — Beispielnamen, Ergebnis- und Rechenwegtexte, Quellenangaben, Klapptexte; überholte Ankündigungstexte richtiggestellt. ⚠️ **hat keine `VERSION`** (siehe 3.6) |
+| `i18n_kern.js` | **N5c erweitert, N5c-3 nachgeschärft** — Beispielnamen, Ergebnis- und Rechenwegtexte, Quellenangaben, Klapptexte; `msg_sv_l_eff_zu_kurz` nennt jetzt EN 1993-1-8 §4.5.1(2), neu `msg_sv_l_eff_je_zug`. ⚠️ **hat keine `VERSION`** (siehe 3.6) |
 | `i18n_hilfe.js` | **N5c-1 minimal** — Laien-ⓘ zu `t2` sagt, was ohne Eingabe passiert; deckt alle 20 Gruppen und **28** Felder ab. ⚠️ **hat keine `VERSION`** (siehe 3.6) |
 | `i18n_kerbfall.js` | Gerüst, unverändert (Füllung in N14). ⚠️ **hat keine `VERSION`** (siehe 3.6) |
 | `style.css` | **N5c gewachsen** — dazu `.erg-box`, `.tile .tile-k`, `.rw-abschnitt`, `.rw-bilanz`, `.weg-box`, Grafik- und Legendenstile. **Die Klappmechanik brauchte keine neue Zeile** — sie nutzt die `.acc*`-Stile aus N5a |
 
 **DEV-ONLY — nur in `/mnt/project/`, NIE ausliefern und nicht auf GitHub nötig:**
-`test_naht.js` (**822 Assertions**, Sektionen S1–S32; in N5c kam **S31** (Beispiele) und
-**S32** (Rechenweg/Grafik) dazu, S10 wurde umgehängt, S29/S30 geschärft) ·
-`dom_smoke_voll.js` (**448 Prüfungen**) ·
-`dom_smoke_test.js` (**449 Prüfungen**, ruft den Lauf aus `dom_smoke_voll.js` auf;
-in N5c **unverändert**).
+`test_naht.js` (**874 Assertions**, Sektionen S1–S33; in N5c kam **S31** (Beispiele) und
+**S32** (Rechenweg/Grafik) dazu, in N5c-3 **S33** (Nahtzug); S10 umgehängt, S29/S30 geschärft) ·
+`dom_smoke_voll.js` (**463 Prüfungen**, N5c-3: H-Träger und Gegenprobe an der echten
+Oberfläche) ·
+`dom_smoke_test.js` (**464 Prüfungen**, ruft den Lauf aus `dom_smoke_voll.js` auf;
+seit N5c **unverändert**).
 ⚠ **Beide Smoke-Dateien müssen im Projektordner liegen** — `dom_smoke_test.js` allein läuft nicht.
 
 **Noch nicht gebaut:** `symbol.js` (N6b) · `assistent.js` (N8) · `thermik.js` (N9) ·
@@ -1664,29 +1725,36 @@ in N5c **unverändert**).
 `i18n_kern.js`, `i18n_hilfe.js`, `style.css`, `test_naht.js`, `dom_smoke_voll.js` ·
 N5c-2: `ui.js`, `i18n_kern.js`, `style.css`, `test_naht.js`, `dom_smoke_voll.js` ·
 Klappmechanik: `ui.js`, `i18n_kern.js`, `dom_smoke_voll.js`.
-**Von N5c nie angefasst:** beide HTMLs, `daten.js`, `naht.js`, `svglib.js`, `schaubild.js`,
-`solver.js`, `rechenweg.js`, `i18n_kerbfall.js`, `dom_smoke_test.js`.
+**N5c-3-Lieferung (2026-08-03):** `solver.js`, `rechenweg.js`, `i18n_kern.js`,
+`test_naht.js`, `dom_smoke_voll.js` — dazu diese Plandatei und `Schweißnaht-Historie.md`.
+**Von N5c-3 nicht angefasst:** beide HTMLs, `ui.js`, `profil.js`, `validate.js`,
+`optionen.js`, `daten.js`, `naht.js`, `svglib.js`, `schaubild.js`, `i18n_hilfe.js`,
+`i18n_kerbfall.js`, `style.css`, `dom_smoke_test.js`.
+**`profil.js` musste nicht angefasst werden** — die Zugehörigkeit zum Nahtzug gab es dort
+seit N2b als `info[i].raupe`; sie wurde nur nie benutzt.
 
-**Von Dieter am 2026-07-28 bestätigt:** Der Projektordner `/mnt/project/` trägt genau
-diesen Stand. Die N5c-Lieferungen sind eingespielt, am Handy geprüft und **abgenommen**.
-Zusätzlich **gegengeprüft**: die drei Testläufe sind direkt aus dem Projektordner grün
-(**822 / 448 / 449 · 0 Fehler**), `node --check` über alle 16 JS-Dateien ist sauber, und die
-beiden HTMLs unterscheiden sich weiterhin in genau einer Zeile.
-⚠️ **Beim Austausch sind zweimal Dateien verlorengegangen** (einmal die Plandatei, einmal
-`style.css` und `test_naht.js`). Deshalb ist die Vollständigkeitsprüfung gegen die Tabelle
-oben keine Formsache — sie hat beide Male den Verlust gefunden.
+**Stand 2026-08-03:** Die N5c-Lieferungen (N5c-1, N5c-2, Klappmechanik) sind eingespielt,
+am Handy geprüft und **abgenommen**. **N5c-3 ist geliefert, aber noch NICHT am Handy
+abgenommen** — das ist die erste Frage im nächsten Chat.
+Gemessen wurde zuletzt: die drei Testläufe grün (**874 / 463 / 464 · 0 Fehler**),
+`node --check` über alle 16 JS-Dateien sauber, die beiden HTMLs unterscheiden sich weiterhin
+in genau einer Zeile.
+⚠️ **Beim Austausch sind schon Dateien verlorengegangen oder veraltet** — einmal `style.css`
+und `test_naht.js`, **zweimal die Plandatei** (2026-07-28 und 2026-08-03, letztere elf
+Versionen alt). Deshalb ist die Vollständigkeitsprüfung gegen die Tabelle oben keine
+Formsache, und der Basislinien-Abgleich aus Kickoff-Punkt 11 ebenso wenig.
 
 **Erste Handlung im neuen Chat:** Vollständigkeit gegen die Tabelle oben prüfen
-(**13 Module**, `style.css`, beide HTMLs, **alle drei** DEV-ONLY-Dateien), Arbeitsordner
-herstellen, die drei Testläufe starten.
-Melden müssen sie **822 / 448 / 449 · 0 Fehler**. Weicht etwas ab, erst das klären —
+(**13 Module**, `style.css`, beide HTMLs, **alle drei** DEV-ONLY-Dateien, dazu Plandatei und
+`Schweißnaht-Historie.md`), Arbeitsordner herstellen, die drei Testläufe starten.
+Melden müssen sie **874 / 463 / 464 · 0 Fehler**. Weicht etwas ab, erst das klären —
 nicht bauen.
 
-**Was N5c überschreiben wird** (zur Vorwarnung, nicht als Auftrag): `ui.js` wächst um die
-Ergebnisdarstellung und ruft dort **erstmals** Rechenmodule auf — die Assertion auf
-Fachlogikfreiheit in S29/S30 muss dann bewusst umgestellt werden, statt sie stillschweigend
-zu lockern. `style.css` und `i18n_kern.js` wachsen, Harness und DOM-Smokes wachsen mit.
-Die Rechenmodule N1–N4 bleiben unberührt.
+**Was N5d überschreiben wird** (zur Vorwarnung, nicht als Auftrag): `optionen.js` und
+`validate.js` um den Block „Ausführung & Dokumentation", `ui.js` um dessen Anzeige,
+`i18n_kern.js` und `i18n_hilfe.js` um die Texte, `style.css` gegebenenfalls.
+**Zuerst** bekommen `i18n_kern.js`, `i18n_hilfe.js` und `i18n_kerbfall.js` ihre `VERSION`
+(3.6). Die Rechenmodule N1–N4 bleiben unberührt.
 
 ---
 ## 9. Entscheidungslog — **verdichtet; der Volltext steht in `Schweißnaht-Historie.md`**
@@ -1748,6 +1816,15 @@ will. Also: Vorschriften und Wegweiser bleiben hier, die Erzählung wandert.
   So ist der Segment-Fehler aus N5c-3 acht Tage lang unentdeckt geblieben (5.1-0).
 - **Ampel und Rechenweg müssen dasselbe sagen.** Ein grünes Ergebnis neben einem roten
   Nachweis ist immer ein Fehler, egal welche Seite recht hat.
+- **Die drei Prüfebenen nicht zusammenlegen** (4.8, seit N5c-3): `a_min`/`a_max` **je
+  Segment** · Mindestlänge **je Nahtzug** · `β_Lw` **je Segment**. Jede dieser drei Ebenen
+  ist einzeln begründet; wer sie vereinheitlicht, macht eine davon falsch.
+- **Die Mindestlänge ist eine WARNUNG, kein Nachweis** (Dieters Entscheidung 2026-08-03,
+  5.1-0). Sie färbt die Ampel nicht und trägt im Rechenweg **keinen** Haken. Dafür nennt
+  ihr Text die Norm und steht ohne Aufklappen im Ergebniskasten.
+- **Plandatei und Code werden bei JEDEM Wiedereinstieg gegeneinander gemessen**
+  (Kickoff-Punkt 11): Basislinie im Kopfblock gegen die drei Testläufe. Weichen sie ab,
+  ist eine Seite alt — **nicht bauen, erst klären**. Zweimal war genau das der Fall.
 - **Token-Pause: 4 Stunden.**
 
 ---
@@ -1779,6 +1856,7 @@ Die Blöcke stehen dort in dieser Reihenfolge; jeder nennt Datum und Baustein:
 - Aus N5c-2 „Es erklärt sich" (2026-07-28)
 - Aus der Abnahme von N5c-2 (2026-07-28)
 - Zum Verfahren (2026-07-28)
+- Aus N5c-3 „Nahtzug statt Segment" (2026-08-03)
 - Aus der Rückmeldung 2026-07-27 (N5a abgenommen)
 - Aus N5a (2026-07-26)
 - Aus der Rückmeldung 2026-07-26 (N2c abgenommen)
@@ -1796,25 +1874,14 @@ Changelog — **die vollständige Fassung ab v1.0 steht in `Schweißnaht-Histori
 Hier stehen nur die letzten drei Einträge. Wer wissen will, wie eine Entscheidung
 zustande kam, findet die Kette dort — lückenlos ab der Erstfassung vom 2026-07-23.
 
-**v2.24 (2026-07-28):** Etappe **N5c-1 („Es rechnet")** gebaut und abgenommen.
-Feldbereinigung (`l` entfällt, 29 → **28** Felder; `t1` profilabhängig, `t2` freiwillig),
-Längenprüfungen **umgehängt statt gestrichen** (3 → 6 Assertions). Drei nachgerechnete
-Beispiele als Daten in `optionen.js`. Übersetzung Formular → Rechenkern in `validate.js`.
-„Berechnen" rechnet wirklich, Ergebnis-Kacheln mit Ampel. Fachlogik-Assertion **geschärft**.
-Neu: Abschnitt **4.10c**, Harness-Sektion **S31**.
-**724 → 764 Assertions · Smokes 385/386 → 418/419.**
-
-**v2.25 (2026-07-28):** Etappe **N5c-2 („Es erklärt sich")** gebaut und abgenommen.
-Rechenweg mit 10 Abschnitten, Nahtbild-Grafik mit dreisprachiger Legende, die zwei
-Häkchenarten getrennt, Liste 2.4 sichtbar, Zahlformat je Sprache aus `rechenweg.zahl()`.
-`ui.js` darf jetzt **drei** Anzeige-Module rufen. Neu: Harness-Sektion **S32**.
-**764 → 822 Assertions · Smokes 418/419 → 440/441.**
-
-**v2.26 (2026-07-28):** Rechenweg **aufklappbar** (Rückmeldung Dieter, wie im
-Schwesterprogramm) — gebaut mit der vorhandenen Klappmechanik aus N5a, ohne neue CSS-Zeile;
-Bilanz und Liste 2.4 bleiben ohne Antippen sichtbar. Plandatei vollständig auf den
-N5c-Stand gebracht (Kopfblock, Kickoff, 3.6, 4.10c, 5.1, 5.2, 8.1, Log, Changelog).
-**822 Assertions · Smokes 440/441 → 448/449 · i18n-Parität 0.**
+**v2.27 (2026-07-28):** **Entscheidungslog und Changelog nach `Schweißnaht-Historie.md`
+ausgelagert.** Kein Code geändert, keine Zeile Inhalt verloren — zeichengenau geprüft.
+In dieser Datei bleiben: die bindenden Festlegungen (9.2), die Warnung, vor jeder
+„Korrektur" erst die Historie zu lesen (9.1), ein Wegweiser über alle Blöcke (9.3) und die
+letzten drei Changelog-Einträge. Grund: die beiden Teile waren **45 % dieser Datei** und
+wurden in jedem Chat mitgelesen, obwohl von 160 Log-Einträgen nur 13 eine Verpflichtung
+tragen. **Die Historie ist anhängend, nicht pflegend** — sie kann deshalb nicht veralten.
+**Basislinie unverändert: 822 Assertions · Smokes 448/449 · i18n-Parität 0.**
 
 **v2.28 (2026-07-28):** **Fehlerbefund von Dieter beim Prüfen — neue Etappe N5c-3
 („Nahtzug statt Segment"), sie hat Vorrang vor N5d.** Die Prüfung
@@ -1831,14 +1898,27 @@ gefangen werden. **Ehrlich vermerkt:** der Fall war bekannt und wurde bei der Be
 umgangen statt gelöst; die Lehre daraus steht in 9.2. Kein Code geändert.
 **Basislinie unverändert: 822 Assertions · Smokes 448/449 · i18n-Parität 0.**
 
-**v2.27 (2026-07-28):** **Entscheidungslog und Changelog nach `Schweißnaht-Historie.md`
-ausgelagert.** Kein Code geändert, keine Zeile Inhalt verloren — zeichengenau geprüft.
-In dieser Datei bleiben: die bindenden Festlegungen (9.2), die Warnung, vor jeder
-„Korrektur" erst die Historie zu lesen (9.1), ein Wegweiser über alle Blöcke (9.3) und die
-letzten drei Changelog-Einträge. Grund: die beiden Teile waren **45 % dieser Datei** und
-wurden in jedem Chat mitgelesen, obwohl von 160 Log-Einträgen nur 13 eine Verpflichtung
-tragen. **Die Historie ist anhängend, nicht pflegend** — sie kann deshalb nicht veralten.
-**Basislinie unverändert: 822 Assertions · Smokes 448/449 · i18n-Parität 0.**
+**v2.29 (2026-08-03):** **Etappe N5c-3 („Nahtzug statt Segment") gebaut und grün
+ausgeliefert** — der Fehlerbefund aus v2.28 ist repariert. Die Prüfung
+`l ≥ max(6·a; 30 mm)` läuft jetzt **je durchlaufendem Nahtzug** statt je Segment;
+`solver.js` gruppiert dafür über `info[i].raupe`, das `profil.js` seit N2b liefert und das
+nie benutzt wurde. Nachgemessen: I 200×200 rundum = **ein** Zug über 1182 mm ·
+U 80×160 = 626 mm · U 100×200 = 782 mm — keiner gilt mehr als zu kurz, und die Gegenprobe
+(Blech 35 mm, Flanken, a 5 → 25 mm je Zug) wird weiterhin gefangen.
+**Dieters Entscheidung zur offenen Frage: die Längenprüfung ist eine WARNUNG, kein
+Nachweis** — die Ampel bleibt bei η, der Rechenwegschritt trägt keinen Haken mehr, dafür
+nennt der Warntext EN 1993-1-8 §4.5.1(2) und sagt, dass das Ergebnis nur rechnerisch gilt.
+Damit widersprechen Ampel und Rechenweg sich nicht mehr (der zweite Befund aus v2.28).
+Zwei benannte Entscheidungen: **β_Lw bleibt je Segment** (auf Zug-Ebene löste ein
+umlaufender Zug die Langnaht-Abminderung fälschlich aus) und **ohne Raupenangabe bleibt
+jedes Segment ein eigener Zug** (freier Modus, strengere Annahme). Neu: Harness-Sektion
+**S33**, Hinweiscode `msg_sv_l_eff_je_zug`. Geändert: `solver.js`, `rechenweg.js`,
+`i18n_kern.js`, `test_naht.js`, `dom_smoke_voll.js` — `ui.js`, `profil.js` und beide HTMLs
+blieben unberührt. **Plandatei vollständig nachgezogen** (Kopfblock, Kickoff 5b, 4.8, 4.9,
+5.1, 5.2, 8.1, 9.2, 9.3, Changelog), nachdem im Projektordner eine **elf Versionen alte**
+Plandatei (v2.17) zu neuem Code lag — gefunden allein durch den Basislinien-Abgleich.
+**Basislinie 822 → 874 Assertions · Smokes 448/449 → 463/464 · i18n-Parität 0.**
+**Nächster Schritt: N5c-3 am Handy abnehmen, dann N5d — Einstieg „weiter mit N5d".**
 
 ═══════════════════════════════════════════════════════════════════════════
 Ende Schweißnaht-1.md · DT-ProfiSchweissnaht

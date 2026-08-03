@@ -805,7 +805,84 @@ function lauf(edition) {
      'N5c-2: und ist auf Englisch beschriftet');
   s.setSprache('de');
 
+  /* ---- N5c-3: DER H-TRAEGER MUSS DURCHRECHNEN -------------------------
+     Das ist Dieters Abnahmekriterium fuer diese Etappe: ein umlaufend
+     geschweisstes I-Profil an der echten Oberflaeche, ohne roten Nachweis,
+     der keiner ist. Vorher fiel es durch, weil die Flanschkante nur t_f
+     lang ist und die Laengenpruefung je Segment lief (Plan 5.1-0). */
+  s.leeren();
+  var s33Fall = { welt: 'A', rechenrichtung: 'nachweis', werkstoffgruppe: 'stahl',
+                  werkstoff: 'S235', stossart: 't_stoss', nahtart: 'kehl_doppel',
+                  nachweisverfahren: 'richtungsbezogen', profil: 'i_profil',
+                  kanten: 'rundum', lasteingabe: 'direkt' };
+  for (var s33k in s33Fall) {
+    if (Object.prototype.hasOwnProperty.call(s33Fall, s33k)) waehle(s33k, s33Fall[s33k]);
+  }
+  var s33Ein = { b: '200', h: '200', tw: '9', tf: '15', a: '4', N: '50000', Q: '0' };
+  for (var s33e in s33Ein) {
+    if (!Object.prototype.hasOwnProperty.call(s33Ein, s33e)) continue;
+    if (d.byId['fld_' + s33e]) d.byId['fld_' + s33e].value = s33Ein[s33e];
+  }
+  var s33Pr = s.pruefen();
+  ok(s33Pr && s33Pr.ok === true,
+     'N5c-3: der Fall ist vollstaendig eingegeben' +
+     (s33Pr && s33Pr.fehler && s33Pr.fehler.length ? ' — offen: ' + JSON.stringify(s33Pr.fehler) : ''));
+  var s33Erg = s.rechnen();
+  ok(s33Erg && s33Erg.ok === true,
+     'N5c-3: das umlaufend geschweisste I-Profil rechnet an der Oberflaeche durch');
+  ok(s33Erg.grenzen.n_zuege === 1,
+     'N5c-3: es ist EIN Nahtzug, nicht zwoelf Segmente (' + s33Erg.grenzen.n_zuege + ')');
+  ok(Math.round(s33Erg.nahtbild.l_ges) === 1182,
+     'N5c-3: die Naht ist 1182 mm lang — kein 15-mm-Stueck darin ist eine 15-mm-Naht');
+  ok(d.byId.ergAmpel.classList.contains('gruen'),
+     'N5c-3: die Ampel steht auf gruen');
+  var s33Rw = s.rechenweg();
+  ok(s33Rw && s33Rw.nachweis_ok === true,
+     'N5c-3: und der Rechenweg widerspricht ihr NICHT mehr');
+  ok(s33Erg.erfuellt === s33Rw.nachweis_ok,
+     'N5c-3: Ampel und Rechenweg sagen dasselbe — der zweite Befund aus 5.1-0');
+  ok(!/kürzer als die Mindestlänge/.test(d.alleTexte()),
+     'N5c-3: es steht keine Kurznahtwarnung mehr da, die keine ist');
+  ok(/durchlaufendem Nahtzug|Nahtzug/.test(d.alleTexte()),
+     'N5c-3: stattdessen ist ehrlich benannt, auf welcher Ebene geprueft wird');
+
+  /* ---- DIE GEGENPROBE an derselben Oberflaeche ------------------------
+     Ein wirklich zu kurzes Blech muss weiterhin warnen — und die Warnung
+     muss OHNE Aufklappen zu sehen sein (Plan 9.2: ehrliche Luecken). */
+  s.leeren();
+  var s33Geg = { welt: 'A', rechenrichtung: 'nachweis', werkstoffgruppe: 'stahl',
+                 werkstoff: 'S235', stossart: 'ueberlappstoss', nahtart: 'kehl_doppel',
+                 nachweisverfahren: 'richtungsbezogen', profil: 'blech',
+                 kanten: 'flanken', lasteingabe: 'direkt' };
+  for (var s33g in s33Geg) {
+    if (Object.prototype.hasOwnProperty.call(s33Geg, s33g)) waehle(s33g, s33Geg[s33g]);
+  }
+  d.byId.fld_b.value = '35';
+  d.byId.fld_t1.value = '20';
+  d.byId.fld_a.value = '5';
+  d.byId.fld_N.value = '20000';
+  if (d.byId.fld_Q) d.byId.fld_Q.value = '0';
+  var s33GErg = s.rechnen();
+  ok(s33GErg && s33GErg.ok === true, 'N5c-3 Gegenprobe: das kurze Blech rechnet durch');
+  ok(/kürzer als die Mindestlänge/.test(d.alleTexte()),
+     'N5c-3 Gegenprobe: die Kurznahtwarnung ist WEITERHIN da');
+  ok(/4\.5\.1/.test(d.alleTexte()),
+     'N5c-3 Gegenprobe: und sie nennt die Fundstelle EN 1993-1-8 §4.5.1(2)');
+  function s33Text(wurzel) {
+    var t = wurzel.inhalt(), q;
+    for (q = 0; q < wurzel.children.length; q++) t += ' ' + s33Text(wurzel.children[q]);
+    return t;
+  }
+  ok(/kürzer als die Mindestlänge/.test(s33Text(d.byId.ergBox)),
+     'N5c-3 Gegenprobe: die Warnung steht im Ergebniskasten — ohne Antippen sichtbar (Plan 9.2)');
+  ok(zaehleKlasse(d.byId.ergBox, 'pruef-warnung') > 0,
+     'N5c-3 Gegenprobe: und ist als Warnung ausgezeichnet, nicht als Nachweis');
+  ok(s33GErg.erfuellt === s.rechenweg().nachweis_ok,
+     'N5c-3 Gegenprobe: auch im Warnfall sagen Ampel und Rechenweg dasselbe');
+
   /* Leeren raeumt auch Rechenweg und Grafik. */
+  s.beispielLaden('traeger');
+  s.rechnen();
   s.leeren();
   ok(d.byId.pathIdle.hidden === false && d.byId.wegBox.children.length === 0,
      'N5c-2: "Leeren" raeumt den Rechenweg weg');

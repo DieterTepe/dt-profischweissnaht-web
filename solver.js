@@ -110,7 +110,8 @@
       'msg_sv_weltb_lastfall_ohne_wirkung', 'msg_sv_alu_wez', 'msg_sv_alu_wez_nicht_geprueft',
       'msg_sv_kreis_verdichtet', 'msg_sv_a_aufgerundet', 'msg_sv_a_je_segment_gerundet',
       'msg_sv_beta_lw_angewendet', 'msg_sv_beta_lw_nicht_angewendet',
-      'msg_sv_umlaufend_aus_profil', 'msg_sv_sigma_senk_zusatz', 'msg_sv_schiefe_biegung'
+      'msg_sv_umlaufend_aus_profil', 'msg_sv_sigma_senk_zusatz', 'msg_sv_schiefe_biegung',
+      'msg_sv_l_eff_je_zug'
     ]
   };
 
@@ -490,11 +491,54 @@
   /* --------------------------------------------------------------------- */
   /* 6) Geometrische Grenzen je Segment (a_min, a_max, l_eff, lange Naht)   */
   /* --------------------------------------------------------------------- */
+  /* NAHTZUEGE — die Ebene, auf die die Laengenpruefung gehoert (Plan 5.1-0).
+     EN 1993-1-8 §4.5.1(2) spricht von EINER Kehlnaht, deren wirksame Laenge zu
+     klein ist: gemeint sind kurze, freistehende Naehte. Eine umlaufend
+     geschweisste Naht ist EIN Zug von z. B. 1182 mm — sie geht nur um Ecken.
+     Ein 15-mm-Stueck mittendrin (die Flanschkante eines I-Profils) ist keine
+     15-mm-Naht. Frueher lief die Pruefung je Segment; dadurch fiel JEDES I- und
+     U-Profil mit umlaufender Naht durch, weil t_f nie 30 mm erreicht.
+     profil.js gibt die Zugehoerigkeit als info[i].raupe bereits heraus.
+     FEHLT sie (freier Segmentmodus), ist jedes Segment ein eigener Zug — das
+     ist die strengere Annahme und genau das bisherige Verhalten. */
+  function nahtzuege(segmente, info) {
+    var zuege = [], nach = {}, i, key, z, a;
+    for (i = 0; i < segmente.length; i++) {
+      key = (info && info[i] && zahl(info[i].raupe) !== null)
+          ? ('r' + info[i].raupe)
+          : ('s' + i);
+      z = nach[key];
+      if (!z) {
+        z = { index: zuege.length, segmente: [], l: 0, a: 0,
+              geschlossen: !!(info && info[i] && info[i].geschlossen) };
+        nach[key] = z;
+        zuege.push(z);
+      }
+      a = segmente[i].a;
+      z.segmente.push(i);
+      z.l += Naht.laenge(segmente[i]);
+      if (a > z.a) z.a = a;         /* strengste Grenze im Zug ist massgebend */
+    }
+    return zuege;
+  }
+
   function grenzenPruefen(segmente, info, ein, warnungen, hinweise) {
     var G = Data.GEOMETRIE;
     var a_min = oder(ein.a_min, G.a_min_ec3.wert);
-    var out = { a_min: a_min, verletzt: [], je_segment: [], beta_Lw: null, lange_naht: false };
-    var i, s, t, amax, l, leffmin, lang;
+    var out = { a_min: a_min, verletzt: [], je_segment: [], je_zug: [],
+                n_zuege: 0, mehrsegmentig: false, beta_Lw: null, lange_naht: false };
+    var zuege = nahtzuege(segmente, info);
+    var zugVon = {}, i, j, s, t, amax, l, lang, zg, leffmin, kurz;
+    for (i = 0; i < zuege.length; i++) {
+      for (j = 0; j < zuege[i].segmente.length; j++) zugVon[zuege[i].segmente[j]] = i;
+      if (zuege[i].segmente.length > 1) out.mehrsegmentig = true;
+    }
+    out.n_zuege = zuege.length;
+
+    /* --- je Segment: a_min, a_max und die lange Naht ---------------------
+       Die Langnaht-Abminderung beta_Lw bleibt BEWUSST je Segment. Sie zielt
+       auf lange Laschenanschluesse; ein umlaufender Zug von 1182 mm wuerde
+       sie sonst faelschlich ausloesen (benannte Entscheidung, Plan 9.2). */
     for (i = 0; i < segmente.length; i++) {
       s = segmente[i];
       t = null;
@@ -502,12 +546,11 @@
       if (t === null) t = tMin(ein);
       amax = (t === null) ? null : 0.7 * t;
       l = Naht.laenge(s);
-      leffmin = Math.max(6 * s.a, 30);
       lang = l > 150 * s.a;
       if (lang) out.lange_naht = true;
       out.je_segment.push({
         index: i, code: s.code || null, a: s.a, t: t,
-        a_max: amax, l: l, l_eff_min: leffmin, lang: lang
+        a_max: amax, l: l, zug: zugVon[i], lang: lang
       });
       if (amax !== null && s.a > amax + 1e-9) {
         out.verletzt.push({ code: 'msg_sv_a_ueber_amax', index: i, ist: s.a, grenze: amax });
@@ -515,10 +558,23 @@
       if (s.a < a_min - 1e-9) {
         out.verletzt.push({ code: 'msg_sv_a_unter_amin', index: i, ist: s.a, grenze: a_min });
       }
-      if (l < leffmin - 1e-9) {
-        out.verletzt.push({ code: 'msg_sv_l_eff_zu_kurz', index: i, ist: l, grenze: leffmin });
+    }
+
+    /* --- je NAHTZUG: die Mindestlaenge ---------------------------------- */
+    for (i = 0; i < zuege.length; i++) {
+      zg = zuege[i];
+      leffmin = Math.max(6 * zg.a, 30);
+      kurz = zg.l < leffmin - 1e-9;
+      out.je_zug.push({
+        index: i, n_seg: zg.segmente.length, segmente: zg.segmente.slice(0),
+        l: zg.l, a: zg.a, l_eff_min: leffmin,
+        geschlossen: zg.geschlossen, zu_kurz: kurz
+      });
+      if (kurz) {
+        out.verletzt.push({ code: 'msg_sv_l_eff_zu_kurz', zug: i, ist: zg.l, grenze: leffmin });
       }
     }
+    if (out.mehrsegmentig) schiebe(hinweise, 'msg_sv_l_eff_je_zug');
     for (i = 0; i < out.verletzt.length; i++) schiebe(warnungen, out.verletzt[i].code);
 
     if (out.lange_naht) {

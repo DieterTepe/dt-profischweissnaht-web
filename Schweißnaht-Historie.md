@@ -924,6 +924,98 @@ wieder die **alleinige** Grundlage; die Fortschreibungsdateien koennen geloescht
 **Basislinie 822 Assertions · Smokes 440/441 → 448/449 · i18n-Paritaet 0.**
 **Naechster Schritt: N5d — Einstieg „weiter mit N5d".**
 
+
+---
+
+> ⚠️ **NACHGETRAGEN AM 2026-08-03.** Die Einträge **v2.27** und **v2.28** wurden am
+> 2026-07-28 nur in `Schweißnaht-1.md` geschrieben und hier vergessen — aufgefallen beim
+> Abgleich der beiden Dateien. Sie stehen unten **wortgleich** so, wie sie dort standen;
+> nichts daran ist aus dem Gedächtnis ergänzt.
+> **Lehre:** Die Historie ist anhängend, aber sie hängt sich nicht von selbst an. Der
+> Changelog-Eintrag gehört in **beide** Dateien — hier vollständig, in der Plandatei die
+> letzten drei.
+
+**v2.27 (2026-07-28):** **Entscheidungslog und Changelog nach `Schweißnaht-Historie.md`
+ausgelagert.** Kein Code geändert, keine Zeile Inhalt verloren — zeichengenau geprüft.
+In dieser Datei bleiben: die bindenden Festlegungen (9.2), die Warnung, vor jeder
+„Korrektur" erst die Historie zu lesen (9.1), ein Wegweiser über alle Blöcke (9.3) und die
+letzten drei Changelog-Einträge. Grund: die beiden Teile waren **45 % dieser Datei** und
+wurden in jedem Chat mitgelesen, obwohl von 160 Log-Einträgen nur 13 eine Verpflichtung
+tragen. **Die Historie ist anhängend, nicht pflegend** — sie kann deshalb nicht veralten.
+**Basislinie unverändert: 822 Assertions · Smokes 448/449 · i18n-Parität 0.**
+
+**v2.28 (2026-07-28):** **Fehlerbefund von Dieter beim Prüfen — neue Etappe N5c-3
+(„Nahtzug statt Segment"), sie hat Vorrang vor N5d.** Die Prüfung
+`l_eff ≥ max(6·a; 30 mm)` läuft **je geometrischem Segment** statt je durchlaufendem
+Nahtzug. Bei Profilen mit Flansch ist die Flanschkante nur `t_f` lang — **jedes I- und
+U-Profil mit umlaufender Naht fällt dadurch durch**, unabhängig von den Maßen (nachgemessen:
+I 200×200 → 4 × 15 mm bei 1182 mm Gesamtnaht · U 80×160 → 2 × 10 mm bei 626 mm ·
+U 100×200 → 2 × 14 mm bei 782 mm). Dieters Einwand trifft zu: der Flansch müsste dicker als
+30 mm sein, dann passt kein Normbauteil mehr. **Zweiter Befund beim Messen:** Ampel grün
+und Rechenweg „✗ nicht erfüllt" **gleichzeitig**. Beides in 5.1-0 mit Messwerten,
+Begründung (EN 1993-1-8 §4.5.1(2) meint kurze *freistehende* Nähte), Reparaturvorschlag und
+Prüfankern festgehalten — samt der Gegenprobe, dass wirklich kurze Einzelnähte weiterhin
+gefangen werden. **Ehrlich vermerkt:** der Fall war bekannt und wurde bei der Beispielwahl
+umgangen statt gelöst; die Lehre daraus steht in 9.2. Kein Code geändert.
+**Basislinie unverändert: 822 Assertions · Smokes 448/449 · i18n-Parität 0.**
+
+---
+
+**Aus N5c-3 „Nahtzug statt Segment" (2026-08-03):**
+
+- **Der Fehler saß eine Ebene zu tief, nicht in der Formel.** `l ≥ max(6·a; 30 mm)` war
+  richtig; falsch war, worauf sie angewendet wurde. Die Reparatur hat keine Norm
+  angefasst, sondern die Bezugsgröße: **Nahtzug statt Segment.**
+- **Das Material lag seit N2b bereit.** `profil.js` gibt je Segment `raupe` und
+  `geschlossen` heraus, weil der Endkraterabzug schon immer je Raupe greifen musste.
+  Der Solver hat diese Angabe nur nie gelesen. Es musste also nichts erfunden werden —
+  eine vorhandene, bereits getestete Struktur wurde endlich benutzt.
+- **Warum die Längenprüfung eine WARNUNG wurde und kein Nachweis** *(Dieters Entscheidung,
+  er ist der Fachmann)*: Beides war vertretbar. EN 1993-1-8 §4.5.1(2) formuliert hart —
+  eine so kurze Naht darf nicht als tragend angesetzt werden —, aber nach der
+  Nahtzug-Reparatur trifft die Prüfung nur noch wirklich kurze Einzelnähte, und dort ist
+  der Anwender besser mit einer Warnung bedient, die ihm sagt *warum*, als mit einer roten
+  Ampel, die ihm die Rechnung wegnimmt. **Die Bedingung dafür:** der Warntext muss die
+  Norm aussprechen und ohne Aufklappen dastehen. Beides ist so gebaut.
+  *Angeboten und nicht entschieden:* wenn Grün sich im Gebrauch als zu freundlich erweist,
+  kennt die Ampel auch **Gelb** — das bliebe Warnung statt Nachweis.
+- **β_Lw blieb bewusst je Segment.** Beim Umbau lag nahe, auch die Langnaht-Abminderung
+  auf Zug-Ebene zu heben — das wäre falsch gewesen: ein umlaufender 1182-mm-Zug hätte sie
+  ausgelöst, obwohl sie auf lange Laschenanschlüsse zielt. **Eine Reparatur darf nicht
+  weiterlaufen, als sie muss.**
+- **Der freie Segmentmodus wurde nicht mit gelockert.** Ohne Raupenangabe bleibt jedes
+  Segment ein eigener Zug. Wer Segmente von Hand eingibt, bekommt weiterhin die strenge
+  Prüfung — die Lockerung gilt nur dort, wo die Zugehörigkeit belegt ist.
+- **Die Plandatei im Projektordner war elf Versionen alt** (v2.17, Basislinie 679/234/235)
+  zu Code auf Stand N5c-2. Gefunden hat es allein der Abgleich „Basislinie im Kopfblock
+  gegen gemessene Basislinie". Ohne ihn wäre auf einem drei Etappen alten Plan
+  weitergebaut worden. **Das ist der zweite Fall dieser Art in sechs Tagen** — die Regel
+  steht deshalb jetzt in 9.2, nicht nur in der Kickoff-Liste.
+- **Was diese Etappe über das Verfahren sagt:** Der Fehler war acht Tage lang bekannt und
+  stand als Kommentar in `optionen.js` („I-Profil um die Flansche geschweißt warnt immer,
+  deshalb nur der Steg"). Ein Beispiel war gewählt worden, um einem Verhalten
+  auszuweichen. **Die Regel dagegen steht seit v2.28 in 9.2 — sie ist an genau diesem
+  Fall entstanden.**
+
+**v2.29 (2026-08-03):** **Etappe N5c-3 („Nahtzug statt Segment") gebaut und grün
+ausgeliefert** — der Fehlerbefund aus v2.28 ist repariert. Die Prüfung
+`l ≥ max(6·a; 30 mm)` läuft jetzt **je durchlaufendem Nahtzug** statt je Segment;
+`solver.js` gruppiert dafür über `info[i].raupe`, das `profil.js` seit N2b liefert und das
+nie benutzt wurde. Nachgemessen: I 200×200 rundum = **ein** Zug über 1182 mm ·
+U 80×160 = 626 mm · U 100×200 = 782 mm — keiner gilt mehr als zu kurz, und die Gegenprobe
+(Blech 35 mm, Flanken, a 5 → 25 mm je Zug) wird weiterhin gefangen.
+**Dieters Entscheidung zur offenen Frage: die Längenprüfung ist eine WARNUNG, kein
+Nachweis** — die Ampel bleibt bei η, der Rechenwegschritt trägt keinen Haken mehr, dafür
+nennt der Warntext EN 1993-1-8 §4.5.1(2) und sagt, dass das Ergebnis nur rechnerisch gilt.
+Damit widersprechen Ampel und Rechenweg sich nicht mehr (der zweite Befund aus v2.28).
+Zwei benannte Entscheidungen: **β_Lw bleibt je Segment** und **ohne Raupenangabe bleibt
+jedes Segment ein eigener Zug**. Neu: Harness-Sektion **S33**, Hinweiscode
+`msg_sv_l_eff_je_zug`. Geändert: `solver.js`, `rechenweg.js`, `i18n_kern.js`,
+`test_naht.js`, `dom_smoke_voll.js` — `ui.js`, `profil.js` und beide HTMLs blieben
+unberührt. Plandatei vollständig nachgezogen.
+**Basislinie 822 → 874 Assertions · Smokes 448/449 → 463/464 · i18n-Parität 0.**
+**Nächster Schritt: N5c-3 am Handy abnehmen, dann N5d — Einstieg „weiter mit N5d".**
+
 ═══════════════════════════════════════════════════════════════════════════
 Ende Schweißnaht-Historie.md · DT-ProfiSchweissnaht
 ═══════════════════════════════════════════════════════════════════════════
