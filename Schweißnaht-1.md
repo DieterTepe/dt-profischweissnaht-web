@@ -6,28 +6,30 @@
 > **Diese Datei ersetzt `Schweißnaht.md` vollständig.** Sie enthält den Stand nach dem
 > Konzeptgespräch (2026-07-23), nach der abgeschlossenen Recherche (R1–R6), nach der
 > Abstimmung vom **2026-07-24** (alle offenen Fragen aus Abschnitt 0 geklärt) und nach den
-> abgenommenen Bausteinen **N1, N2, N2b, N2c, N3, N4, N5a, N5b und N5c (alle drei
-> Etappen)** sowie der **gelieferten Etappe N5d** — Stand 2026-08-03.
+> abgenommenen Bausteinen **N1, N2, N2b, N2c, N3, N4 und N5 vollständig
+> (N5a, N5b, N5c-1 bis N5c-3 und N5d)** — Stand 2026-08-03.
 > Sie ist so geschrieben, dass ein **neuer Chat ohne Vorwissen** damit weiterarbeiten kann.
 > **Das WARUM steht in `Schweißnaht-Historie.md`** (Entscheidungslog + Changelog im
 > Volltext) — dort nachschlagen, bevor etwas geändert wird, das falsch aussieht.
 > Einstieg dort: **„weiter mit N6b"** — dann der Reihenfolge in Kickoff-Punkt 5b folgen.
-> (Ist N5d noch nicht am Handy abgenommen, lautet der Einstieg **„N5d abnehmen"**.)
 
 ```
-Plan-Version : 2.32 · Stand 2026-08-03
+Plan-Version : 2.33 · Stand 2026-08-03
 Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                N2c (Nahtbild-Grafik), N3 (Spannungen + beide Welten),
-               N4 (Rechenweg), N5a (UI-Grundgerüst), N5b (Eingabeseite) und
-               N5c (alle drei Etappen) — von Dieter am Handy geprüft und
-               ABGENOMMEN.
-               **Etappe N5d („Ausführung & Dokumentation" + Versionszeile)
-               ist gebaut und grün ausgeliefert — Abnahme am Handy steht noch
-               aus.** Damit ist Baustein N5 inhaltlich vollständig.
-               → NÄCHSTER SCHRITT: **N5d am Handy abnehmen** (11 Dateien
-                 überschreiben, Liste in 8.1). Danach Baustein **N6b**
-                 (ISO-2553-Symbolgenerator) — Einstieg „weiter mit N6b",
-                 **Umfang vor dem Bau abstimmen** (5.1-2).
+               N4 (Rechenweg) und **N5 VOLLSTÄNDIG** — N5a (UI-Grundgerüst),
+               N5b (Eingabeseite), N5c-1, N5c-2, N5c-3 und **N5d
+               („Ausführung & Dokumentation" + Versionszeile)** — alle von
+               Dieter am Handy geprüft und ABGENOMMEN.
+               Projektordner /mnt/project/ ist auf diesem Stand — am
+               2026-08-03 gegengeprüft: Vollständigkeit gegen 8.1, die drei
+               Testläufe direkt aus dem Ordner grün, `node --check` über alle
+               16 JS sauber, beide HTMLs mit genau einer Zeile Unterschied,
+               die 13 gelieferten Dateien byteweise identisch angekommen und
+               die acht nicht angefassten Module unverändert.
+               → NÄCHSTER SCHRITT: Baustein **N6b** (ISO-2553-Symbolgenerator)
+                 — Einstieg „weiter mit N6b", **Umfang vor dem Bau abstimmen
+                 (5.1-2)**.
                  Schnittstellen: 4.5 (naht.js), 4.6 (profil.js),
                  4.7 (svglib.js + schaubild.js), 4.8 (solver.js),
                  4.9 (rechenweg.js), 4.10 / 4.10b / 4.10c / 4.10d (ui.js).
@@ -91,8 +93,7 @@ welche Dateien zu überschreiben sind** → Dieter bestätigt am Handy → erst 
 Schritt. Danach Plan-Kopf (Version/Status/Basislinie) + Changelog pflegen.
 
 **5b) WIEDEREINSTIEG IN EINEM NEUEN CHAT — genau diese Reihenfolge:**
-Einstiegssatz von Dieter: **„weiter mit N6b"** (bzw. **„N5d abnehmen"**, solange
-die Abnahme von N5d aussteht).
+Einstiegssatz von Dieter: **„weiter mit N6b"**.
 1. Diese Datei komplett lesen (`Schweißnaht-1.md`, sie ist die alleinige Grundlage
    für das Bauen).
    **`Schweißnaht-Historie.md` NICHT vorab lesen** — sie enthält Entscheidungslog und
@@ -528,6 +529,13 @@ aber **nichts davon ist sichtbar** — der Info-ⓘ nennt bisher nur die Edition
 - **Jede Ausgabe** (Druck, PDF, Word, `.dts`) trägt dieselbe Zeile (N11).
 - Eine Assertion prüft, dass die angezeigte Kennung mit den geladenen Modulen
   übereinstimmt — im DOM-Smoke Modul für Modul gegen `win.DTN…VERSION`.
+
+> **Offener Punkt für N11 (aus der Abnahme von N5d, 2026-08-03):** Die Zeile zeigt die
+> **Modulnamen**, nicht die **Dateinamen** — `data` statt `daten.js`, `options` statt
+> `optionen.js`, `kern`/`hilfe`/`kerbfall` statt der drei `i18n_*.js`. Zum Erkennen eines
+> fehlenden oder alten Moduls reicht das; sobald die Zeile aber in Druck, PDF, Word und
+> `.dts` wandert, sollen die Namen den Dateinamen entsprechen. Das ist **eine Zeile je
+> Modul** (`NAME`) und gehört **in N11 mitgemacht**, nicht als eigener Bau.
 
 **Warum das mehr ist als Kosmetik:** Die Prüfdateien (`test_naht.js`, beide DOM-Smokes)
 sind **DEV-ONLY** und liegen nach V1 nur noch im Archiv, nicht beim ausgelieferten
@@ -1276,13 +1284,13 @@ noch nicht gebaut hat), und keine der vier benannten Lücken aus 2.4.
 | **N2c** ✅ | **Nahtbild-Grafik** *(abgenommen 2026-07-26)* | `svglib.js` + `schaubild.js`: SVG-Vorschau des Nahtbilds, Segmente farbig nach Gruppe, Schwerpunkt und Achsen, nicht geschweißte Kanten gestrichelt, Ecklücken sichtbar. Zugleich **Auswahl-Skizze** der Profileingabe. **Schnittstelle: Abschnitt 4.7.** |
 | **N3** ✅ | **Spannungen + beide Welten** *(abgenommen 2026-07-26)* | `solver.js`: σ⊥, τ⊥, τ∥ aus N/Q/M/T · Welt A (EC3, beide Verfahren) · Welt B (klassisch, Tabelle + Formel) · **Nachweis UND Auslegung** mit Aufrundung · Ampel. **Schnittstelle: Abschnitt 4.8.** |
 | **N4** ✅ | **Rechenweg** *(abgenommen 2026-07-26)* | `rechenweg.js`: selbstprüfende Schrittliste für N2/N2b/N3, dreisprachig, zweiter Rechenpfad je Schritt, Rechenprobe und Nachweis getrennt. **Schnittstelle: Abschnitt 4.9.** |
-| **N5** ✅ | **UI-Basis — N5a ✅, N5b ✅, N5c-1 ✅, N5c-2 ✅, N5c-3 ✅ abgenommen · N5d gebaut und geliefert (Abnahme offen)** | 2 HTMLs, `style.css`, Formular mit aufklappbaren Bereichen und Freischalt-Haken, Ergebnis-Kacheln, Ampel, i18n, Theme (**Start immer dunkel**), Laien-ⓘ, Block „Ausführung & Dokumentation" (ISO 5817 + EXC). **Erster Handy-Test.** |
+| **N5** ✅ | **UI-Basis — VOLLSTÄNDIG ABGENOMMEN: N5a, N5b, N5c-1, N5c-2, N5c-3 und N5d** | 2 HTMLs, `style.css`, Formular mit aufklappbaren Bereichen und Freischalt-Haken, Ergebnis-Kacheln, Ampel, i18n, Theme (**Start immer dunkel**), Laien-ⓘ, Block „Ausführung & Dokumentation" (ISO 5817 + EXC). **Erster Handy-Test.** |
 | **N6b** ⬅ | **ISO-2553-Symbolgenerator** *(nächster Bau — Umfang vorher abstimmen, 5.1-2)* | `symbol.js`: Pfeil-/Gegenseite, a- bzw. z-Maß, Länge, Rundumnaht, Baustellennaht. Nutzt `svglib.js` aus N2c. Bewusst **vor** dem Launch — Verkaufsargument. |
 | **N7** | **Presets** | Die 6 Starter als Profil-/Kantendaten auf `profil.js`, **mit Merkmalen für die kontextbezogene Beispielliste** (3.2). |
 | **N8** | **Assistent** | `assistent.js` (DOM-freie Dialoglogik) + Overlay-UI, Button-Einstieg, tabellengestützt aus `optionen.js`, mit Erklärungen/Tipps/Skizzen je Dialog, Übernahme vorhandener Eingaben. |
 | **N9** | **Vorwärmung & t8/5** | `thermik.js` + Panel + Rechenweg + Assistenten-Schritte. |
 | **N10** | **Kosten/Zeit/Draht** | `kosten.js` + Panel + Rechenweg + Assistenten-Schritte. |
-| **N11** | **Ausgaben** | `report.js`: `.dts` speichern/öffnen (**erst leeren, dann laden** + Formatversion), Druck/PDF, Word (.rtf), `guard()`-Gating. Aktionsleiste **oben**, Dateiname trägt Bezeichnung + Datum. **Jede Ausgabe trägt die Versionszeile** (3.6). |
+| **N11** | **Ausgaben** | `report.js`: `.dts` speichern/öffnen (**erst leeren, dann laden** + Formatversion), Druck/PDF, Word (.rtf), `guard()`-Gating. Aktionsleiste **oben**, Dateiname trägt Bezeichnung + Datum. **Jede Ausgabe trägt die Versionszeile** (3.6) — **dabei die Modulnamen an die Dateinamen angleichen**, siehe Merkposten in 3.6. |
 | **N12** | **Edition/Registrierung/Impressum** | Testbalken, Aktivierungsdialog beim Erststart (Name + Schlüssel, **keine Formatprüfung**), „Vollversion · lizenziert für <Name>", **10-s-Long-Press** = Reset, Info-ⓘ mit Impressum. |
 | **★** | **LAUNCH-CHECKPOINT** | **Ab hier verkaufsfähig.** Dieter entscheidet: weiterbauen oder veröffentlichen. |
 | **N13** | **Ermüdung — Rechenkern** | `ermuedung.js`: Wöhlerlinie m=3/5, γ_Mf, Miner, Kollektive + Rechenweg. **Hier Dieter nach seinen Praxis-Kerbfällen fragen.** |
@@ -1404,9 +1412,11 @@ durch — ohne roten Nachweis, der keiner ist.
 
 ---
 
-#### 5.1-1 · N5d — **GEBAUT UND GELIEFERT 2026-08-03** *(Abnahme am Handy offen)*
+#### 5.1-1 · N5d — **GEBAUT, GELIEFERT UND ABGENOMMEN 2026-08-03**
 
-> ✅ **Vollständig gebaut, grün ausgeliefert.** Was unten steht, ist der abgestimmte
+> ✅ **Gebaut, grün ausgeliefert und von Dieter am Handy ABGENOMMEN — ohne Nacharbeit.**
+> Belegt am Handy: die Versionszeile nennt 13 von 13 Modulen mit Kennung, der Block
+> klappt auf und verhält sich wie beschrieben. Was unten steht, ist der abgestimmte
 > Umfang — er bleibt als **Begründung** stehen, gebaut wird daraus nichts mehr.
 >
 > **Was geliefert wurde:**
@@ -1430,7 +1440,8 @@ durch — ohne roten Nachweis, der keiner ist.
 > die WPS-Nummer bleibt WEG**, solange N11 die Ausgaben noch nicht gebaut hat.
 >
 > **Basislinie 874 → 984 Assertions · Smokes 463/464 → 513/514 · i18n-Parität 0.**
-> **Offen: nur die Abnahme am Handy.**
+> **Nichts offen.** Ein einziger Punkt ist an die Ausgaben weitergereicht worden:
+> die Modulnamen der Versionszeile werden in **N11** an die Dateinamen angeglichen (3.6).
 
 **Der abgestimmte Umfang (Begründung, nicht mehr Auftrag):**
 
@@ -1733,7 +1744,7 @@ AWS/US-Normen, EN 1993-1-8:2024 (2. Generation, β_w,mod — Werte noch nicht be
 | **N5c-1** ✅ | *(abgenommen 2026-07-28)* **Feldbereinigung** (`l` entfällt, `t1` profilabhängig, `t2` freiwillig — begründet in 5.1), **drei Beispiele** hinter „Beispiel laden", **Übersetzung Formular → `profil_eingabe`**, „Berechnen" rechnet wirklich, Ergebnis-Kacheln mit Ampel. **Schnittstelle: 4.10c.** | Beispiel antippen, rechnen, eine Zahl und eine Ampel sehen |
 | **N5c-2** ✅ | *(abgenommen 2026-07-28)* **Rechenweg aus N4 angezeigt** (10 Abschnitte, seit der Abnahme **aufklappbar**), Nahtbild-Grafik eingebunden, die zwei Häkchenarten optisch getrennt, Liste 2.4, Warnungen und ehrliche Lücken, Zahlformat je Sprache aus `rechenweg.zahl()`. **Schnittstelle: 4.10c.** | Ein vollständiger Nachweis von der Eingabe bis zur Quellenangabe |
 | **N5c-3** ✅ | *(gebaut, geliefert und **abgenommen 2026-08-03**, ohne Nacharbeit — Ergebnis in 5.1-0)* **„Nahtzug statt Segment":** die Prüfung `l_eff ≥ max(6a; 30)` lief je Segment statt je durchlaufendem Nahtzug — dadurch fiel **jedes I- und U-Profil mit umlaufender Naht** durch, weil die Flanschkante nur `t_f` lang ist. Dazu zusammengeführt: Ampel und Rechenweg widersprachen sich. Die Längenprüfung ist jetzt eine **Warnung** | Ein H-Träger und ein U-Profil, umlaufend geschweißt, rechnen durch — ohne roten Nachweis, der keiner ist |
-| **N5d** ✅* | *(gebaut und grün ausgeliefert 2026-08-03 — **Abnahme am Handy offen**, Ergebnis in 5.1-1)* Block „Ausführung & Dokumentation": ISO 5817 + EXC angezeigt und ehrlich als nicht rechenwirksam beschriftet, **EXC schlägt die Bewertungsgruppe vor** (überschreibbar, mit sichtbarer Herkunft), Ermüdungshinweis ohne Scheinrechnung, Anforderungszeile im Ergebnis, **vier benannte Lücken in Liste 2.4**. Dazu die **Versionszeile im Info-ⓘ** und die drei nachgerüsteten `VERSION`-Kennungen (3.6). **Schnittstelle: 4.10d.** | Der Block klappt auf, EXC füllt die Bewertungsgruppe mit sichtbarer Herkunft und lässt sie überschreibbar; der Programmstand ist am Handy ablesbar |
+| **N5d** ✅ | *(gebaut, geliefert und **abgenommen 2026-08-03**, ohne Nacharbeit — Ergebnis in 5.1-1)* Block „Ausführung & Dokumentation": ISO 5817 + EXC angezeigt und ehrlich als nicht rechenwirksam beschriftet, **EXC schlägt die Bewertungsgruppe vor** (überschreibbar, mit sichtbarer Herkunft), Ermüdungshinweis ohne Scheinrechnung, Anforderungszeile im Ergebnis, **vier benannte Lücken in Liste 2.4**. Dazu die **Versionszeile im Info-ⓘ** und die drei nachgerüsteten `VERSION`-Kennungen (3.6). **Schnittstelle: 4.10d.** | Der Block klappt auf, EXC füllt die Bewertungsgruppe mit sichtbarer Herkunft und lässt sie überschreibbar; der Programmstand ist am Handy ablesbar |
 
 **N8 — Assistent (drei Etappen):**
 | Etappe | Inhalt |
@@ -1750,8 +1761,9 @@ AWS/US-Normen, EN 1993-1-8:2024 (2. Generation, β_w,mod — Werte noch nicht be
 | **N14a** | `kerbfall.js`: **Struktur vollständig** (Codes, Kategorien, Anwendungsbedingungen, Verweis auf Skizze) mit den ersten Details — ab hier ist jede Lücke sichtbar statt still |
 | **N14b…** | Füllung in Etappen von je 8–12 Details, jedes mit eigener SVG-Skizze und **2 Quellen**. Hier wird Dieter nach seinen Praxis-Kerbfällen gefragt (Reihenfolge der Füllung) |
 
-**Alle Etappen von N5 sind gebaut** — N5a bis N5c-3 abgenommen, N5d geliefert und in
-der Abnahme. **Baustein N5 ist damit inhaltlich abgeschlossen.**
+**Alle Etappen von N5 sind gebaut und abgenommen** — N5a, N5b, N5c-1 bis N5c-3 und N5d.
+**Baustein N5 ist abgeschlossen.** Die Etappenteilung hat sich über sechs Lieferungen
+getragen: jede war einzeln lauffähig, einzeln prüfbar und einzeln abnehmbar.
 
 **Nicht geteilt** (einteilig): N6b, N7, N9, N10, N11, N12, N15 — bei N4 hat sich die
 Einschätzung bestätigt.
@@ -1840,7 +1852,7 @@ Volltext (ab 2026-07-28 ausgelagert). **Nur bei Bedarf lesen**, Regel in Abschni
 **Referenzdateien (read-only, nur Muster):** `DT-ProfiPassung_Testversion-Orginal.html` ·
 `DT-ProfiPassung.html` · `DT-ProfiPassung_Test.html`
 
-### 8.1 Dateistand nach N5d *(Stand 2026-08-03)*
+### 8.1 Dateistand nach N5d — abgenommen *(Stand 2026-08-03)*
 
 **Produktdateien (13 Module + style.css + 2 HTMLs):**
 | Datei | Stand |
@@ -1900,8 +1912,16 @@ seit N2b als `info[i].raupe`; sie wurde nur nie benutzt.
 angefasst. Die vier neuen Lücken laufen durch `daten.js` in Solver und Rechenweg,
 ohne dass dort eine Zeile geändert wurde.
 
-**Stand N5c-3, von Dieter am 2026-08-03 bestätigt:** Der Projektordner `/mnt/project/` trug
-genau diesen Stand. **Alle N5c-Lieferungen — N5c-1, N5c-2, Klappmechanik und N5c-3 — sind
+**Von Dieter am 2026-08-03 bestätigt — N5d eingespielt und ABGENOMMEN.** Der Projektordner
+`/mnt/project/` trägt genau diesen Stand. Gegengeprüft direkt aus dem Ordner: Vollständigkeit
+gegen die Tabelle oben, die drei Testläufe grün (**984 / 513 / 514 · 0 Fehler**),
+`node --check` über alle 16 JS sauber, beide HTMLs mit genau einer Zeile Unterschied, die
+**13 gelieferten Dateien byteweise identisch** angekommen und die **acht nicht angefassten
+Module unverändert** (`naht.js`, `profil.js`, `svglib.js`, `schaubild.js`, `solver.js`,
+`rechenweg.js`, `validate.js`, `dom_smoke_test.js`) — nichts versehentlich überschrieben.
+
+**Frühere Bestätigung (Stand N5c-3, 2026-08-03):** Der Projektordner trug
+genau jenen Stand. **Alle N5c-Lieferungen — N5c-1, N5c-2, Klappmechanik und N5c-3 — sind
 eingespielt, am Handy geprüft und ABGENOMMEN**, N5c-3 ohne Nacharbeit.
 Zusätzlich **gegengeprüft, direkt aus dem Projektordner**: Vollständigkeit gegen die
 Tabelle oben, die drei Testläufe grün (**874 / 463 / 464 · 0 Fehler**), `node --check` über
@@ -2044,6 +2064,7 @@ Die Blöcke stehen dort in dieser Reihenfolge; jeder nennt Datum und Baustein:
 - Aus der Rückmeldung 2026-08-03 (N5c-3 abgenommen)
 - Aus der Abstimmung 2026-08-03 (vor N5d)
 - Aus N5d (2026-08-03) — Ausführung & Dokumentation, Versionszeile, Vorschlag statt Zwang
+- Aus der Rückmeldung 2026-08-03 (N5d abgenommen)
 - Aus der Rückmeldung 2026-07-27 (N5a abgenommen)
 - Aus N5a (2026-07-26)
 - Aus der Rückmeldung 2026-07-26 (N2c abgenommen)
@@ -2060,19 +2081,6 @@ Changelog — **die vollständige Fassung ab v1.0 steht in `Schweißnaht-Histori
 
 Hier stehen nur die letzten drei Einträge. Wer wissen will, wie eine Entscheidung
 zustande kam, findet die Kette dort — lückenlos ab der Erstfassung vom 2026-07-23.
-
-**v2.30 (2026-08-03):** **Etappe N5c-3 von Dieter am Handy geprüft und ABGENOMMEN —
-ohne Nacharbeit.** Damit ist Baustein N5 bis auf N5d fertig. Der Projektordner wurde
-gegengeprüft: Vollständigkeit gegen 8.1, die drei Testläufe direkt aus dem Ordner grün,
-beide HTMLs mit genau einer Zeile Unterschied, und die sieben gelieferten Dateien
-byteweise identisch angekommen. Plandatei auf den abgenommenen Stand gesetzt (Kopfblock,
-Kickoff-Punkt 12, Bausteintabelle, 5.1, 5.2, 8.1, Wegweiser 9.3); die Fallunterscheidung
-„abgenommen ja/nein" im Kopfblock entfällt, der Einstieg lautet ohne Vorbehalt
-**„weiter mit N5d"**. Im Changelog dieser Datei ist v2.27 herausgerollt — er steht
-vollständig in der Historie. **Code unverändert.**
-**Basislinie unverändert und verbindlich: 874 Assertions · Smokes 463/464 · i18n-Parität 0.**
-**Nächster Schritt: N5d — Umfang vor dem Bau abstimmen (5.1-1), vorher die drei
-fehlenden `VERSION`-Kennungen nachrüsten (3.6).**
 
 **v2.31 (2026-08-03):** **Umfang von N5d abgestimmt und in 5.1-1 ausformuliert** — noch im
 N5c-3-Chat, damit er einen Chatwechsel überlebt. Aufgenommen: die zwei bereits in
@@ -2113,6 +2121,27 @@ Geändert: `daten.js`, `optionen.js`, `ui.js`, `i18n_kern.js`, `i18n_hilfe.js`,
 **Basislinie 874 → 984 Assertions · Smokes 463/464 → 513/514 · i18n-Parität 0.**
 **Nächster Schritt: N5d am Handy abnehmen, dann N6b — Einstieg „weiter mit N6b",
 Umfang vorher abstimmen (5.1-2).**
+
+
+
+**v2.33 (2026-08-03):** **Etappe N5d von Dieter am Handy geprüft und ABGENOMMEN — ohne
+Nacharbeit. Damit ist Baustein N5 vollständig abgeschlossen.** Belegt wurde am Handy, was
+in 5.1-1 gefordert war: die Versionszeile im Info-ⓘ nennt **13 von 13 Modulen mit Kennung**
+(kein Fragezeichen, alle Nummern stimmen mit der Lieferung überein), und der Block
+„Ausführung & Dokumentation" verhält sich wie beschrieben. Der Projektordner wurde
+gegengeprüft: Vollständigkeit gegen 8.1, die drei Testläufe direkt aus dem Ordner grün
+(984 / 513 / 514 · 0 Fehler), `node --check` über alle 16 JS sauber, beide HTMLs mit genau
+einer Zeile Unterschied, die **13 gelieferten Dateien byteweise identisch** angekommen und
+die **acht nicht angefassten Module unverändert**. Ein einziger Punkt ist weitergereicht
+worden: die Versionszeile zeigt **Modulnamen statt Dateinamen** (`data` statt `daten.js`,
+`options` statt `optionen.js`, `kern`/`hilfe`/`kerbfall` statt der drei `i18n_*.js`) — das
+wird in **N11** mitgemacht, wenn die Zeile in Druck, PDF, Word und `.dts` wandert
+(Merkposten in 3.6, Hinweis in der Bausteintabelle bei N11). Plandatei auf den abgenommenen
+Stand gesetzt (Kopfblock, Kickoff 5b, Bausteintabelle, 3.6, 5.1-1, 5.2, 8.1, Wegweiser 9.3).
+**Code unverändert.**
+**Basislinie unverändert und verbindlich: 984 Assertions · Smokes 513/514 · i18n-Parität 0.**
+**Nächster Schritt: N6b (ISO-2553-Symbolgenerator) — Einstieg „weiter mit N6b",
+Umfang vor dem Bau abstimmen (5.1-2).**
 
 
 ═══════════════════════════════════════════════════════════════════════════

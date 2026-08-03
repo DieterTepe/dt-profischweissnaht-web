@@ -1169,6 +1169,54 @@ blieben unberührt. Plandatei vollständig nachgezogen (v2.32).
 **Nächster Schritt: N5d am Handy abnehmen, dann N6b — Einstieg „weiter mit N6b".**
 
 
+
+---
+
+**Aus der Rückmeldung 2026-08-03 (N5d abgenommen):**
+
+- **N5d ist ohne Nacharbeit durchgegangen.** Dieter hat am Handy geprüft, was in 5.1-1 als
+  Beleg gefordert war: die Versionszeile nennt 13 von 13 Modulen mit Kennung, kein
+  Fragezeichen, alle Nummern stimmen mit der Lieferung überein — und der Block
+  „Ausführung & Dokumentation" verhält sich wie beschrieben. **Damit ist Baustein N5
+  vollständig abgeschlossen**, über sechs einzeln abgenommene Etappen.
+- **Die Versionszeile hat sich in derselben Stunde bewährt, in der sie gebaut wurde.** Sie
+  war als Schutz gegen das Auseinanderdriften von Programm und Archiv gedacht (3.6). Bei
+  der Abnahme hat sie aber vor allem eines geleistet: Dieter konnte am Handy selbst sehen,
+  dass alle 11 Dateien angekommen sind — ohne Dateidaten zu vergleichen und ohne Rückfrage.
+  **Aus einer Entwicklerhilfe ist die billigste Einspielkontrolle des Projekts geworden.**
+- **Ein Befund aus der Abnahme, weitergereicht statt schnell repariert:** Die Zeile zeigt
+  **Modulnamen**, nicht **Dateinamen** — `data` statt `daten.js`, `options` statt
+  `optionen.js`, `kern`/`hilfe`/`kerbfall` statt der drei `i18n_*.js`. Zum Erkennen eines
+  fehlenden Moduls reicht das vollkommen; sobald die Zeile aber in Druck, PDF, Word und
+  `.dts` wandert, sollen die Namen den Dateinamen entsprechen. Das ist **eine Zeile je
+  Modul** und gehört zu **N11**. Es jetzt nachzuschieben hätte eine abgenommene Etappe
+  wieder geöffnet, um eine Kosmetik zu ändern, die erst in N11 sichtbar wird —
+  **die Etappe bleibt zu, der Punkt steht im Plan.**
+- **Der Ordnerabgleich hat sich zum zweiten Mal als feste Handlung bewährt.** Nach dem
+  Einspielen wurden nicht nur die drei Testläufe aus dem Ordner gestartet, sondern auch die
+  13 gelieferten Dateien byteweise verglichen **und** die acht nicht angefassten Module
+  gegen den Vorstand geprüft. Der zweite Teil ist neu: er fängt das ab, was der erste nicht
+  sieht — eine Datei, die *zusätzlich* mit überschrieben wurde. Kosten: ein Befehl.
+- **Was diese Etappe über die Reihenfolge sagt:** Der eigentliche Bau (Block anzeigen,
+  Vorschlag verdrahten) war klein. Groß war der Vorlauf — der Umfang stand seit dem
+  Vorgängerchat in 5.1-1, die Datengrundlage lag seit N1 im Code, der Befund zu den drei
+  fehlenden Kennungen seit dem 2026-07-28 im Plan. **Eine Etappe, die vollständig
+  vorbereitet ist, kostet fast nur noch Tippen.**
+
+**v2.33 (2026-08-03):** **Etappe N5d von Dieter am Handy geprüft und ABGENOMMEN — ohne
+Nacharbeit. Baustein N5 ist damit vollständig abgeschlossen.** Der Projektordner wurde
+gegengeprüft: Vollständigkeit gegen 8.1, die drei Testläufe direkt aus dem Ordner grün
+(984 / 513 / 514 · 0 Fehler), `node --check` über alle 16 JS sauber, beide HTMLs mit genau
+einer Zeile Unterschied, die 13 gelieferten Dateien byteweise identisch angekommen und die
+acht nicht angefassten Module unverändert. Ein Punkt wurde an **N11** weitergereicht: die
+Versionszeile zeigt Modulnamen statt Dateinamen — das wird angeglichen, wenn die Zeile in
+die Ausgaben wandert (Merkposten in 3.6, Hinweis bei N11 in der Bausteintabelle). Plandatei
+auf den abgenommenen Stand gesetzt; im Changelog dort ist v2.30 herausgerollt — Volltext
+steht hier. **Code unverändert.**
+**Basislinie unverändert und verbindlich: 984 Assertions · Smokes 513/514 · i18n-Parität 0.**
+**Nächster Schritt: N6b — Einstieg „weiter mit N6b", Umfang vor dem Bau abstimmen (5.1-2).**
+
+
 ═══════════════════════════════════════════════════════════════════════════
 Ende Schweißnaht-Historie.md · DT-ProfiSchweissnaht
 ═══════════════════════════════════════════════════════════════════════════
