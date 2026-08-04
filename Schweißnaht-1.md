@@ -7,8 +7,8 @@
 > Konzeptgespräch (2026-07-23), nach der abgeschlossenen Recherche (R1–R6), nach der
 > Abstimmung vom **2026-07-24** (alle offenen Fragen aus Abschnitt 0 geklärt) und nach den
 > abgenommenen Bausteinen **N1, N2, N2b, N2c, N3, N4 und N5 vollständig
-> (N5a, N5b, N5c-1 bis N5c-3 und N5d)**, **N6b**, **N7** und **N8a**, dazu
-> **N8b und N8c gebaut und geliefert (Abnahme offen)** — Stand 2026-08-04.
+> (N5a, N5b, N5c-1 bis N5c-3 und N5d)**, **N6b**, **N7** und **N8 vollständig
+> (N8a, N8b-1, N8b-2, N8c)** — Stand 2026-08-04.
 > Sie ist so geschrieben, dass ein **neuer Chat ohne Vorwissen** damit weiterarbeiten kann.
 > **Das WARUM steht in `Schweißnaht-Historie.md`** (Entscheidungslog + Changelog im
 > Volltext) — dort nachschlagen, bevor etwas geändert wird, das falsch aussieht.
@@ -17,7 +17,7 @@
 > in 4.11 und in der Historie. Im Projektordner liegt **keine Vorlaufdatei** mehr.
 
 ```
-Plan-Version : 2.44 · Stand 2026-08-04
+Plan-Version : 2.45 · Stand 2026-08-04
 Codestand    : Plan 2.44 · ui 0.10.0 · N8c
                (Die Planversion, gegen die der CODE gebaut ist. Sie steht auch
                in ui.js als PLAN und wird von einer Assertion damit verglichen.
@@ -47,15 +47,17 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                und `ui 0.9.1`, und **alle zwölf Beispiele grün, Nachweis
                erfüllt** — die neue Skript-Zeile in beiden HTMLs hat nichts
                gestört.
-               **Etappen N8b und N8c sind GEBAUT und GELIEFERT** —
-               Abnahme steht aus. Damit ist **Baustein N8 vollständig**:
-               der Assistent führt, zeichnet und mündet in die volle
-               Anzeige. Neu dabei ist `skizze.js` (**16 Module**).
-               → NÄCHSTER SCHRITT: **N8 am Handy abnehmen.** Danach
-                 Baustein **N9 (Vorwärmung & t8/5)** — Einstieg
-                 „weiter mit N9", **Umfang vor dem Bau abstimmen**. Ab
-                 jetzt gilt die Prozessregel aus 3.3: **jeder weitere
-                 Baustein liefert seine Assistenten-Schritte MIT.**
+               **Baustein N8 ist von Dieter am Handy geprüft und
+               ABGENOMMEN (2026-08-04), ohne Nacharbeit.** Belegt: die
+               Versionszeile mit **16 Modulen** samt `skizze 0.1.0-N8b`
+               und `ui 0.10.0`; ein Durchlauf des **Auslegungsfalls mit
+               Moment** (a gesucht) grün mit erfülltem Nachweis; und der
+               **Sprachwechsel bei offenem Dialog** in allen drei Sprachen.
+               → NÄCHSTER SCHRITT: Baustein **N9 (Vorwärmung & t8/5)** —
+                 Einstieg „weiter mit N9", **Umfang vor dem Bau
+                 abstimmen**. Ab jetzt gilt die Prozessregel aus 3.3:
+                 **jeder weitere Baustein liefert seine
+                 Assistenten-Schritte MIT.**
                  Schnittstellen: 4.5 (naht.js), 4.6 (profil.js),
                  4.7 (svglib.js + schaubild.js), 4.8 (solver.js),
                  4.9 (rechenweg.js), 4.10 / 4.10b / 4.10c / 4.10d (ui.js),
@@ -598,8 +600,9 @@ aber **nichts davon ist sichtbar** — der Info-ⓘ nennt bisher nur die Edition
 
 > **Zweiter offener Punkt für N11 (aus der Abnahme von N7, 2026-08-04):** Die
 > Modulkennungen sind **nicht alle mitgewachsen**. N7 hat in `solver.js` und
-> `rechenweg.js` tief eingegriffen, N8a in `validate.js` — alle drei melden
-> aber weiterhin `0.1.0-N3`, `0.1.0-N4` bzw. `0.1.0-N1`. Bei der Abnahme von
+> `rechenweg.js` tief eingegriffen, N8a in `validate.js`, N8b in
+> `assistent.js` — alle vier melden aber weiterhin `0.1.0-N3`, `0.1.0-N4`,
+> `0.1.0-N1` bzw. `0.1.0-N8a`. Bei der Abnahme von
 > N8a stand `validate 0.1.0-N1` unverändert in der Zeile, obwohl das Modul
 > gerade die Feld-zu-Bereich-Zuordnung bekommen hatte. **Die Zeile belegt,
 > dass 15 Module DA sind — nicht, dass sie AKTUELL sind.** Nur `ui.js` wandert mit, weil es als einziges eine gepflegte
@@ -1473,7 +1476,7 @@ im Wörterbuch; eine weitere Assertion verbietet einen zweiten Text daneben.
 | **N5** ✅ | **UI-Basis — VOLLSTÄNDIG ABGENOMMEN: N5a, N5b, N5c-1, N5c-2, N5c-3 und N5d** | 2 HTMLs, `style.css`, Formular mit aufklappbaren Bereichen und Freischalt-Haken, Ergebnis-Kacheln, Ampel, i18n, Theme (**Start immer dunkel**), Laien-ⓘ, Block „Ausführung & Dokumentation" (ISO 5817 + EXC). **Erster Handy-Test.** |
 | **N6b** ✅ | **ISO-2553-Symbolgenerator — ABGENOMMEN 2026-08-04** | `symbol.js`: Pfeil-/Gegenseite, a- bzw. z-Maß, Länge, Rundumnaht, Baustellennaht. Nutzt `svglib.js` aus N2c. Bewusst **vor** dem Launch — Verkaufsargument. |
 | **N7** ✅ | **Beispielkatalog — ABGENOMMEN 2026-08-04** | **Zwölf Beispiele, sechs je Bemessungswelt**, als reine Daten in `optionen.js` auf `profil.js` aufgesetzt, mit Merkmalen für die **kontextbezogene Beispielliste** (3.2). Hat **vier Fehler aus N5c aufgedeckt und behoben** — Ergebnis in 5.1-3. |
-| **N8** ✅ | **Assistent — vollständig gebaut 2026-08-04, Abnahme offen** | `assistent.js` (DOM-freie Dialoglogik) + Overlay-UI, Button-Einstieg, tabellengestützt aus `optionen.js`, mit Erklärungen/Tipps/Skizzen je Dialog, Übernahme vorhandener Eingaben. |
+| **N8** ✅ | **Assistent — vollständig ABGENOMMEN 2026-08-04** | `assistent.js` (DOM-freie Dialoglogik) + Overlay-UI, Button-Einstieg, tabellengestützt aus `optionen.js`, mit Erklärungen/Tipps/Skizzen je Dialog, Übernahme vorhandener Eingaben. |
 | **N9** ⬅ | **Vorwärmung & t8/5** *(nächster Bau — Umfang vorher abstimmen)* | `thermik.js` + Panel + Rechenweg + Assistenten-Schritte. |
 | **N10** | **Kosten/Zeit/Draht** | `kosten.js` + Panel + Rechenweg + Assistenten-Schritte. |
 | **N11** | **Ausgaben** | `report.js`: `.dts` speichern/öffnen (**erst leeren, dann laden** + Formatversion), Druck/PDF, Word (.rtf), `guard()`-Gating. Aktionsleiste **oben**, Dateiname trägt Bezeichnung + Datum. **Jede Ausgabe trägt die Versionszeile** (3.6) — **dabei die Modulnamen an die Dateinamen angleichen UND die Modulkennungen mitwachsen lassen**, beide Merkposten in 3.6. |
@@ -1905,7 +1908,14 @@ Sonst ist **nichts** zu sehen — das Overlay kommt mit N8b.
 
 ---
 
-#### 5.1-5 · N8b und N8c — **GEBAUT UND GELIEFERT 2026-08-04, Abnahme offen**
+#### 5.1-5 · N8b und N8c — **GEBAUT, GELIEFERT UND ABGENOMMEN 2026-08-04**
+
+> ✅ **Von Dieter am Handy geprüft und ABGENOMMEN — ohne Nacharbeit.**
+> Geprüft wurden ausdrücklich die drei Punkte, an denen es hätte hängen
+> können: die Versionszeile mit 16 Modulen, der **Auslegungsfall mit
+> Moment** über den Assistenten (grün, Nachweis erfüllt) und der
+> **Sprachwechsel bei offenem Dialog** in allen drei Sprachen.
+> Was unten steht, bleibt als **Begründung**.
 
 **Dieters Festlegung vorab:** *erst alle Skizzen bauen*, dann das Overlay.
 Daraus wurde die vorgeschaltete Etappe **N8b-1**.
@@ -2199,8 +2209,8 @@ AWS/US-Normen, EN 1993-1-8:2024 (2. Generation, β_w,mod — Werte noch nicht be
 | Etappe | Inhalt |
 |---|---|
 | **N8a** ✅ | **ABGENOMMEN 2026-08-04.** `assistent.js`: DOM-freie Dialoglogik, Schrittfolge aus `optionen.js` und `validate.js`, Verzweigung, Umkehrbarkeit jedes Schritts, Übernahme bereits gefüllter Felder — vollständig in Node testbar, **ohne** Oberfläche. Ergebnis in 5.1-4 |
-| **N8b** ✅ | **GEBAUT UND GELIEFERT 2026-08-04, Abnahme offen.** Overlay-UI: Button-Einstieg, ein Dialogfenster je Schritt mit Laien-Erklärung, Standardwert-Tipp, **Skizze** und antippbarer Auswahl (3.3). Vorgeschaltet **N8b-1**: neues Modul `skizze.js`. Ergebnis in 5.1-5 |
-| **N8c** ✅ | **GEBAUT UND GELIEFERT 2026-08-04, Abnahme offen.** Mündung in die volle Anzeige mit Rechenweg und Liste 2.4; **ab hier gilt die Prozessregel**, dass jeder spätere Baustein seine Assistenten-Schritte mitliefert |
+| **N8b** ✅ | **ABGENOMMEN 2026-08-04.** Overlay-UI: Button-Einstieg, ein Dialogfenster je Schritt mit Laien-Erklärung, Standardwert-Tipp, **Skizze** und antippbarer Auswahl (3.3). Vorgeschaltet **N8b-1**: neues Modul `skizze.js`. Ergebnis in 5.1-5 |
+| **N8c** ✅ | **ABGENOMMEN 2026-08-04.** Mündung in die volle Anzeige mit Rechenweg und Liste 2.4; **ab hier gilt die Prozessregel**, dass jeder spätere Baustein seine Assistenten-Schritte mitliefert |
 
 **N13/N14 — Ermüdung und Kerbfallkatalog:**
 | Etappe | Inhalt |
@@ -2693,29 +2703,6 @@ Changelog — **die vollständige Fassung ab v1.0 steht in `Schweißnaht-Histori
 Hier stehen nur die letzten drei Einträge. Wer wissen will, wie eine Entscheidung
 zustande kam, findet die Kette dort — lückenlos ab der Erstfassung vom 2026-07-23.
 
-**v2.42 (2026-08-04):** **Etappe N8a gebaut und geliefert — der Assistent kann
-denken, aber noch nicht sprechen.** Neues Modul `assistent.js`: DOM-freie
-Dialoglogik, Schrittfolge **abgeleitet** aus `optionen.js` und `validate.js`
-statt handgepflegt, jeder Schritt umkehrbar, Sitzungen unveränderlich.
-Abgestimmter Umfang (Dieter): Felder nach Bereichen gebündelt, Zusatzbereiche
-mit dabei, Zeichnungssymbol als ein freiwilliger Schritt; N8b und N8c werden
-zusammen gebaut. Neu in `validate.js`: **Feld → Bereich** am Feld selbst, damit
-der Assistent nicht auf `ui.js` zugreifen muss — beidseitig gesichert.
-**Die Kernprobe:** alle **zwölf Beispiele** laufen einmal durch das Formular
-und einmal durch den Assistenten und liefern **dieselbe Ausnutzung auf zwölf
-Nachkommastellen**. Sie hat auch gleich einen Fehler gefangen: der erste
-Entwurf ließ die „eigener Wert"-Felder weg, wodurch **Moment, Torsion und
-Eckenausrundung** aus dem Dialog fielen und sieben Beispiele anders
-herauskamen — Plan 3.3 verlangt ausdrücklich das Gegenteil. Geändert: neu
-`assistent.js`, dazu `validate.js`, `i18n_kern.js`, `ui.js` (nur Kennungen),
-beide HTMLs, `test_naht.js` (**S40**), `dom_smoke_voll.js`.
-**Basislinie 1589 → 1748 Assertions · Smokes 611/612 → 614/615 · i18n-Parität 0.**
-**Codestand 2.39 → 2.42** (`ui` 0.9.0 → 0.9.1, Etappe N7 → N8a, **15 Module**).
-**Nächster Schritt: N8a am Handy abnehmen, dann N8b+N8c zusammen.
-Einstieg: „weiter mit N8b".**
-
-
-
 **v2.43 (2026-08-04):** **Etappe N8a von Dieter am Handy geprüft und ABGENOMMEN —
 ohne Nacharbeit.** Die Versionszeile zeigt „Programmstand N8a · Plan 2.42 ·
 15 Module" mit `assistent 0.1.0-N8a` und `ui 0.9.1`; **alle zwölf Beispiele
@@ -2753,6 +2740,23 @@ Geändert: neu `skizze.js`, dazu `assistent.js`, `i18n_kern.js`, `ui.js`,
 **Codestand 2.42 → 2.44** (`ui` 0.9.1 → 0.10.0, Etappe N8a → N8c, **16 Module**).
 **Nächster Schritt: N8 am Handy abnehmen, dann Baustein N9 (Vorwärmung & t8/5).
 Ab jetzt liefert jeder Baustein seine Assistenten-Schritte MIT (3.3).**
+
+
+
+**v2.45 (2026-08-04):** **Baustein N8 vollständig von Dieter am Handy geprüft
+und ABGENOMMEN — ohne Nacharbeit.** Die Versionszeile zeigt „Programmstand
+N8c · Plan 2.44 · 16 Module" mit `skizze 0.1.0-N8b` und `ui 0.10.0`. Geprüft
+wurden gezielt die drei heiklen Punkte: ein **Auslegungsfall mit Moment** über
+den Assistenten (a gesucht) läuft grün mit erfülltem Nachweis; die
+**Auswahlkacheln** tragen ihre Bilder; und der **Sprachwechsel bei offenem
+Dialog** trägt Überschrift, Fortschritt, Erklärung, Tipp, Kacheltexte und
+Knöpfe in allen drei Sprachen mit. Der Merkposten aus 3.6 hat sich zum vierten
+Mal gemeldet: `assistent 0.1.0-N8a` stand unverändert in der Zeile, obwohl N8b
+dort die Skizzenzuordnung eingebaut hat — 3.6 ist um dieses Modul erweitert,
+Termin bleibt **N11**. **Code unverändert, `Codestand` bleibt 2.44.**
+**Basislinie unverändert: 1825 Assertions · Smokes 662 / 663 · i18n-Parität 0.**
+**Nächster Schritt: Baustein N9 (Vorwärmung & t8/5) — Umfang vor dem Bau
+abstimmen, Assistenten-Schritte liefert N9 MIT. Einstieg: „weiter mit N9".**
 
 
 ═══════════════════════════════════════════════════════════════════════════

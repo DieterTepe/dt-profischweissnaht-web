@@ -1670,3 +1670,45 @@ seine Assistenten-Schritte MIT. Der Assistent wird nie am Ende drangebaut.
 **Basislinie 1748 → 1825 Assertions · Smokes 614/615 → 662/663.**
 **Codestand 2.42 → 2.44 · 16 Module.**
 **Nächster Schritt: N8 am Handy abnehmen, dann N9 (Vorwärmung & t8/5).**
+
+
+**v2.45 (2026-08-04):** **N8 abgenommen — der Assistent steht.**
+
+**Aus der Rückmeldung 2026-08-04 (N8 abgenommen)**
+
+Dieter hat gezielt die drei Punkte geprüft, an denen es hätte hängen können,
+und alle drei trugen: die Versionszeile mit sechzehn Modulen, ein
+**Auslegungsfall mit Moment** über den Assistenten — grün, Nachweis erfüllt —
+und der **Sprachwechsel bei offenem Dialog** in allen drei Sprachen.
+
+**Warum ausgerechnet diese drei.** Der Auslegungsfall mit Moment vereint alles,
+was in diesem Baustein schiefgehen konnte: ein gesuchtes a-Maß (der Pfad, den
+N7 überhaupt erst geöffnet hat), ein Moment (das Feld, das mein erster
+N8a-Entwurf aus dem Dialog hatte fallen lassen) und die Mündung in dieselbe
+Rechenkette. Der Sprachwechsel wiederum ist der einzige Punkt, der sich an
+keinem Ergebnis zeigt — ein Dialogfenster wird programmatisch aufgebaut, also
+hätte es beim Umschalten stehenbleiben können, ohne dass eine Zahl falsch
+wird. Genau solche Stellen fallen sonst erst dem Kunden auf.
+
+**Der Merkposten aus 3.6 hat sich zum vierten Mal gemeldet.** In der Zeile
+stand `assistent 0.1.0-N8a`, obwohl N8b in genau diesem Modul die
+Skizzenzuordnung eingebaut hat. Nach `solver`, `rechenweg` und `validate` ist
+das der vierte Fall. Erweitert in 3.6, Termin bleibt N11.
+
+**Der Stand nach N8.** N1 bis N5 vollständig, N6b, N7 und N8 abgenommen. Das
+Programm rechnet in beiden Bemessungswelten, in beide Rechenrichtungen, zeigt
+seinen Rechenweg, prüft sich selbst, bringt zwölf durchgerechnete Beispiele
+mit und führt einen Laien in neunzehn Schritten mit Bildern durch die Eingabe.
+Bis zum Verkaufsstand fehlen N9 (Vorwärmung), N10 (Kosten), N11 (Ausgaben) und
+N12 (Edition und Registrierung).
+
+**Ab hier trägt jeder Baustein eine zusätzliche Pflicht:** Er liefert seine
+Assistenten-Schritte MIT (3.3). Das ist billiger, als es klingt — die
+Schrittfolge leitet sich aus `optionen.js` und `validate.js` ab, ein neues
+Modul erscheint also von selbst im Dialog. Was mitgeliefert werden muss, sind
+die Laien-Erklärung, der Tipp und die Entscheidung über die Skizze: gezeichnet
+oder benannt ohne. Die Assertion aus S41 erzwingt genau diese Entscheidung.
+
+**Code unverändert, `Codestand` bleibt 2.44.**
+**Basislinie unverändert: 1825 Assertions · Smokes 662 / 663.**
+**Nächster Schritt: Baustein N9 (Vorwärmung & t8/5).**
