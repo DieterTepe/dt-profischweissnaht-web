@@ -35,12 +35,12 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.9.1';
-  var ETAPPE = 'N8a';
+  var VERSION = '0.10.0';
+  var ETAPPE = 'N8c';
   /* Plan-Version, die zu diesem Stand gehoert. Sie ist die EINZIGE von Hand
      gepflegte Zahl der Versionszeile — alles andere kommt aus den geladenen
      Modulen selbst (Plan 3.6). */
-  var PLAN = '2.42';
+  var PLAN = '2.44';
   var SPRACHEN = ['de', 'en', 'pt'];
 
   /* Plan 3.1 (bindend): die Oberflaeche startet IMMER im dunklen Design —
@@ -133,6 +133,10 @@
     'host_grund', 'host_werkstoff', 'host_naht', 'host_geometrie',
     'host_lasten', 'host_beiwerte', 'host_zusatz', 'host_ausfuehrung',
     'pruefBox', 'pruefTitel', 'pruefListe',
+    /* N8b */
+    'assistModal', 'assistTitel', 'assistFortschritt', 'assistSkizze',
+    'assistLegende', 'assistWas', 'assistTippLbl', 'assistTipp', 'assistHost',
+    'assistAbbruch', 'assistZurueck', 'assistUeber', 'assistWeiter',
     'hilfeModal', 'hilfeTitel', 'hilfeWasLbl', 'hilfeWas', 'hilfeBereichLbl',
     'hilfeBereich', 'hilfeTippLbl', 'hilfeTipp', 'hilfeClose',
     /* N5d */
@@ -161,13 +165,18 @@
     /* N5d */
     'info-version', 'info-module',
     /* N6b */
-    'symbol-box', 'symbol-bild', 'symbol-legende', 'symbol-masse'
+    'symbol-box', 'symbol-bild', 'symbol-legende', 'symbol-masse',
+    /* N8b */
+    'assist-fortschritt', 'assist-skizze', 'assist-legende', 'assist-host',
+    'assist-wahl', 'assist-wahl-vorschlag', 'assist-feld', 'assist-einheit',
+    'assist-haken', 'assist-folgt', 'assist-actions', 'modal-assist', 'gewaehlt',
+    'assist-wahl-bild'
   ];
 
   /* Buttons, die bewusst noch nicht verdrahtet sind: Id -> ehrliche Meldung.
      "Berechnen" ist ab N5b verdrahtet — es PRUEFT (Rechnen folgt in N5c). */
   var GERUEST_BUTTONS = [
-    ['assistBtn', 'uiFolgtN8'],
+    /* 'assistBtn' ist seit N8b verdrahtet und steht deshalb NICHT mehr hier. */
     ['saveBtn', 'uiFolgtN11'],
     ['loadBtn', 'uiFolgtN11'],
     ['printBtn', 'uiFolgtN11'],
@@ -831,23 +840,23 @@
 
     /* Plan 3.5, sinngemaess: ERST ALLES LEEREN, DANN LADEN — nie duerfen
        Reste einer frueheren Eingabe in einer neuen Rechnung stehenbleiben. */
-    function beispielLaden(code) {
-      if (!Options || !Valid) return null;
-      var b = Options.beispiel(code);
-      if (!b) return null;
+    /* EIN WEG, IN DAS FORMULAR ZU SCHREIBEN (seit N8b geteilt).
+       Beispielkatalog und Assistent benutzen dieselbe Funktion. Zwei
+       Schreibwege waeren zwei Gelegenheiten, verschieden zu schreiben — und
+       genau daran haengt, dass Formular und Assistent dasselbe ergeben. */
+    function formularSetzen(auswahl, werte) {
+      if (!Options || !Valid) return false;
+      var i, g, sel, k, f, ev, inp;
 
-      leeren();
-
-      var i, g, sel, wert;
       /* Die Gruppen in ihrer eigenen Reihenfolge setzen: sie ist zugleich die
          Abhaengigkeitsreihenfolge (erst stossart, dann nahtart …). Nach jeder
          Auswahl neu filtern, sonst gaebe es die naechste Option noch nicht. */
       for (i = 0; i < Options.GRUPPEN.length; i++) {
         g = Options.GRUPPEN[i].code;
-        if (!Object.prototype.hasOwnProperty.call(b.auswahl, g)) continue;
+        if (!auswahl || !Object.prototype.hasOwnProperty.call(auswahl, g)) continue;
         sel = el(doc, 'sel_' + g);
         if (!sel) continue;
-        sel.value = b.auswahl[g];
+        sel.value = auswahl[g];
         aktualisiere();
       }
 
@@ -855,24 +864,374 @@
          ist gesperrt vorbelegt — dafuer wird der "eigener Wert"-Haken
          mitgesetzt, sonst faende der Anwender seinen Wert gleich wieder
          ueberschrieben. */
-      for (var k in b.felder) {
-        if (!Object.prototype.hasOwnProperty.call(b.felder, k)) continue;
-        var f = Valid.feld(k);
-        if (!f) continue;
-        if (f.ueberschreibbar) {
-          var ev = el(doc, 'ev_' + k);
-          if (ev) ev.checked = true;
-          eigenerWert(k, true);
+      for (k in (werte || {})) {
+        if (!Object.prototype.hasOwnProperty.call(werte, k)) continue;
+        f = Valid.feld(k);
+        if (f) {
+          if (f.ueberschreibbar) {
+            ev = el(doc, 'ev_' + k);
+            if (ev) ev.checked = true;
+            eigenerWert(k, true);
+          }
+          inp = el(doc, 'fld_' + k);
+          if (inp) inp.value = String(werte[k]);
+        } else if (/_aktiv$/.test(k)) {
+          /* Die Freischalt-Haken der Zusatzbereiche (Plan 2.6). */
+          ev = el(doc, 'zus_' + k.replace(/_aktiv$/, ''));
+          if (ev) ev.checked = werte[k] === true;
         }
-        var inp = el(doc, 'fld_' + k);
-        if (inp) inp.value = String(b.felder[k]);
       }
 
       aktualisiere();
-      sel = el(doc, 'presetSel');
+      return true;
+    }
+
+    function beispielLaden(code) {
+      if (!Options || !Valid) return null;
+      var b = Options.beispiel(code);
+      if (!b) return null;
+
+      leeren();
+      formularSetzen(b.auswahl, b.felder);
+      var sel = el(doc, 'presetSel');
       if (sel) sel.value = code;
       meldung(txt(win, 'uiBeispiel', S.sprache) + ' ' + txt(win, b.name, S.sprache));
       return code;
+    }
+
+    /* ==================================================================== */
+    /* N8b · ASSISTENT — Overlay ueber der DOM-freien Logik aus N8a          */
+    /*                                                                       */
+    /* HIER WIRD NICHT GEFUEHRT UND NICHT GERECHNET. Welcher Schritt kommt,  */
+    /* welche Optionen es gibt und was noch fehlt, sagt assistent.js. Was    */
+    /* gezeichnet wird, sagen skizze.js, schaubild.js und symbol.js. Diese   */
+    /* Schicht malt nur hin, was sie bekommt, und gibt Antippen zurueck.     */
+    /*                                                                       */
+    /* AM ENDE (N8c) schreibt der Assistent ueber formularSetzen() in        */
+    /* DIESELBEN Felder wie die Handeingabe und drueckt DENSELBEN Rechenweg  */
+    /* an — es gibt keinen zweiten Rechenpfad (Plan 3.3).                    */
+    /* ==================================================================== */
+
+    function assiModul() { return win.DTNAssistent || null; }
+
+    /* Platzhalter {0}, {1} … in einem uebersetzten Text ersetzen. Bewusst
+       hier und nicht im Woerterbuch: die Texte bleiben so lesbar und
+       uebersetzbar, ohne dass i18n_kern.js Logik bekommt. */
+    function fuelle(vorlage, werte) {
+      var t = String(vorlage || ''), i;
+      for (i = 0; i < (werte || []).length; i++) {
+        t = t.split('{' + i + '}').join(String(werte[i]));
+      }
+      return t;
+    }
+
+    function assistOffen() { return !!S.assi; }
+
+    /* Die Skizze zum Schritt. WELCHE Quelle zustaendig ist, sagt der
+       Assistent; diese Schicht ruft sie nur auf. Kommt kein Bild zustande,
+       bleibt der Kasten leer — lieber nichts als ein falsches Bild. */
+    function assistSkizzeZeigen(sch) {
+      var box = el(doc, 'assistSkizze'), leg = el(doc, 'assistLegende');
+      if (!box) return false;
+      box.innerHTML = '';
+      if (leg) { setzeText(leg, ''); leg.hidden = true; }
+      zeige(box, false);
+      if (!sch || !sch.skizze) return false;
+
+      var Svg = win.DTNSvgLib, erg = null, quelle = sch.skizze;
+      if (!Svg) return false;
+
+      if (quelle === 'skizze' && win.DTNSkizze) {
+        erg = win.DTNSkizze.zeichne(sch.code, sch.wert, Svg);
+      } else if (quelle === 'symbol' && win.DTNSymbol) {
+        var na = (sch.art === 'auswahl') ? sch.wert : S.assi.auswahl.nahtart;
+        if (na) erg = win.DTNSymbol.ausNahtart(na, {}, Svg);
+      } else if (quelle === 'schaubild' && win.DTNSchaubild) {
+        /* Erst mit den ECHTEN Massen versuchen. Reichen sie noch nicht,
+           zeichnet das Mustermass — schematisch, klar benannt, und es
+           landet in keinem Feld. */
+        var re = Valid.rechenEingabe(S.assi.werte, S.assi.auswahl);
+        if (re && re.ok && re.eingabe && re.eingabe.profil_eingabe) {
+          erg = win.DTNSchaubild.ausProfil(re.eingabe.profil_eingabe, { sprache: S.sprache });
+        }
+        if ((!erg || !erg.ok) && win.DTNSkizze) {
+          var m = win.DTNSkizze.muster(S.assi.auswahl.profil, S.assi.auswahl.kanten);
+          if (m) erg = win.DTNSchaubild.ausProfil(m, { sprache: S.sprache });
+        }
+      }
+      if (!erg || !erg.ok || !erg.svg) return false;
+
+      box.innerHTML = erg.svg;
+      zeige(box, true);
+      if (leg && erg.legende && erg.legende.length) {
+        var teile = [], i;
+        for (i = 0; i < erg.legende.length; i++) {
+          teile.push(txt(win, erg.legende[i].code || erg.legende[i], S.sprache));
+        }
+        setzeText(leg, teile.join(' · '));
+        leg.hidden = false;
+      }
+      return true;
+    }
+
+    /* DIE SKIZZE ZU EINER EINZELNEN OPTION (N8b).
+       Beim Auswaehlen ist noch nichts gewaehlt — eine Skizze ueber der Liste
+       koennte also gar nichts zeigen. Deshalb bekommt JEDE Kachel ihr
+       eigenes Bild: fuenf Stossarten, sieben Profile, drei Lastfaelle
+       nebeneinander. Genau so ist "moeglichst anklickbare Auswahl" aus
+       Plan 3.3 gemeint. */
+    function assistOptionSkizze(quelle, gruppe, optionCode) {
+      var Svg = win.DTNSvgLib, m;
+      if (!Svg || !quelle || !optionCode) return null;
+      if (quelle === 'skizze' && win.DTNSkizze) {
+        return win.DTNSkizze.zeichne(gruppe, optionCode, Svg);
+      }
+      if (quelle === 'symbol' && win.DTNSymbol && gruppe === 'nahtart') {
+        return win.DTNSymbol.ausNahtart(optionCode, {}, Svg);
+      }
+      if (quelle === 'schaubild' && win.DTNSchaubild && win.DTNSkizze) {
+        if (gruppe === 'profil') m = win.DTNSkizze.muster(optionCode, 'rundum');
+        else if (gruppe === 'kanten') m = win.DTNSkizze.muster(S.assi.auswahl.profil, optionCode);
+        else m = null;
+        if (m) return win.DTNSchaubild.ausProfil(m, { sprache: S.sprache });
+      }
+      return null;
+    }
+
+    /* Eine antippbare Auswahlkachel. */
+    function assistKachel(host, code, label, gewaehlt, vorschlagText, aufTipp, bild, gruppe) {
+      var b = neu('button', 'assist-wahl', null);
+      b.setAttribute('type', 'button');
+      if (gewaehlt) klasse(b, 'gewaehlt', true);
+      if (bild && bild.ok && bild.svg) {
+        /* Eigene Kennung, damit das Bild auch von aussen auffindbar ist. */
+        var bx = neu('span', 'assist-wahl-bild', 'ass_bild_' + gruppe + '_' + code);
+        bx.innerHTML = bild.svg;
+        b.appendChild(bx);
+      }
+      var t = neu('span', null, null);
+      setzeText(t, label);
+      b.appendChild(t);
+      if (vorschlagText) {
+        var v = neu('span', 'assist-wahl-vorschlag', null);
+        setzeText(v, vorschlagText);
+        b.appendChild(v);
+      }
+      if (b.addEventListener) b.addEventListener('click', function () { aufTipp(code); });
+      host.appendChild(b);
+      return b;
+    }
+
+    function assistZeigen() {
+      var A = assiModul();
+      if (!A || !S.assi) return false;
+      var host = el(doc, 'assistHost');
+      var sch = A.schritt(S.assi);
+      var l = S.sprache, i;
+
+      if (!sch) return assistFertig();
+      if (host) host.innerHTML = '';
+
+      setzeText(el(doc, 'assistTitel'), txt(win, sch.label, l));
+      var fs = A.fortschritt(S.assi);
+      setzeText(el(doc, 'assistFortschritt'),
+                fuelle(txt(win, 'uiAssSchritt', l), [String(fs.schritt + 1), String(fs.von)]));
+
+      /* Laien-Erklaerung und Tipp kommen aus i18n_hilfe.js — dieselbe Quelle
+         wie der ⓘ-Knopf im Formular (Plan 3.3, keine zweite Textpflege). */
+      var was = hilfe(win, sch.hilfe, l, 'was');
+      var tip = hilfe(win, sch.hilfe, l, 'tipp');
+      if (!was && sch.freiwillig) was = txt(win, 'uiAssFreiwillig', l);
+      setzeText(el(doc, 'assistWas'), was || '');
+      setzeText(el(doc, 'assistTipp'), tip || '');
+      zeige(el(doc, 'assistTipp'), !!tip);
+      zeige(el(doc, 'assistTippLbl'), !!tip);
+
+      /* Die grosse Skizze nur dort, wo es keine Kacheln gibt — sonst
+         stuende dasselbe Bild zweimal im Fenster. */
+      if (sch.art === 'auswahl') {
+        var box0 = el(doc, 'assistSkizze'), leg0 = el(doc, 'assistLegende');
+        if (box0) { box0.innerHTML = ''; zeige(box0, false); }
+        if (leg0) { setzeText(leg0, ''); leg0.hidden = true; }
+      } else {
+        assistSkizzeZeigen(sch);
+      }
+
+      if (sch.art === 'auswahl') {
+        for (i = 0; i < sch.optionen.length; i++) {
+          (function (o) {
+            var vor = (sch.vorschlag && sch.vorschlag.wert === o.code)
+                    ? txt(win, 'uiAssVorschlag', l) : null;
+            assistKachel(host, o.code, txt(win, o.label, l), sch.wert === o.code, vor,
+                         function (c) { assistWeiter(c); },
+                         assistOptionSkizze(sch.skizze, sch.code, o.code), sch.code);
+          }(sch.optionen[i]));
+        }
+      } else if (sch.art === 'felder') {
+        for (i = 0; i < sch.felder.length; i++) {
+          (function (f) {
+            var zeile = neu('div', 'assist-feld', null);
+            var lab = neu('label', null, null);
+            setzeText(lab, txt(win, f.label, l) + (f.pflicht ? ' *' : ''));
+            if (f.pflicht) klasse(lab, 'pflicht', true);
+            var inp = neu('input', null, 'ass_f_' + f.code);
+            inp.setAttribute('type', 'number');
+            if (f.wert !== null) inp.value = String(f.wert);
+            else if (f.standard !== null) inp.value = String(f.standard);
+            var eh = neu('span', 'assist-einheit', null);
+            setzeText(eh, f.einheit ? txt(win, f.einheit, l) : '');
+            zeile.appendChild(lab); zeile.appendChild(inp); zeile.appendChild(eh);
+            host.appendChild(zeile);
+          }(sch.felder[i]));
+        }
+      } else if (sch.art === 'zusatz') {
+        for (i = 0; i < sch.bereiche.length; i++) {
+          (function (b) {
+            var zeile = neu('label', 'assist-haken', null);
+            var box = neu('input', null, 'ass_z_' + b.code);
+            box.setAttribute('type', 'checkbox');
+            box.checked = b.wert === true;
+            var t = neu('span', null, null);
+            setzeText(t, txt(win, b.label, l));
+            zeile.appendChild(box); zeile.appendChild(t);
+            /* EHRLICH: was es noch nicht gibt, sagt es selbst. */
+            if (b.folgt) {
+              var f2 = neu('span', 'assist-folgt', null);
+              setzeText(f2, fuelle(txt(win, 'uiAssFolgt', l), [b.folgt]));
+              zeile.appendChild(f2);
+            }
+            host.appendChild(zeile);
+          }(sch.bereiche[i]));
+        }
+      } else if (sch.art === 'symbol') {
+        for (i = 0; i < sch.gruppen.length; i++) {
+          (function (g) {
+            var zeile = neu('div', 'assist-feld', null);
+            var lab = neu('label', null, null);
+            setzeText(lab, txt(win, g.label, l));
+            var sel = neu('select', null, 'ass_s_' + g.code);
+            var leerOpt = doc.createElement('option');
+            leerOpt.setAttribute('value', '');
+            setzeText(leerOpt, '—');
+            sel.appendChild(leerOpt);
+            for (var j = 0; j < g.optionen.length; j++) {
+              var o = doc.createElement('option');
+              o.setAttribute('value', g.optionen[j].code);
+              o.value = g.optionen[j].code;
+              setzeText(o, txt(win, g.optionen[j].label, l));
+              sel.appendChild(o);
+            }
+            sel.value = g.wert || '';
+            zeile.appendChild(lab); zeile.appendChild(sel);
+            host.appendChild(zeile);
+          }(sch.gruppen[i]));
+        }
+      }
+
+      /* Die Knoepfe richten sich nach dem Schritt. */
+      zeige(el(doc, 'assistZurueck'), fs.schritt > 0);
+      zeige(el(doc, 'assistUeber'), sch.freiwillig === true);
+      var w = el(doc, 'assistWeiter');
+      if (w) beschrifte(w, (fs.schritt + 1 >= fs.von) ? 'uiAssFertig' : 'uiAssWeiter');
+      /* Bei einer reinen Auswahl fuehrt das Antippen weiter — der
+         Weiter-Knopf bleibt trotzdem da, damit eine schon getroffene
+         Auswahl bestaetigt werden kann, ohne sie neu zu tippen. */
+      return true;
+    }
+
+    /* Sammelt die Antwort des aktuellen Fensters ein. */
+    function assistAntwortAus(sch) {
+      var wert = null, i, inp;
+      if (!sch) return null;
+      if (sch.art === 'auswahl') {
+        wert = sch.wert;
+      } else if (sch.art === 'felder') {
+        wert = {};
+        for (i = 0; i < sch.felder.length; i++) {
+          inp = el(doc, 'ass_f_' + sch.felder[i].code);
+          if (inp && !istLeer(inp.value)) wert[sch.felder[i].code] = inp.value;
+        }
+      } else if (sch.art === 'zusatz') {
+        wert = {};
+        for (i = 0; i < sch.bereiche.length; i++) {
+          inp = el(doc, 'ass_z_' + sch.bereiche[i].code);
+          wert[sch.bereiche[i].code] = !!(inp && inp.checked);
+        }
+      } else if (sch.art === 'symbol') {
+        wert = {};
+        for (i = 0; i < sch.gruppen.length; i++) {
+          inp = el(doc, 'ass_s_' + sch.gruppen[i].code);
+          if (inp && !istLeer(inp.value)) wert[sch.gruppen[i].code] = inp.value;
+        }
+      }
+      return wert;
+    }
+
+    function assistStart() {
+      var A = assiModul();
+      if (!A) return false;
+      /* UEBERNAHME (3.3): was im Formular steht, kommt mit. */
+      S.assi = A.starte(zustand(), werte());
+      var m = el(doc, 'assistModal');
+      if (m) { m.hidden = false; klasse(m, 'offen', true); }
+      assistZeigen();
+      return true;
+    }
+
+    function assistSchliessen() {
+      var m = el(doc, 'assistModal');
+      if (m) { m.hidden = true; klasse(m, 'offen', false); }
+      S.assi = null;
+      return true;
+    }
+
+    function assistAbbrechen() {
+      assistSchliessen();
+      meldung(txt(win, 'uiAssAbgebrochen', S.sprache));
+      return true;
+    }
+
+    function assistWeiter(direktWert) {
+      var A = assiModul();
+      if (!A || !S.assi) return false;
+      var sch = A.schritt(S.assi);
+      var wert = (direktWert !== undefined && direktWert !== null)
+               ? direktWert : assistAntwortAus(sch);
+      S.assi = A.antworte(S.assi, wert);
+      if (A.fertig(S.assi)) return assistFertig();
+      return assistZeigen();
+    }
+
+    function assistZurueck() {
+      var A = assiModul();
+      if (!A || !S.assi) return false;
+      S.assi = A.zurueck(S.assi);
+      return assistZeigen();
+    }
+
+    function assistUeberspringen() {
+      var A = assiModul();
+      if (!A || !S.assi) return false;
+      S.assi = A.ueberspringe(S.assi);
+      if (A.fertig(S.assi)) return assistFertig();
+      return assistZeigen();
+    }
+
+    /* N8c · DIE MUENDUNG. Der Assistent endet NICHT in einer eigenen
+       Ergebnisanzeige, sondern schreibt in das Formular und drueckt denselben
+       Rechenweg an, den auch die Handeingabe nimmt. Der Anwender sieht
+       danach die VOLLE Anzeige samt Rechenweg und der Liste dessen, was
+       nicht geprueft wurde (Plan 3.3, Sicherheitsaspekt). */
+    function assistFertig() {
+      var A = assiModul();
+      if (!A || !S.assi) return false;
+      var erg = A.ergebnis(S.assi);
+      assistSchliessen();
+      leeren();
+      formularSetzen(erg.auswahl, erg.werte);
+      var r = rechnen();
+      meldung(txt(win, 'uiAssFertigMsg', S.sprache));
+      return r;
     }
 
     /* ------------------------------------------------------------ Pruefen */
@@ -1397,6 +1756,9 @@
         rechenwegZeigen(S.letztesErgebnis, S.letzteEingabe);
         grafikZeigen(S.letzteEingabe, S.letztesErgebnis);
       }
+      /* Ein offener Assistent wird mit uebersetzt — sonst stuende das
+         Dialogfenster nach dem Umschalten noch in der alten Sprache. */
+      if (S.assi) assistZeigen();
       return S.sprache;
     }
 
@@ -1629,6 +1991,18 @@
         }(GERUEST_BUTTONS[i]));
       }
 
+      /* N8b · Assistent */
+      b = el(doc, 'assistBtn');
+      if (b && b.addEventListener) b.addEventListener('click', function () { assistStart(); });
+      b = el(doc, 'assistWeiter');
+      if (b && b.addEventListener) b.addEventListener('click', function () { assistWeiter(); });
+      b = el(doc, 'assistZurueck');
+      if (b && b.addEventListener) b.addEventListener('click', function () { assistZurueck(); });
+      b = el(doc, 'assistUeber');
+      if (b && b.addEventListener) b.addEventListener('click', function () { assistUeberspringen(); });
+      b = el(doc, 'assistAbbruch');
+      if (b && b.addEventListener) b.addEventListener('click', function () { assistAbbrechen(); });
+
       b = el(doc, 'presetSel');
       if (b && b.addEventListener) {
         b.addEventListener('change', function () {
@@ -1679,6 +2053,22 @@
       /* N5c-1 */
       /* KONTEXTBEZOGEN seit N7 (Plan 3.2): dieselbe Liste, die im Kasten
          steht — nicht der ganze Katalog. */
+      /* N8b — der Assistent von aussen bedienbar (fuer den DOM-Smoke). */
+      assistStart: assistStart,
+      assistSchritt: function () {
+        var A = assiModul();
+        return (A && S.assi) ? A.schritt(S.assi) : null;
+      },
+      assistWeiter: assistWeiter,
+      assistZurueck: assistZurueck,
+      assistUeberspringen: assistUeberspringen,
+      assistAbbrechen: assistAbbrechen,
+      assistOffen: assistOffen,
+      letztesErgebnis: function () { return S.letztesErgebnis || null; },
+      assistFortschritt: function () {
+        var A = assiModul();
+        return (A && S.assi) ? A.fortschritt(S.assi) : null;
+      },
       beispiele: function () {
         if (!Options || !Options.BEISPIELE) return [];
         return Options.beispieleFuer ? Options.beispieleFuer(zustand())

@@ -253,6 +253,33 @@
   </div>
 </div>
 
+<!-- N8b · Assistent. Ein Fenster je Schritt: Skizze, Laien-Erklaerung,
+     Tipp und antippbare Auswahl (Plan 3.3). Der Assistent RECHNET NIE
+     selbst — am Ende schreibt er in dieselben Felder wie die Handeingabe
+     und uebergibt an dieselbe Kette. -->
+<div class="modal-overlay" id="assistModal" role="dialog" aria-modal="true" aria-labelledby="assistTitel" hidden>
+  <div class="modal modal-assist">
+    <div class="modal-head">
+      <h3 id="assistTitel"></h3>
+      <p class="assist-fortschritt" id="assistFortschritt"></p>
+    </div>
+    <div class="modal-body">
+      <div class="assist-skizze" id="assistSkizze" hidden></div>
+      <p class="assist-legende" id="assistLegende" hidden></p>
+      <p class="hilfe-abschnitt" id="assistWas"></p>
+      <p class="hilfe-titel" id="assistTippLbl" data-i18n="uiHilfeTipp">Empfehlung</p>
+      <p class="hilfe-abschnitt" id="assistTipp"></p>
+      <div class="assist-host" id="assistHost"></div>
+    </div>
+    <div class="modal-actions assist-actions">
+      <button type="button" class="btn btn-ghost" id="assistAbbruch" data-i18n="uiAssAbbruch">Abbrechen</button>
+      <button type="button" class="btn btn-ghost" id="assistZurueck" data-i18n="uiAssZurueck">Zurück</button>
+      <button type="button" class="btn btn-ghost" id="assistUeber" data-i18n="uiAssUeber">Überspringen</button>
+      <button type="button" class="btn btn-primary" id="assistWeiter" data-i18n="uiAssWeiter">Weiter</button>
+    </div>
+  </div>
+</div>
+
 <!-- Module in Abhaengigkeitsreihenfolge (Schweissnaht-1.md 4.1).
      ui.js laedt zuletzt und ist das einzige DOM-nahe Modul. -->
 <script src="i18n_kern.js"></script>
@@ -268,6 +295,7 @@
 <script src="solver.js"></script>
 <script src="rechenweg.js"></script>
 <script src="symbol.js"></script>
+<script src="skizze.js"></script>
 <script src="assistent.js"></script>
 <script src="ui.js"></script>
 </body>

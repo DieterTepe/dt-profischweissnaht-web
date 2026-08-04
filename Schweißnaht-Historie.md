@@ -1568,3 +1568,105 @@ der Inhalt kommt. Nichts erfunden, nichts weggelassen.
 **Basislinie 1589 → 1748 Assertions · Smokes 611/612 → 614/615.**
 **Codestand 2.39 → 2.42 · 15 Module.**
 **Nächster Schritt: N8a am Handy abnehmen, dann N8b+N8c zusammen.**
+
+
+**v2.43 (2026-08-04):** **N8a abgenommen — und die Modulkennung fällt zum dritten Mal auf.**
+
+**Aus der Rückmeldung 2026-08-04 (N8a abgenommen)**
+
+Dieter hat die Versionszeile geprüft und alle zwölf Beispiele durchgeklickt:
+grün, Nachweis erfüllt. Die dritte Abnahme in Folge ohne Nacharbeit. Die
+zusätzliche Skript-Zeile in beiden HTMLs hat nichts gestört, und
+`assistent 0.1.0-N8a` steht in der Zeile — die neue Datei ist auf GitHub
+angekommen.
+
+**Bemerkenswert ist, WAS diese Abnahme prüfen konnte und was nicht.** N8a ist
+DOM-frei; am Handy gab es nichts zu bedienen. Die einzigen beiden Belege waren
+die Versionszeile und die Frage, ob das Bestehende noch läuft. Genau dafür war
+der Schnitt gedacht, und er hat funktioniert — aber es zeigt auch die Grenze:
+Die eigentliche Prüfung von N8a lag im Harness, nicht am Gerät. Der
+Zwölf-Fälle-Vergleich Formular gegen Assistent ist der Beleg, nicht dieser
+Durchklick.
+
+**Der Merkposten aus 3.6 hat sich zum dritten Mal gemeldet.** In der Zeile
+stand `validate 0.1.0-N1`, obwohl N8a in genau diesem Modul die
+Feld-zu-Bereich-Zuordnung eingebaut hatte. Vorher waren es `solver 0.1.0-N3`
+und `rechenweg 0.1.0-N4` nach N7. Das Muster ist jetzt eindeutig: **nur `ui.js`
+zieht seine Kennung mit, alle anderen Module nicht.** Die Zeile belegt, dass
+fünfzehn Module da sind — nicht, dass sie aktuell sind. Damit prüft sie weniger,
+als sie zu prüfen scheint, und das ist dieselbe Fehlerklasse wie die
+festgeschriebene Assertion aus v2.36 und wie die Anker-Frage aus S39.
+
+Wieder nicht sofort repariert, sondern in 3.6 um `validate.js` erweitert und
+für **N11** terminiert. Der Grund bleibt derselbe: Eine Einzelreparatur erzwingt
+die Regel nicht. Sie muss geprüft werden — jedes geänderte Modul zieht seine
+`VERSION` mit, und eine Assertion hält fest, dass eine Änderung ohne
+Kennungswechsel nicht durchgeht. Bis dahin ist der Basislinien-Abgleich aus
+Kickoff-Punkt 11 die einzige verlässliche Probe.
+
+**Code unverändert, `Codestand` bleibt 2.42.**
+**Basislinie unverändert: 1748 Assertions · Smokes 614 / 615.**
+**Nächster Schritt: N8b und N8c zusammen.**
+
+
+**v2.44 (2026-08-04):** **N8b und N8c — der Assistent bekommt ein Gesicht.**
+
+**Aus N8b/N8c (2026-08-04) — Entscheidungen und Erfahrungen**
+
+**Dieters Festlegung war „erst alle Skizzen bauen".** Daraus wurde die
+vorgeschaltete Etappe N8b-1. Beim Zuschnitt zeigte sich, dass „alle" nicht
+wörtlich gehen kann, und das war die wichtigste Klärung des Tages: Für die
+Hälfte der Auswahlgruppen — Welt, Werkstoffgruppe, Nachweisverfahren,
+Nahtgüte und weitere — gibt es schlicht **nichts zu zeichnen, das erklärt
+statt schmückt**. Ein hübsches Bildchen ohne Aussage wäre genau die stille
+Lüge, die dieses Programm nicht baut.
+
+Die Antwort war nicht, die Lücke zu verschweigen, sondern sie zu **listen**:
+`OHNE_SKIZZE` führt die dreizehn Gruppen namentlich, und eine Assertion
+verlangt, dass jede Auswahlgruppe entweder gezeichnet wird, aus fremder
+Quelle kommt oder dort steht. Kommt später eine Gruppe dazu und niemand
+entscheidet über ihre Skizze, wird es rot. **Eine benannte Lücke ist eine
+Entscheidung, eine vergessene ist ein Fehler.**
+
+**Kein Bild wurde doppelt gezeichnet.** Von den neun Schritten mit Skizze
+bedient das neue Modul vier; die anderen fünf kommen aus `schaubild.js`
+(N2c) und `symbol.js` (N6b). Für die Profil- und Kantenwahl fehlten nur die
+Maße — die kamen als **Mustermaße** dazu, mit denen `schaubild.js` ganz
+normal zeichnet. Also kein zweiter Zeichenweg für dieselbe Sache. Die
+Mustermaße stehen in keinem Ergebnis und landen in keinem Feld; eine
+Assertion hält das fest.
+
+**Die beste Einzelentscheidung war, die Skizze IN die Auswahlkachel zu
+setzen.** Der erste Entwurf hatte ein großes Bild über der Optionsliste —
+und zeigte nichts, weil beim Auswählen ja noch nichts ausgewählt ist. Der
+DOM-Smoke fand es sofort: drei Skizzen statt der erwarteten neun. Jetzt
+stehen fünf Stoßarten oder sieben Profile nebeneinander, jede Kachel mit
+ihrem eigenen Bild. Das ist nicht nur ein Fehler weniger, sondern die
+bessere Bedienung — und näher an dem, was 3.3 mit „möglichst anklickbare
+Auswahl" meint.
+
+**Ein Schreibweg, nicht zwei.** `formularSetzen()` wurde aus
+`beispielLaden()` herausgelöst; Beispielkatalog und Assistent benutzen jetzt
+dieselbe Funktion. Das ist dieselbe Lehre wie bei der Schrittfolge in N8a:
+Ein zweiter Weg zu denselben Daten ist eine zweite Gelegenheit, es anders zu
+machen. Die Probe dazu ist ein vollständiger Durchlauf über die echte
+Oberfläche gegen dieselbe Eingabe von Hand — zwölf Nachkommastellen gleich.
+
+**Wieder ein Prüfmuster, das ich nicht aufgeweicht habe:** Der Assistent
+nannte die Zeichenmodule in einem Kommentar, und die Quelltextprobe „kennt
+keinen Rechenkern" schlug an. Der Kommentar wurde umformuliert, nicht die
+Prüfung gelockert. Es war ein Kommentar, das Aufweichen hätte niemandem
+geschadet — und genau deshalb wäre es der Anfang gewesen.
+
+**Der Rechenkern blieb zum zweiten Mal in Folge unberührt.** `solver.js`,
+`rechenweg.js`, `naht.js`, `profil.js`, `daten.js`, `optionen.js` und
+`validate.js` haben sich in N8b/N8c nicht um ein Zeichen geändert. Bei einem
+Baustein, der eine komplette zweite Bedienoberfläche hinzufügt, ist das der
+beste Beleg dafür, dass der Schnitt stimmt.
+
+**Ab jetzt gilt die Prozessregel aus 3.3:** Jeder weitere Baustein liefert
+seine Assistenten-Schritte MIT. Der Assistent wird nie am Ende drangebaut.
+
+**Basislinie 1748 → 1825 Assertions · Smokes 614/615 → 662/663.**
+**Codestand 2.42 → 2.44 · 16 Module.**
+**Nächster Schritt: N8 am Handy abnehmen, dann N9 (Vorwärmung & t8/5).**

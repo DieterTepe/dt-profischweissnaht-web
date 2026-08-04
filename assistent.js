@@ -55,6 +55,35 @@
   var SCHRITT_ZUSATZ = 'zusatzbereiche';
   var SCHRITT_SYMBOL = 'symbol';
 
+  /* WELCHE SKIZZE ZU WELCHEM SCHRITT GEHOERT (N8b-1, Plan 3.3).
+     Das ist DIALOGWISSEN, kein Fachwissen — deshalb steht es hier und nicht
+     in der Oberflaeche. Dieses Modul zeichnet nichts; es sagt nur, WELCHE
+     Quelle die Oberflaeche fragen soll. Drei Quellen gibt es:
+       'skizze'    — die schematischen Bilder aus N8b-1
+       'schaubild' — das echte Nahtbild aus dem Profil (N2c)
+       'symbol'    — Fugenform und ISO-2553-Symbol (N6b)
+     Fehlt ein Eintrag, gibt es zu diesem Schritt KEINE Skizze — und das ist
+     eine benannte Luecke, keine vergessene: fuer Welt, Werkstoffgruppe,
+     Nachweisverfahren und die uebrigen gaebe es nichts zu zeichnen, das
+     erklaert statt schmueckt (OHNE_SKIZZE im Skizzenmodul). Dort traegt das
+     Fenster die Laien-Erklaerung und den Tipp aus i18n_hilfe.js. */
+  var SKIZZE_QUELLE = {
+    stossart:       'skizze',
+    lastfall:       'skizze',
+    rechenrichtung: 'skizze',
+    lasteingabe:    'skizze',
+    nahtart:        'symbol',
+    profil:         'schaubild',
+    kanten:         'schaubild',
+    naht:           'schaubild',      /* der Feldbereich mit dem a-Mass */
+    geometrie:      'schaubild'
+  };
+
+  function skizzeZu(code) {
+    return Object.prototype.hasOwnProperty.call(SKIZZE_QUELLE, code)
+         ? SKIZZE_QUELLE[code] : null;
+  }
+
   /* --------------------------------------------------------------------- */
   /* Kleinkram                                                              */
   /* --------------------------------------------------------------------- */
@@ -181,6 +210,7 @@
         }),
         wert: istLeer(s.auswahl[akt.code]) ? null : s.auswahl[akt.code],
         vorschlag: Options.vorschlag ? Options.vorschlag(akt.code, s.auswahl) : null,
+        skizze: skizzeZu(akt.code),
         index: s.index, von: f.length
       };
     }
@@ -202,7 +232,8 @@
       return {
         art: 'felder', code: akt.code,
         label: 'ber_' + akt.code, hilfe: 'ber_' + akt.code,
-        felder: fs, index: s.index, von: f.length
+        felder: fs, skizze: skizzeZu(akt.code),
+        index: s.index, von: f.length
       };
     }
 
@@ -221,7 +252,8 @@
       return {
         art: 'zusatz', code: SCHRITT_ZUSATZ,
         label: 'ass_zusatz', hilfe: 'ass_zusatz',
-        bereiche: opt, index: s.index, von: f.length
+        bereiche: opt, skizze: null,
+        index: s.index, von: f.length
       };
     }
 
@@ -241,7 +273,8 @@
     return {
       art: 'symbol', code: SCHRITT_SYMBOL, freiwillig: true,
       label: 'ass_symbol', hilfe: 'ass_symbol',
-      gruppen: fs, index: s.index, von: f.length
+      gruppen: fs, skizze: 'symbol',
+      index: s.index, von: f.length
     };
   }
 
@@ -358,6 +391,7 @@
   return {
     NAME: NAME, VERSION: VERSION,
     FELD_BEREICHE: FELD_BEREICHE, SYMBOL_GRUPPEN: SYMBOL_GRUPPEN,
+    SKIZZE_QUELLE: SKIZZE_QUELLE, skizzeZu: skizzeZu,
     SCHRITT_ZUSATZ: SCHRITT_ZUSATZ, SCHRITT_SYMBOL: SCHRITT_SYMBOL,
     starte: starte, schritte: schritte, schritt: schritt, anzahl: anzahl,
     antworte: antworte, zurueck: zurueck, springe: springe,

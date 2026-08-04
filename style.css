@@ -334,3 +334,33 @@ input.feld,select.feld{display:block; width:100%; margin:0}
 .symbol-bild svg{display:block; width:100%; height:auto}
 .symbol-legende{list-style:none; margin:.2rem 0; padding:0}
 .symbol-masse{font-size:.86rem; margin:.3rem 0 .2rem}
+
+/* ---- N8b · Assistent -------------------------------------------------- */
+.modal-assist{max-width:560px}
+.assist-fortschritt{margin:.2rem 0 0; font-size:.82rem; color:var(--dim)}
+.assist-skizze{background:var(--card2); border:1px solid var(--linie); border-radius:10px;
+               padding:.4rem; margin:0 0 .5rem}
+.assist-skizze[hidden]{display:none}
+.assist-skizze svg{display:block; width:100%; height:auto}
+.assist-legende{margin:0 0 .6rem; font-size:.78rem; color:var(--dim)}
+.assist-legende[hidden]{display:none}
+.assist-host{margin-top:.7rem; display:flex; flex-direction:column; gap:.45rem}
+.assist-wahl{display:block; width:100%; text-align:left; padding:.7rem .85rem;
+             background:var(--card2); border:1px solid var(--linie); border-radius:10px;
+             color:var(--text); font-size:.95rem; cursor:pointer}
+.assist-wahl:hover{border-color:var(--akzent)}
+.assist-wahl.gewaehlt{border-color:var(--akzent); background:var(--card);
+                      box-shadow:inset 0 0 0 1px var(--akzent)}
+.assist-wahl .assist-wahl-vorschlag{display:block; font-size:.75rem; color:var(--dim); margin-top:.15rem}
+.assist-feld{display:flex; align-items:center; gap:.5rem; flex-wrap:wrap}
+.assist-feld label{flex:1 1 9rem; font-size:.88rem}
+.assist-feld input[type=number]{flex:0 1 7rem; padding:.45rem .5rem; border-radius:8px;
+                                border:1px solid var(--linie); background:var(--card2); color:var(--text)}
+.assist-feld .assist-einheit{font-size:.8rem; color:var(--dim); min-width:2.4rem}
+.assist-feld .pflicht{color:var(--warn)}
+.assist-haken{display:flex; align-items:center; gap:.5rem; font-size:.9rem}
+.assist-haken .assist-folgt{font-size:.75rem; color:var(--dim)}
+.assist-actions{flex-wrap:wrap; gap:.4rem}
+.assist-wahl{display:flex; align-items:center; gap:.7rem}
+.assist-wahl-bild{flex:0 0 88px; display:block; background:var(--card); border-radius:8px; padding:.2rem}
+.assist-wahl-bild svg{display:block; width:100%; height:auto}

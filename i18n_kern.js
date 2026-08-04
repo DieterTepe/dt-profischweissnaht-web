@@ -369,6 +369,30 @@
     opt_exc_EXC4: { de: 'EXC4', en: 'EXC4', pt: 'EXC4' },
 
     /* ---------- Zusatzbereiche ---------- */
+    /* Bedienung des Assistenten (N8b). */
+    uiAssAbbruch:   { de: 'Abbrechen', en: 'Cancel', pt: 'Cancelar' },
+    uiAssZurueck:   { de: 'Zurück', en: 'Back', pt: 'Voltar' },
+    uiAssUeber:     { de: 'Überspringen', en: 'Skip', pt: 'Ignorar' },
+    uiAssWeiter:    { de: 'Weiter', en: 'Next', pt: 'Seguinte' },
+    uiAssFertig:    { de: 'Fertig — jetzt rechnen', en: 'Done — calculate now', pt: 'Concluído — calcular agora' },
+    uiAssSchritt:   { de: 'Schritt {0} von {1}', en: 'Step {0} of {1}', pt: 'Passo {0} de {1}' },
+    uiAssFreiwillig:{ de: 'Dieser Schritt ist freiwillig.', en: 'This step is optional.', pt: 'Este passo é opcional.' },
+    uiAssVorschlag: { de: 'vorgeschlagen', en: 'suggested', pt: 'sugerido' },
+    uiAssFolgt:     { de: 'folgt mit Baustein {0}', en: 'comes with module {0}', pt: 'chega com o módulo {0}' },
+    uiAssFertigMsg: { de: 'Der Assistent hat die Eingaben übernommen und gerechnet. Prüfe den Rechenweg und die Liste der nicht geprüften Punkte.', en: 'The assistant has transferred your input and calculated. Please check the calculation path and the list of unchecked points.', pt: 'O assistente transferiu os dados e calculou. Verifique o percurso de cálculo e a lista de pontos não verificados.' },
+    uiAssAbgebrochen:{ de: 'Assistent abgebrochen — im Formular hat sich nichts geändert.', en: 'Assistant cancelled — nothing changed in the form.', pt: 'Assistente cancelado — nada mudou no formulário.' },
+
+    /* Legende der Dialogskizzen (N8b-1). KEIN TEXT IM SVG (4.3) —
+       beschriftet wird ausschliesslich hier. */
+    skz_bauteil:      { de: 'Bauteil im Schnitt', en: 'Component in section', pt: 'Componente em corte' },
+    skz_naht:         { de: 'Schweißnaht', en: 'Weld', pt: 'Cordão de solda' },
+    skz_kraft:        { de: 'Belastung', en: 'Load', pt: 'Carga' },
+    skz_zeit:         { de: 'Zeit', en: 'Time', pt: 'Tempo' },
+    skz_nulllinie:    { de: 'Nulllinie', en: 'Zero line', pt: 'Linha zero' },
+    skz_gesucht:      { de: 'gesucht: das a-Maß', en: 'sought: the throat thickness', pt: 'procurado: a garganta' },
+    skz_hebelarm:     { de: 'Hebelarm', en: 'Lever arm', pt: 'Braço de alavanca' },
+    skz_nicht_masstab:{ de: 'Schema, nicht maßstäblich', en: 'Schematic, not to scale', pt: 'Esquema, sem escala' },
+
     /* Beschriftungen des Assistenten (N8a). Er selbst fuehrt nur
        sprachneutrale Schluessel — uebersetzt wird ausschliesslich hier. */
     ber_naht:       { de: 'Maße der Naht', en: 'Weld dimensions', pt: 'Dimensões do cordão' },

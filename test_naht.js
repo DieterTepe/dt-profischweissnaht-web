@@ -17,6 +17,7 @@ var Svg     = require('./svglib.js');
 var Bild    = require('./schaubild.js');
 var Solver  = require('./solver.js');
 var Weg     = require('./rechenweg.js');
+var Skizze  = require('./skizze.js');
 var Assi    = require('./assistent.js');
 
 var N = 0, FAIL = [], SEKTION = '';
@@ -1877,7 +1878,7 @@ eq((uiHtml.match(/<script>/g) || []).length, 1,
 
 var uiSrcRe = /<script src="([^"]+)"><\/script>/g, uiSrcs = [], uiM;
 while ((uiM = uiSrcRe.exec(uiHtml)) !== null) uiSrcs.push(uiM[1]);
-eq(uiSrcs.length, 15, '15 Module in der HTML eingebunden — assistent.js ist mit N8a dazugekommen');
+eq(uiSrcs.length, 16, '16 Module in der HTML eingebunden — skizze.js ist mit N8b dazugekommen');
 eq(uiSrcs[uiSrcs.length - 1], 'ui.js', 'ui.js laedt zuletzt');
 var uiDateiFehlt = [];
 for (uiI = 0; uiI < uiSrcs.length; uiI++) {
@@ -2099,7 +2100,11 @@ eq(s30IdDoppelt.length, 0, 'N5b: keine Id kommt in der HTML doppelt vor (' + s30
 var s30Geruest = [];
 for (s30i = 0; s30i < Ui2.GERUEST_BUTTONS.length; s30i++) s30Geruest.push(Ui2.GERUEST_BUTTONS[s30i][0]);
 ok(s30Geruest.indexOf('calcBtn') < 0, 'N5b: "Berechnen" gilt nicht mehr als unverdrahteter Knopf');
-ok(s30Geruest.indexOf('assistBtn') >= 0, 'N5b: der Assistent verweist weiterhin ehrlich auf N8');
+/* Seit N8b ist der Assistentenknopf VERDRAHTET — er darf deshalb nicht mehr
+   in der Geruestliste stehen. Die Liste ist die ehrliche Aufzaehlung dessen,
+   was noch nicht kann; ein verdrahteter Knopf darin waere eine Luege in die
+   andere Richtung. */
+ok(s30Geruest.indexOf('assistBtn') < 0, 'N8b: der Assistent steht nicht mehr unter den unverdrahteten Knoepfen');
 
 /* --- DIE Filterregel: mild beim Anzeigen, streng beim Bereinigen -------
    Das ist die Regel aus dem N1-Log, und sie ist der Grund, warum ui.js eine
@@ -3791,6 +3796,264 @@ for (s40i = 0; s40i < s40Keys.length; s40i++) {
   if (!Kern.has(s40Keys[s40i])) s40Fehl.push(s40Keys[s40i]);
 }
 eq(s40Fehl.length, 0, 'S40: jede Beschriftung des Assistenten ist dreisprachig belegt (' + s40Fehl.join(',') + ')');
+
+sek('S41 · N8b-1 Dialogskizzen — zeichnen, was erklaert');
+
+/* Plan 3.3 verlangt in JEDEM Dialogfenster eine Skizze. Gezeichnet wird aus
+   drei Quellen: schaubild.js (Profil, Kanten, Nahtbild), symbol.js (Fugenform
+   und ISO-2553-Symbol) und neu skizze.js fuer die vier Auswahlen, bei denen
+   ein Bild wirklich etwas erklaert.
+   UND FUER DEN REST AUSDRUECKLICH KEINE: Welt, Werkstoffgruppe,
+   Nachweisverfahren und die uebrigen haetten nichts zu zeigen, das erklaert
+   statt schmueckt. Diese Luecke ist BENANNT (skizze.js OHNE_SKIZZE) und wird
+   hier geprueft — eine vergessene Luecke waere ein Fehler, eine benannte ist
+   eine Entscheidung. */
+
+var s41i, s41j;
+
+eq(Skizze.NAME, 'skizze', 'S41: skizze.js nennt sich beim Namen');
+ok(/^0\.\d+\.\d+-N8b$/.test(Skizze.VERSION), 'S41: und traegt eine N8b-Kennung (' + Skizze.VERSION + ')');
+
+/* --- 1) Jede Option jeder bedienten Gruppe wird gezeichnet -------------- */
+var s41Fehl = [], s41N = 0;
+for (s41i = 0; s41i < Skizze.GRUPPEN.length; s41i++) {
+  (function (gc) {
+    var g = Options.gruppe(gc), r, j;
+    ok(!!g, 'S41: ' + gc + ' ist eine echte Auswahlgruppe');
+    if (!g) return;
+    for (j = 0; j < g.optionen.length; j++) {
+      r = Skizze.zeichne(gc, g.optionen[j].code, Svg);
+      s41N++;
+      if (!r.ok) s41Fehl.push(gc + '/' + g.optionen[j].code);
+      else {
+        ok(r.svg.indexOf('<svg') === 0, 'S41 [' + gc + '/' + g.optionen[j].code + ']: es entsteht ein SVG');
+        ok(r.legende.length > 0, 'S41 [' + gc + '/' + g.optionen[j].code + ']: mit Legende');
+        ok(r.masstaeblich === false,
+           'S41 [' + gc + '/' + g.optionen[j].code + ']: und es sagt, dass es NICHT masstaeblich ist');
+      }
+    }
+  }(Skizze.GRUPPEN[s41i]));
+}
+eq(s41Fehl.length, 0, 'S41: jede Option der bedienten Gruppen hat eine Skizze (' + s41Fehl.join(',') + ')');
+ok(s41N >= 12, 'S41: es sind mindestens zwoelf Skizzen (' + s41N + ')');
+
+/* --- 2) KEIN TEXT IM SVG (Plan 4.3) ------------------------------------ */
+/* Dieselbe Regel wie bei schaubild.js und symbol.js: beschriftet wird ueber
+   die Legende, nie im Bild. Sonst waere jede Skizze einsprachig. */
+var s41Text = [];
+for (s41i = 0; s41i < Skizze.GRUPPEN.length; s41i++) {
+  (function (gc) {
+    var g = Options.gruppe(gc), r, j;
+    for (j = 0; j < g.optionen.length; j++) {
+      r = Skizze.zeichne(gc, g.optionen[j].code, Svg);
+      if (r.ok && (r.svg.indexOf('<text') >= 0 || r.svg.indexOf('<tspan') >= 0)) {
+        s41Text.push(gc + '/' + g.optionen[j].code);
+      }
+    }
+  }(Skizze.GRUPPEN[s41i]));
+}
+eq(s41Text.length, 0, 'S41: kein Text in keiner Skizze (' + s41Text.join(',') + ')');
+var s41Src = fsU.readFileSync(__dirname + '/skizze.js', 'utf8');
+ok(s41Src.indexOf('<text') < 0, 'S41: auch im Quelltext steht kein Textknoten');
+
+/* --- 3) Jede Legende ist dreisprachig belegt ---------------------------- */
+var s41Leg = [];
+for (s41i = 0; s41i < Skizze.LEGENDE_CODES.length; s41i++) {
+  if (!Kern.has(Skizze.LEGENDE_CODES[s41i])) s41Leg.push(Skizze.LEGENDE_CODES[s41i]);
+}
+eq(s41Leg.length, 0, 'S41: jeder Legendencode hat einen Text (' + s41Leg.join(',') + ')');
+/* Und keine Skizze benutzt einen Code, der nicht im Katalog steht. */
+var s41Fremd = [];
+for (s41i = 0; s41i < Skizze.GRUPPEN.length; s41i++) {
+  (function (gc) {
+    var g = Options.gruppe(gc), r, j, k;
+    for (j = 0; j < g.optionen.length; j++) {
+      r = Skizze.zeichne(gc, g.optionen[j].code, Svg);
+      if (!r.ok) continue;
+      for (k = 0; k < r.legende.length; k++) {
+        if (Skizze.LEGENDE_CODES.indexOf(r.legende[k]) < 0) s41Fremd.push(r.legende[k]);
+      }
+    }
+  }(Skizze.GRUPPEN[s41i]));
+}
+eq(s41Fremd.length, 0, 'S41: keine Skizze benutzt einen Legendencode ausserhalb des Katalogs (' + s41Fremd.join(',') + ')');
+
+/* --- 4) DIE LUECKE IST VOLLSTAENDIG BENANNT ----------------------------- */
+/* Jede Auswahlgruppe muss entweder eine Skizze haben oder ausdruecklich in
+   OHNE_SKIZZE stehen. Eine Gruppe, die in keiner der beiden Listen steht,
+   waere schlicht vergessen worden — und genau das soll auffallen, wenn
+   spaeter eine neue Gruppe dazukommt. */
+var s41Fremdquelle = ['profil', 'kanten', 'nahtart'];
+for (s41i = 0; s41i < Assi.SYMBOL_GRUPPEN.length; s41i++) s41Fremdquelle.push(Assi.SYMBOL_GRUPPEN[s41i]);
+var s41Offen = [];
+for (s41i = 0; s41i < Options.GRUPPEN.length; s41i++) {
+  (function (c) {
+    if (Skizze.GRUPPEN.indexOf(c) >= 0) return;
+    if (Skizze.OHNE_SKIZZE.indexOf(c) >= 0) return;
+    if (s41Fremdquelle.indexOf(c) >= 0) return;
+    s41Offen.push(c);
+  }(Options.GRUPPEN[s41i].code));
+}
+eq(s41Offen.length, 0,
+   'S41: jede Auswahlgruppe ist zugeordnet — gezeichnet, aus fremder Quelle oder benannt ohne (' +
+   s41Offen.join(',') + ')');
+/* Und keine Gruppe steht in beiden Listen. */
+var s41Doppel = [];
+for (s41i = 0; s41i < Skizze.GRUPPEN.length; s41i++) {
+  if (Skizze.OHNE_SKIZZE.indexOf(Skizze.GRUPPEN[s41i]) >= 0) s41Doppel.push(Skizze.GRUPPEN[s41i]);
+}
+eq(s41Doppel.length, 0, 'S41: keine Gruppe steht zugleich mit und ohne Skizze (' + s41Doppel.join(',') + ')');
+
+/* --- 5) Fehlerfaelle liefern kein halbes Bild --------------------------- */
+var s41L1 = Skizze.zeichne('welt', 'A', Svg);
+ok(s41L1.ok === false && s41L1.svg === '',
+   'S41: zu einer Gruppe ohne Skizze kommt KEIN Bild — und kein halbes');
+ok((s41L1.fehler || []).length > 0, 'S41: sondern ein benannter Grund');
+var s41L2 = Skizze.zeichne('stossart', 'gibtsnicht', Svg);
+ok(s41L2.ok === false, 'S41: eine unbekannte Option liefert kein Bild');
+var s41L3 = Skizze.zeichne('stossart', null, Svg);
+ok(s41L3.ok === false, 'S41: eine leere Auswahl ebenso');
+
+/* --- 6) Bestimmtheit: dieselbe Eingabe, dasselbe Bild ------------------- */
+var s41A = Skizze.zeichne('lastfall', 'wechselnd', Svg);
+var s41B = Skizze.zeichne('lastfall', 'wechselnd', Svg);
+eq(s41A.svg, s41B.svg, 'S41: zweimal gezeichnet ergibt zeichengleich dasselbe');
+ok(Skizze.zeichne('lastfall', 'ruhend', Svg).svg !== s41A.svg,
+   'S41: verschiedene Lastfaelle sehen verschieden aus');
+
+/* --- 7) Der Assistent weiss, WELCHE Quelle zu welchem Schritt gehoert --- */
+/* Er zeichnet nichts — er nennt nur die Quelle. Das ist Dialogwissen und
+   gehoert deshalb in assistent.js, nicht in die Oberflaeche. */
+ok(typeof Assi.skizzeZu === 'function', 'S41: der Assistent nennt die Skizzenquelle je Schritt');
+var s41Q = ['skizze', 'schaubild', 'symbol'];
+var s41BadQ = [];
+for (var s41k in Assi.SKIZZE_QUELLE) {
+  if (!Object.prototype.hasOwnProperty.call(Assi.SKIZZE_QUELLE, s41k)) continue;
+  if (s41Q.indexOf(Assi.SKIZZE_QUELLE[s41k]) < 0) s41BadQ.push(s41k);
+}
+eq(s41BadQ.length, 0, 'S41: und nennt nur Quellen, die es gibt (' + s41BadQ.join(',') + ')');
+/* Jede Gruppe, die skizze.js bedient, muss im Assistenten auch darauf zeigen. */
+var s41Zeig = [];
+for (s41i = 0; s41i < Skizze.GRUPPEN.length; s41i++) {
+  if (Assi.skizzeZu(Skizze.GRUPPEN[s41i]) !== 'skizze') s41Zeig.push(Skizze.GRUPPEN[s41i]);
+}
+eq(s41Zeig.length, 0, 'S41: jede gezeichnete Gruppe ist im Assistenten verdrahtet (' + s41Zeig.join(',') + ')');
+/* Und umgekehrt: keine benannte Luecke traegt heimlich doch eine Skizze. */
+var s41Heimlich = [];
+for (s41i = 0; s41i < Skizze.OHNE_SKIZZE.length; s41i++) {
+  if (Assi.skizzeZu(Skizze.OHNE_SKIZZE[s41i]) !== null) s41Heimlich.push(Skizze.OHNE_SKIZZE[s41i]);
+}
+eq(s41Heimlich.length, 0, 'S41: keine benannte Luecke zeigt doch auf eine Quelle (' + s41Heimlich.join(',') + ')');
+
+/* --- 8) skizze.js rechnet nicht ----------------------------------------- */
+var s41Verboten = ['solver.js', 'naht.js', 'profil.js', 'daten.js', 'rechenweg.js',
+                   'validate.js', 'optionen.js', 'ui.js'];
+var s41T = [];
+for (s41i = 0; s41i < s41Verboten.length; s41i++) {
+  if (s41Src.indexOf(s41Verboten[s41i]) >= 0) s41T.push(s41Verboten[s41i]);
+}
+eq(s41T.length, 0, 'S41: skizze.js haengt an keinem Rechen- oder Datenmodul (' + s41T.join(',') + ')');
+ok(s41Src.indexOf('document') < 0 && s41Src.indexOf('window') < 0, 'S41: und kennt kein DOM');
+
+sek('S42 · N8b/N8c Assistent an der Oberflaeche — eine Muendung, kein zweiter Weg');
+
+/* N8c, Plan 3.3, Sicherheitsaspekt: Der Assistent muendet IMMER in die volle
+   Anzeige mit Rechenweg und benennt, was nicht geprueft wurde. Er hat keine
+   eigene Ergebnisdarstellung und keinen eigenen Rechenweg — es gibt genau
+   einen. Diese Sektion prueft die Nahtstelle: dass ui.js EINEN Schreibweg
+   ins Formular hat, dass der Assistentenknopf verdrahtet ist und dass in der
+   Oberflaeche keine Dialoglogik nachgebaut wurde. */
+
+var s42Src = fsU.readFileSync(__dirname + '/ui.js', 'utf8');
+
+/* --- 1) EIN Schreibweg ins Formular ------------------------------------- */
+/* Beispielkatalog und Assistent schreiben ueber dieselbe Funktion. Zwei
+   Schreibwege waeren zwei Gelegenheiten, verschieden zu schreiben — und
+   genau daran haengt, dass beide Wege dasselbe ergeben. */
+ok(s42Src.indexOf('function formularSetzen') > 0,
+   'S42: ui.js hat einen gemeinsamen Schreibweg ins Formular');
+var s42Anz = s42Src.split('formularSetzen(').length - 1;
+ok(s42Anz >= 3, 'S42: und beide Wege benutzen ihn (' + s42Anz + ' Stellen)');
+
+/* --- 2) Die Oberflaeche baut keine Dialoglogik nach --------------------- */
+/* Welcher Schritt kommt und welche Optionen es gibt, sagt assistent.js.
+   Stuende die Schrittfolge auch in ui.js, waere sie beim naechsten Baustein
+   an einer der beiden Stellen veraltet. */
+ok(s42Src.indexOf('DTNAssistent') > 0, 'S42: ui.js holt die Schrittfolge beim Assistenten');
+var s42Bereiche = 0, s42i;
+for (s42i = 0; s42i < Assi.FELD_BEREICHE.length; s42i++) {
+  if (s42Src.indexOf("'" + Assi.FELD_BEREICHE[s42i] + "'") >= 0) s42Bereiche++;
+}
+ok(true, 'S42: (Bereichsnamen in ui.js: ' + s42Bereiche + ' — Anordnung, nicht Dialogfolge)');
+/* Keine Schrittliste in der Oberflaeche. */
+ok(s42Src.indexOf('SKIZZE_QUELLE') < 0,
+   'S42: die Zuordnung Schritt -> Skizzenquelle steht NICHT in ui.js');
+
+/* --- 3) Der Knopf ist verdrahtet und ehrlich ---------------------------- */
+var s42Geruest = [];
+for (s42i = 0; s42i < Ui2.GERUEST_BUTTONS.length; s42i++) s42Geruest.push(Ui2.GERUEST_BUTTONS[s42i][0]);
+ok(s42Geruest.indexOf('assistBtn') < 0, 'S42: der Assistentenknopf gilt nicht mehr als unverdrahtet');
+ok(s42Geruest.indexOf('saveBtn') >= 0 && s42Geruest.indexOf('printBtn') >= 0,
+   'S42: die Ausgabeknoepfe verweisen weiterhin ehrlich auf N11');
+
+/* --- 4) Alle Bedientexte dreisprachig ----------------------------------- */
+var s42Keys = ['uiAssAbbruch', 'uiAssZurueck', 'uiAssUeber', 'uiAssWeiter',
+               'uiAssFertig', 'uiAssSchritt', 'uiAssFreiwillig', 'uiAssVorschlag',
+               'uiAssFolgt', 'uiAssFertigMsg', 'uiAssAbgebrochen'];
+var s42Fehl = [];
+for (s42i = 0; s42i < s42Keys.length; s42i++) {
+  if (!Kern.has(s42Keys[s42i])) s42Fehl.push(s42Keys[s42i]);
+}
+eq(s42Fehl.length, 0, 'S42: jeder Bedientext des Assistenten ist belegt (' + s42Fehl.join(',') + ')');
+
+/* --- 5) Jeder Dialogschritt hat eine Laien-Erklaerung -------------------- */
+/* Plan 3.3: jedes Fenster traegt eine aussagekraeftige Erklaerung fuer Laien.
+   Sie kommt aus i18n_hilfe.js — derselben Quelle wie der ⓘ-Knopf im
+   Formular. Geprueft wird, dass zu JEDEM Schritt eines Durchlaufs ein
+   Hilfeschluessel existiert; ein Fenster ohne Erklaerung waere genau die
+   Stelle, an der ein Laie stehenbleibt. */
+var s42Ohne = [], s42S = Assi.starte({}, {}), s42Schutz = 0, s42Sch;
+while (!Assi.fertig(s42S) && s42Schutz < 60) {
+  s42Schutz++;
+  s42Sch = Assi.schritt(s42S);
+  if (!Hilfe.has(s42Sch.hilfe) && !Kern.has(s42Sch.hilfe)) s42Ohne.push(s42Sch.code);
+  if (s42Sch.art === 'auswahl') {
+    s42S = Assi.antworte(s42S, s42Sch.optionen.length ? s42Sch.optionen[0].code : null);
+  } else if (s42Sch.art === 'felder') {
+    var s42W = {}, s42j;
+    for (s42j = 0; s42j < s42Sch.felder.length; s42j++) {
+      if (s42Sch.felder[s42j].standard !== null) s42W[s42Sch.felder[s42j].code] = s42Sch.felder[s42j].standard;
+      else s42W[s42Sch.felder[s42j].code] = 1;
+    }
+    s42S = Assi.antworte(s42S, s42W);
+  } else if (s42Sch.art === 'zusatz') { s42S = Assi.antworte(s42S, {}); }
+  else { s42S = Assi.ueberspringe(s42S); }
+}
+eq(s42Ohne.length, 0, 'S42: jeder Dialogschritt hat einen belegten Hilfetext (' + s42Ohne.join(',') + ')');
+
+/* --- 6) Die Skizzenquellen sind alle vorhanden -------------------------- */
+var s42Q = {}, s42k;
+for (s42k in Assi.SKIZZE_QUELLE) {
+  if (Object.prototype.hasOwnProperty.call(Assi.SKIZZE_QUELLE, s42k)) s42Q[Assi.SKIZZE_QUELLE[s42k]] = true;
+}
+ok(!s42Q.skizze || typeof Skizze.zeichne === 'function', 'S42: die Quelle skizze gibt es');
+ok(!s42Q.symbol || typeof require('./symbol.js').ausNahtart === 'function', 'S42: die Quelle symbol gibt es');
+ok(!s42Q.schaubild || typeof Bild.ausProfil === 'function', 'S42: die Quelle schaubild gibt es');
+/* Die Mustermasse zeichnen fuer JEDES Profil — sonst bliebe die Kachel leer. */
+var s42Leer = [];
+var s42P = Options.gruppe('profil');
+for (s42i = 0; s42i < s42P.optionen.length; s42i++) {
+  (function (c) {
+    var m = Skizze.muster(c, 'rundum');
+    var r = m ? Bild.ausProfil(m, { sprache: 'de' }) : null;
+    if (!r || !r.ok) s42Leer.push(c);
+  }(s42P.optionen[s42i].code));
+}
+eq(s42Leer.length, 0, 'S42: jedes Profil hat ein Musterbild fuer die Auswahlkachel (' + s42Leer.join(',') + ')');
+/* Die Mustermasse duerfen NIE in einem Feld landen. */
+ok(s42Src.indexOf('DTNSkizze.muster') > 0, 'S42: ui.js holt die Mustermasse beim Skizzenmodul');
+ok(s42Src.indexOf('muster(') > 0 && s42Src.split('formularSetzen(')[0].indexOf('muster') < 0,
+   'S42: und schreibt sie nirgends ins Formular');
 
 /* ========================================================================= */
 console.log('\n════════════════════════════════════════════');

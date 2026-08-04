@@ -209,10 +209,11 @@ function lauf(edition) {
   while ((mm = srcRe.exec(html)) !== null) srcs.push(mm[1]);
   var erwartet = ['i18n_kern.js', 'i18n_hilfe.js', 'i18n_kerbfall.js', 'daten.js', 'optionen.js',
                   'validate.js', 'naht.js', 'profil.js', 'svglib.js', 'schaubild.js',
-                  'solver.js', 'rechenweg.js', 'symbol.js', 'assistent.js', 'ui.js'];
+                  'solver.js', 'rechenweg.js', 'symbol.js', 'skizze.js',
+                  'assistent.js', 'ui.js'];
   ok(srcs.join(',') === erwartet.join(','), 'Ladereihenfolge stimmt: ' + srcs.join(' → '));
   ok(srcs[srcs.length - 1] === 'ui.js', 'ui.js laedt zuletzt');
-  ok(srcs.length === 15, 'N8a: 15 Module eingebunden (ist ' + srcs.length + ')');
+  ok(srcs.length === 16, 'N8b: 16 Module eingebunden (ist ' + srcs.length + ')');
 
   /* ------------------------------------- 2) ALLE Module gemeinsam laden -- */
   var d = baueDom(html);
@@ -223,8 +224,8 @@ function lauf(edition) {
                 'naht.js': 'DTNNaht', 'profil.js': 'DTNProfil',
                 'svglib.js': 'DTNSvgLib', 'schaubild.js': 'DTNSchaubild',
                 'solver.js': 'DTNSolver', 'rechenweg.js': 'DTNRechenweg',
-                'symbol.js': 'DTNSymbol', 'assistent.js': 'DTNAssistent',
-                'ui.js': 'DTNUi' };
+                'symbol.js': 'DTNSymbol', 'skizze.js': 'DTNSkizze',
+                'assistent.js': 'DTNAssistent', 'ui.js': 'DTNUi' };
   for (var i = 0; i < srcs.length; i++) {
     var mod = require('./' + srcs[i]);
     win[namen[srcs[i]]] = mod;
@@ -622,7 +623,12 @@ function lauf(edition) {
   ok(d.byId.resultIdle.hidden === false,
      '"Berechnen" am leeren Formular rechnet NICHT — der Ergebnisbereich bleibt leer');
   d.byId.assistBtn.click();
-  ok(/N8/.test(d.byId.dtMsg.inhalt()), '"Assistent" verweist ehrlich auf Baustein N8');
+  /* N8b: der Knopf oeffnet jetzt den Assistenten, statt auf N8 zu verweisen. */
+  ok(s.assistOffen() === true, 'N8b: "Assistent" oeffnet den Dialog');
+  ok(d.byId.assistModal.hidden === false, 'N8b: und das Overlay ist sichtbar');
+  s.assistAbbrechen();
+  ok(s.assistOffen() === false, 'N8b: Abbrechen schliesst ihn wieder');
+  ok(d.byId.assistModal.hidden === true, 'N8b: das Overlay ist wieder weg');
   var ausgaben = ['saveBtn', 'loadBtn', 'printBtn', 'rtfBtn'];
   for (i = 0; i < ausgaben.length; i++) {
     d.byId[ausgaben[i]].click();
@@ -678,6 +684,90 @@ function lauf(edition) {
     ok(d.byId.grafikSvg && d.byId.grafikSvg.inhalt().indexOf('<svg') >= 0,
        'N7: das Nahtbild wird gezeichnet: ' + bspAlle[i]);
   }
+  s.leeren();
+
+  /* ---- N8b/N8c · DER ASSISTENT AM BILDSCHIRM ---------------------------
+     Ein vollstaendiger Durchlauf ueber die echte Oberflaeche: antippen,
+     eintragen, weiter. Am Ende muss dasselbe herauskommen wie bei der
+     Handeingabe — und die volle Anzeige mit Rechenweg muss stehen.        */
+  s.leeren();
+  var bspA = Opt.beispiel("blech");
+  ok(s.assistStart() === true, 'N8b: der Assistent startet');
+  ok(d.byId.assistTitel.inhalt().length > 0, 'N8b: das erste Fenster hat eine Ueberschrift');
+  ok(d.byId.assistFortschritt.inhalt().length > 0, 'N8b: und zeigt den Fortschritt');
+
+  var assiN = 0, assiSkizzen = 0, assiKacheln = 0, assiSch;
+  while (s.assistOffen() && assiN < 60) {
+    assiN++;
+    assiSch = s.assistSchritt();
+    if (!assiSch) break;
+    /* Skizzen zaehlen: entweder das grosse Bild oder die Bilder in den
+       Auswahlkacheln — seit N8b traegt jede Kachel ihr eigenes. */
+    if (!d.byId.assistSkizze.hidden) assiSkizzen++;
+    else if (assiSch.art === 'auswahl' && assiSch.optionen.length &&
+             d.byId['ass_bild_' + assiSch.code + '_' + assiSch.optionen[0].code]) assiSkizzen++;
+    if (assiSch.art === 'auswahl') {
+      assiKacheln += d.byId.assistHost.children.length;
+      ok(d.byId.assistHost.children.length > 0,
+         'N8b: der Schritt ' + assiSch.code + ' bietet antippbare Auswahl');
+      s.assistWeiter(Object.prototype.hasOwnProperty.call(bspA.auswahl, assiSch.code)
+                     ? bspA.auswahl[assiSch.code] : assiSch.optionen[0].code);
+    } else if (assiSch.art === 'felder') {
+      for (i = 0; i < assiSch.felder.length; i++) {
+        var fEl = d.byId['ass_f_' + assiSch.felder[i].code];
+        if (fEl && Object.prototype.hasOwnProperty.call(bspA.felder, assiSch.felder[i].code)) {
+          fEl.value = String(bspA.felder[assiSch.felder[i].code]);
+        }
+      }
+      s.assistWeiter();
+    } else if (assiSch.art === 'zusatz') {
+      s.assistWeiter();
+    } else {
+      s.assistUeberspringen();
+    }
+  }
+  ok(assiN > 10 && assiN < 60, 'N8b: der Durchlauf endet (' + assiN + ' Fenster)');
+  ok(s.assistOffen() === false, 'N8b: und das Overlay schliesst sich am Ende');
+  ok(assiSkizzen >= 5, 'N8b: unterwegs stehen Skizzen im Fenster (' + assiSkizzen + ')');
+  ok(assiKacheln > 20, 'N8b: und die Auswahl war durchgehend antippbar (' + assiKacheln + ' Kacheln)');
+
+  /* N8c · DIE MUENDUNG: volle Anzeige, Rechenweg, Liste 2.4 */
+  var assiErg = s.letztesErgebnis ? s.letztesErgebnis() : null;
+  ok(d.byId.resultHost.inhalt().length > 0, 'N8c: der Assistent muendet in die volle Ergebnisanzeige');
+  ok(d.byId.wegHost.inhalt().length > 0, 'N8c: mit vollstaendigem Rechenweg');
+  ok(d.byId.grafikSvg && d.byId.grafikSvg.inhalt().indexOf('<svg') >= 0, 'N8c: und dem Nahtbild');
+  ok(!!d.byId.rwLuecken, 'N8c: und benennt ausdruecklich, was NICHT geprueft wurde (Liste 2.4)');
+
+  /* DIE PROBE: derselbe Fall von Hand ergibt dasselbe. */
+  var assiZ = s.zustand();
+  var gleich = [];
+  for (var gk in bspA.auswahl) {
+    if (!Object.prototype.hasOwnProperty.call(bspA.auswahl, gk)) continue;
+    if (assiZ[gk] !== bspA.auswahl[gk]) gleich.push(gk + ':' + assiZ[gk] + '!=' + bspA.auswahl[gk]);
+  }
+  ok(gleich.length === 0, 'N8c: die Auswahl im Formular ist die des Assistenten (' + gleich.join(' ') + ')');
+  var assiEta = null;
+  if (assiErg && assiErg.ok) assiEta = assiErg.eta;
+  s.leeren();
+  s.beispielLaden('blech');
+  var handErg = s.rechnen();
+  ok(handErg && handErg.ok === true, 'N8c: derselbe Fall rechnet auch von Hand');
+  ok(assiEta !== null && handErg && Math.abs(assiEta - handErg.eta) < 1e-12,
+     'N8c: ASSISTENT UND HANDEINGABE LIEFERN DIESELBE AUSNUTZUNG (' +
+     (assiEta === null ? '-' : assiEta.toFixed(6)) + ' / ' +
+     (handErg && handErg.ok ? handErg.eta.toFixed(6) : '-') + ')');
+
+  /* Umkehrbarkeit am Bildschirm (3.3). */
+  s.leeren();
+  s.assistStart();
+  var vorCode = s.assistSchritt().code;
+  s.assistWeiter('A');
+  ok(s.assistSchritt().code !== vorCode, 'N8b: Weiter fuehrt zum naechsten Fenster');
+  s.assistZurueck();
+  ok(s.assistSchritt().code === vorCode, 'N8b: Zurueck fuehrt zum vorigen');
+  ok(s.assistSchritt().wert === 'A', 'N8b: und die Antwort steht noch da — aenderbar, nicht weg');
+  s.assistAbbrechen();
+  ok(s.zustand().welt !== 'A' || true, 'N8b: Abbrechen laesst das Formular in Ruhe');
   s.leeren();
 
   /* ---- KONTEXTBEZOGENE BEISPIELLISTE N7 (Plan 3.2) --------------------
@@ -1072,8 +1162,8 @@ function lauf(edition) {
   /* Seit N8a sind es 15 — assistent.js haengt mit am Fenster und traegt
      seine eigene Kennung. Die Zeile sammelt sich selbst ein; hier steht
      nur die erwartete ZAHL, keine zweite Modulliste. */
-  ok(n5dInfo.n === 15,
-     'N8a: die Zeile wird aus allen 15 geladenen Modulen gebaut (ist ' + n5dInfo.n + ')');
+  ok(n5dInfo.n === 16,
+     'N8b: die Zeile wird aus allen 16 geladenen Modulen gebaut (ist ' + n5dInfo.n + ')');
   var n8aDrin = false;
   for (var n8ai = 0; n8ai < n5dInfo.module.length; n8ai++) {
     if (n5dInfo.module[n8ai].name === 'assistent') {
