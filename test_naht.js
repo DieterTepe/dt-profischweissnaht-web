@@ -2510,10 +2510,14 @@ var s34PlanPfad = __dirname + '/Schweißnaht-1.md';
 ok(fsU.existsSync(s34PlanPfad),
    'N6b: die Plandatei liegt neben dem Code — sonst ist der Abgleich nicht moeglich');
 var s34PlanTxt = fsU.existsSync(s34PlanPfad) ? fsU.readFileSync(s34PlanPfad, 'utf8') : '';
-var s34PlanNr = (s34PlanTxt.match(/Plan-Version\s*:\s*([0-9]+\.[0-9]+)/) || [])[1] || null;
-ok(!!s34PlanNr, 'N6b: die Planversion ist aus dem Kopfblock lesbar');
+/* Verglichen wird gegen `Codestand`, NICHT gegen `Plan-Version`: sonst muesste
+   jeder reine Plan- oder Abnahmeeintrag den Code anfassen, nur damit eine Zahl
+   wieder passt — und genau solche Pflichtaenderungen erzeugen die Fluechtig-
+   keitsfehler, die hier verhindert werden sollen. */
+var s34PlanNr = (s34PlanTxt.match(/Codestand\s*:\s*Plan\s+([0-9]+\.[0-9]+)/) || [])[1] || null;
+ok(!!s34PlanNr, 'N6b: das Kopffeld Codestand ist aus der Plandatei lesbar');
 eq(Ui34.PLAN, s34PlanNr,
-   'N6b: die Planversion in ui.js ist DIESELBE wie im Kopf der Plandatei (ui: ' +
+   'N6b: die Planversion in ui.js ist DIESELBE wie im Kopffeld Codestand (ui: ' +
    Ui34.PLAN + ', Plan: ' + s34PlanNr + ')');
 
 /* --- 2) EXC schlaegt die Bewertungsgruppe vor (5.1-1) ------------------- */

@@ -16,7 +16,12 @@
 > gelöscht** werden — der Inhalt steht jetzt in 4.11 und in der Historie.
 
 ```
-Plan-Version : 2.36 · Stand 2026-08-04
+Plan-Version : 2.37 · Stand 2026-08-04
+Codestand    : Plan 2.36 · ui 0.8.0 · N6b
+               (Die Planversion, gegen die der CODE gebaut ist. Sie steht auch
+               in ui.js als PLAN und wird von einer Assertion damit verglichen.
+               Sie wandert nur mit, wenn sich Code ändert — reine Plan- oder
+               Abnahmeeinträge lassen sie stehen.)
 Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                N2c (Nahtbild-Grafik), N3 (Spannungen + beide Welten),
                N4 (Rechenweg) und **N5 VOLLSTÄNDIG** — N5a (UI-Grundgerüst),
@@ -29,15 +34,16 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                16 JS sauber, beide HTMLs mit genau einer Zeile Unterschied,
                die 13 gelieferten Dateien byteweise identisch angekommen und
                die acht nicht angefassten Module unverändert.
-               **Baustein N6b (ISO-2553-Symbolgenerator) ist gebaut und grün
-               ausgeliefert — Abnahme am Handy steht noch aus.**
-               → NÄCHSTER SCHRITT: **N6b am Handy abnehmen** (11 Dateien, Liste
-                 in 8.1; `symbol.js` ist NEU). Danach der nächste Baustein nach
-                 der Tabelle in Abschnitt 5.
+               **Baustein N6b (ISO-2553-Symbolgenerator) ist von Dieter am
+               Handy geprüft und ABGENOMMEN (2026-08-04).**
+               → NÄCHSTER SCHRITT: nächster Baustein nach der Tabelle in
+                 Abschnitt 5 — **Umfang vor dem Bau abstimmen**.
+                 `N6b_Vorlauf-Messwerte.md` kann aus dem Projektordner
+                 GELÖSCHT werden; ihr Inhalt steht in 4.11 und in der Historie.
                  Schnittstellen: 4.5 (naht.js), 4.6 (profil.js),
                  4.7 (svglib.js + schaubild.js), 4.8 (solver.js),
                  4.9 (rechenweg.js), 4.10 / 4.10b / 4.10c / 4.10d (ui.js),
-                 **4.11 (symbol.js)**.
+                 4.11 (symbol.js).
                Große Bausteine (N5, N8, N13, N14) werden in ETAPPEN gebaut — Regel in
                Kickoff-Punkt 5c, Etappen in Abschnitt 5.2.
 Basislinie   : 1138 Assertions · DOM-Smokes 537 (voll) + 538 (test) · i18n-Parität 0 Abweichungen
@@ -544,6 +550,10 @@ aber **nichts davon ist sichtbar** — der Info-ⓘ nennt bisher nur die Edition
 > DIESER DATEI und vergleicht sie mit `PLAN` in `ui.js`. Eine Assertion, die einen
 > Handwert gegen eine Konstante prüft, prüft nichts — sie muss gegen die **Quelle** prüfen.
 > `ETAPPE` und `VERSION` in `ui.js` gehören ab jetzt in die Abschlussliste jedes Bausteins.
+> **Verglichen wird gegen das Kopffeld `Codestand`, nicht gegen `Plan-Version`:** Sonst
+> müsste jeder reine Plan- oder Abnahmeeintrag den Code anfassen, nur damit eine Zahl
+> wieder passt — und genau solche Pflichtänderungen erzeugen die Flüchtigkeitsfehler, die
+> hier verhindert werden sollen. `Codestand` wandert nur mit, wenn sich Code ändert.
 
 > **Offener Punkt für N11 (aus der Abnahme von N5d, 2026-08-03):** Die Zeile zeigt die
 > **Modulnamen**, nicht die **Dateinamen** — `data` statt `daten.js`, `options` statt
@@ -1354,7 +1364,7 @@ im Wörterbuch; eine weitere Assertion verbietet einen zweiten Text daneben.
 | **N3** ✅ | **Spannungen + beide Welten** *(abgenommen 2026-07-26)* | `solver.js`: σ⊥, τ⊥, τ∥ aus N/Q/M/T · Welt A (EC3, beide Verfahren) · Welt B (klassisch, Tabelle + Formel) · **Nachweis UND Auslegung** mit Aufrundung · Ampel. **Schnittstelle: Abschnitt 4.8.** |
 | **N4** ✅ | **Rechenweg** *(abgenommen 2026-07-26)* | `rechenweg.js`: selbstprüfende Schrittliste für N2/N2b/N3, dreisprachig, zweiter Rechenpfad je Schritt, Rechenprobe und Nachweis getrennt. **Schnittstelle: Abschnitt 4.9.** |
 | **N5** ✅ | **UI-Basis — VOLLSTÄNDIG ABGENOMMEN: N5a, N5b, N5c-1, N5c-2, N5c-3 und N5d** | 2 HTMLs, `style.css`, Formular mit aufklappbaren Bereichen und Freischalt-Haken, Ergebnis-Kacheln, Ampel, i18n, Theme (**Start immer dunkel**), Laien-ⓘ, Block „Ausführung & Dokumentation" (ISO 5817 + EXC). **Erster Handy-Test.** |
-| **N6b** ✅ | **ISO-2553-Symbolgenerator — gebaut und geliefert (Abnahme offen)** | `symbol.js`: Pfeil-/Gegenseite, a- bzw. z-Maß, Länge, Rundumnaht, Baustellennaht. Nutzt `svglib.js` aus N2c. Bewusst **vor** dem Launch — Verkaufsargument. |
+| **N6b** ✅ | **ISO-2553-Symbolgenerator — ABGENOMMEN 2026-08-04** | `symbol.js`: Pfeil-/Gegenseite, a- bzw. z-Maß, Länge, Rundumnaht, Baustellennaht. Nutzt `svglib.js` aus N2c. Bewusst **vor** dem Launch — Verkaufsargument. |
 | **N7** | **Presets** | Die 6 Starter als Profil-/Kantendaten auf `profil.js`, **mit Merkmalen für die kontextbezogene Beispielliste** (3.2). |
 | **N8** | **Assistent** | `assistent.js` (DOM-freie Dialoglogik) + Overlay-UI, Button-Einstieg, tabellengestützt aus `optionen.js`, mit Erklärungen/Tipps/Skizzen je Dialog, Übernahme vorhandener Eingaben. |
 | **N9** | **Vorwärmung & t8/5** | `thermik.js` + Panel + Rechenweg + Assistenten-Schritte. |
@@ -1582,7 +1592,7 @@ und erscheint nur in der Ausgabe — aber es ist der erste Schritt Richtung Doku
 
 ---
 
-#### 5.1-2 · N6b — **GEBAUT UND GELIEFERT 2026-08-04** *(Abnahme am Handy offen)*
+#### 5.1-2 · N6b — **GEBAUT, GELIEFERT UND ABGENOMMEN 2026-08-04**
 
 > ⚠️ **ANLAUF VOM 2026-08-03 VERWORFEN — und zwar richtig so.** Drittel 1 (Katalog +
 > Nahtvorbereitung, 984 → **1067** Assertions) und Drittel 2 (Zeichnen, → **1116**
@@ -2277,6 +2287,20 @@ Quelle. Der Befund steht in 3.6. Geändert: `ui.js`, `test_naht.js`, `dom_smoke_
 **Basislinie 1135 → 1138 Assertions · Smokes unverändert 537/538.**
 **Nächster Schritt: N6b am Handy abnehmen.** `N6b_Vorlauf-Messwerte.md` kann danach
 gelöscht werden — ihr Inhalt steht in 4.11 und in der Historie.
+
+
+
+**v2.37 (2026-08-04):** **Baustein N6b von Dieter am Handy geprüft und ABGENOMMEN.** Die
+Versionszeile zeigt „Programmstand N6b · Plan 2.36 · 14 Module" mit `ui 0.8.0` und
+`symbol 0.1.0-N6b`; alle zwölf übrigen Kennungen unverändert. Projektordner gegengeprüft:
+alle 13 gelieferten Dateien byteweise identisch, die acht nicht angefassten Module
+unverändert, `node --check` über 17 Dateien sauber, Testläufe aus dem Ordner
+**1138 / 537 / 538 · 0 Fehler**, HTML-Diff genau eine Zeile. **Neu im Kopfblock: das Feld
+`Codestand`** — die Planversion, gegen die der Code gebaut ist. Der Harness vergleicht
+`PLAN` aus `ui.js` ab jetzt damit statt mit `Plan-Version`, damit reine Plan- oder
+Abnahmeeinträge nicht jedes Mal eine Codeänderung erzwingen. **Code unverändert.**
+`N6b_Vorlauf-Messwerte.md` hat ihren Zweck erfüllt und kann gelöscht werden.
+**Nächster Schritt: nächster Baustein nach Abschnitt 5 — Umfang vorher abstimmen.**
 
 
 ═══════════════════════════════════════════════════════════════════════════
