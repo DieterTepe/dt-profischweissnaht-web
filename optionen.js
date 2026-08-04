@@ -32,6 +32,39 @@
   /* --------------------------------------------------------------------- */
   /* Gruppen in Abfragereihenfolge. Jede Gruppe: code, pflicht, optionen.   */
   /* --------------------------------------------------------------------- */
+  /* --------------------------------------------------------------------- */
+  /* N6b — SYMBOLWAHL (Plan 5.1-2)                                          */
+  /*                                                                        */
+  /* Die Codes stehen hier ein zweites Mal — sie gehoeren eigentlich allein  */
+  /* symbol.js. Der Grund ist der Modulgraph: optionen.js haengt von KEINEM  */
+  /* anderen Modul ab, und das soll so bleiben. Die Doppelung ist deshalb    */
+  /* BENANNT und BEWACHT: eine Assertion prueft in beide Richtungen, dass    */
+  /* diese Listen und der Katalog deckungsgleich sind. Wer im Katalog etwas  */
+  /* ergaenzt und hier vergisst, faellt sofort auf.                          */
+  /*                                                                        */
+  /* `schluessel` zeigt auf den vorhandenen Katalogtext (`sym_*`) — damit    */
+  /* stehen die Namen der Symbole NUR EINMAL im Woerterbuch.                 */
+  /* --------------------------------------------------------------------- */
+  var SYM_GRUND = [
+    'i_naht', 'v_naht', 'x_naht', 'hv_naht', 'k_naht',
+    'y_naht', 'dy_naht', 'hy_naht', 'dhy_naht',
+    'u_naht', 'du_naht', 'j_naht', 'dj_naht',
+    'steilflanke_v', 'steilflanke_hv',
+    'kehlnaht', 'doppelkehlnaht',
+    'lochnaht', 'punktnaht', 'rollennaht', 'boerdelnaht',
+    'auftragschweissung', 'gegenlage'
+  ];
+  var SYM_OBERFLAECHE = ['flach', 'gewoelbt', 'hohl', 'kerbfrei'];
+  var SYM_SICHERUNG = ['badsicherung_bleibend', 'badsicherung_entfernbar'];
+
+  function symOptionen(codes) {
+    var r = [], i;
+    for (i = 0; i < codes.length; i++) {
+      r.push({ code: codes[i], schluessel: 'sym_' + codes[i] });
+    }
+    return r;
+  }
+
   var GRUPPEN = [
 
     { code: 'welt', pflicht: true, verzweigt: true, optionen: [
@@ -211,6 +244,20 @@
     { code: 'iso5817', pflicht: false, verzweigt: false, rechenwirksam: false, optionen: [
       { code: 'B' }, { code: 'C' }, { code: 'D' }
     ]},
+
+    /* ---- N6b: Zeichnungssymbol nach EN ISO 2553 ---------------------- */
+    { code: 'sym_grund', pflicht: false, rechenwirksam: false,
+      optionen: symOptionen(SYM_GRUND) },
+    { code: 'sym_gegen', pflicht: false, rechenwirksam: false,
+      optionen: symOptionen(SYM_GRUND) },
+    { code: 'sym_oberflaeche', pflicht: false, rechenwirksam: false,
+      optionen: symOptionen(SYM_OBERFLAECHE) },
+    { code: 'sym_sicherung', pflicht: false, rechenwirksam: false,
+      optionen: symOptionen(SYM_SICHERUNG) },
+    { code: 'sym_lage', pflicht: false, rechenwirksam: false,
+      optionen: [{ code: 'rundum', schluessel: 'sym_rundum' },
+                 { code: 'baustelle', schluessel: 'sym_baustelle' },
+                 { code: 'rundum_baustelle' }] },
 
     { code: 'exc', pflicht: false, verzweigt: false, rechenwirksam: false, optionen: [
       { code: 'EXC1' }, { code: 'EXC2' }, { code: 'EXC3' }, { code: 'EXC4' }
@@ -496,6 +543,7 @@
     ZUSATZBEREICHE: ZUSATZBEREICHE,
     BEISPIELE: BEISPIELE,
     beispiel: beispiel,
+    SYM_GRUND: SYM_GRUND, SYM_OBERFLAECHE: SYM_OBERFLAECHE, SYM_SICHERUNG: SYM_SICHERUNG,
     VORSCHLAEGE: VORSCHLAEGE,
     vorschlag: vorschlag,
     istVorschlagsZiel: istVorschlagsZiel,

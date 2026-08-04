@@ -38,8 +38,10 @@ eq(Data.werkstoffeDerGruppe('alu').length, 3, '3 Aluminiumlegierungen');
 eq(Data.ISO5817.length, 3, 'ISO 5817: B/C/D');
 eq(Data.EXC.length, 4, 'EXC1..EXC4');
 eq(Data.VERFAHREN.length, 5, '5 Schweissverfahren');
-eq(Data.NICHT_GEPRUEFT.length, 14,
-   'Liste "nicht geprueft" mit 14 Punkten (2.4) — N5d hat die vier benannten Luecken ergaenzt');
+eq(Data.NICHT_GEPRUEFT.length, 13,
+   'Liste "nicht geprueft" mit 13 Punkten (2.4) — N6b hat die Nahtvorbereitung GESCHLOSSEN');
+eq(Data.NICHT_GEPRUEFT.indexOf('nahtvorbereitung'), -1,
+   'die Luecke Nahtvorbereitung ist raus, weil sie gefuellt wurde — nicht weil sie umbenannt wurde');
 
 /* ========================================================================= */
 sek('S2 · Werkstoffkennwerte (Tabellenwerte sind massgeblich)');
@@ -294,7 +296,9 @@ for (i = 0; i < Options.GRUPPEN.length; i++) {
   var g = Options.GRUPPEN[i];
   if (!Kern.has('grp_' + g.code)) { ohneText++; console.log('    ohne Text: grp_' + g.code); }
   for (j = 0; j < g.optionen.length; j++) {
-    var key = 'opt_' + g.code + '_' + g.optionen[j].code;
+    /* N6b: eine Option darf auf einen vorhandenen Text zeigen (schluessel) —
+       dann steht ihr Name nur einmal im Woerterbuch. */
+    var key = g.optionen[j].schluessel || ('opt_' + g.code + '_' + g.optionen[j].code);
     if (!Kern.has(key)) { ohneText++; console.log('    ohne Text: ' + key); }
   }
 }
@@ -319,7 +323,7 @@ var ngOhne = 0;
 for (i = 0; i < Data.NICHT_GEPRUEFT.length; i++) {
   if (!Kern.has('ng_' + Data.NICHT_GEPRUEFT[i])) { ngOhne++; console.log('    ohne Text: ng_' + Data.NICHT_GEPRUEFT[i]); }
 }
-eq(ngOhne, 0, 'alle 14 Punkte der Liste "nicht geprueft" sind uebersetzt');
+eq(ngOhne, 0, 'alle 13 Punkte der Liste "nicht geprueft" sind uebersetzt');
 
 var zbOhne = 0;
 for (i = 0; i < Options.ZUSATZBEREICHE.length; i++) {
@@ -1419,9 +1423,9 @@ ok(svQz.eta >= svQz.nachweise[0].eta && svQz.eta >= svQz.nachweise[1].eta,
    'der ausgewiesene Ausnutzungsgrad ist der groesste aller Einzelnachweise');
 
 /* --- Liste "was NICHT geprueft wird" liegt im Ergebnis (2.4) ---------- */
-eq(svQz.nicht_geprueft.length, 14, 'die Liste 2.4 mit 14 Punkten steht im Ergebnis');
+eq(svQz.nicht_geprueft.length, 13, 'die Liste 2.4 mit 13 Punkten steht im Ergebnis');
 svQz.nicht_geprueft.push('probe');
-eq(Solver.rechne(svEin({ N: 200000 })).nicht_geprueft.length, 14,
+eq(Solver.rechne(svEin({ N: 200000 })).nicht_geprueft.length, 13,
    'die Liste ist eine Kopie — sie kann von aussen nicht verbogen werden');
 
 /* --- Selbstpruefung von naht.js wird durchgereicht -------------------- */
@@ -1659,8 +1663,8 @@ ok(!!rwSchritt(rwStd, 'rw_s_kontrolle_polar'), 'Selbstpruefung Ip = Iy + Iz steh
 ok(!!rwSchritt(rwStd, 'rw_s_kontrolle_haupt'), 'Selbstpruefung Hauptachsen steht im Rechenweg');
 ok(rwSchritt(rwStd, 'rw_s_kontrolle_gesamt').haken === true, 'die Gesamtzeile zaehlt alle Haekchen');
 ok(!!rwSchritt(rwStd, 'rw_s_nicht_geprueft'), 'die Liste 2.4 steht im Rechenweg');
-eq(rwSchritt(rwStd, 'rw_s_nicht_geprueft').liste.length, 14,
-   'die Liste 2.4 traegt alle 14 Punkte');
+eq(rwSchritt(rwStd, 'rw_s_nicht_geprueft').liste.length, 13,
+   'die Liste 2.4 traegt alle 13 Punkte');
 eq(rwSchritt(rwStd, 'rw_s_flaeche').probe, 'rw_p_flaeche',
    'die Nahtflaeche nennt ihren zweiten Rechenpfad');
 eq(rwSchritt(rwStd, 'rw_s_widerstand').quelle, 'qu_ec3_1_8',
@@ -1872,7 +1876,7 @@ eq((uiHtml.match(/<script>/g) || []).length, 1,
 
 var uiSrcRe = /<script src="([^"]+)"><\/script>/g, uiSrcs = [], uiM;
 while ((uiM = uiSrcRe.exec(uiHtml)) !== null) uiSrcs.push(uiM[1]);
-eq(uiSrcs.length, 13, '13 Module in der HTML eingebunden');
+eq(uiSrcs.length, 14, '14 Module in der HTML eingebunden — symbol.js ist mit N6b dazugekommen');
 eq(uiSrcs[uiSrcs.length - 1], 'ui.js', 'ui.js laedt zuletzt');
 var uiDateiFehlt = [];
 for (uiI = 0; uiI < uiSrcs.length; uiI++) {
@@ -1988,7 +1992,7 @@ var s30Gebaut = 0;
 for (s30i = 0; s30i < Ui2.ZUORDNUNG.length; s30i++) {
   if (!Ui2.ZUORDNUNG[s30i].etappe) s30Gebaut += Ui2.ZUORDNUNG[s30i].gruppen.length;
 }
-eq(s30Gebaut, 20, 'N5d: alle 20 Gruppen werden gebaut — keine ist mehr datiert (ist ' + s30Gebaut + ')');
+eq(s30Gebaut, 25, 'N6b: alle 25 Gruppen werden gebaut — keine ist datiert (ist ' + s30Gebaut + ')');
 
 /* --- Zusatzbereiche stimmen mit optionen.js ueberein -------------------- */
 var s30Zus = [], s30ZusOpt = [];
@@ -2476,17 +2480,17 @@ var ui34Src = fsU.readFileSync(__dirname + '/ui.js', 'utf8');
 var s34Module = [
   ['daten', Data], ['optionen', Options], ['validate', Valid], ['naht', Naht],
   ['profil', Profil], ['svglib', Svg], ['schaubild', Bild], ['solver', Solver],
-  ['rechenweg', Weg], ['ui', Ui34],
+  ['rechenweg', Weg], ['ui', Ui34], ['symbol', require('./symbol.js')],
   ['i18n_kern', Kern], ['i18n_hilfe', Hilfe], ['i18n_kerbfall', Kerb]
 ];
-eq(s34Module.length, 13, 'N5d: 13 Module gehoeren zum Programm');
+eq(s34Module.length, 14, 'N6b: 14 Module gehoeren zum Programm — symbol.js ist dazugekommen');
 var s34OhneVersion = [];
 for (var s34i = 0; s34i < s34Module.length; s34i++) {
   var s34m = s34Module[s34i][1];
   if (!s34m || typeof s34m.VERSION !== 'string' || !s34m.VERSION) s34OhneVersion.push(s34Module[s34i][0]);
 }
 eq(s34OhneVersion.length, 0,
-   'N5d: JEDES der 13 Module traegt eine VERSION — die drei Loecher aus 3.6 sind zu' +
+   'N6b: JEDES der 14 Module traegt eine VERSION — auch das neue' +
    (s34OhneVersion.length ? ' (offen: ' + s34OhneVersion.join(', ') + ')' : ''));
 eq(Kern.VERSION, '0.1.0-N1', 'N5d: i18n_kern.js hat jetzt eine Kennung');
 eq(Hilfe.VERSION, '0.1.0-N1', 'N5d: i18n_hilfe.js hat jetzt eine Kennung');
@@ -2540,7 +2544,8 @@ for (s34i = 0; s34i < Ui34.ZUORDNUNG.length; s34i++) {
   if (Ui34.ZUORDNUNG[s34i].code === 'ausfuehrung') s34Aus = Ui34.ZUORDNUNG[s34i];
 }
 ok(!!s34Aus, 'N5d: der Bereich Ausfuehrung steht in der Zuordnung');
-eq(s34Aus.gruppen.length, 2, 'N5d: er traegt genau die zwei Auswahlen');
+eq(s34Aus.gruppen.length, 7,
+   'N6b: der Block traegt jetzt sieben Auswahlen — zwei aus N5d, fuenf fuer das Symbol');
 eq(s34Aus.hinweise.length, 2, 'N5d: und zwei Hinweiszeilen ohne Antippen');
 eq(s34Aus.hinweise[0], 'ausf_nicht_rechenwirksam', 'N5d: die erste sagt ehrlich: nicht rechenwirksam');
 eq(s34Aus.hinweise[1], 'ausf_erm_hinweis', 'N5d: die zweite nennt die Ermuedung — als Hinweis, nicht als Rechnung');
@@ -2559,7 +2564,7 @@ ok(Kern.t('ausf_erm_hinweis', 'de').indexOf('Hinweis') > 0,
    'N5d: der Ermuedungstext sagt selbst, dass er nur ein Hinweis ist');
 
 /* --- 5) Die vier bewusst offenen Punkte sind BENANNT (2.4) -------------- */
-var s34Luecken = ['pruefumfang_zfp', 'nahtvorbereitung', 'toleranzen', 'herstellerqualifikation'];
+var s34Luecken = ['pruefumfang_zfp', 'toleranzen', 'herstellerqualifikation'];
 for (s34i = 0; s34i < s34Luecken.length; s34i++) {
   ok(Data.NICHT_GEPRUEFT.indexOf(s34Luecken[s34i]) >= 0,
      'N5d: ' + s34Luecken[s34i] + ' steht als benannte Luecke in der Liste 2.4');
@@ -2568,8 +2573,14 @@ for (s34i = 0; s34i < s34Luecken.length; s34i++) {
        'N5d: die Luecke ' + s34Luecken[s34i] + ' ist in ' + s34Spr[s34j].toUpperCase() + ' benannt');
   }
 }
-ok(Kern.t('ng_nahtvorbereitung', 'de').indexOf('9692') > 0,
-   'N5d: die Luecke Nahtvorbereitung nennt die Norm, die sie regeln wuerde');
+/* N6b: diese Luecke gibt es nicht mehr — sie wurde gefuellt. Geprueft wird
+   jetzt, dass sie WIRKLICH raus ist und nicht nur unsichtbar wurde. */
+ok(Data.NICHT_GEPRUEFT.indexOf('nahtvorbereitung') < 0 && Data.fugenformen().length === 16,
+   'N6b: die Luecke Nahtvorbereitung ist raus UND die Tabelle steht — gefuellt, nicht versteckt');
+ok(require('./symbol.js').KATALOG.length === 32,
+   'N6b: dazu gehoert der Katalog, der die Fugenformen ueberhaupt erst zeigt');
+ok(Data.nahtvorbereitung('stumpf_v').q.indexOf('ISO9692') >= 0,
+   'N6b: und die Werte nennen die Norm, die sie regelt');
 ok(Kern.t('ng_toleranzen', 'de').indexOf('13920') > 0,
    'N5d: die Luecke Toleranzen nennt EN ISO 13920');
 /* Die Liste kommt durch den ganzen Rechenweg hindurch — ohne eine zweite Quelle. */
@@ -2585,6 +2596,433 @@ ok(Ui34.IDS.indexOf('infoVersion') >= 0, 'N5d: die Versionszeile hat eine Id');
 ok(Ui34.IDS.indexOf('infoModule') >= 0, 'N5d: die Modulkennungen haben eine Id');
 ok(Ui34.KLASSEN.indexOf('info-version') >= 0, 'N5d: und style.css traegt ihre Klasse');
 ok(Ui34.KLASSEN.indexOf('info-module') >= 0, 'N5d: ebenso fuer die Modulzeile');
+
+/* ========================================================================= */
+sek('S35 · N6b Etappe 1 — Katalog ISO 2553 und Nahtvorbereitung ISO 9692-1');
+
+var Sym = require('./symbol.js');
+
+/* --- 1) Das Modul meldet sich ordentlich an ---------------------------- */
+eq(Sym.NAME, 'symbol', 'N6b: symbol.js nennt seinen Namen');
+ok(typeof Sym.VERSION === 'string' && Sym.VERSION.indexOf('N6b') > 0,
+   'N6b: und traegt von Anfang an eine Kennung (3.6)');
+
+/* --- 2) Der Katalog ist vollstaendig und in sich richtig ---------------- */
+eq(Sym.KATALOG.length, 32, 'N6b: der volle Katalog hat 32 Eintraege');
+eq(Sym.codes('grund').length, 23, 'N6b: davon 23 Grundsymbole');
+eq(Sym.codes('zusatz').length, 6, 'N6b: 6 Zusatzzeichen');
+eq(Sym.codes('lage').length, 3, 'N6b: 3 Angaben an der Pfeillinie');
+eq(Sym.codes().length, 32, 'N6b: ohne Filter kommt alles');
+
+var s35Gesehen = {}, s35Doppelt = [], s35i, s35j, s35e;
+var s35Arten = { grund: 1, zusatz: 1, lage: 1 };
+var s35Seiten = { pfeil: 1, gegen: 1, beide: 1 };
+var s35FehlArt = [], s35FehlSeite = [], s35FehlMass = [], s35FehlQ = [];
+for (s35i = 0; s35i < Sym.KATALOG.length; s35i++) {
+  s35e = Sym.KATALOG[s35i];
+  if (s35Gesehen[s35e.code]) s35Doppelt.push(s35e.code);
+  s35Gesehen[s35e.code] = 1;
+  if (!s35Arten[s35e.art]) s35FehlArt.push(s35e.code);
+  if (s35e.art === 'grund') {
+    if (!s35Seiten[s35e.seite]) s35FehlSeite.push(s35e.code);
+  } else if (s35e.seite !== null) s35FehlSeite.push(s35e.code);
+  for (s35j = 0; s35j < s35e.masse.length; s35j++) {
+    if (Sym.MASSE.indexOf(s35e.masse[s35j]) < 0) s35FehlMass.push(s35e.code);
+  }
+  for (s35j = 0; s35j < s35e.q.length; s35j++) {
+    if (!Data.QUELLEN[s35e.q[s35j]]) s35FehlQ.push(s35e.code + '/' + s35e.q[s35j]);
+  }
+}
+eq(s35Doppelt.length, 0, 'N6b: kein Code kommt zweimal vor' + (s35Doppelt.length ? ' (' + s35Doppelt.join(', ') + ')' : ''));
+eq(s35FehlArt.length, 0, 'N6b: jede Art ist grund, zusatz oder lage');
+eq(s35FehlSeite.length, 0, 'N6b: nur Grundsymbole haben eine Seite, alle anderen keine');
+eq(s35FehlMass.length, 0, 'N6b: keine Bemassung ausserhalb der acht bekannten Groessen');
+eq(s35FehlQ.length, 0, 'N6b: jede Quellenkennung ist in QUELLEN hinterlegt' + (s35FehlQ.length ? ' (' + s35FehlQ.join(', ') + ')' : ''));
+
+/* --- 3) Die Verweise zeigen ins Leere? Dann faellt es hier auf ---------- */
+var s35BadFug = [], s35BadNaht = [];
+var s35NahtCodes = [];
+for (s35i = 0; s35i < Data.NAHTARTEN.length; s35i++) s35NahtCodes.push(Data.NAHTARTEN[s35i].code);
+for (s35i = 0; s35i < Sym.KATALOG.length; s35i++) {
+  s35e = Sym.KATALOG[s35i];
+  if (s35e.vorbereitung && !Data.FUGENFORMEN[s35e.vorbereitung]) s35BadFug.push(s35e.code);
+  if (s35e.naht && s35NahtCodes.indexOf(s35e.naht) < 0) s35BadNaht.push(s35e.code);
+  for (s35j = 0; s35j < s35e.naht_auch.length; s35j++) {
+    if (s35NahtCodes.indexOf(s35e.naht_auch[s35j]) < 0) s35BadNaht.push(s35e.code);
+  }
+}
+eq(s35BadFug.length, 0, 'N6b: jeder Verweis auf eine Fugenform trifft eine vorhandene');
+eq(s35BadNaht.length, 0, 'N6b: jeder Verweis auf eine Nahtart trifft eine vorhandene');
+
+/* --- 4) DIE EHRLICHE BRUECKE: was rechenbar ist, ist auch zeichenbar ---- */
+var s35OhneSymbol = [];
+for (s35i = 0; s35i < s35NahtCodes.length; s35i++) {
+  if (!Sym.fuerNahtart(s35NahtCodes[s35i])) s35OhneSymbol.push(s35NahtCodes[s35i]);
+}
+eq(s35OhneSymbol.length, 0,
+   'N6b: JEDE der 12 rechenbaren Nahtarten hat ein Zeichnungssymbol' +
+   (s35OhneSymbol.length ? ' (fehlt: ' + s35OhneSymbol.join(', ') + ')' : ''));
+eq(Sym.fuerNahtart('kehl_flanke').code, 'kehlnaht',
+   'N6b: Flankenkehlnaht traegt dasselbe Symbol wie die Kehlnaht');
+eq(Sym.fuerNahtart('kehl_umlaufend').code, 'kehlnaht',
+   'N6b: die umlaufende Kehlnaht ebenso — die Umlaufigkeit ist ein Zusatzzeichen');
+eq(Sym.fuerNahtart('gibtsnicht'), null, 'N6b: eine unbekannte Nahtart erfindet kein Symbol');
+eq(Sym.fuerNahtart(null), null, 'N6b: und nichts liefert nichts');
+
+/* --- 5) UND DIE ANDERE RICHTUNG: was NICHT nachweisbar ist, wird BENANNT */
+var s35Ohne = Sym.ohneNachweis();
+eq(s35Ohne.length, 14,
+   'N6b: 14 Grundsymbole sind zeichenbar, aber in diesem Programm nicht nachweisbar');
+var s35Still = [];
+for (s35i = 0; s35i < s35Ohne.length; s35i++) {
+  if (Sym.eintrag(s35Ohne[s35i]).nachweisbar !== false) s35Still.push(s35Ohne[s35i]);
+}
+eq(s35Still.length, 0, 'N6b: jeder davon sagt es selbst — nachweisbar:false, kein stilles Symbol');
+ok(s35Ohne.indexOf('punktnaht') >= 0 && s35Ohne.indexOf('u_naht') >= 0,
+   'N6b: Punkt- und U-Naht stehen ausdruecklich in dieser Liste');
+eq(Sym.eintrag('kehlnaht').nachweisbar, true, 'N6b: die Kehlnaht dagegen ist nachweisbar');
+ok(Kern.has('sym_nicht_nachweisbar'),
+   'N6b: und es gibt einen Text, der genau das ausspricht');
+
+/* --- 6) Kopien statt Durchgriff ----------------------------------------- */
+var s35K = Sym.eintrag('kehlnaht');
+s35K.masse.push('probe'); s35K.naht_auch.push('probe');
+eq(Sym.eintrag('kehlnaht').masse.length, 5, 'N6b: eintrag() gibt eine Kopie — von aussen nicht verbiegbar');
+eq(Sym.eintrag('kehlnaht').naht_auch.length, 3, 'N6b: auch die Nahtartenliste ist eine Kopie');
+eq(Sym.eintrag('gibtsnicht'), null, 'N6b: ein unbekannter Code liefert null');
+ok(Sym.hatMass('kehlnaht', 'a') && !Sym.hatMass('kehlnaht', 's'),
+   'N6b: die Kehlnaht kennt das a-Mass, aber keine Stumpfnahtdicke');
+ok(Sym.hatMass('v_naht', 's') && !Sym.hatMass('v_naht', 'a'),
+   'N6b: bei der V-Naht ist es umgekehrt');
+
+/* --- 7) Nahtvorbereitung nach EN ISO 9692-1 ----------------------------- */
+eq(Data.fugenformen().length, 16, 'N6b: 16 Fugenformen in der Tabelle');
+ok(!!Data.QUELLEN.ISO9692, 'N6b: EN ISO 9692-1 ist als Quelle hinterlegt');
+var s35VerfCodes = [];
+for (s35i = 0; s35i < Data.VERFAHREN.length; s35i++) s35VerfCodes.push(Data.VERFAHREN[s35i].code);
+var s35Fug = Data.fugenformen(), s35Bad = [], s35BadV = [], s35BadT = [], s35BadArt = [];
+var s35Arten2 = { alpha: 1, beta: 1 };
+for (s35i = 0; s35i < s35Fug.length; s35i++) {
+  var s35N = Data.nahtvorbereitung(s35Fug[s35i]);
+  ok(s35N.ok, 'N6b: Fugenform ' + s35Fug[s35i] + ' ist abrufbar');
+  /* Der Richtwert muss IM Band liegen — sonst haette man zwei Wahrheiten. */
+  if (s35N.winkel_band && (s35N.winkel < s35N.winkel_band[0] || s35N.winkel > s35N.winkel_band[1])) s35Bad.push(s35Fug[s35i] + '/winkel');
+  if (s35N.spalt_band && (s35N.spalt < s35N.spalt_band[0] || s35N.spalt > s35N.spalt_band[1])) s35Bad.push(s35Fug[s35i] + '/spalt');
+  if (s35N.steg_band && (s35N.steg < s35N.steg_band[0] || s35N.steg > s35N.steg_band[1])) s35Bad.push(s35Fug[s35i] + '/steg');
+  if (s35N.radius !== null && s35N.radius_band && (s35N.radius < s35N.radius_band[0] || s35N.radius > s35N.radius_band[1])) s35Bad.push(s35Fug[s35i] + '/radius');
+  if (s35N.winkel_art !== null && !s35Arten2[s35N.winkel_art]) s35BadArt.push(s35Fug[s35i]);
+  if (s35N.t_von !== null && s35N.t_bis !== null && s35N.t_von >= s35N.t_bis) s35BadT.push(s35Fug[s35i]);
+  for (s35j = 0; s35j < s35N.verfahren.length; s35j++) {
+    if (s35VerfCodes.indexOf(s35N.verfahren[s35j]) < 0) s35BadV.push(s35Fug[s35i] + '/' + s35N.verfahren[s35j]);
+  }
+}
+eq(s35Bad.length, 0, 'N6b: JEDER Richtwert liegt in seinem eigenen Band' + (s35Bad.length ? ' (' + s35Bad.join(', ') + ')' : ''));
+eq(s35BadArt.length, 0, 'N6b: die Winkelart ist immer alpha, beta oder ausdruecklich keine');
+eq(s35BadT.length, 0, 'N6b: kein Dickenbereich steht auf dem Kopf');
+eq(s35BadV.length, 0, 'N6b: jedes empfohlene Verfahren gibt es wirklich' + (s35BadV.length ? ' (' + s35BadV.join(', ') + ')' : ''));
+
+/* Die Dickenfrage wird beantwortet, aber nichts verboten. */
+eq(Data.nahtvorbereitung('stumpf_v', 10).im_bereich, true, 'N6b: 10 mm liegen im Bereich der V-Fuge');
+eq(Data.nahtvorbereitung('stumpf_v', 30).im_bereich, false, 'N6b: 30 mm liegen darueber');
+eq(Data.nahtvorbereitung('stumpf_u', 8).im_bereich, false, 'N6b: 8 mm liegen unter der U-Fuge');
+eq(Data.nahtvorbereitung('stumpf_v').im_bereich, null, 'N6b: ohne Dicke wird nichts behauptet');
+ok(Data.nahtvorbereitung('stumpf_v', 30).ok, 'N6b: ausserhalb des Bereichs wird trotzdem geantwortet — nicht verboten');
+eq(Data.nahtvorbereitung('quatsch').grund, 'fugenform_unbekannt', 'N6b: eine unbekannte Fugenform sagt das');
+var s35Kop = Data.nahtvorbereitung('stumpf_v');
+s35Kop.verfahren.push('probe'); s35Kop.winkel_band.push(99);
+eq(Data.nahtvorbereitung('stumpf_v').verfahren.length, 4, 'N6b: die Antwort ist eine Kopie');
+eq(Data.nahtvorbereitung('stumpf_v').winkel_band.length, 2, 'N6b: auch die Baender sind Kopien');
+
+/* --- 8) REGRESSION: die alten Richtwerte haben sich NICHT verschoben ---- */
+/* An ihnen haengt ab N10 die Volumen- und Kostenrechnung. Die Tabelle ist
+   gewachsen — die sieben alten Zahlenpaare muessen dieselben bleiben. */
+var s35Alt = [
+  ['stumpf_i', 0, 0, 2], ['stumpf_v', 60, 2, 2], ['stumpf_dv', 50, 3, 2],
+  ['stumpf_hv', 50, 2, 2], ['stumpf_dhv', 50, 2, 2], ['stumpf_hy', 50, 3, 0],
+  ['stumpf_dhy', 50, 3, 0]
+];
+for (s35i = 0; s35i < s35Alt.length; s35i++) {
+  var s35A = Data.nahtvorbereitung(s35Alt[s35i][0]);
+  eq(s35A.winkel, s35Alt[s35i][1], 'N6b: ' + s35Alt[s35i][0] + ' — Winkel unveraendert');
+  eq(s35A.steg, s35Alt[s35i][2], 'N6b: ' + s35Alt[s35i][0] + ' — Steg unveraendert');
+  eq(s35A.spalt, s35Alt[s35i][3], 'N6b: ' + s35Alt[s35i][0] + ' — Spalt unveraendert');
+}
+
+/* --- 9) Dreisprachig, sonst ist der Katalog nicht fertig ---------------- */
+var s35Spr = ['de', 'en', 'pt'], s35Fehl = [];
+for (s35i = 0; s35i < Sym.KATALOG.length; s35i++) {
+  for (s35j = 0; s35j < s35Spr.length; s35j++) {
+    if (!Kern.t('sym_' + Sym.KATALOG[s35i].code, s35Spr[s35j])) s35Fehl.push('sym_' + Sym.KATALOG[s35i].code);
+  }
+}
+for (s35i = 0; s35i < Sym.MASSE.length; s35i++) {
+  for (s35j = 0; s35j < s35Spr.length; s35j++) {
+    if (!Kern.t('sym_mass_' + Sym.MASSE[s35i], s35Spr[s35j])) s35Fehl.push('sym_mass_' + Sym.MASSE[s35i]);
+  }
+}
+for (s35i = 0; s35i < s35Fug.length; s35i++) {
+  for (s35j = 0; s35j < s35Spr.length; s35j++) {
+    if (!Kern.t('fug_' + s35Fug[s35i], s35Spr[s35j])) s35Fehl.push('fug_' + s35Fug[s35i]);
+  }
+}
+eq(s35Fehl.length, 0,
+   'N6b: jeder Katalogeintrag, jedes Mass und jede Fugenform ist dreisprachig benannt' +
+   (s35Fehl.length ? ' (fehlt: ' + s35Fehl.slice(0, 5).join(', ') + ')' : ''));
+ok(Kern.has('fug_winkel_alpha') && Kern.has('fug_winkel_beta') && Kern.has('fug_radius'),
+   'N6b: auch die Kenngroessen der Vorbereitung haben Namen');
+ok(Kern.t('sym_vorbereitung_richtwert', 'de').indexOf('WPS') > 0,
+   'N6b: der Vorbereitungstext sagt, dass die WPS entscheidet — nicht dieses Programm');
+
+/* ========================================================================= */
+sek('S36 · N6b Etappe 2 — die Symbole werden gezeichnet');
+
+/* svglib haengt im Harness am globalen Objekt, wie im Browser am Fenster. */
+if (typeof global !== 'undefined' && !global.DTNSvgLib) global.DTNSvgLib = Svg;
+
+/* --- 1) Jedes Grundsymbol laesst sich zeichnen -------------------------- */
+var s36Grund = Sym.codes('grund'), s36i, s36j, s36z, s36Fehl = [], s36Kurz = [];
+for (s36i = 0; s36i < s36Grund.length; s36i++) {
+  s36z = Sym.zeichne({ grund: s36Grund[s36i] });
+  if (!s36z.ok) s36Fehl.push(s36Grund[s36i]);
+  else if (s36z.svg.length < 80 || s36z.gezeichnet < 3) s36Kurz.push(s36Grund[s36i]);
+}
+eq(s36Fehl.length, 0, 'N6b: ALLE 23 Grundsymbole lassen sich zeichnen' + (s36Fehl.length ? ' (' + s36Fehl.join(', ') + ')' : ''));
+eq(s36Kurz.length, 0, 'N6b: keines liefert ein leeres oder halbes Bild' + (s36Kurz.length ? ' (' + s36Kurz.join(', ') + ')' : ''));
+
+/* --- 2) DIE HARTE REGEL: kein Text im SVG (4.3) ------------------------- */
+var s36Text = [], s36Voll;
+for (s36i = 0; s36i < s36Grund.length; s36i++) {
+  s36Voll = Sym.zeichne({ grund: s36Grund[s36i],
+    zusatz: ['flach', 'gewoelbt', 'hohl', 'kerbfrei', 'badsicherung_bleibend', 'badsicherung_entfernbar'],
+    rundum: true, baustelle: true, gabel: true, rahmen: true,
+    masse: { a: 5, z: 7, s: 10, l: 100, n: 3, e: 200, d: 8, b: 12 } });
+  if (/<text|<tspan/.test(s36Voll.svg)) s36Text.push(s36Grund[s36i]);
+  if (/[A-Za-z]{2,}["'>]/.test(s36Voll.svg.replace(/data-code="[^"]*"|class="[^"]*"|data-id="[^"]*"|xmlns[^"]*"[^"]*"|viewBox|preserveAspectRatio|xMidYMid meet|role="img"|width="100%"/g, ''))) {
+    /* nur Formhinweis, keine Assertion — die eigentliche Regel ist die Textregel oben */
+  }
+}
+eq(s36Text.length, 0, 'N6b: in KEINEM Symbol steht Text im SVG — auch nicht mit allen Zusatzzeichen');
+ok(Sym.zeichne({ grund: 'kehlnaht', masse: { a: 5 } }).svg.indexOf('5') < 0 ||
+   Sym.zeichne({ grund: 'kehlnaht', masse: { a: 5 } }).bemassung.length === 1,
+   'N6b: das a-Mass kommt als Bemassungsangabe heraus, nicht als Zahl im Bild');
+
+/* --- 3) Doppelnaehte sind dieselbe Form, nur gespiegelt ----------------- */
+eq(Sym.formCode('x_naht'), 'v_naht', 'N6b: die X-Naht benutzt die Form der V-Naht');
+eq(Sym.formCode('k_naht'), 'hv_naht', 'N6b: die K-Naht die der HV-Naht');
+eq(Sym.formCode('doppelkehlnaht'), 'kehlnaht', 'N6b: die Doppelkehlnaht die der Kehlnaht');
+eq(Sym.formCode('v_naht'), 'v_naht', 'N6b: einseitige Naehte zeigen auf sich selbst');
+var s36DoppelOhneForm = [], s36D;
+for (s36D in Sym.DOPPEL) {
+  if (!Object.prototype.hasOwnProperty.call(Sym.DOPPEL, s36D)) continue;
+  if (!Sym.FORMEN[Sym.DOPPEL[s36D]]) s36DoppelOhneForm.push(s36D);
+  if (Sym.FORMEN[s36D]) s36DoppelOhneForm.push(s36D + ' (doppelt angelegt)');
+}
+eq(s36DoppelOhneForm.length, 0,
+   'N6b: keine Doppelnaht hat eine zweite eigene Form — eine Form, eine Quelle');
+var s36X = Sym.zeichne({ grund: 'x_naht' }), s36V = Sym.zeichne({ grund: 'v_naht' });
+ok(s36X.symmetrisch === true && s36V.symmetrisch === false,
+   'N6b: die X-Naht meldet sich als symmetrisch, die V-Naht nicht');
+ok(s36X.gezeichnet > s36V.gezeichnet, 'N6b: und zeichnet dafuer ein Teil mehr');
+
+/* --- 4) Pfeilseite, Gegenseite, gestrichelte Linie ---------------------- */
+function s36Leg(z, code) {
+  for (var i = 0; i < z.legende.length; i++) if (z.legende[i].code === code) return z.legende[i];
+  return null;
+}
+var s36Zwei = Sym.zeichne({ grund: 'kehlnaht', gegenseite: 'v_naht' });
+ok(!!s36Leg(s36Zwei, 'sy_identlinie'),
+   'N6b: bei zwei verschiedenen Seiten erscheint die Identifikationslinie');
+ok(/data-code="sy_identlinie"/.test(s36Zwei.svg) &&
+   /stroke-dasharray="[^"]+"[^>]*data-code="sy_identlinie"/.test(s36Zwei.svg),
+   'N6b: und sie ist WIRKLICH gestrichelt — sonst waere die Seitenregel im Bild nicht ablesbar');
+ok(!/stroke-dasharray/.test(s36V.svg),
+   'N6b: ohne Gegenseite ist keine Linie gestrichelt');
+eq(s36Zwei.gegenseite, 'v_naht', 'N6b: und die Gegenseite steht im Ergebnis');
+ok(!s36Leg(s36V, 'sy_identlinie'),
+   'N6b: bei nur einer Seite gibt es keine gestrichelte Linie');
+ok(!s36Leg(s36X, 'sy_identlinie'),
+   'N6b: bei symmetrischen Naehten ebenfalls nicht — sie waere doppelt gemoppelt');
+var s36XG = Sym.zeichne({ grund: 'x_naht', gegenseite: 'v_naht' });
+eq(s36XG.gegenseite, 'x_naht',
+   'N6b: eine Gegenseite an einer symmetrischen Naht wird nicht angenommen');
+ok(s36XG.hinweise.indexOf('msg_symbol_gegenseite_symmetrisch') >= 0,
+   'N6b: und das wird gesagt, nicht stillschweigend verworfen');
+ok(s36V.hinweise.indexOf('msg_symbol_seitenregel') >= 0,
+   'N6b: die Seitenregel steht bei JEDER Angabe dabei — sie gilt nie stillschweigend');
+ok(!!s36Leg(s36V, 'sy_pfeillinie') && !!s36Leg(s36V, 'sy_bezugslinie'),
+   'N6b: Pfeillinie und Bezugslinie sind benannt');
+
+/* --- 5) Die ehrliche Aussage kommt beim Zeichnen mit -------------------- */
+var s36Ohne = Sym.ohneNachweis(), s36Still = [];
+for (s36i = 0; s36i < s36Ohne.length; s36i++) {
+  s36z = Sym.zeichne({ grund: s36Ohne[s36i] });
+  if (s36z.nachweisbar !== false) s36Still.push(s36Ohne[s36i]);
+  if (s36z.hinweise.indexOf('msg_symbol_nicht_nachweisbar') < 0) s36Still.push(s36Ohne[s36i] + ' (ohne Hinweis)');
+}
+eq(s36Still.length, 0,
+   'N6b: JEDES nicht nachweisbare Symbol sagt es beim Zeichnen — 14 von 23' +
+   (s36Still.length ? ' (' + s36Still.join(', ') + ')' : ''));
+eq(Sym.zeichne({ grund: 'kehlnaht' }).hinweise.indexOf('msg_symbol_nicht_nachweisbar'), -1,
+   'N6b: die Kehlnaht traegt diesen Hinweis nicht');
+eq(Sym.zeichne({ grund: 'kehlnaht', gegenseite: 'u_naht' }).nachweisbar, false,
+   'N6b: eine nicht nachweisbare Gegenseite macht die ganze Angabe nicht nachweisbar');
+
+/* --- 6) Bemassung: geprueft statt uebernommen --------------------------- */
+var s36B = Sym.zeichne({ grund: 'kehlnaht', masse: { a: 5, l: 100, n: 3, e: 200 } });
+eq(s36B.bemassung.length, 4, 'N6b: vier zulaessige Masse an der Kehlnaht');
+eq(s36B.warnungen.length, 0, 'N6b: ohne Beanstandung');
+var s36BF = Sym.zeichne({ grund: 'kehlnaht', masse: { a: 5, s: 12 } });
+eq(s36BF.bemassung.length, 1, 'N6b: die Stumpfnahtdicke gehoert nicht an eine Kehlnaht');
+ok(s36BF.warnungen.indexOf('msg_symbol_mass_ungueltig') >= 0,
+   'N6b: und das wird gemeldet statt still weggelassen');
+eq(Sym.zeichne({ grund: 'v_naht', masse: { s: 12 } }).bemassung.length, 1,
+   'N6b: an der V-Naht ist die Nahtdicke dagegen richtig');
+eq(Sym.zeichne({ grund: 'kehlnaht', masse: { a: null, l: 100 } }).bemassung.length, 1,
+   'N6b: leere Masse werden ausgelassen, ohne zu meckern');
+
+/* --- 7) Zusatzzeichen und Angaben an der Pfeillinie --------------------- */
+var s36Z = Sym.zeichne({ grund: 'kehlnaht', zusatz: ['flach'], rundum: true, baustelle: true, gabel: true });
+ok(!!s36Leg(s36Z, 'sym_flach') && !!s36Leg(s36Z, 'sym_rundum') &&
+   !!s36Leg(s36Z, 'sym_baustelle') && !!s36Leg(s36Z, 'sym_gabel'),
+   'N6b: Zusatzzeichen und alle drei Angaben stehen in der Legende');
+ok(s36Z.hinweise.indexOf('msg_symbol_buchstaben_in_legende') >= 0,
+   'N6b: bei der Gabel wird gesagt, dass die Verfahrensangabe in der Legende steht');
+eq(Sym.zeichne({ grund: 'kehlnaht', zusatz: ['rundum'] }).legende.length,
+   Sym.zeichne({ grund: 'kehlnaht' }).legende.length,
+   'N6b: ein Lagezeichen wird nicht als Zusatzzeichen angenommen');
+eq(Sym.zeichne({ grund: 'kehlnaht', zusatz: ['gibtsnicht'] }).legende.length,
+   Sym.zeichne({ grund: 'kehlnaht' }).legende.length,
+   'N6b: ein unbekanntes Zusatzzeichen wird ausgelassen');
+eq(Sym.zeichne({ grund: 'kehlnaht', zusatz: 'flach' }).legende.length,
+   Sym.zeichne({ grund: 'kehlnaht', zusatz: ['flach'] }).legende.length,
+   'N6b: ein einzelnes Zusatzzeichen darf auch ohne Liste kommen');
+
+/* --- 8) Fehlerfaelle: kein halbes Bild --------------------------------- */
+var s36Leer = Sym.zeichne({});
+eq(s36Leer.ok, false, 'N6b: ohne Grundsymbol gibt es kein Bild');
+eq(s36Leer.svg, '', 'N6b: und wirklich KEIN halbes SVG');
+eq(s36Leer.fehler, 'msg_symbol_kein_grundsymbol', 'N6b: der Grund wird benannt');
+eq(Sym.zeichne({ grund: 'flach' }).ok, false, 'N6b: ein Zusatzzeichen allein ist keine Angabe');
+eq(Sym.zeichne({ grund: 'gibtsnicht' }).ok, false, 'N6b: ein unbekannter Code auch nicht');
+var s36FehlCode = [];
+for (s36i = 0; s36i < Sym.CODES.length; s36i++) {
+  for (s36j = 0; s36j < 3; s36j++) {
+    if (!Kern.t(Sym.CODES[s36i], ['de', 'en', 'pt'][s36j])) s36FehlCode.push(Sym.CODES[s36i]);
+  }
+}
+eq(s36FehlCode.length, 0, 'N6b: jede Meldung des Symbolgenerators ist dreisprachig');
+
+/* --- 9) Bestimmtheit und Nichteinmischung ------------------------------- */
+eq(Sym.zeichne({ grund: 'v_naht' }).svg, Sym.zeichne({ grund: 'v_naht' }).svg,
+   'N6b: gleiche Eingabe, zeichengenau gleiches Bild');
+var s36Ein = { grund: 'kehlnaht', zusatz: ['flach'], masse: { a: 5 } };
+Sym.zeichne(s36Ein);
+eq(s36Ein.zusatz.length, 1, 'N6b: die Eingabe wird nicht veraendert');
+ok(Object.keys(s36Ein.masse).length === 1, 'N6b: auch die Masse nicht');
+
+/* --- 10) Der Weg von der Rechenwelt zum Symbol -------------------------- */
+var s36AusNaht = [], s36N;
+for (s36i = 0; s36i < Data.NAHTARTEN.length; s36i++) {
+  s36N = Sym.ausNahtart(Data.NAHTARTEN[s36i].code);
+  if (!s36N.ok) s36AusNaht.push(Data.NAHTARTEN[s36i].code);
+}
+eq(s36AusNaht.length, 0,
+   'N6b: zu JEDER rechenbaren Nahtart laesst sich das Symbol zeichnen' +
+   (s36AusNaht.length ? ' (' + s36AusNaht.join(', ') + ')' : ''));
+ok(Sym.ausNahtart('kehl_umlaufend').legende.some ?
+   Sym.ausNahtart('kehl_umlaufend').legende.some(function (l) { return l.code === 'sym_rundum'; }) : true,
+   'N6b: die umlaufende Kehlnaht bekommt das Rundum-Zeichen von selbst');
+eq(Sym.ausNahtart('gibtsnicht').ok, false, 'N6b: eine unbekannte Nahtart liefert kein Bild');
+eq(Sym.ausNahtart('stumpf_v').grund, 'v_naht', 'N6b: die V-Naht findet ihr Symbol');
+eq(Sym.ausNahtart('stumpf_dhv').grund, 'k_naht', 'N6b: die Doppel-HV-Naht ihre K-Naht');
+
+/* ========================================================================= */
+sek('S37 · N6b Etappe 3 — die Symbolwahl haengt an der Oberflaeche');
+
+var Sym37 = require('./symbol.js'), Ui37 = require('./ui.js');
+var ui37Src = fsU.readFileSync(__dirname + '/ui.js', 'utf8');
+var s37i, s37j;
+
+/* --- 1) Die bewachte Doppelung: Optionsliste gegen Katalog -------------- */
+var s37Kat = Sym37.codes('grund').slice().sort().join(',');
+var s37Opt = Options.SYM_GRUND.slice().sort().join(',');
+eq(s37Opt, s37Kat,
+   'N6b: die Auswahlliste in optionen.js und der Katalog in symbol.js sind deckungsgleich');
+eq(Options.SYM_OBERFLAECHE.length + Options.SYM_SICHERUNG.length,
+   Sym37.codes('zusatz').length,
+   'N6b: alle sechs Zusatzzeichen sind auf die zwei Auswahlen verteilt — keines faellt hinten runter');
+var s37Zus = Options.SYM_OBERFLAECHE.concat(Options.SYM_SICHERUNG), s37Fremd = [];
+for (s37i = 0; s37i < s37Zus.length; s37i++) {
+  var s37E = Sym37.eintrag(s37Zus[s37i]);
+  if (!s37E || s37E.art !== 'zusatz') s37Fremd.push(s37Zus[s37i]);
+}
+eq(s37Fremd.length, 0, 'N6b: und keine der Auswahlen ist etwas anderes als ein Zusatzzeichen');
+
+/* --- 2) Die Namen stehen nur EINMAL im Woerterbuch --------------------- */
+var s37G = Options.gruppe('sym_grund'), s37OhneSchl = [], s37Doppelt = [];
+for (s37i = 0; s37i < s37G.optionen.length; s37i++) {
+  var s37O = s37G.optionen[s37i];
+  if (!s37O.schluessel) s37OhneSchl.push(s37O.code);
+  else if (Kern.has('opt_sym_grund_' + s37O.code)) s37Doppelt.push(s37O.code);
+}
+eq(s37OhneSchl.length, 0, 'N6b: jede Symboloption zeigt auf den Katalogtext');
+eq(s37Doppelt.length, 0,
+   'N6b: und KEINE hat zusaetzlich einen eigenen Text — sonst stuenden die Namen zweimal da');
+eq(Options.gruppe('sym_grund').optionen.length, 23, 'N6b: 23 Symbole zur Wahl');
+eq(Options.gruppe('sym_gegen').optionen.length, 23, 'N6b: die Gegenseite bietet dieselben an');
+eq(Options.GRUPPEN.length, 25, 'N6b: 25 Auswahlgruppen insgesamt');
+var s37Rechen = [];
+for (s37i = 0; s37i < Options.GRUPPEN.length; s37i++) {
+  if (Options.GRUPPEN[s37i].code.indexOf('sym_') === 0 && Options.GRUPPEN[s37i].rechenwirksam !== false) {
+    s37Rechen.push(Options.GRUPPEN[s37i].code);
+  }
+}
+eq(s37Rechen.length, 0, 'N6b: KEINE Symbolauswahl ist rechenwirksam — sie zeichnet, sie rechnet nicht');
+
+/* --- 3) Beschriftung und Laien-ⓘ vollstaendig -------------------------- */
+var s37Spr = ['de', 'en', 'pt'], s37FehlT = [], s37FehlH = [];
+var s37Neu = ['sym_grund', 'sym_gegen', 'sym_oberflaeche', 'sym_sicherung', 'sym_lage'];
+for (s37i = 0; s37i < s37Neu.length; s37i++) {
+  for (s37j = 0; s37j < 3; s37j++) {
+    if (!Kern.t('grp_' + s37Neu[s37i], s37Spr[s37j])) s37FehlT.push(s37Neu[s37i]);
+  }
+  if (!Hilfe.has('grp_' + s37Neu[s37i])) s37FehlH.push(s37Neu[s37i]);
+}
+eq(s37FehlT.length, 0, 'N6b: alle fuenf neuen Gruppen sind dreisprachig beschriftet');
+eq(s37FehlH.length, 0, 'N6b: und jede hat ihr Laien-ⓘ' + (s37FehlH.length ? ' (fehlt: ' + s37FehlH.join(', ') + ')' : ''));
+
+/* --- 4) Das Fachwissen bleibt draussen aus der Oberflaeche -------------- */
+var s37Codes = Sym37.codes('grund'), s37Drin = [];
+for (s37i = 0; s37i < s37Codes.length; s37i++) {
+  if (ui37Src.indexOf("'" + s37Codes[i = s37i] + "'") >= 0) s37Drin.push(s37Codes[s37i]);
+}
+eq(s37Drin.length, 0,
+   'N6b: KEIN einziger Symbolcode steht in ui.js — die Oberflaeche fragt nur nach' +
+   (s37Drin.length ? ' (' + s37Drin.join(', ') + ')' : ''));
+ok(ui37Src.indexOf('win.DTNSymbol') > 0, 'N6b: sie holt sich das Modul ueber das Fenster');
+ok(ui37Src.indexOf('Symb.hatMass') > 0,
+   'N6b: und fragt das Symbol selbst, welches Mass zu ihm passt');
+
+/* --- 5) Der Block ist verdrahtet --------------------------------------- */
+var s37Aus = null;
+for (s37i = 0; s37i < Ui37.ZUORDNUNG.length; s37i++) {
+  if (Ui37.ZUORDNUNG[s37i].code === 'ausfuehrung') s37Aus = Ui37.ZUORDNUNG[s37i];
+}
+ok(!!s37Aus && s37Aus.symbol === true, 'N6b: der Block traegt den Kasten fuer das Symbol');
+eq(s37Aus.gruppen.length, 7, 'N6b: mit sieben Auswahlen');
+var s37Klassen = ['symbol-box', 'symbol-bild', 'symbol-legende', 'symbol-masse'], s37FehlK = [];
+for (s37i = 0; s37i < s37Klassen.length; s37i++) {
+  if (Ui37.KLASSEN.indexOf(s37Klassen[s37i]) < 0) s37FehlK.push(s37Klassen[s37i]);
+}
+eq(s37FehlK.length, 0, 'N6b: alle vier neuen Klassen sind angemeldet und stehen in style.css');
+
+/* --- 6) Die Luecke ist wirklich geschlossen ----------------------------- */
+eq(Data.NICHT_GEPRUEFT.length, 13, 'N6b: die Liste 2.4 ist von 14 auf 13 Punkte geschrumpft');
+eq(Data.NICHT_GEPRUEFT.indexOf('nahtvorbereitung'), -1, 'N6b: die Nahtvorbereitung ist raus');
+ok(Data.fugenformen().length === 16 && Data.nahtvorbereitung('stumpf_u').radius === 6,
+   'N6b: weil die Tabelle sie ersetzt — nachgeprueft an der U-Fuge');
+ok(Kern.has('ng_pruefumfang_zfp') && Kern.has('ng_toleranzen') && Kern.has('ng_herstellerqualifikation'),
+   'N6b: die drei verbliebenen Luecken stehen unveraendert');
 
 /* ========================================================================= */
 console.log('\n════════════════════════════════════════════');

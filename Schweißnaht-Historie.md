@@ -1217,6 +1217,58 @@ steht hier. **Code unverändert.**
 **Nächster Schritt: N6b — Einstieg „weiter mit N6b", Umfang vor dem Bau abstimmen (5.1-2).**
 
 
+
+---
+
+**Aus N6b (2026-08-04) — ISO-2553-Katalog, Nahtvorbereitung, Symbolgenerator:**
+
+- **Der verworfene Anlauf war nicht verworfen.** Weil die Sitzung im selben Chat
+  weiterlief, lag der Stand aus Drittel 1 und 2 noch vollständig und grün da. Claude hat
+  das gemeldet, statt es stillschweigend zu benutzen **oder** stillschweigend noch einmal
+  zu bauen — und Dieter hat entschieden (A: weiterverwenden). **Gelernt:** Regel 5c
+  schützt davor, dass Halbes ausgeliefert wird und dass aus dem Gedächtnis rekonstruiert
+  wird. Beides war hier nicht der Fall. Eine Regel anzuwenden, ohne ihren Zweck zu prüfen,
+  hätte 20 Prozentpunkte gekostet — und die fehlten dann im letzten Drittel.
+- **Der erste Schritt nach „A" war der Abgleich gegen die Vorlaufdatei**, nicht das Bauen:
+  acht Kennzahlen (Katalogumfang, Fugenformen, Liste 2.4, Wörterbuch) gegen das, was die
+  Datei behauptete. Erst als alle acht stimmten, ging es weiter. Ohne diesen Abgleich wäre
+  „noch da" eine Vermutung geblieben.
+- **Die Lücke wurde geschlossen, nicht umbenannt.** `nahtvorbereitung` fiel aus Liste 2.4,
+  **weil** die 16 Fugenformen jetzt wirklich in `daten.js` stehen. Die Assertion prüft
+  beides zusammen: die Lücke ist raus **und** die Tabelle ist da. Eine Lücke, die nur aus
+  der Liste verschwindet, ist eine verschwiegene Lücke.
+- **Die Legende darf nichts behaupten, was im Bild nicht steht.** Die
+  Identifikationslinie war zuerst durchgezogen gezeichnet, während die Legende
+  „gestrichelt = Gegenseite" sagte. Der Legendeneintrag war korrekt, das Bild nicht — und
+  eine Assertion auf den Legendeneintrag hätte grün gemeldet. **Geprüft wird jetzt das
+  `stroke-dasharray` im SVG-String selbst.** Als Festlegung in 9.2 übernommen.
+- **Eine Doppelung, die benannt und bewacht ist, ist besser als eine Abhängigkeit, die
+  niemand wollte.** Die Codeliste steht in `optionen.js` ein zweites Mal, damit dieses
+  Modul von keinem anderen abhängt. Der Preis ist eine Assertion, die in **beide**
+  Richtungen vergleicht — und ein Kommentar, der den Grund nennt. Ohne beides wäre es
+  schlicht eine Doppelung.
+- **Die Namen stehen trotzdem nur einmal.** Über `schluessel` zeigen die Optionen auf den
+  Katalogtext `sym_*`; eine zweite Assertion verbietet einen eigenen `opt_*`-Text daneben.
+  46 Wörterbucheinträge gespart — und keine Stelle, an der zwei Namen auseinanderlaufen.
+- **Drei Fehlschläge, drei Lehren:** `var`-Hoisting (die Optionslisten standen hinter
+  `GRUPPEN` und waren beim Bauen noch `undefined`) · der Harness benutzte `Sym` in einer
+  Sektion, die vor der Deklaration läuft · und im DOM-Smoke heißen Eingabefelder `fld_`,
+  nicht `f_`. Alle drei fielen sofort auf, weil vor jedem Weiterbauen gemessen wurde.
+- **Der letzte Fund war der wichtigste:** Felder lösten kein Neuzeichnen aus. Das a-Maß am
+  Symbol wäre stehen geblieben, während die Rechnung längst mit dem neuen Wert lief —
+  zwei Wahrheiten auf einem Bildschirm. Gefunden hat es der Durchklick am echten Formular,
+  nicht der Harness.
+
+**v2.35 (2026-08-04):** **Baustein N6b gebaut und grün ausgeliefert.** Neu `symbol.js`
+(32 Katalogeinträge + Zeichnen auf der unveränderten `svglib.js`), `FUGENFORMEN` von 7 auf
+16 Fugenformen nach EN ISO 9692-1, **Liste 2.4 von 14 auf 13 Punkte** (Nahtvorbereitung
+geschlossen), fünf Auswahlen mit Livebild im Block „Ausführung & Dokumentation", neue
+Sektionen S35/S36/S37, Planabschnitt 4.11, zwei Festlegungen in 9.2. Beide HTMLs binden
+14 Module ein. **Basislinie 984 → 1135 Assertions · Smokes 513/514 → 537/538 ·
+i18n-Parität 0.** Im Plan-Changelog ist v2.32 herausgerollt — Volltext steht hier.
+**Nächster Schritt: N6b am Handy abnehmen.**
+
+
 ═══════════════════════════════════════════════════════════════════════════
 Ende Schweißnaht-Historie.md · DT-ProfiSchweissnaht
 ═══════════════════════════════════════════════════════════════════════════

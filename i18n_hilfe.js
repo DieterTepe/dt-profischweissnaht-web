@@ -240,6 +240,26 @@
 
     /* =============== Eingabefelder =============== */
 
+    grp_sym_grund: {
+      de: { was: 'Das Symbol, das die Naht auf der Zeichnung darstellt (EN ISO 2553).', bereich: 'Für die Pfeilseite — also die Seite, auf die der Pfeil zeigt.', tipp: 'Der Katalog kann mehr zeichnen, als dieses Programm rechnen kann. Symbole ohne Nachweis werden gezeichnet und dabei ausdrücklich als nicht nachweisbar benannt.' },
+      en: { was: 'The symbol representing the weld on the drawing (EN ISO 2553).', bereich: 'For the arrow side — the side the arrow points at.', tipp: 'The catalogue can draw more than this program can calculate. Symbols without verification are drawn and explicitly marked as not verifiable.' },
+      pt: { was: 'O símbolo que representa o cordão no desenho (EN ISO 2553).', bereich: 'Para o lado da seta — o lado para onde a seta aponta.', tipp: 'O catálogo desenha mais do que este programa calcula. Os símbolos sem verificação são desenhados e assinalados como não verificáveis.' } },
+    grp_sym_gegen: {
+      de: { was: 'Ein zweites Symbol für die Gegenseite, wenn dort etwas anderes geschweißt wird.', bereich: 'Nur nötig, wenn beide Seiten unterschiedlich sind.', tipp: 'Bei symmetrischen Nähten (X, K, Doppelkehlnaht) leer lassen — das Symbol steht dort ohnehin auf beiden Seiten.' },
+      en: { was: 'A second symbol for the other side, if something different is welded there.', bereich: 'Only needed when the two sides differ.', tipp: 'Leave empty for symmetrical welds (double-V, double-bevel, double fillet) — the symbol already appears on both sides.' },
+      pt: { was: 'Um segundo símbolo para o lado oposto, se aí for soldado algo diferente.', bereich: 'Só é necessário quando os dois lados diferem.', tipp: 'Deixe vazio em cordões simétricos (X, K, ângulo duplo) — o símbolo já aparece dos dois lados.' } },
+    grp_sym_oberflaeche: {
+      de: { was: 'Wie die fertige Nahtoberfläche aussehen soll: eben, gewölbt, hohl oder kerbfrei verschliffen.', bereich: 'Freiwillig — ohne Angabe bleibt die Oberfläche wie geschweißt.', tipp: 'Kerbfrei verschliffen verbessert den Kerbfall bei Ermüdung erheblich. In dieser Fassung ist das nur eine Zeichnungsangabe, gerechnet wird damit noch nicht.' },
+      en: { was: 'How the finished weld surface shall look: flat, convex, concave or blended smooth.', bereich: 'Optional — without it the surface stays as welded.', tipp: 'Blending the toes smooth improves the fatigue detail category considerably. Here it is a drawing note only; nothing is calculated from it yet.' },
+      pt: { was: 'Como deve ficar a superfície do cordão: à face, convexa, côncava ou suavizada.', bereich: 'Facultativo — sem indicação a superfície fica como soldada.', tipp: 'A suavização melhora bastante a categoria de fadiga. Aqui é apenas uma indicação de desenho; ainda não entra em cálculo.' } },
+    grp_sym_sicherung: {
+      de: { was: 'Eine Badsicherung stützt die Wurzel beim Schweißen von einer Seite.', bereich: 'M bleibt im Bauteil, MR wird nach dem Schweißen entfernt.', tipp: 'Die Buchstaben M und MR stehen in der Legende unter dem Bild, nicht im Bild selbst — nur so bleiben sie übersetzbar.' },
+      en: { was: 'Backing supports the root when welding from one side.', bereich: 'M stays in the part, MR is removed after welding.', tipp: 'The letters M and MR appear in the legend below the image, not inside it — only then do they stay translatable.' },
+      pt: { was: 'O cobre-junta apoia a raiz ao soldar de um só lado.', bereich: 'M fica na peça, MR é removido após a soldadura.', tipp: 'As letras M e MR constam da legenda por baixo da imagem, não da imagem — só assim permanecem traduzíveis.' } },
+    grp_sym_lage: {
+      de: { was: 'Zusätzliche Angaben am Knick der Pfeillinie: Rundumnaht und Baustellennaht.', bereich: 'Freiwillig.', tipp: 'Die Gabel mit der Verfahrensangabe erscheint von selbst, sobald oben ein Schweißverfahren gewählt ist.' },
+      en: { was: 'Additional notes at the elbow of the arrow line: weld all round and site weld.', bereich: 'Optional.', tipp: 'The tail with the process reference appears automatically once a welding process is selected above.' },
+      pt: { was: 'Indicações adicionais no cotovelo da linha de seta: soldadura em todo o contorno e no local.', bereich: 'Facultativo.', tipp: 'A bifurcação com o processo aparece automaticamente assim que for escolhido um processo acima.' } },
     fld_a: {
       de: { was: 'Die rechnerische Nahtdicke: der Abstand von der Nahtwurzel zur Nahtoberfläche, gemessen im eingeschriebenen Dreieck.',
             bereich: '3 bis etwa 12 mm im üblichen Stahlbau; höchstens 0,7 · kleinste Blechdicke.',

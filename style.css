@@ -326,3 +326,11 @@ input.feld,select.feld{display:block; width:100%; margin:0}
 .info-version{font-size:.86rem;color:var(--muted);margin:.2rem 0 0}
 .info-module{font-size:.74rem;color:var(--muted);opacity:.85;line-height:1.5;
              word-break:break-word;margin:.15rem 0 .4rem}
+
+/* --- N6b: Kasten fuer das Zeichnungssymbol -------------------------------- */
+.symbol-box{margin:.6rem 0 .2rem; padding:.6rem .7rem; border:1px solid var(--linie);
+            border-radius:8px; background:var(--flaeche)}
+.symbol-bild{max-width:320px; margin:0 auto .4rem; color:var(--text)}
+.symbol-bild svg{display:block; width:100%; height:auto}
+.symbol-legende{list-style:none; margin:.2rem 0; padding:0}
+.symbol-masse{font-size:.86rem; margin:.3rem 0 .2rem}

@@ -209,10 +209,10 @@ function lauf(edition) {
   while ((mm = srcRe.exec(html)) !== null) srcs.push(mm[1]);
   var erwartet = ['i18n_kern.js', 'i18n_hilfe.js', 'i18n_kerbfall.js', 'daten.js', 'optionen.js',
                   'validate.js', 'naht.js', 'profil.js', 'svglib.js', 'schaubild.js',
-                  'solver.js', 'rechenweg.js', 'ui.js'];
+                  'solver.js', 'rechenweg.js', 'symbol.js', 'ui.js'];
   ok(srcs.join(',') === erwartet.join(','), 'Ladereihenfolge stimmt: ' + srcs.join(' → '));
   ok(srcs[srcs.length - 1] === 'ui.js', 'ui.js laedt zuletzt');
-  ok(srcs.length === 13, '13 Module eingebunden (ist ' + srcs.length + ')');
+  ok(srcs.length === 14, '14 Module eingebunden (ist ' + srcs.length + ')');
 
   /* ------------------------------------- 2) ALLE Module gemeinsam laden -- */
   var d = baueDom(html);
@@ -223,7 +223,7 @@ function lauf(edition) {
                 'naht.js': 'DTNNaht', 'profil.js': 'DTNProfil',
                 'svglib.js': 'DTNSvgLib', 'schaubild.js': 'DTNSchaubild',
                 'solver.js': 'DTNSolver', 'rechenweg.js': 'DTNRechenweg',
-                'ui.js': 'DTNUi' };
+                'symbol.js': 'DTNSymbol', 'ui.js': 'DTNUi' };
   for (var i = 0; i < srcs.length; i++) {
     var mod = require('./' + srcs[i]);
     win[namen[srcs[i]]] = mod;
@@ -390,7 +390,7 @@ function lauf(edition) {
       gebauteGruppen++;
     }
   }
-  ok(gebauteGruppen === 20, 'N5d: alle 20 Gruppen gebaut, auch ISO 5817 und EXC (ist ' +
+  ok(gebauteGruppen === 25, 'N6b: alle 25 Gruppen gebaut, auch die fuenf fuer das Symbol (ist ' +
      gebauteGruppen + ')');
   ok(!!d.byId['sel_iso5817'] && !!d.byId['sel_exc'],
      'N5d: der Block Ausfuehrung steht jetzt wirklich auf der Seite');
@@ -971,7 +971,8 @@ function lauf(edition) {
 
   /* Die vier bewusst offenen Punkte stehen in der Liste 2.4 (2.4 / 5.1-1). */
   var n5dSeite = d.alleTexte();
-  ok(/9692/.test(n5dSeite), 'N5d: die Luecke Nahtvorbereitung ist auf der Seite benannt');
+  ok(!/9692/.test(n5dSeite),
+     'N6b: die Luecke Nahtvorbereitung steht NICHT mehr in der Liste 2.4 — sie ist gefuellt');
   ok(/13920/.test(n5dSeite), 'N5d: die Luecke Toleranzklassen ebenso');
   ok(/3834/.test(n5dSeite), 'N5d: die Luecke Herstellerqualifikation ebenso');
   ok(/VT, PT, MT, UT, RT/.test(n5dSeite), 'N5d: der Pruefumfang ebenso');
@@ -984,8 +985,8 @@ function lauf(edition) {
   ok(/N5d/.test(n5dVz), 'N5d: der Info-Dialog nennt den Programmstand');
   ok(/2\.32/.test(n5dVz), 'N5d: und die Planversion');
   var n5dInfo = s.version();
-  ok(n5dInfo.n === 13,
-     'N5d: die Zeile wird aus allen 13 geladenen Modulen gebaut (ist ' + n5dInfo.n + ')');
+  ok(n5dInfo.n === 14,
+     'N6b: die Zeile wird aus allen 14 geladenen Modulen gebaut (ist ' + n5dInfo.n + ')');
   ok(n5dInfo.ohne === 0,
      'N5d: kein Modul ohne Kennung — die drei Loecher aus 3.6 sind zu');
   var n5dMl = d.byId.infoModule.inhalt();
@@ -1021,6 +1022,89 @@ function lauf(edition) {
      'N5d: "Leeren" raeumt auch den Block Ausfuehrung');
   ok(d.byId.herk_iso5817.hidden === true, 'N5d: und die Herkunftszeile verschwindet mit');
   ok(s.istSelbstGewaehlt('iso5817') === false, 'N5d: der Merker der eigenen Wahl ebenso');
+
+  /* ---- N6b · DAS ZEICHNUNGSSYMBOL AN DER OBERFLAECHE (5.1-2) -----------
+     Der Kasten steht im Block und nicht im Ergebnis, weil man beim Waehlen
+     sehen will, was man waehlt. Geprueft wird am echten Formular. */
+  s.leeren();
+  s.schalte('ausfuehrung', true);
+  ok(!!d.byId.sel_sym_grund && !!d.byId.sel_sym_gegen && !!d.byId.sel_sym_oberflaeche &&
+     !!d.byId.sel_sym_sicherung && !!d.byId.sel_sym_lage,
+     'N6b: alle fuenf Auswahlen fuer das Symbol stehen im Block');
+  ok(!!d.byId.symBox && d.byId.symBox.hidden === true,
+     'N6b: der Symbolkasten ist da, bleibt ohne Wahl aber weg — kein leerer Rahmen');
+
+  d.byId.sel_sym_grund.value = 'kehlnaht';
+  d.byId.sel_sym_grund.change();
+  ok(d.byId.symBox.hidden === false, 'N6b: mit der Wahl klappt der Kasten auf');
+  ok(/<svg/.test(d.byId.symBild.inhalt()), 'N6b: und es steht wirklich ein Bild darin');
+  function n6bLegende() {
+    var t = '', i = 0;
+    while (d.byId['symLeg_' + i]) { t += d.byId['symLeg_' + i].inhalt() + ' '; i++; }
+    return t;
+  }
+  function n6bMasse() {
+    var t = '', i = 0;
+    while (d.byId['symMass_' + i]) { t += d.byId['symMass_' + i].inhalt() + ' '; i++; }
+    return t;
+  }
+  var n6bLeg = n6bLegende();
+  ok(/Pfeillinie/.test(n6bLeg) && /Bezugslinie/.test(n6bLeg) && /Kehlnaht/.test(n6bLeg),
+     'N6b: die Legende benennt Pfeillinie, Bezugslinie und die Naht selbst');
+  ok(!/\[[a-zA-Z0-9_]+\]/.test(n6bLeg), 'N6b: kein unuebersetzter Platzhalter in der Legende');
+
+  /* Die Bemassung kommt aus dem EINGEGEBENEN Wert, nicht aus dem Nichts. */
+  d.byId.fld_a.value = '5';
+  d.byId.fld_a.change();
+  ok(/5/.test(n6bMasse()) && /a-M/.test(n6bMasse()),
+     'N6b: das eingegebene a-Mass erscheint als Bemassung unter dem Bild');
+  ok(!/<text|<tspan/.test(d.byId.symBild.inhalt()),
+     'N6b: aber NICHT als Zahl im Bild — kein Text im SVG (4.3)');
+
+  /* Ein nicht nachweisbares Symbol sagt es an der Oberflaeche. */
+  d.byId.sel_sym_grund.value = 'punktnaht';
+  d.byId.sel_sym_grund.change();
+  ok(/nicht nachgewiesen|nicht nachweisbar/.test(d.byId.symHinweis.inhalt()),
+     'N6b: die Punktnaht sagt am Bildschirm, dass sie nicht nachgewiesen wird');
+  d.byId.sel_sym_grund.value = 'kehlnaht';
+  d.byId.sel_sym_grund.change();
+  ok(!/nicht nachgewiesen/.test(d.byId.symHinweis.inhalt()),
+     'N6b: die Kehlnaht sagt das nicht');
+
+  /* Symmetrische Naht: die Gegenseite wird nicht angenommen, sondern erklaert. */
+  d.byId.sel_sym_grund.value = 'x_naht';
+  d.byId.sel_sym_grund.change();
+  d.byId.sel_sym_gegen.value = 'v_naht';
+  d.byId.sel_sym_gegen.change();
+  ok(/symmetrisch|doppelt/.test(d.byId.symHinweis.inhalt()),
+     'N6b: bei symmetrischer Naht wird die Gegenseite begruendet weggelassen');
+
+  /* Zusatzzeichen und Angaben landen in der Legende. */
+  d.byId.sel_sym_grund.value = 'kehlnaht';
+  d.byId.sel_sym_grund.change();
+  d.byId.sel_sym_gegen.value = '';
+  d.byId.sel_sym_gegen.change();
+  d.byId.sel_sym_oberflaeche.value = 'kerbfrei';
+  d.byId.sel_sym_oberflaeche.change();
+  d.byId.sel_sym_lage.value = 'rundum_baustelle';
+  d.byId.sel_sym_lage.change();
+  var n6bLeg2 = n6bLegende();
+  ok(/kerbfrei/.test(n6bLeg2) && /Rundum/.test(n6bLeg2) && /Baustelle/.test(n6bLeg2),
+     'N6b: Zusatzzeichen und beide Angaben stehen in der Legende');
+  var n6bSym = s.symbol();
+  ok(!!n6bSym && n6bSym.ok === true, 'N6b: die Sitzung gibt das gezeichnete Symbol heraus');
+  ok(n6bSym.gezeichnet >= 6, 'N6b: mit allen Teilen (ist ' + n6bSym.gezeichnet + ')');
+
+  /* Dreisprachig. */
+  s.setSprache('en');
+  ok(/Fillet weld/.test(n6bLegende()), 'N6b: EN — die Legende ist uebersetzt');
+  s.setSprache('pt');
+  ok(/Cordão de ângulo/.test(n6bLegende()), 'N6b: PT — ebenso');
+  s.setSprache('de');
+
+  s.leeren();
+  ok(d.byId.symBox.hidden === true, 'N6b: "Leeren" raeumt auch den Symbolkasten weg');
+  ok(s.symbol() === null, 'N6b: und die Sitzung vergisst das Symbol');
 
   /* ------------------------------------------------------- 9) Theme ----- */
   ok(d.byId.infoModal.hidden === true, 'der Info-Dialog ist beim Start zu');

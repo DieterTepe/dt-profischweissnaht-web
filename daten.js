@@ -36,6 +36,7 @@
     ISO5817:  'EN ISO 5817 — Bewertungsgruppen B/C/D',
     ISO2553:  'EN ISO 2553 — Zeichnungssymbole',
     ISO4063:  'EN ISO 4063 — Prozesskennzahlen',
+    ISO9692:  'EN ISO 9692-1 — Schweissnahtvorbereitung, Lichtbogenschweissen Stahl',
     CESTRUCO: 'Wald et al., CESTRUCO "Welding", TU Prag (Sekundaerquelle)',
     NA_DE:    'Deutscher Nationaler Anhang / Stahlbau-Kalender (Ungermann/Schneider)',
     BFS:      'bauforumstahl, Arbeitshilfen A.1.1 / B.9.3',
@@ -291,15 +292,103 @@
     { code: 'stumpf_dhy',      typ: 'stumpf', durchgeschweisst: false }
   ];
 
-  /* Fugengeometrie-Defaults (fuer Volumen/Kosten ab N10; hier nur Daten) */
+  /* --------------------------------------------------------------------- */
+  /* Nahtvorbereitung nach EN ISO 9692-1 (N6b)                              */
+  /*                                                                        */
+  /* winkel / steg / spalt sind die RICHTWERTE und stehen unveraendert wie  */
+  /* vor N6b — daran haengt die Volumenrechnung ab N10. Neu sind daneben    */
+  /* die BAENDER (…_band = [von, bis]), der Blechdickenbereich, der         */
+  /* Ausrundungsradius bei U/J, die Zugaenglichkeit und die empfohlenen     */
+  /* Verfahren. Eine Groesse, eine Quelle: der Richtwert steht NICHT ein    */
+  /* zweites Mal im Band, er liegt darin.                                   */
+  /*                                                                        */
+  /* winkel_art: 'alpha' = Oeffnungswinkel der ganzen Fuge (V, X, U),       */
+  /*             'beta'  = Flankenwinkel EINER Flanke (HV, K, J, HY),       */
+  /*             null    = kein Fugenwinkel (I-Naht, Kehlnaht)              */
+  /* seiten:     von wie vielen Seiten geschweisst wird                     */
+  /*                                                                        */
+  /* Die Werte sind Richtwerte der Norm, KEINE Zusage: die WPS entscheidet. */
+  /* --------------------------------------------------------------------- */
   var FUGENFORMEN = {
-    stumpf_i:   { winkel: 0,  steg: 0, spalt: 2, t_bis: 4,  q: ['ERL'], luecke: 'spalt_richtwert' },
-    stumpf_v:   { winkel: 60, steg: 2, spalt: 2, t_von: 3, t_bis: 20, q: ['ERL', 'AZS'] },
-    stumpf_dv:  { winkel: 50, steg: 3, spalt: 2, t_von: 12, q: ['ERL', 'AZS'] },
-    stumpf_hv:  { winkel: 50, steg: 2, spalt: 2, q: ['ERL'], luecke: 'nur_eine_quelle' },
-    stumpf_dhv: { winkel: 50, steg: 2, spalt: 2, q: ['ERL'], luecke: 'nur_eine_quelle' },
-    stumpf_hy:  { winkel: 50, steg: 3, spalt: 0, q: ['ERL'], luecke: 'nur_eine_quelle' },
-    stumpf_dhy: { winkel: 50, steg: 3, spalt: 0, q: ['ERL'], luecke: 'nur_eine_quelle' }
+    stumpf_i:   { winkel: 0,  steg: 0, spalt: 2, t_bis: 4,
+                  winkel_art: null, spalt_band: [0, 4], steg_band: null, radius: null,
+                  seiten: 1, verfahren: ['ehand', 'mag', 'wig'],
+                  q: ['ISO9692', 'ERL'], luecke: 'spalt_richtwert' },
+    stumpf_v:   { winkel: 60, steg: 2, spalt: 2, t_von: 3, t_bis: 20,
+                  winkel_art: 'alpha', winkel_band: [40, 60], spalt_band: [1, 4],
+                  steg_band: [0, 3], radius: null,
+                  seiten: 1, verfahren: ['ehand', 'mag', 'wig', 'up'],
+                  q: ['ISO9692', 'ERL', 'AZS'] },
+    stumpf_dv:  { winkel: 50, steg: 3, spalt: 2, t_von: 12,
+                  winkel_art: 'alpha', winkel_band: [40, 60], spalt_band: [1, 4],
+                  steg_band: [0, 3], radius: null,
+                  seiten: 2, verfahren: ['ehand', 'mag', 'up'],
+                  q: ['ISO9692', 'ERL', 'AZS'] },
+    stumpf_hv:  { winkel: 50, steg: 2, spalt: 2, t_von: 3, t_bis: 20,
+                  winkel_art: 'beta', winkel_band: [35, 60], spalt_band: [1, 4],
+                  steg_band: [0, 3], radius: null,
+                  seiten: 1, verfahren: ['ehand', 'mag'],
+                  q: ['ISO9692', 'ERL'], luecke: 'nur_eine_quelle' },
+    stumpf_dhv: { winkel: 50, steg: 2, spalt: 2, t_von: 12,
+                  winkel_art: 'beta', winkel_band: [35, 60], spalt_band: [1, 4],
+                  steg_band: [0, 3], radius: null,
+                  seiten: 2, verfahren: ['ehand', 'mag'],
+                  q: ['ISO9692', 'ERL'], luecke: 'nur_eine_quelle' },
+    stumpf_y:   { winkel: 60, steg: 3, spalt: 2, t_von: 5, t_bis: 40,
+                  winkel_art: 'alpha', winkel_band: [40, 60], spalt_band: [1, 3],
+                  steg_band: [2, 4], radius: null,
+                  seiten: 1, verfahren: ['ehand', 'mag', 'up'],
+                  q: ['ISO9692'] },
+    stumpf_dy:  { winkel: 50, steg: 3, spalt: 2, t_von: 16,
+                  winkel_art: 'alpha', winkel_band: [40, 60], spalt_band: [1, 3],
+                  steg_band: [2, 4], radius: null,
+                  seiten: 2, verfahren: ['ehand', 'mag', 'up'],
+                  q: ['ISO9692'] },
+    stumpf_hy:  { winkel: 50, steg: 3, spalt: 0, t_von: 5, t_bis: 40,
+                  winkel_art: 'beta', winkel_band: [35, 60], spalt_band: [0, 3],
+                  steg_band: [2, 4], radius: null,
+                  seiten: 1, verfahren: ['ehand', 'mag'],
+                  q: ['ISO9692', 'ERL'], luecke: 'nur_eine_quelle' },
+    stumpf_dhy: { winkel: 50, steg: 3, spalt: 0, t_von: 16,
+                  winkel_art: 'beta', winkel_band: [35, 60], spalt_band: [0, 3],
+                  steg_band: [2, 4], radius: null,
+                  seiten: 2, verfahren: ['ehand', 'mag'],
+                  q: ['ISO9692', 'ERL'], luecke: 'nur_eine_quelle' },
+    stumpf_u:   { winkel: 10, steg: 2, spalt: 1, t_von: 12,
+                  winkel_art: 'beta', winkel_band: [8, 12], spalt_band: [0, 3],
+                  steg_band: [1, 3], radius: 6, radius_band: [4, 8],
+                  seiten: 1, verfahren: ['ehand', 'mag', 'wig', 'up'],
+                  q: ['ISO9692'] },
+    stumpf_du:  { winkel: 10, steg: 2, spalt: 1, t_von: 30,
+                  winkel_art: 'beta', winkel_band: [8, 12], spalt_band: [0, 3],
+                  steg_band: [1, 3], radius: 6, radius_band: [4, 8],
+                  seiten: 2, verfahren: ['ehand', 'mag', 'up'],
+                  q: ['ISO9692'] },
+    stumpf_j:   { winkel: 15, steg: 2, spalt: 1, t_von: 16,
+                  winkel_art: 'beta', winkel_band: [10, 20], spalt_band: [0, 3],
+                  steg_band: [1, 3], radius: 6, radius_band: [4, 8],
+                  seiten: 1, verfahren: ['ehand', 'mag', 'up'],
+                  q: ['ISO9692'] },
+    stumpf_dj:  { winkel: 15, steg: 2, spalt: 1, t_von: 30,
+                  winkel_art: 'beta', winkel_band: [10, 20], spalt_band: [0, 3],
+                  steg_band: [1, 3], radius: 6, radius_band: [4, 8],
+                  seiten: 2, verfahren: ['ehand', 'mag', 'up'],
+                  q: ['ISO9692'] },
+    steilflanke_v:  { winkel: 10, steg: 1, spalt: 8, t_von: 12,
+                  winkel_art: 'alpha', winkel_band: [6, 15], spalt_band: [6, 12],
+                  steg_band: [0, 2], radius: null,
+                  seiten: 1, verfahren: ['mag', 'up'],
+                  q: ['ISO9692'], luecke: 'nur_eine_quelle' },
+    steilflanke_hv: { winkel: 5, steg: 1, spalt: 8, t_von: 12,
+                  winkel_art: 'beta', winkel_band: [3, 8], spalt_band: [6, 12],
+                  steg_band: [0, 2], radius: null,
+                  seiten: 1, verfahren: ['mag', 'up'],
+                  q: ['ISO9692'], luecke: 'nur_eine_quelle' },
+    kehl:       { winkel: 90, steg: 0, spalt: 0,
+                  winkel_art: null, winkel_band: [70, 100], spalt_band: [0, 2],
+                  steg_band: null, radius: null,
+                  seiten: 1, verfahren: ['ehand', 'mag', 'mig', 'wig', 'up'],
+                  q: ['ISO9692', 'EC3_18'] }
   };
 
   var STOSSARTEN = [
@@ -375,7 +464,11 @@
     /* N5d (Plan 5.1-1): bewusst NICHT aufgenommen, weil es gepflegt werden
        muesste — das Programm ist ein Nachweisprogramm, keine Qualitaets-
        sicherung. Was draussen bleibt, wird BENANNT statt verschwiegen. */
-    'pruefumfang_zfp', 'nahtvorbereitung', 'toleranzen', 'herstellerqualifikation'
+    /* 'nahtvorbereitung' ist mit N6b HERAUSGEFALLEN — nicht umbenannt,
+       sondern geschlossen: die Fugenformen nach EN ISO 9692-1 stehen jetzt
+       als Tabelle in diesem Modul. Eine Luecke verschwindet nur, wenn sie
+       wirklich gefuellt ist. */
+    'pruefumfang_zfp', 'toleranzen', 'herstellerqualifikation'
   ];
 
   /* --------------------------------------------------------------------- */
@@ -464,6 +557,41 @@
     return { ok: true, wert: reihe[idx], bewertungsgruppe: WELTB_TABELLE.bewertungsgruppe, q: WELTB_TABELLE.q };
   }
 
+  /* Nahtvorbereitung zu einer Fugenform. Ist t angegeben, sagt die Antwort
+     zusaetzlich, ob die Dicke im Anwendungsbereich der Norm liegt — sie
+     rechnet aber nichts nach und verbietet nichts. */
+  function nahtvorbereitung(code, t) {
+    var f = FUGENFORMEN[code];
+    if (!f) return { ok: false, grund: 'fugenform_unbekannt', code: code || null };
+    var dicke = (typeof t === 'number' && isFinite(t) && t > 0) ? t : null;
+    var unten = (typeof f.t_von === 'number') ? f.t_von : null;
+    var oben = (typeof f.t_bis === 'number') ? f.t_bis : null;
+    var drin = null;
+    if (dicke !== null) {
+      drin = true;
+      if (unten !== null && dicke < unten) drin = false;
+      if (oben !== null && dicke > oben) drin = false;
+    }
+    return {
+      ok: true, grund: null, code: code,
+      winkel: f.winkel, winkel_art: f.winkel_art || null,
+      winkel_band: f.winkel_band ? f.winkel_band.slice() : null,
+      spalt: f.spalt, spalt_band: f.spalt_band ? f.spalt_band.slice() : null,
+      steg: f.steg, steg_band: f.steg_band ? f.steg_band.slice() : null,
+      radius: (typeof f.radius === 'number') ? f.radius : null,
+      radius_band: f.radius_band ? f.radius_band.slice() : null,
+      t_von: unten, t_bis: oben, t: dicke, im_bereich: drin,
+      seiten: f.seiten, verfahren: f.verfahren.slice(),
+      q: f.q.slice(), luecke: f.luecke || null
+    };
+  }
+
+  function fugenformen() {
+    var r = [], k;
+    for (k in FUGENFORMEN) if (Object.prototype.hasOwnProperty.call(FUGENFORMEN, k)) r.push(k);
+    return r;
+  }
+
   function verfahren(code) {
     for (var i = 0; i < VERFAHREN.length; i++) if (VERFAHREN[i].code === code) return VERFAHREN[i];
     return null;
@@ -539,6 +667,8 @@
     bHaz: bHaz,
     weltBTabelle: weltBTabelle,
     verfahren: verfahren,
+    nahtvorbereitung: nahtvorbereitung,
+    fugenformen: fugenformen,
     alleCodes: alleCodes,
     luecken: luecken
   };

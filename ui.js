@@ -104,7 +104,11 @@
        anforderung = die Auswahlen dieses Bereichs erscheinen nach dem Rechnen
                      als Anforderungszeile im Ergebnis (vollstaendig in allen
                      Ausgaben erst mit N11). */
-    { code: 'ausfuehrung', leit: null, gruppen: ['iso5817', 'exc'], felder: [],
+    { code: 'ausfuehrung', leit: null,
+      gruppen: ['iso5817', 'exc',
+                'sym_grund', 'sym_gegen', 'sym_oberflaeche', 'sym_sicherung', 'sym_lage'],
+      felder: [],
+      symbol: true,
       anforderung: true,
       hinweise: ['ausf_nicht_rechenwirksam', 'ausf_erm_hinweis'] }
   ];
@@ -155,7 +159,9 @@
     'weg-box', 'grafik-box', 'grafik-svg', 'grafik-legende',
     'legende-eintrag', 'legende-punkt', 'legende-text', 'rw-abschnitt', 'rw-bilanz',
     /* N5d */
-    'info-version', 'info-module'
+    'info-version', 'info-module',
+    /* N6b */
+    'symbol-box', 'symbol-bild', 'symbol-legende', 'symbol-masse'
   ];
 
   /* Buttons, die bewusst noch nicht verdrahtet sind: Id -> ehrliche Meldung.
@@ -319,7 +325,10 @@
         opt = doc.createElement('option');
         opt.setAttribute('value', o.code);
         opt.value = o.code;
-        beschrifte(opt, 'opt_' + g.code + '_' + o.code);
+        /* N6b: zeigt die Option auf einen vorhandenen Text (z. B. den
+           Katalognamen sym_*), wird dieser benutzt — sonst steht der Name
+           zweimal im Woerterbuch. */
+        beschrifte(opt, o.schluessel || ('opt_' + g.code + '_' + o.code));
         sel.appendChild(opt);
         if (o.code === wert) drin = true;
       }
@@ -356,7 +365,13 @@
       var inp = neu('input', 'feld', 'fld_' + f.code);
       inp.setAttribute('type', 'text');
       inp.setAttribute('inputmode', 'decimal');
-      inp.addEventListener('change', function () { meldung(''); });
+      inp.addEventListener('change', function () {
+        meldung('');
+        /* N6b: das a-Mass steht am Symbol — aendert sich das Feld, muss die
+           Bemassung mit. Nur das Symbol wird neu gezeichnet, nicht das ganze
+           Formular: Felder sollen beim Tippen nichts umbauen. */
+        symbolZeigen(zustand());
+      });
       box.appendChild(inp);
 
       if (f.einheit) {
@@ -468,6 +483,18 @@
           f = Valid.feld(b.felder[j]);
           if (f) host.appendChild(baueFeld(f));
         }
+        /* N6b: der Kasten fuer das Zeichnungssymbol. Er steht im Block und
+           nicht im Ergebnis, weil man beim Waehlen sehen will, was man waehlt. */
+        if (b.symbol) {
+          var sk = neu('div', 'symbol-box', 'symBox');
+          sk.hidden = true;
+          sk.appendChild(neu('div', 'symbol-bild', 'symBild'));
+          sk.appendChild(neu('ul', 'symbol-legende', 'symLegende'));
+          sk.appendChild(neu('div', 'symbol-masse', 'symMasse'));
+          sk.appendChild(neu('div', 'gap-note', 'symHinweis'));
+          host.appendChild(sk);
+        }
+
         /* N5d: ehrliche Beschriftung und Ermuedungshinweis — ohne Antippen. */
         for (j = 0; j < (b.hinweise || []).length; j++) {
           var hw = neu('div', 'gap-note', 'hinw_' + b.code + '_' + j);
@@ -604,7 +631,91 @@
         }
       }
       vorschlaegeAnwenden(z);
+      symbolZeigen(z);
       return z;
+    }
+
+    /* ------------------------------------------------------------------
+     * N6b — DAS ZEICHNUNGSSYMBOL (Plan 5.1-2 / 4.11)
+     * ui.js waehlt nur aus und ordnet an. WAS gezeichnet wird, wie es
+     * aussieht und was daran nicht nachweisbar ist, weiss allein das
+     * Symbolmodul. Hier steht kein einziger Symbolcode.
+     * ---------------------------------------------------------------- */
+    function symbolZeigen(z) {
+      var kasten = el(doc, 'symBox');
+      if (!kasten) return null;
+      var Symb = win.DTNSymbol || null;
+      if (!Symb || istLeer(z.sym_grund)) { zeige(kasten, false); return null; }
+
+      /* Die Bemassung kommt aus den EINGEGEBENEN Werten, nicht aus dem Nichts:
+         dieselbe Nahtdicke, mit der auch gerechnet wird. Welches Kuerzel dazu
+         passt, entscheidet das Symbol. */
+      var masse = {}, dicke = wertVon('a');
+      if (dicke !== null) {
+        if (Symb.hatMass(z.sym_grund, 'a')) masse.a = dicke;
+        else if (Symb.hatMass(z.sym_grund, 's')) masse.s = dicke;
+      }
+
+      var zus = [];
+      if (!istLeer(z.sym_oberflaeche)) zus.push(z.sym_oberflaeche);
+      if (!istLeer(z.sym_sicherung)) zus.push(z.sym_sicherung);
+
+      var erg = Symb.zeichne({
+        grund: z.sym_grund,
+        gegenseite: istLeer(z.sym_gegen) ? null : z.sym_gegen,
+        zusatz: zus,
+        rundum: (z.sym_lage === 'rundum' || z.sym_lage === 'rundum_baustelle'),
+        baustelle: (z.sym_lage === 'baustelle' || z.sym_lage === 'rundum_baustelle'),
+        gabel: !istLeer(z.verfahren),
+        masse: masse
+      }, win.DTNSvgLib);
+
+      var bild = el(doc, 'symBild');
+      if (bild) bild.innerHTML = erg.ok ? erg.svg : '';
+      zeige(kasten, true);
+
+      /* Legende: jede Linie und jedes Zeichen wird benannt. */
+      var liste = el(doc, 'symLegende'), i, li;
+      if (liste) {
+        liste.innerHTML = '';
+        for (i = 0; i < erg.legende.length; i++) {
+          li = neu('li', 'legende-eintrag', 'symLeg_' + i);
+          setzeText(li, txt(win, erg.legende[i].code, S.sprache));
+          liste.appendChild(li);
+        }
+      }
+
+      /* Bemassung: die Zahlen stehen HIER, nicht im Bild (4.3). */
+      var mk = el(doc, 'symMasse');
+      if (mk) {
+        mk.innerHTML = '';
+        for (i = 0; i < erg.bemassung.length; i++) {
+          var mz = neu('div', 'legende-text', 'symMass_' + i);
+          setzeText(mz, txt(win, erg.bemassung[i].code, S.sprache) + ': ' + erg.bemassung[i].wert);
+          mk.appendChild(mz);
+        }
+      }
+
+      /* Hinweise und Warnungen des Moduls — ungefiltert. */
+      var hk = el(doc, 'symHinweis');
+      if (hk) {
+        var t = [];
+        for (i = 0; i < erg.hinweise.length; i++) t.push(txt(win, erg.hinweise[i], S.sprache));
+        for (i = 0; i < erg.warnungen.length; i++) t.push(txt(win, erg.warnungen[i], S.sprache));
+        if (!erg.ok && erg.fehler) t.push(txt(win, erg.fehler, S.sprache));
+        setzeText(hk, t.join(' '));
+        zeige(hk, t.length > 0);
+      }
+      S.letztesSymbol = erg;
+      return erg;
+    }
+
+    /* Zahl aus einem Eingabefeld, oder null. */
+    function wertVon(code) {
+      var f = el(doc, 'fld_' + code);
+      if (!f || istLeer(f.value)) return null;
+      var w = parseFloat(String(f.value).replace(',', '.'));
+      return (isFinite(w) && w > 0) ? w : null;
     }
 
     /* ------------------------------------------------------------------
@@ -1243,6 +1354,8 @@
 
       edition();
       versionZeigen();
+      /* N6b: die Legende des Symbols haengt an der Sprache — sie muss mit. */
+      if (S.gebaut) symbolZeigen(zustand());
       bereicheBeschriften();
       setzeText(el(doc, 'pruefTitel'), txt(win, 'uiPruefTitel', l));
       meldung('');
@@ -1352,6 +1465,7 @@
 
       for (i = 0; i < ZUSATZ.length; i++) zeige(el(doc, 'zusn_' + ZUSATZ[i].code), false);
       S.manuell = {};
+      S.letztesSymbol = null;
       var box = el(doc, 'pruefBox');
       if (box) { box.hidden = true; klasse(box, 'offen', false); }
       var liste = el(doc, 'pruefListe');
@@ -1548,6 +1662,7 @@
       rechenweg: function () { return S.letzterWeg || null; },
       /* N5d */
       version: versionInfo,
+      symbol: function () { return S.letztesSymbol || null; },
       anforderung: anforderungText,
       istSelbstGewaehlt: function (code) { return S.manuell[code] === true; }
     };
