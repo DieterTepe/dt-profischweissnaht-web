@@ -369,6 +369,14 @@
     opt_exc_EXC4: { de: 'EXC4', en: 'EXC4', pt: 'EXC4' },
 
     /* ---------- Zusatzbereiche ---------- */
+    /* Beschriftungen des Assistenten (N8a). Er selbst fuehrt nur
+       sprachneutrale Schluessel — uebersetzt wird ausschliesslich hier. */
+    ber_naht:       { de: 'Maße der Naht', en: 'Weld dimensions', pt: 'Dimensões do cordão' },
+    ber_geometrie:  { de: 'Maße des Bauteils', en: 'Component dimensions', pt: 'Dimensões do componente' },
+    ber_lasten:     { de: 'Belastung', en: 'Loading', pt: 'Carregamento' },
+    ber_beiwerte:   { de: 'Beiwerte', en: 'Factors', pt: 'Coeficientes' },
+    ass_zusatz:     { de: 'Welche Zusatzbereiche sollen dabei sein?', en: 'Which additional topics do you want?', pt: 'Que áreas adicionais deseja incluir?' },
+    ass_symbol:     { de: 'Zeichnungssymbol (freiwillig)', en: 'Drawing symbol (optional)', pt: 'Símbolo de desenho (opcional)' },
     zb_ermuedung:   { de: 'Ermüdung / Betriebsfestigkeit', en: 'Fatigue', pt: 'Fadiga' },
     zb_thermik:     { de: 'Vorwärmung & t8/5', en: 'Preheating & t8/5', pt: 'Pré-aquecimento e t8/5' },
     zb_kosten:      { de: 'Kosten, Zeit, Drahtbedarf', en: 'Cost, time, wire demand', pt: 'Custo, tempo, consumo de fio' },

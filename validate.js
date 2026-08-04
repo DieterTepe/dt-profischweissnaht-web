@@ -27,11 +27,21 @@
   /*   typ        'zahl' | 'auswahl'                                        */
   /*   label/hilfe i18n-Schluessel                                          */
   /*   pflicht_wenn wie optionen.js: {schluessel:[werte]} — leer = immer    */
+  /*   bereich    Zugehoerigkeit (N8a) — siehe unten                        */
+  /*                                                                        */
+  /* FELD -> BEREICH (N8a, 2026-08-04): Der Assistent buendelt die Eingabe-  */
+  /* felder nach Bereichen (Dieters Festlegung) und darf dafuer NICHT auf    */
+  /* ui.js zugreifen — die Oberflaeche ist die oberste Schicht, kein Modul   */
+  /* haengt an ihr. Die Zuordnung steht deshalb hier am Feld selbst.         */
+  /* ui.js fuehrt in ZUORDNUNG weiterhin die ANORDNUNG (Reihenfolge der      */
+  /* Bereiche und der Felder darin); eine beidseitige Assertion haelt beide  */
+  /* Listen deckungsgleich — dasselbe Muster wie bei den Symbolcodes in N6b. */
+  /* Wer ein Feld verschiebt und nur eine Seite aendert, bekommt Rot.        */
   /* --------------------------------------------------------------------- */
   var SCHEMA = [
-    { code: 'a',  typ: 'zahl', einheit: 'unit_mm',   min: 0.5,  max: 50,   dez: 1,
+    { code: 'a', bereich: 'naht',  typ: 'zahl', einheit: 'unit_mm',   min: 0.5,  max: 50,   dez: 1,
       label: 'fld_a',  hilfe: 'fld_a',  pflicht_wenn: { rechenrichtung: ['nachweis'] } },
-    { code: 'z',  typ: 'zahl', einheit: 'unit_mm',   min: 0.7,  max: 71,   dez: 1,
+    { code: 'z', bereich: 'naht',  typ: 'zahl', einheit: 'unit_mm',   min: 0.7,  max: 71,   dez: 1,
       label: 'fld_z',  hilfe: 'fld_z',  pflicht: false },
     /* ---- FELDBEREINIGUNG N5c-1 (Plan 5.1) -----------------------------
        Das Feld 'l' ist ENTFALLEN. Die Nahtlaenge ergibt sich aus Profil und
@@ -47,42 +57,42 @@
        an seine Stelle.
        t2 ist FREIWILLIG: die Dicke des angeschlossenen Bauteils. Bleibt es
        leer, arbeitet solver.js mit der Dicke je Segment aus profil.js. ---- */
-    { code: 't1', typ: 'zahl', einheit: 'unit_mm',   min: 0.5,  max: 200,  dez: 1,
+    { code: 't1', bereich: 'geometrie', typ: 'zahl', einheit: 'unit_mm',   min: 0.5,  max: 200,  dez: 1,
       label: 'fld_t1', hilfe: 'fld_t1',
       pflicht_wenn: { profil: ['blech', 'rohr_rechteck', 'rohr_rund', 'winkel'] } },
-    { code: 't2', typ: 'zahl', einheit: 'unit_mm',   min: 0.5,  max: 200,  dez: 1,
+    { code: 't2', bereich: 'geometrie', typ: 'zahl', einheit: 'unit_mm',   min: 0.5,  max: 200,  dez: 1,
       label: 'fld_t2', hilfe: 'fld_t2', pflicht: false },
 
     /* ---- Profilmasse (N2b, 2.2b) — Pflicht genau dort, wo das gewaehlte
            Profil den Wert braucht. t1 dient zugleich als Blech-, Wand- bzw.
            Schenkeldicke, damit kein Mass doppelt abgefragt wird. ---------- */
-    { code: 'b',  typ: 'zahl', einheit: 'unit_mm',   min: 2,    max: 5000, dez: 1,
+    { code: 'b', bereich: 'geometrie',  typ: 'zahl', einheit: 'unit_mm',   min: 2,    max: 5000, dez: 1,
       label: 'fld_b',  hilfe: 'fld_b',
       pflicht_wenn: { profil: ['blech', 'rohr_rechteck', 'i_profil', 'u_profil', 'winkel'] } },
-    { code: 'h',  typ: 'zahl', einheit: 'unit_mm',   min: 2,    max: 5000, dez: 1,
+    { code: 'h', bereich: 'geometrie',  typ: 'zahl', einheit: 'unit_mm',   min: 2,    max: 5000, dez: 1,
       label: 'fld_h',  hilfe: 'fld_h',
       pflicht_wenn: { profil: ['rohr_rechteck', 'i_profil', 'u_profil', 'winkel'] } },
-    { code: 'd',  typ: 'zahl', einheit: 'unit_mm',   min: 2,    max: 5000, dez: 1,
+    { code: 'd', bereich: 'geometrie',  typ: 'zahl', einheit: 'unit_mm',   min: 2,    max: 5000, dez: 1,
       label: 'fld_d',  hilfe: 'fld_d',
       pflicht_wenn: { profil: ['rohr_rund', 'vollrund'] } },
-    { code: 'tw', typ: 'zahl', einheit: 'unit_mm',   min: 0.5,  max: 200,  dez: 1,
+    { code: 'tw', bereich: 'geometrie', typ: 'zahl', einheit: 'unit_mm',   min: 0.5,  max: 200,  dez: 1,
       label: 'fld_tw', hilfe: 'fld_tw', pflicht_wenn: { profil: ['i_profil', 'u_profil'] } },
-    { code: 'tf', typ: 'zahl', einheit: 'unit_mm',   min: 0.5,  max: 200,  dez: 1,
+    { code: 'tf', bereich: 'geometrie', typ: 'zahl', einheit: 'unit_mm',   min: 0.5,  max: 200,  dez: 1,
       label: 'fld_tf', hilfe: 'fld_tf', pflicht_wenn: { profil: ['i_profil', 'u_profil'] } },
-    { code: 'r_ecke', typ: 'zahl', einheit: 'unit_mm', min: 0,  max: 200,  dez: 1,
+    { code: 'r_ecke', bereich: 'geometrie', typ: 'zahl', einheit: 'unit_mm', min: 0,  max: 200,  dez: 1,
       standard: 0, label: 'fld_r_ecke', hilfe: 'fld_r_ecke', pflicht: false, ueberschreibbar: true },
-    { code: 'a_steg',    typ: 'zahl', einheit: 'unit_mm', min: 0.5, max: 50, dez: 1,
+    { code: 'a_steg', bereich: 'naht',    typ: 'zahl', einheit: 'unit_mm', min: 0.5, max: 50, dez: 1,
       label: 'fld_a_steg',    hilfe: 'fld_a_steg',    pflicht: false, ueberschreibbar: true },
-    { code: 'a_flansch', typ: 'zahl', einheit: 'unit_mm', min: 0.5, max: 50, dez: 1,
+    { code: 'a_flansch', bereich: 'naht', typ: 'zahl', einheit: 'unit_mm', min: 0.5, max: 50, dez: 1,
       label: 'fld_a_flansch', hilfe: 'fld_a_flansch', pflicht: false, ueberschreibbar: true },
 
-    { code: 'N',  typ: 'zahl', einheit: 'unit_N',    min: -1e9, max: 1e9,  dez: 0,
+    { code: 'N', bereich: 'lasten',  typ: 'zahl', einheit: 'unit_N',    min: -1e9, max: 1e9,  dez: 0,
       label: 'fld_N',  hilfe: 'fld_N',  pflicht_wenn: { lasteingabe: ['direkt'] } },
-    { code: 'Q',  typ: 'zahl', einheit: 'unit_N',    min: -1e9, max: 1e9,  dez: 0,
+    { code: 'Q', bereich: 'lasten',  typ: 'zahl', einheit: 'unit_N',    min: -1e9, max: 1e9,  dez: 0,
       label: 'fld_Q',  hilfe: 'fld_Q',  pflicht_wenn: { lasteingabe: ['direkt'] } },
-    { code: 'M',  typ: 'zahl', einheit: 'unit_Nm',   min: -1e9, max: 1e9,  dez: 0,
+    { code: 'M', bereich: 'lasten',  typ: 'zahl', einheit: 'unit_Nm',   min: -1e9, max: 1e9,  dez: 0,
       label: 'fld_M',  hilfe: 'fld_M',  pflicht: false },
-    { code: 'T',  typ: 'zahl', einheit: 'unit_Nm',   min: -1e9, max: 1e9,  dez: 0,
+    { code: 'T', bereich: 'lasten',  typ: 'zahl', einheit: 'unit_Nm',   min: -1e9, max: 1e9,  dez: 0,
       label: 'fld_T',  hilfe: 'fld_T',  pflicht: false },
 
     /* ---- N3: ausfuehrliche Schnittgroessen. Q und M oben sind die
@@ -90,38 +100,38 @@
            oder zweiachsig belastet, nutzt diese Felder. solver.js meldet es
            ehrlich als Fehler, wenn Kurzform und ausfuehrliche Form mit
            VERSCHIEDENEN Werten gefuellt sind (msg_sv_last_doppelt). ------ */
-    { code: 'Qy', typ: 'zahl', einheit: 'unit_N',    min: -1e9, max: 1e9,  dez: 0,
+    { code: 'Qy', bereich: 'lasten', typ: 'zahl', einheit: 'unit_N',    min: -1e9, max: 1e9,  dez: 0,
       label: 'fld_Qy', hilfe: 'fld_Qy', pflicht: false },
-    { code: 'Qz', typ: 'zahl', einheit: 'unit_N',    min: -1e9, max: 1e9,  dez: 0,
+    { code: 'Qz', bereich: 'lasten', typ: 'zahl', einheit: 'unit_N',    min: -1e9, max: 1e9,  dez: 0,
       label: 'fld_Qz', hilfe: 'fld_Qz', pflicht: false },
-    { code: 'My', typ: 'zahl', einheit: 'unit_Nm',   min: -1e9, max: 1e9,  dez: 0,
+    { code: 'My', bereich: 'lasten', typ: 'zahl', einheit: 'unit_Nm',   min: -1e9, max: 1e9,  dez: 0,
       label: 'fld_My', hilfe: 'fld_My', pflicht: false },
-    { code: 'Mz', typ: 'zahl', einheit: 'unit_Nm',   min: -1e9, max: 1e9,  dez: 0,
+    { code: 'Mz', bereich: 'lasten', typ: 'zahl', einheit: 'unit_Nm',   min: -1e9, max: 1e9,  dez: 0,
       label: 'fld_Mz', hilfe: 'fld_Mz', pflicht: false },
 
-    { code: 'F',  typ: 'zahl', einheit: 'unit_N',    min: -1e9, max: 1e9,  dez: 0,
+    { code: 'F', bereich: 'lasten',  typ: 'zahl', einheit: 'unit_N',    min: -1e9, max: 1e9,  dez: 0,
       label: 'fld_F',  hilfe: 'fld_F',  pflicht_wenn: { lasteingabe: ['geometrisch'] } },
-    { code: 'e',  typ: 'zahl', einheit: 'unit_mm',   min: 0,    max: 100000, dez: 1,
+    { code: 'e', bereich: 'lasten',  typ: 'zahl', einheit: 'unit_mm',   min: 0,    max: 100000, dez: 1,
       label: 'fld_e',  hilfe: 'fld_e',  pflicht_wenn: { lasteingabe: ['geometrisch'] } },
 
-    { code: 'gammaM2', typ: 'zahl', einheit: 'unit_dimensionslos', min: 1.0, max: 2.0, dez: 2,
+    { code: 'gammaM2', bereich: 'beiwerte', typ: 'zahl', einheit: 'unit_dimensionslos', min: 1.0, max: 2.0, dez: 2,
       standard: 1.25, label: 'fld_gammaM2', hilfe: 'fld_gammaM2',
       pflicht_wenn: { welt: ['A'] }, ueberschreibbar: true },
-    { code: 'gammaMw', typ: 'zahl', einheit: 'unit_dimensionslos', min: 1.0, max: 2.0, dez: 2,
+    { code: 'gammaMw', bereich: 'beiwerte', typ: 'zahl', einheit: 'unit_dimensionslos', min: 1.0, max: 2.0, dez: 2,
       standard: 1.25, label: 'fld_gammaMw', hilfe: 'fld_gammaMw',
       pflicht_wenn: { welt: ['A'], werkstoffgruppe: ['alu'] }, ueberschreibbar: true },
-    { code: 'betaW',   typ: 'zahl', einheit: 'unit_dimensionslos', min: 0.5, max: 1.5, dez: 2,
+    { code: 'betaW', bereich: 'beiwerte',   typ: 'zahl', einheit: 'unit_dimensionslos', min: 0.5, max: 1.5, dez: 2,
       label: 'fld_betaW', hilfe: 'fld_betaW', pflicht: false, ueberschreibbar: true },
 
-    { code: 'S',  typ: 'zahl', einheit: 'unit_dimensionslos', min: 1.0, max: 4.0, dez: 2,
+    { code: 'S', bereich: 'beiwerte',  typ: 'zahl', einheit: 'unit_dimensionslos', min: 1.0, max: 4.0, dez: 2,
       standard: 1.5, label: 'fld_S', hilfe: 'fld_S',
       pflicht_wenn: { welt: ['B'] }, ueberschreibbar: true },
-    { code: 'nu', typ: 'zahl', einheit: 'unit_dimensionslos', min: 0.3, max: 1.0, dez: 2,
+    { code: 'nu', bereich: 'beiwerte', typ: 'zahl', einheit: 'unit_dimensionslos', min: 0.3, max: 1.0, dez: 2,
       label: 'fld_nu', hilfe: 'fld_nu', pflicht: false, ueberschreibbar: true },
 
     /* R_e wird aus der Werkstofftabelle vorbelegt und ist per Haken
        ueberschreibbar (Regel 3.1) — nur Welt B rechnet mit der Streckgrenze. */
-    { code: 'Re', typ: 'zahl', einheit: 'unit_Nmm2', min: 100, max: 1000, dez: 0,
+    { code: 'Re', bereich: 'beiwerte', typ: 'zahl', einheit: 'unit_Nmm2', min: 100, max: 1000, dez: 0,
       label: 'fld_Re', hilfe: 'fld_Re', pflicht: false, ueberschreibbar: true }
   ];
 

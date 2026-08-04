@@ -17,6 +17,7 @@ var Svg     = require('./svglib.js');
 var Bild    = require('./schaubild.js');
 var Solver  = require('./solver.js');
 var Weg     = require('./rechenweg.js');
+var Assi    = require('./assistent.js');
 
 var N = 0, FAIL = [], SEKTION = '';
 function sek(s) { SEKTION = s; console.log('\n— ' + s + ' —'); }
@@ -1876,7 +1877,7 @@ eq((uiHtml.match(/<script>/g) || []).length, 1,
 
 var uiSrcRe = /<script src="([^"]+)"><\/script>/g, uiSrcs = [], uiM;
 while ((uiM = uiSrcRe.exec(uiHtml)) !== null) uiSrcs.push(uiM[1]);
-eq(uiSrcs.length, 14, '14 Module in der HTML eingebunden — symbol.js ist mit N6b dazugekommen');
+eq(uiSrcs.length, 15, '15 Module in der HTML eingebunden — assistent.js ist mit N8a dazugekommen');
 eq(uiSrcs[uiSrcs.length - 1], 'ui.js', 'ui.js laedt zuletzt');
 var uiDateiFehlt = [];
 for (uiI = 0; uiI < uiSrcs.length; uiI++) {
@@ -3537,6 +3538,259 @@ ok(s39QH === true,
    'S39: das Programm sagt selbst, dass es die Querkraft gleichmaessig ansetzt — kein Schubfluss');
 ok(s39Nah(s39E2.nahtbild.Wz, 2 * 3 * 80 * 80 / 6, 1e-9),
    'S39: und dass es ELASTISCH rechnet (W = 2*a*l^2/6), nicht plastisch');
+
+sek('S40 · N8a Assistent — Dialoglogik ohne Oberflaeche');
+
+/* DIE HARTE REGEL AUS 3.3: DER ASSISTENT RECHNET NIE SELBST. Er fuellt
+   dieselben Felder wie die Handeingabe und uebergibt an dieselbe Kette.
+   Diese Sektion prueft vor allem das — und zwar nicht durch Zusehen,
+   sondern indem sie jeden der zwoelf Beispielfaelle EINMAL durch das
+   Formular und EINMAL durch den Assistenten schickt und beide Ergebnisse
+   Zeichen fuer Zeichen vergleicht. Weichen sie ab, gibt es zwei Wahrheiten,
+   und der selbstpruefende Rechenweg waere entwertet. */
+
+var s40i, s40j, s40k;
+
+/* --- 1) Aufbau und Grenzen des Moduls ---------------------------------- */
+ok(typeof Assi === 'object' && Assi !== null, 'S40: assistent.js laedt');
+eq(Assi.NAME, 'assistent', 'S40: es nennt sich beim Namen');
+ok(/^0\.\d+\.\d+-N8a$/.test(Assi.VERSION), 'S40: und traegt eine N8a-Kennung (' + Assi.VERSION + ')');
+var s40Fn = ['starte', 'schritt', 'schritte', 'anzahl', 'antworte', 'zurueck',
+             'springe', 'ueberspringe', 'fertig', 'ergebnis', 'offen', 'fortschritt'];
+for (s40i = 0; s40i < s40Fn.length; s40i++) {
+  ok(typeof Assi[s40Fn[s40i]] === 'function', 'S40: ' + s40Fn[s40i] + '() gibt es');
+}
+
+/* DER ASSISTENT DARF NICHT RECHNEN — dieselbe Quelltextprobe wie bei ui.js.
+   Kein Math., kein Rechenkern, keine Daten. Er kennt nur optionen.js und
+   validate.js, also die Frage "was ist jetzt zu waehlen", nie die Frage
+   "was kommt dabei heraus". */
+var s40Src = fsU.readFileSync(__dirname + '/assistent.js', 'utf8');
+ok(s40Src.indexOf('Math.') < 0 || s40Src.indexOf('Math.min') >= 0,
+   'S40: keine freie Rechnerei im Assistenten');
+var s40Verboten = ['solver.js', 'naht.js', 'profil.js', 'daten.js', 'rechenweg.js',
+                   'schaubild.js', 'svglib.js', 'symbol.js', 'ui.js'];
+var s40Treffer = [];
+for (s40i = 0; s40i < s40Verboten.length; s40i++) {
+  if (s40Src.indexOf(s40Verboten[s40i]) >= 0) s40Treffer.push(s40Verboten[s40i]);
+}
+eq(s40Treffer.length, 0, 'S40: der Assistent kennt keinen Rechenkern (' + s40Treffer.join(',') + ')');
+ok(s40Src.indexOf('document') < 0 && s40Src.indexOf('window') < 0,
+   'S40: und kein DOM — N8a ist reine Logik');
+
+/* --- 2) Feld -> Bereich: EINE Quelle, beidseitig gesichert -------------- */
+/* validate.js traegt die Zugehoerigkeit, ui.js die Anordnung. Beide Listen
+   muessen deckungsgleich sein — sonst zeigt der Assistent ein Feld, das im
+   Formular woanders steht (oder gar nicht). */
+var s40UiSrc = fsU.readFileSync(__dirname + '/ui.js', 'utf8');
+var s40Ohne = [];
+for (s40i = 0; s40i < Valid.SCHEMA.length; s40i++) {
+  if (!Valid.SCHEMA[s40i].bereich) s40Ohne.push(Valid.SCHEMA[s40i].code);
+}
+eq(s40Ohne.length, 0, 'S40: jedes Feld kennt seinen Bereich (' + s40Ohne.join(',') + ')');
+for (s40i = 0; s40i < Assi.FELD_BEREICHE.length; s40i++) {
+  (function (b) {
+    var ausSchema = [], m, liste;
+    for (s40j = 0; s40j < Valid.SCHEMA.length; s40j++) {
+      if (Valid.SCHEMA[s40j].bereich === b) ausSchema.push(Valid.SCHEMA[s40j].code);
+    }
+    /* Die Felderliste desselben Bereichs aus ui.js herauslesen. */
+    m = s40UiSrc.match(new RegExp("code: '" + b + "'[\\s\\S]{0,400}?felder: \\[([^\\]]*)\\]"));
+    ok(!!m, 'S40: ui.js fuehrt den Bereich ' + b + ' mit Feldern');
+    if (m) {
+      liste = m[1].replace(/['\s]/g, '').split(',').filter(function (x) { return x.length; });
+      eq(liste.slice().sort().join(','), ausSchema.slice().sort().join(','),
+         'S40: Bereich ' + b + ' — validate.js und ui.js fuehren DIESELBEN Felder');
+    }
+  }(Assi.FELD_BEREICHE[s40i]));
+}
+
+/* --- 3) Unveraenderlichkeit: keine Sitzung wird umgebaut ---------------- */
+var s40S0 = Assi.starte({}, {});
+var s40Vor = JSON.stringify(s40S0);
+var s40S1 = Assi.antworte(s40S0, 'A');
+eq(JSON.stringify(s40S0), s40Vor, 'S40: antworte() laesst die alte Sitzung unberuehrt');
+ok(s40S1 !== s40S0, 'S40: und liefert eine neue');
+eq(s40S1.index, s40S0.index + 1, 'S40: einen Schritt weiter');
+Assi.zurueck(s40S1); Assi.springe(s40S1, 'welt'); Assi.ergebnis(s40S1);
+eq(JSON.stringify(s40S0), s40Vor, 'S40: auch zurueck/springe/ergebnis aendern nichts');
+
+/* --- 4) Umkehrbarkeit — jeder Schritt (3.3) ---------------------------- */
+var s40Z = Assi.zurueck(s40S1);
+eq(s40Z.index, s40S0.index, 'S40: zurueck fuehrt auf denselben Schritt');
+eq(Assi.schritt(s40Z).code, Assi.schritt(s40S0).code, 'S40: und auf dieselbe Frage');
+eq(Assi.schritt(s40Z).wert, 'A', 'S40: die gegebene Antwort steht noch da — sie ist AENDERBAR, nicht weg');
+eq(Assi.zurueck(s40S0).index, 0, 'S40: vor dem ersten Schritt gibt es kein Zurueck');
+
+/* Eine spaete Kursaenderung raeumt auf: wer die Welt wechselt, schleppt
+   keine Auswahl aus der alten Welt mit (Plan 3.4). */
+var s40B = Assi.starte({ welt: 'B', nahtguete: 'kehlnaht_allgemein', lastfall: 'ruhend' }, {});
+var s40BA = Assi.antworte(Assi.springe(s40B, 'welt'), 'A');
+ok(s40BA.auswahl.nahtguete === undefined && s40BA.auswahl.lastfall === undefined,
+   'S40: der Wechsel von Welt B nach A entfernt die Welt-B-Auswahlen');
+ok(s40BA.entfernt && s40BA.entfernt.length >= 1 &&
+   s40BA.entfernt.join(',').indexOf('lastfall') >= 0,
+   'S40: und der Assistent sagt, WAS er entfernt hat (' + (s40BA.entfernt || []).join(',') + ')');
+
+/* --- 5) Uebernahme bestehender Eingaben (3.3) --------------------------- */
+var s40Bsp = Options.beispiel('blech');
+var s40U = Assi.starte(s40Bsp.auswahl, s40Bsp.felder);
+eq(Assi.schritt(s40U).wert, s40Bsp.auswahl.welt,
+   'S40: was im Formular stand, steht im ersten Dialogfenster schon drin');
+ok(Assi.schritt(s40U).optionen.length > 1,
+   'S40: und ist trotzdem aenderbar — es wird vorbelegt, nicht uebersprungen');
+var s40UF = Assi.springe(s40U, 'geometrie');
+var s40Hat = false;
+for (s40i = 0; s40i < Assi.schritt(s40UF).felder.length; s40i++) {
+  if (Assi.schritt(s40UF).felder[s40i].code === 'b' &&
+      Assi.schritt(s40UF).felder[s40i].wert === s40Bsp.felder.b) s40Hat = true;
+}
+ok(s40Hat === true, 'S40: auch die Zahlenwerte kommen mit');
+
+/* --- 6) DIE KERNPROBE: Formular und Assistent liefern DASSELBE ---------- */
+/* Jeder der zwoelf Beispielfaelle wird durch den Assistenten gefuehrt —
+   beantwortet genau so, wie das Beispiel es vorgibt. Am Ende muss Zeichen
+   fuer Zeichen dasselbe herauskommen, und die Rechenkette muss dieselbe
+   Ausnutzung liefern. Waeren es zwei Wege mit zwei Ergebnissen, waere der
+   Assistent kein Bedienhelfer, sondern ein zweites Programm. */
+function s40Durchlauf(bsp) {
+  var s = Assi.starte({}, {}), sch, wert, i, f, code, schutz = 0;
+  while (!Assi.fertig(s) && schutz < 60) {
+    schutz++;
+    sch = Assi.schritt(s);
+    if (sch.art === 'auswahl') {
+      wert = Object.prototype.hasOwnProperty.call(bsp.auswahl, sch.code)
+           ? bsp.auswahl[sch.code] : null;
+      s = Assi.antworte(s, wert);
+    } else if (sch.art === 'felder') {
+      wert = {};
+      for (i = 0; i < sch.felder.length; i++) {
+        f = sch.felder[i]; code = f.code;
+        if (Object.prototype.hasOwnProperty.call(bsp.felder, code)) wert[code] = bsp.felder[code];
+        else if (f.standard !== null && f.pflicht) wert[code] = f.standard;
+      }
+      s = Assi.antworte(s, wert);
+    } else if (sch.art === 'zusatz') {
+      s = Assi.antworte(s, {});
+    } else {
+      s = Assi.ueberspringe(s);
+    }
+  }
+  return { sitzung: s, schutz: schutz };
+}
+function s40Rechne(auswahl, werte) {
+  var w = Valid.standardwerte(auswahl), k;
+  for (k in werte) if (Object.prototype.hasOwnProperty.call(werte, k)) w[k] = werte[k];
+  var re = Valid.rechenEingabe(w, auswahl);
+  if (!re.ok) return null;
+  return Solver.rechne(re.eingabe);
+}
+for (s40i = 0; s40i < Options.BEISPIELE.length; s40i++) {
+  (function (bsp) {
+    var wo = 'S40 [' + bsp.code + ']: ';
+    var d = s40Durchlauf(bsp);
+    ok(Assi.fertig(d.sitzung) === true, wo + 'der Assistent kommt ans Ende');
+    ok(d.schutz < 60, wo + 'ohne sich im Kreis zu drehen (' + d.schutz + ' Schritte)');
+    var erg = Assi.ergebnis(d.sitzung);
+    var off = Assi.offen(d.sitzung);
+    ok(off.vollstaendig === true,
+       wo + 'und mit einem vollstaendigen Eingabesatz' +
+       (off.vollstaendig ? '' : ' — offen: ' + JSON.stringify(off)));
+    /* Die Auswahl muss identisch sein. */
+    var fehlt = [];
+    for (var g in bsp.auswahl) {
+      if (!Object.prototype.hasOwnProperty.call(bsp.auswahl, g)) continue;
+      if (erg.auswahl[g] !== bsp.auswahl[g]) fehlt.push(g + ':' + erg.auswahl[g] + '!=' + bsp.auswahl[g]);
+    }
+    eq(fehlt.length, 0, wo + 'die Auswahl ist dieselbe wie im Formular (' + fehlt.join(' ') + ')');
+    /* Und die Rechnung muss dieselbe sein. */
+    var eForm = s40Rechne(bsp.auswahl, bsp.felder);
+    var eAss = s40Rechne(erg.auswahl, erg.werte);
+    ok(eForm !== null && eForm.ok === true, wo + 'der Formularweg rechnet');
+    ok(eAss !== null && eAss.ok === true, wo + 'der Assistentenweg rechnet');
+    if (eForm && eAss && eForm.ok && eAss.ok) {
+      ok(Math.abs(eForm.eta - eAss.eta) < 1e-12,
+         wo + 'BEIDE WEGE LIEFERN DIESELBE AUSNUTZUNG (' +
+         eForm.eta.toFixed(6) + ' / ' + eAss.eta.toFixed(6) + ')');
+      eq(eAss.ampel, eForm.ampel, wo + 'und dieselbe Ampel');
+      eq(eAss.nahtbild.n_seg, eForm.nahtbild.n_seg, wo + 'und dasselbe Nahtbild');
+    }
+  }(Options.BEISPIELE[s40i]));
+}
+
+/* --- 7) Keine Sackgasse, kein verwaistes Feld (3.4) --------------------- */
+/* Dieselben zwei Forderungen, die der Wegetest ans Formular stellt, gelten
+   fuer den Assistenten: An JEDEM Schritt muss mindestens eine Option
+   waehlbar sein, und JEDES Pflichtfeld muss irgendwo abgefragt worden sein.
+   Sonst fuehrt der Dialog in eine Lage, aus der niemand herausfindet. */
+var s40Sack = [], s40Waise = [];
+for (s40i = 0; s40i < Options.BEISPIELE.length; s40i++) {
+  (function (bsp) {
+    var s = Assi.starte({}, {}), sch, gefragt = {}, schutz = 0, i;
+    while (!Assi.fertig(s) && schutz < 60) {
+      schutz++;
+      sch = Assi.schritt(s);
+      if (sch.art === 'auswahl') {
+        if (!sch.optionen.length) s40Sack.push(bsp.code + '/' + sch.code);
+        s = Assi.antworte(s, Object.prototype.hasOwnProperty.call(bsp.auswahl, sch.code)
+                             ? bsp.auswahl[sch.code] : sch.optionen[0].code);
+      } else if (sch.art === 'felder') {
+        var wert = {};
+        for (i = 0; i < sch.felder.length; i++) {
+          gefragt[sch.felder[i].code] = true;
+          if (Object.prototype.hasOwnProperty.call(bsp.felder, sch.felder[i].code)) {
+            wert[sch.felder[i].code] = bsp.felder[sch.felder[i].code];
+          } else if (sch.felder[i].standard !== null) {
+            wert[sch.felder[i].code] = sch.felder[i].standard;
+          }
+        }
+        s = Assi.antworte(s, wert);
+      } else if (sch.art === 'zusatz') { s = Assi.antworte(s, {}); }
+      else { s = Assi.ueberspringe(s); }
+    }
+    /* Jedes Pflichtfeld des Endzustands muss unterwegs gefragt worden sein. */
+    for (i = 0; i < Valid.SCHEMA.length; i++) {
+      if (Valid.istPflicht(Valid.SCHEMA[i], s.auswahl) && !gefragt[Valid.SCHEMA[i].code]) {
+        s40Waise.push(bsp.code + '/' + Valid.SCHEMA[i].code);
+      }
+    }
+  }(Options.BEISPIELE[s40i]));
+}
+eq(s40Sack.length, 0, 'S40: keine Sackgasse — jeder Schritt hat eine Option (' + s40Sack.join(' ') + ')');
+eq(s40Waise.length, 0, 'S40: kein verwaistes Pflichtfeld (' + s40Waise.join(' ') + ')');
+
+/* --- 8) Zusatzbereiche und Symbol -------------------------------------- */
+var s40ZS = Assi.springe(Assi.starte(Options.beispiel('blech').auswahl,
+                                     Options.beispiel('blech').felder), Assi.SCHRITT_ZUSATZ);
+var s40ZSch = Assi.schritt(s40ZS);
+eq(s40ZSch.art, 'zusatz', 'S40: es gibt einen Schritt fuer die Zusatzbereiche');
+eq(s40ZSch.bereiche.length, Options.ZUSATZBEREICHE.length,
+   'S40: er zeigt alle, die auch das Formular zeigt');
+/* EHRLICH: die vier leeren Bereiche nennen ihren Baustein. Der Assistent
+   verspricht dort nichts, was das Programm heute nicht kann. */
+var s40Folgt = 0;
+for (s40i = 0; s40i < s40ZSch.bereiche.length; s40i++) {
+  if (s40ZSch.bereiche[s40i].folgt) s40Folgt++;
+}
+ok(s40Folgt >= 4, 'S40: und benennt bei jedem, mit welchem Baustein er kommt');
+var s40ZA = Assi.antworte(s40ZS, { thermik: true });
+ok(s40ZA.werte.thermik_aktiv === true, 'S40: ein angehakter Bereich landet als <code>_aktiv in den Werten');
+var s40SySch = Assi.schritt(Assi.springe(s40ZA, Assi.SCHRITT_SYMBOL));
+eq(s40SySch.art, 'symbol', 'S40: der Symbolschritt steht am Schluss');
+ok(s40SySch.freiwillig === true, 'S40: und ist ausdruecklich freiwillig');
+ok(Assi.fertig(Assi.ueberspringe(Assi.springe(s40ZA, Assi.SCHRITT_SYMBOL))) === true,
+   'S40: er laesst sich ueberspringen und beendet den Dialog');
+
+/* --- 9) Fortschritt und Beschriftung ------------------------------------ */
+var s40FS = Assi.fortschritt(Assi.starte({}, {}));
+ok(s40FS.von > 0 && s40FS.schritt === 0 && s40FS.anteil === 0, 'S40: der Fortschritt startet bei null');
+var s40Keys = ['ass_zusatz', 'ass_symbol'];
+for (s40i = 0; s40i < Assi.FELD_BEREICHE.length; s40i++) s40Keys.push('ber_' + Assi.FELD_BEREICHE[s40i]);
+var s40Fehl = [];
+for (s40i = 0; s40i < s40Keys.length; s40i++) {
+  if (!Kern.has(s40Keys[s40i])) s40Fehl.push(s40Keys[s40i]);
+}
+eq(s40Fehl.length, 0, 'S40: jede Beschriftung des Assistenten ist dreisprachig belegt (' + s40Fehl.join(',') + ')');
 
 /* ========================================================================= */
 console.log('\n════════════════════════════════════════════');

@@ -209,10 +209,10 @@ function lauf(edition) {
   while ((mm = srcRe.exec(html)) !== null) srcs.push(mm[1]);
   var erwartet = ['i18n_kern.js', 'i18n_hilfe.js', 'i18n_kerbfall.js', 'daten.js', 'optionen.js',
                   'validate.js', 'naht.js', 'profil.js', 'svglib.js', 'schaubild.js',
-                  'solver.js', 'rechenweg.js', 'symbol.js', 'ui.js'];
+                  'solver.js', 'rechenweg.js', 'symbol.js', 'assistent.js', 'ui.js'];
   ok(srcs.join(',') === erwartet.join(','), 'Ladereihenfolge stimmt: ' + srcs.join(' → '));
   ok(srcs[srcs.length - 1] === 'ui.js', 'ui.js laedt zuletzt');
-  ok(srcs.length === 14, '14 Module eingebunden (ist ' + srcs.length + ')');
+  ok(srcs.length === 15, 'N8a: 15 Module eingebunden (ist ' + srcs.length + ')');
 
   /* ------------------------------------- 2) ALLE Module gemeinsam laden -- */
   var d = baueDom(html);
@@ -223,7 +223,8 @@ function lauf(edition) {
                 'naht.js': 'DTNNaht', 'profil.js': 'DTNProfil',
                 'svglib.js': 'DTNSvgLib', 'schaubild.js': 'DTNSchaubild',
                 'solver.js': 'DTNSolver', 'rechenweg.js': 'DTNRechenweg',
-                'symbol.js': 'DTNSymbol', 'ui.js': 'DTNUi' };
+                'symbol.js': 'DTNSymbol', 'assistent.js': 'DTNAssistent',
+                'ui.js': 'DTNUi' };
   for (var i = 0; i < srcs.length; i++) {
     var mod = require('./' + srcs[i]);
     win[namen[srcs[i]]] = mod;
@@ -1068,8 +1069,20 @@ function lauf(edition) {
      'N7: der Info-Dialog nennt den Programmstand, den ui.js selbst traegt (' + UI.ETAPPE + ')');
   ok(n5dVz.indexOf(UI.PLAN) >= 0, 'N7: und die Planversion aus ui.js (' + UI.PLAN + ')');
   var n5dInfo = s.version();
-  ok(n5dInfo.n === 14,
-     'N6b: die Zeile wird aus allen 14 geladenen Modulen gebaut (ist ' + n5dInfo.n + ')');
+  /* Seit N8a sind es 15 — assistent.js haengt mit am Fenster und traegt
+     seine eigene Kennung. Die Zeile sammelt sich selbst ein; hier steht
+     nur die erwartete ZAHL, keine zweite Modulliste. */
+  ok(n5dInfo.n === 15,
+     'N8a: die Zeile wird aus allen 15 geladenen Modulen gebaut (ist ' + n5dInfo.n + ')');
+  var n8aDrin = false;
+  for (var n8ai = 0; n8ai < n5dInfo.module.length; n8ai++) {
+    if (n5dInfo.module[n8ai].name === 'assistent') {
+      n8aDrin = true;
+      ok(/^0\.\d+\.\d+-N8a$/.test(n5dInfo.module[n8ai].version),
+         'N8a: und der Assistent nennt seine Kennung (' + n5dInfo.module[n8ai].version + ')');
+    }
+  }
+  ok(n8aDrin === true, 'N8a: der Assistent steht in der Versionszeile');
   ok(n5dInfo.ohne === 0,
      'N5d: kein Modul ohne Kennung — die drei Loecher aus 3.6 sind zu');
   var n5dMl = d.byId.infoModule.inhalt();

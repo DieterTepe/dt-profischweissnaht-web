@@ -1505,3 +1505,66 @@ Ende-zu-Ende-Fall. Bleibt offen.
 
 **Geändert: nur `test_naht.js`** — kein Produktmodul, `Codestand` bleibt 2.39.
 **Basislinie 1553 → 1589 Assertions · Smokes unverändert 611 / 612.**
+
+
+**v2.42 (2026-08-04):** **N8a — die Dialoglogik, und was der Zwölf-Fälle-Vergleich gefangen hat.**
+
+**Aus N8a (2026-08-04) — Entscheidungen und Erfahrungen**
+
+**Dieters Festlegungen vor dem Bau:** Eingabefelder nach Bereichen gebündelt
+statt ein Fenster je Feld · Reichweite einschließlich der Zusatzbereiche ·
+Zeichnungssymbol als ein freiwilliger Schritt am Schluss · N8b und N8c
+anschließend zusammen, weil die erste Hälfte allein am Handy nur halb
+bedienbar wäre.
+
+**Der Schnitt hat sich bewährt.** N8a ist DOM-frei und damit vollständig in
+Node prüfbar — der Rechenkern wurde nicht ein einziges Mal angefasst. Wer eine
+Dialogführung gegen eine bestehende Rechenkette baut, sollte genau so
+schneiden: erst die Logik, die man beweisen kann, dann die Oberfläche.
+
+**Der Fund des Tages kam aus der Kernprobe.** Der Gedanke war Dieters Prinzip
+aus S39, eine Stufe weitergedreht: nicht die Bauteile prüfen, sondern die
+Kette — hier gegen die eigene zweite Kette. Jeder der zwölf Beispielfälle
+läuft einmal durch das Formular und einmal durch den Assistenten; verglichen
+werden Auswahl, Ausnutzung, Ampel und Nahtbild.
+
+Der erste Entwurf bot im Dialog nur **Pflichtfelder** an. Das klang vernünftig
+— warum einen Laien mit β_w behelligen? Ergebnis: **Moment, Torsion und
+Eckenausrundung** sind keine Pflichtfelder und fielen deshalb aus dem Dialog.
+Sieben der zwölf Beispiele kamen über den Assistenten mit einer anderen
+Ausnutzung heraus (RHS 0,359 gegen 0,295; Konsole 0,837 gegen 0,203), zwei
+rechneten überhaupt nicht mehr. Der Plan sagt in 3.3 wörtlich das Gegenteil:
+*nach jeder Auswahl bleiben die zugehörigen Eingabefelder mit „eigener Wert"-
+Haken zugänglich*. Die Regel stand seit N1 da und war beim Bauen trotzdem
+plausibel wegargumentiert worden.
+
+**Die Lehre:** Ein zweiter Eingabeweg ist kein Bedienkomfort, sondern eine
+**zweite Quelle für dieselben Daten**. Er muss gegen die erste geprüft werden,
+und zwar am Ergebnis, nicht an der Bedienung. Ohne den Zwölf-Fälle-Vergleich
+wäre das erst am Handy aufgefallen — bei einem Fall mit Moment, also
+ausgerechnet dort, wo der Assistent seinen Laien am dringendsten braucht.
+
+**Zwei Bauentscheidungen, die Bestand haben sollen:**
+- **Keine zweite Schrittliste.** Die Folge entsteht aus `Options.gruppeAktiv()`
+  und `Valid.sichtbareFelder()` — denselben Funktionen, die das Formular
+  benutzt. Eine handgepflegte Liste wäre beim nächsten Baustein veraltet, ohne
+  dass jemand es merkt. Genau davor warnt 3.4 mit der EINEN Filterfunktion.
+- **Sitzungen sind unveränderlich.** `antworte`, `zurueck` und `springe`
+  liefern eine neue Sitzung. „Einen Schritt zurück" ist damit kein Rückbau,
+  sondern schlicht die vorige Sitzung — und die gegebene Antwort steht noch
+  da, weil sie ja gerade geändert werden soll.
+
+**Feld → Bereich ist umgezogen.** Die Zuordnung lag nur in `ui.js`; der
+Assistent hätte sonst auf die Oberfläche zugreifen müssen, die oberste
+Schicht. Sie steht jetzt am Feld in `validate.js`, `ui.js` behält die
+Anordnung, und eine beidseitige Assertion hält beides deckungsgleich — dasselbe
+Muster wie bei den Symbolcodes in N6b.
+
+**Ehrlich zu den Zusatzbereichen:** Dieter wollte sie mit im Assistenten. Sie
+sind heute reine Haken ohne ein einziges abhängiges Feld. Gebaut wurde deshalb
+genau das, was das Formular auch zeigt — mit der Angabe, mit welchem Baustein
+der Inhalt kommt. Nichts erfunden, nichts weggelassen.
+
+**Basislinie 1589 → 1748 Assertions · Smokes 611/612 → 614/615.**
+**Codestand 2.39 → 2.42 · 15 Module.**
+**Nächster Schritt: N8a am Handy abnehmen, dann N8b+N8c zusammen.**
