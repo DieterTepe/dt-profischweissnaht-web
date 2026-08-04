@@ -1259,6 +1259,18 @@ steht hier. **Code unverändert.**
   zwei Wahrheiten auf einem Bildschirm. Gefunden hat es der Durchklick am echten Formular,
   nicht der Harness.
 
+- **Der letzte Fund kam von Dieter, nicht vom Harness — und war der lehrreichste.** Die
+  Versionszeile listete alle 14 Module richtig, zeigte als Programmstand aber „N5d ·
+  Plan 2.32". `VERSION`, `ETAPPE` und `PLAN` in `ui.js` sind die **einzigen von Hand
+  gepflegten Zahlen** der Zeile — und genau die wurden vergessen. **Die Assertion darauf
+  hat den Fehler nicht gefunden, sondern zementiert**: sie verglich gegen die Konstante
+  `'N5d'`, also gegen den alten Wert selbst. Grün gemeldet, falsch angezeigt.
+  **Regel daraus:** Ein von Hand gepflegter Wert darf nie gegen eine im Test wiederholte
+  Konstante geprüft werden, sondern nur gegen **seine Quelle**. Der Harness liest die
+  Planversion jetzt aus dem Kopfblock der Plandatei. Bitter und passend zugleich: Die
+  Zeile war gebaut worden, um Auseinanderdriften sichtbar zu machen — und drifteten
+  ausgerechnet ihre eigenen drei Zahlen.
+
 **v2.35 (2026-08-04):** **Baustein N6b gebaut und grün ausgeliefert.** Neu `symbol.js`
 (32 Katalogeinträge + Zeichnen auf der unveränderten `svglib.js`), `FUGENFORMEN` von 7 auf
 16 Fugenformen nach EN ISO 9692-1, **Liste 2.4 von 14 auf 13 Punkte** (Nahtvorbereitung

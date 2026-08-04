@@ -2495,8 +2495,26 @@ eq(s34OhneVersion.length, 0,
 eq(Kern.VERSION, '0.1.0-N1', 'N5d: i18n_kern.js hat jetzt eine Kennung');
 eq(Hilfe.VERSION, '0.1.0-N1', 'N5d: i18n_hilfe.js hat jetzt eine Kennung');
 eq(Kerb.VERSION, '0.1.0-N1', 'N5d: i18n_kerbfall.js hat jetzt eine Kennung');
-eq(Ui34.ETAPPE, 'N5d', 'N5d: ui.js nennt seinen Stand');
-ok(!!Ui34.VERSION && Ui34.VERSION !== '0.6.0', 'N5d: die ui-Kennung ist mitgewachsen');
+eq(Ui34.ETAPPE, 'N6b', 'N6b: ui.js nennt seinen Stand');
+eq(Ui34.VERSION, '0.8.0', 'N6b: die ui-Kennung ist mitgewachsen');
+
+/* --- DER FUND VOM 2026-08-04 -------------------------------------------
+   Die Versionszeile liest die Module selbst aus — aber Etappe und
+   Planversion sind von Hand gepflegt, und genau die blieben nach N6b auf
+   N5d/2.32 stehen. Die Assertion darauf hatte den ALTEN Wert festgeschrieben
+   und meldete gruen. Gefunden hat es Dieter am Handy.
+   Ab jetzt prueft der Harness gegen die PLANDATEI selbst: die Zahl in ui.js
+   muss die sein, die im Kopf von Schweissnaht-1.md steht. Damit kann sie
+   nicht mehr unbemerkt zurueckbleiben. */
+var s34PlanPfad = __dirname + '/Schweißnaht-1.md';
+ok(fsU.existsSync(s34PlanPfad),
+   'N6b: die Plandatei liegt neben dem Code — sonst ist der Abgleich nicht moeglich');
+var s34PlanTxt = fsU.existsSync(s34PlanPfad) ? fsU.readFileSync(s34PlanPfad, 'utf8') : '';
+var s34PlanNr = (s34PlanTxt.match(/Plan-Version\s*:\s*([0-9]+\.[0-9]+)/) || [])[1] || null;
+ok(!!s34PlanNr, 'N6b: die Planversion ist aus dem Kopfblock lesbar');
+eq(Ui34.PLAN, s34PlanNr,
+   'N6b: die Planversion in ui.js ist DIESELBE wie im Kopf der Plandatei (ui: ' +
+   Ui34.PLAN + ', Plan: ' + s34PlanNr + ')');
 
 /* --- 2) EXC schlaegt die Bewertungsgruppe vor (5.1-1) ------------------- */
 ok(Opt34.istVorschlagsZiel('iso5817'), 'N5d: die Bewertungsgruppe ist ein Vorschlagsziel');

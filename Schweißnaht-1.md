@@ -16,7 +16,7 @@
 > gelöscht** werden — der Inhalt steht jetzt in 4.11 und in der Historie.
 
 ```
-Plan-Version : 2.35 · Stand 2026-08-04
+Plan-Version : 2.36 · Stand 2026-08-04
 Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                N2c (Nahtbild-Grafik), N3 (Spannungen + beide Welten),
                N4 (Rechenweg) und **N5 VOLLSTÄNDIG** — N5a (UI-Grundgerüst),
@@ -40,7 +40,7 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                  **4.11 (symbol.js)**.
                Große Bausteine (N5, N8, N13, N14) werden in ETAPPEN gebaut — Regel in
                Kickoff-Punkt 5c, Etappen in Abschnitt 5.2.
-Basislinie   : 1135 Assertions · DOM-Smokes 537 (voll) + 538 (test) · i18n-Parität 0 Abweichungen
+Basislinie   : 1138 Assertions · DOM-Smokes 537 (voll) + 538 (test) · i18n-Parität 0 Abweichungen
                (VERBINDLICH. Basislinie darf nur WACHSEN — nie schrumpfen, nie gelockert werden.)
 Dateistand   : siehe Abschnitt 8.1 — dort steht, was fertig ist und was noch fehlt.
 ⚠️ SYNC       : Am 2026-08-03 lag im Projektordner eine **elf Versionen alte**
@@ -129,7 +129,7 @@ Einstiegssatz von Dieter: **„weiter mit N6b"**.
    schon zweimal Dateien verlorengegangen, beide Male hat diese Prüfung es gefunden.
 11. Arbeitsordner herstellen (Befehl unter Punkt 6 der Kickoff-Liste), dann
    `node test_naht.js`, `node dom_smoke_voll.js`, `node dom_smoke_test.js` laufen lassen
-   und die Basislinie aus dem Plan-Kopf bestätigen (**1135 / 537 / 538 · 0 Fehler**),
+   und die Basislinie aus dem Plan-Kopf bestätigen (**1138 / 537 / 538 · 0 Fehler**),
    **bevor** etwas gebaut wird. Weicht etwas ab, erst das klären.
    ⚠️ **Diese drei Läufe sind zugleich die Probe, ob Plandatei und Code zusammenpassen.**
    Steht im Kopfblock eine andere Basislinie als gemessen, ist eine der beiden Seiten alt —
@@ -534,6 +534,16 @@ aber **nichts davon ist sichtbar** — der Info-ⓘ nennt bisher nur die Edition
 - **Jede Ausgabe** (Druck, PDF, Word, `.dts`) trägt dieselbe Zeile (N11).
 - Eine Assertion prüft, dass die angezeigte Kennung mit den geladenen Modulen
   übereinstimmt — im DOM-Smoke Modul für Modul gegen `win.DTN…VERSION`.
+
+> ⚠️ **BEFUND AUS DER ABNAHME VON N6b (2026-08-04):** Die Zeile las die Module richtig
+> aus (14, alle mit Kennung) — aber **Etappe und Planversion blieben auf „N5d · Plan 2.32"
+> stehen**, weil sie von Hand gepflegt werden und beim Bau von N6b vergessen wurden.
+> **Schlimmer: die Assertion darauf hatte den alten Wert festgeschrieben und meldete
+> grün.** Gefunden hat es Dieter am Handy.
+> **Abhilfe, seit v2.36 verbindlich:** Der Harness liest die Planversion aus dem Kopfblock
+> DIESER DATEI und vergleicht sie mit `PLAN` in `ui.js`. Eine Assertion, die einen
+> Handwert gegen eine Konstante prüft, prüft nichts — sie muss gegen die **Quelle** prüfen.
+> `ETAPPE` und `VERSION` in `ui.js` gehören ab jetzt in die Abschlussliste jedes Bausteins.
 
 > **Offener Punkt für N11 (aus der Abnahme von N5d, 2026-08-03):** Die Zeile zeigt die
 > **Modulnamen**, nicht die **Dateinamen** — `data` statt `daten.js`, `options` statt
@@ -2046,7 +2056,7 @@ Formsache, und der Basislinien-Abgleich aus Kickoff-Punkt 11 ebenso wenig.
 **Erste Handlung im neuen Chat:** Vollständigkeit gegen die Tabelle oben prüfen
 (**13 Module**, `style.css`, beide HTMLs, **alle drei** DEV-ONLY-Dateien, dazu Plandatei und
 `Schweißnaht-Historie.md`), Arbeitsordner herstellen, die drei Testläufe starten.
-Melden müssen sie **1135 / 537 / 538 · 0 Fehler**. Weicht etwas ab, erst das klären —
+Melden müssen sie **1138 / 537 / 538 · 0 Fehler**. Weicht etwas ab, erst das klären —
 nicht bauen.
 
 **Was N6b überschreiben wird** (zur Vorwarnung, nicht als Auftrag): neu `symbol.js`,
@@ -2255,6 +2265,16 @@ Wörterbuch stehen. Neue Harness-Sektionen **S35** (Katalog), **S36** (Zeichnen)
 (Anbindung), neuer N6b-Durchklick im DOM-Smoke, Planabschnitt **4.11**, zwei Festlegungen
 in 9.2. Beide HTMLs binden jetzt 14 Module ein; S34 und der Smoke auf 14 nachgezogen.
 **Basislinie 984 → 1135 Assertions · Smokes 513/514 → 537/538 · i18n-Parität 0.**
+
+**v2.36 (2026-08-04):** **Nachbesserung aus der Abnahme von N6b.** Dieter hat am Handy
+gesehen, dass die Versionszeile „Programmstand **N5d** · Plan **2.32**" zeigte, obwohl
+alle 14 Module richtig gelistet waren: `VERSION`, `ETAPPE` und `PLAN` in `ui.js` wurden
+beim Bau von N6b nicht mitgezogen — und **die Assertion darauf hatte den alten Wert
+festgeschrieben und meldete grün**. Jetzt `0.8.0` / `N6b` / `2.36`; `PLAN` ist exportiert,
+und der Harness **liest die Planversion aus dem Kopfblock der Plandatei und vergleicht
+sie** — ein Handwert wird nicht mehr gegen eine Konstante geprüft, sondern gegen seine
+Quelle. Der Befund steht in 3.6. Geändert: `ui.js`, `test_naht.js`, `dom_smoke_voll.js`.
+**Basislinie 1135 → 1138 Assertions · Smokes unverändert 537/538.**
 **Nächster Schritt: N6b am Handy abnehmen.** `N6b_Vorlauf-Messwerte.md` kann danach
 gelöscht werden — ihr Inhalt steht in 4.11 und in der Historie.
 

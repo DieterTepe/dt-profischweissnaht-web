@@ -982,8 +982,8 @@ function lauf(edition) {
   /* Versionszeile im Info-ⓘ (Plan 3.6) — aus den geladenen Modulen gebaut. */
   d.byId.infoBtn.click();
   var n5dVz = d.byId.infoVersion.inhalt();
-  ok(/N5d/.test(n5dVz), 'N5d: der Info-Dialog nennt den Programmstand');
-  ok(/2\.32/.test(n5dVz), 'N5d: und die Planversion');
+  ok(/N6b/.test(n5dVz), 'N6b: der Info-Dialog nennt den AKTUELLEN Programmstand — nicht den vorigen');
+  ok(/2\.36/.test(n5dVz), 'N6b: und die aktuelle Planversion');
   var n5dInfo = s.version();
   ok(n5dInfo.n === 14,
      'N6b: die Zeile wird aus allen 14 geladenen Modulen gebaut (ist ' + n5dInfo.n + ')');
@@ -1002,9 +1002,9 @@ function lauf(edition) {
   ok(n5dAbw.length === 0,
      'N5d: JEDE angezeigte Kennung stimmt mit dem geladenen Modul ueberein (Plan 3.6)' +
      (n5dAbw.length ? ' — Abweichung: ' + n5dAbw.join(', ') : ''));
-  ok(/kern 0\.1\.0/.test(n5dMl) && /hilfe 0\.1\.0/.test(n5dMl) && /kerbfall 0\.1\.0/.test(n5dMl),
+  ok(/symbol 0\.1\.0-N6b/.test(n5dMl) && /kern 0\.1\.0/.test(n5dMl) && /hilfe 0\.1\.0/.test(n5dMl),
      'N5d: auch die drei nachgeruesteten i18n-Module erscheinen mit Kennung');
-  ok(/ui 0\.7\.0/.test(n5dMl), 'N5d: und die Oberflaeche selbst');
+  ok(/ui 0\.8\.0/.test(n5dMl), 'N6b: und die Oberflaeche selbst');
   d.byId.infoClose.click();
 
   /* Dreisprachig ist auch der neue Block. */

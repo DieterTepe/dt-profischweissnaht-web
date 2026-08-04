@@ -35,12 +35,12 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.7.0';
-  var ETAPPE = 'N5d';
+  var VERSION = '0.8.0';
+  var ETAPPE = 'N6b';
   /* Plan-Version, die zu diesem Stand gehoert. Sie ist die EINZIGE von Hand
      gepflegte Zahl der Versionszeile — alles andere kommt aus den geladenen
      Modulen selbst (Plan 3.6). */
-  var PLAN = '2.32';
+  var PLAN = '2.36';
   var SPRACHEN = ['de', 'en', 'pt'];
 
   /* Plan 3.1 (bindend): die Oberflaeche startet IMMER im dunklen Design —
@@ -1628,7 +1628,7 @@
     uebersetze();
 
     var sitzung = {
-      VERSION: VERSION, ETAPPE: ETAPPE,
+      VERSION: VERSION, ETAPPE: ETAPPE, PLAN: PLAN,
       sprache: function () { return S.sprache; },
       setSprache: setSprache,
       theme: function () { return S.theme; },
@@ -1674,6 +1674,7 @@
     NAME: 'ui',
     VERSION: VERSION,
     ETAPPE: ETAPPE,
+    PLAN: PLAN,
     SPRACHEN: SPRACHEN,
     START_THEME: START_THEME,
     START_SPRACHE: START_SPRACHE,
