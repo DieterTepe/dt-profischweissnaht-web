@@ -303,7 +303,8 @@
                  werkstoffgruppe: 'stahl', werkstoff: 'S235',
                  stossart: 't_stoss', nahtart: 'kehl_umlaufend',
                  nachweisverfahren: 'richtungsbezogen',
-                 profil: 'rohr_rechteck', kanten: 'rundum' },
+                 profil: 'rohr_rechteck', kanten: 'rundum',
+                 exc: 'EXC2' },
       felder: { b: 120, h: 80, t1: 6, r_ecke: 9, a: 4, N: 120000, Q: 0 } },
 
     { code: 'traeger', name: 'bsp_traeger',
@@ -311,7 +312,8 @@
                  werkstoffgruppe: 'stahl', werkstoff: 'S355',
                  stossart: 't_stoss', nahtart: 'kehl_doppel',
                  nachweisverfahren: 'richtungsbezogen',
-                 profil: 'i_profil', kanten: 'steg' },
+                 profil: 'i_profil', kanten: 'steg',
+                 exc: 'EXC2' },
       felder: { b: 200, h: 200, tw: 9, tf: 15, a: 4, N: 250000, Q: 0 } },
 
     { code: 'blech', name: 'bsp_blech',
@@ -319,9 +321,140 @@
                  werkstoffgruppe: 'stahl', werkstoff: 'S235',
                  stossart: 'ueberlappstoss', nahtart: 'kehl_doppel',
                  nachweisverfahren: 'richtungsbezogen',
-                 profil: 'blech', kanten: 'flanken' },
-      felder: { b: 80, t1: 10, a: 5, N: 150000, Q: 0 } }
+                 profil: 'blech', kanten: 'flanken',
+                 exc: 'EXC2' },
+      felder: { b: 80, t1: 10, a: 5, N: 150000, Q: 0 } },
+
+    { code: 'konsole', name: 'bsp_konsole',
+      merkmale: { belastung: 'kombiniert' },
+      auswahl: { welt: 'A', rechenrichtung: 'auslegung', lasteingabe: 'direkt',
+                 werkstoffgruppe: 'stahl', werkstoff: 'S355',
+                 stossart: 't_stoss', nahtart: 'kehl_doppel',
+                 nachweisverfahren: 'richtungsbezogen', a_rundung: 'ganze_mm',
+                 profil: 'i_profil', kanten: 'flansche_steg',
+                 exc: 'EXC2' },
+      felder: { b: 100, h: 200, tw: 8, tf: 12, N: 0, Q: 40000, M: 35000 } },
+
+    { code: 'rohr', name: 'bsp_rohr',
+      merkmale: { belastung: 'torsion' },
+      auswahl: { welt: 'A', rechenrichtung: 'nachweis', lasteingabe: 'direkt',
+                 werkstoffgruppe: 'stahl', werkstoff: 'S235',
+                 stossart: 't_stoss', nahtart: 'kehl_umlaufend',
+                 nachweisverfahren: 'richtungsbezogen',
+                 profil: 'rohr_rund', kanten: 'rundum',
+                 exc: 'EXC2' },
+      felder: { d: 114.3, t1: 6, a: 4, N: 0, Q: 0, T: 9000 } },
+
+    { code: 'stoss', name: 'bsp_stoss',
+      merkmale: { belastung: 'zug' },
+      auswahl: { welt: 'A', rechenrichtung: 'nachweis', lasteingabe: 'direkt',
+                 werkstoffgruppe: 'stahl', werkstoff: 'S235',
+                 stossart: 'stumpfstoss', nahtart: 'stumpf_v',
+                 nachweisverfahren: 'richtungsbezogen',
+                 profil: 'blech', kanten: 'eine_flanke',
+                 exc: 'EXC2' },
+      felder: { b: 150, t1: 12, a: 12, N: 280000, Q: 0 } },
+
+    { code: 'lasche_b', name: 'bsp_lasche_b',
+      merkmale: { belastung: 'zug' },
+      auswahl: { welt: 'B', rechenrichtung: 'nachweis', lasteingabe: 'direkt',
+                 werkstoffgruppe: 'stahl', werkstoff: 'S235',
+                 stossart: 'ueberlappstoss', nahtart: 'kehl_doppel',
+                 nahtguete: 'kehlnaht_allgemein', weltb_nahtgruppe: 'kehl_flach',
+                 lastfall: 'ruhend',
+                 profil: 'blech', kanten: 'flanken',
+                 exc: 'EXC2' },
+      felder: { b: 80, t1: 10, a: 5, N: 45000, Q: 0, S: 1.5 } },
+
+    { code: 'konsole_b', name: 'bsp_konsole_b',
+      merkmale: { belastung: 'kombiniert' },
+      /* NICHT 'kehl_umlaufend': die Vertraeglichkeitsregel (Plan 3.4) laesst
+         dazu nur 'rundum' zu — voellig zu Recht, eine umlaufende Naht laeuft
+         um. Hier wird um Flansche und Steg geschweisst, das ist eine
+         Doppelkehlnaht. Die Regel hat den Fehler beim Bauen gefangen. */
+      auswahl: { welt: 'B', rechenrichtung: 'nachweis', lasteingabe: 'direkt',
+                 werkstoffgruppe: 'stahl', werkstoff: 'S355',
+                 stossart: 't_stoss', nahtart: 'kehl_doppel',
+                 nahtguete: 'kehlnaht_allgemein',
+                 weltb_nahtgruppe: 'kehl_flach',
+                 lastfall: 'schwellend',
+                 profil: 'u_profil', kanten: 'flansche_steg',
+                 exc: 'EXC2' },
+      felder: { b: 80, h: 160, tw: 7, tf: 12, a: 4, a_steg: 4, a_flansch: 4,
+                N: 0, Q: 20000, M: 5000, S: 1.5 } },
+
+    { code: 'rhs_b', name: 'bsp_rhs_b',
+      merkmale: { belastung: 'zug' },
+      auswahl: { welt: 'B', rechenrichtung: 'nachweis', lasteingabe: 'direkt',
+                 werkstoffgruppe: 'stahl', werkstoff: 'S235',
+                 stossart: 't_stoss', nahtart: 'kehl_umlaufend',
+                 nahtguete: 'kehlnaht_allgemein',
+                 weltb_nahtgruppe: 'kehl_doppel_umlaufend',
+                 lastfall: 'wechselnd',
+                 profil: 'rohr_rechteck', kanten: 'rundum',
+                 exc: 'EXC2' },
+      felder: { b: 120, h: 80, t1: 6, r_ecke: 9, a: 4, N: 45000, Q: 0, S: 1.5 } },
+
+    { code: 'rohr_b', name: 'bsp_rohr_b',
+      merkmale: { belastung: 'torsion' },
+      auswahl: { welt: 'B', rechenrichtung: 'nachweis', lasteingabe: 'direkt',
+                 werkstoffgruppe: 'stahl', werkstoff: 'S235',
+                 stossart: 't_stoss', nahtart: 'kehl_umlaufend',
+                 nahtguete: 'kehlnaht_allgemein',
+                 weltb_nahtgruppe: 'kehl_doppel_umlaufend',
+                 lastfall: 'ruhend',
+                 profil: 'rohr_rund', kanten: 'rundum',
+                 exc: 'EXC2' },
+      felder: { d: 114.3, t1: 6, a: 4, N: 0, Q: 0, T: 6000, S: 1.5 } },
+
+    { code: 'bolzen_b', name: 'bsp_bolzen_b',
+      merkmale: { belastung: 'kombiniert' },
+      auswahl: { welt: 'B', rechenrichtung: 'auslegung', lasteingabe: 'direkt',
+                 werkstoffgruppe: 'stahl', werkstoff: 'S355',
+                 stossart: 't_stoss', nahtart: 'kehl_umlaufend',
+                 nahtguete: 'kehlnaht_allgemein',
+                 weltb_nahtgruppe: 'kehl_doppel_umlaufend',
+                 lastfall: 'ruhend', a_rundung: 'ganze_mm',
+                 profil: 'vollrund', kanten: 'rundum',
+                 exc: 'EXC2' },
+      felder: { d: 60, N: 0, Q: 8000, M: 1600, T: 1200, S: 1.5 } },
+
+    { code: 'stoss_b', name: 'bsp_stoss_b',
+      merkmale: { belastung: 'zug' },
+      auswahl: { welt: 'B', rechenrichtung: 'nachweis', lasteingabe: 'direkt',
+                 werkstoffgruppe: 'stahl', werkstoff: 'S235',
+                 stossart: 'stumpfstoss', nahtart: 'stumpf_v',
+                 nahtguete: 'durchgeschweisst_zug_geprueft',
+                 weltb_nahtgruppe: 'stumpf_mit_gegenlage',
+                 lastfall: 'ruhend',
+                 profil: 'blech', kanten: 'eine_flanke',
+                 exc: 'EXC2' },
+      felder: { b: 150, t1: 12, a: 12, N: 170000, Q: 0, S: 1.5 } }
   ];
+
+  /* KONTEXTBEZOGENE BEISPIELLISTE (Plan 3.2, gebaut in N7).
+     Gefiltert wird ueber die Auswahl, die das Beispiel ohnehin traegt — es
+     gibt KEINE zweite Merkmalsliste, die auseinanderlaufen koennte. Nur was
+     im Formular gar nicht auswaehlbar ist, steht als eigenes Merkmal da:
+     die Belastungsart. Passt nichts, werden alle gezeigt (Plan 3.2) —
+     eine leere Beispielliste waere eine Sackgasse (Plan 3.4). */
+  var BEISPIEL_FILTER = ['welt', 'werkstoffgruppe', 'nahtart'];
+
+  function beispieleFuer(zustand) {
+    zustand = zustand || {};
+    var passend = [], i, j, g, w, ok;
+    for (i = 0; i < BEISPIELE.length; i++) {
+      ok = true;
+      for (j = 0; j < BEISPIEL_FILTER.length; j++) {
+        g = BEISPIEL_FILTER[j];
+        w = zustand[g];
+        if (istLeer(w)) continue;                    /* nicht entschieden: kein Ausschluss */
+        if (BEISPIELE[i].auswahl[g] !== w) { ok = false; break; }
+      }
+      if (ok) passend.push(BEISPIELE[i]);
+    }
+    return passend.length ? passend : BEISPIELE.slice(0);
+  }
 
   /* --------------------------------------------------------------------- */
   /* VORSCHLAEGE (N5d, Plan 5.1-1) — eine Auswahl schlaegt eine andere vor.  */
@@ -542,6 +675,8 @@
     GRUPPEN: GRUPPEN,
     ZUSATZBEREICHE: ZUSATZBEREICHE,
     BEISPIELE: BEISPIELE,
+    BEISPIEL_FILTER: BEISPIEL_FILTER,
+    beispieleFuer: beispieleFuer,
     beispiel: beispiel,
     SYM_GRUND: SYM_GRUND, SYM_OBERFLAECHE: SYM_OBERFLAECHE, SYM_SICHERUNG: SYM_SICHERUNG,
     VORSCHLAEGE: VORSCHLAEGE,

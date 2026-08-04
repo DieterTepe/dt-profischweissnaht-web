@@ -699,15 +699,25 @@
           (jz[i].l - jz[i].l_eff_min) < (zugEng.l - zugEng.l_eff_min)) zugEng = jz[i];
     }
 
+    /* DIE a-GRENZEN SIND KEHLNAHT-REGELN (N7, 2026-08-04). Bei der
+       durchgeschweissten Stumpfnaht gelten sie nicht — dann liefert der
+       Solver a_min = null und a_max = null, und hier darf KEIN Haken
+       stehen. Ein gruener Haken auf eine Regel, die gar nicht greift,
+       behauptet eine Pruefung, die nicht stattgefunden hat; ein roter
+       waere der Widerspruch aus Plan 9.2 (gruene Ampel, roter Nachweis). */
+    var aGrenzen = (GR.a_grenzen_gelten !== false);
+
     S.add({ code: 'rw_s_a_min',
             formel: 'a \u2265 a_min',
             vorlage: '{0} \u2265 {1} mm',
             werte: [{ v: aKlein, nk: 2 }, { v: GR.a_min, nk: 1 }],
             ergebnis: GR.a_min, einheit: 'unit_mm', nk: 1,
             quelle: 'qu_ec3_1_8',
-            erfuellt: istZahl(aKlein) ? (aKlein >= GR.a_min - 1e-9) : null,
-            hinweis: (istZahl(aKlein) && aKlein < GR.a_min - 1e-9)
-                     ? 'msg_sv_a_unter_amin' : null });
+            erfuellt: (aGrenzen && istZahl(aKlein) && istZahl(GR.a_min))
+                   ? (aKlein >= GR.a_min - 1e-9) : null,
+            hinweis: !aGrenzen ? 'msg_sv_a_grenzen_stumpf_voll'
+                   : ((istZahl(aKlein) && istZahl(GR.a_min) && aKlein < GR.a_min - 1e-9)
+                     ? 'msg_sv_a_unter_amin' : null) });
 
     S.add({ code: 'rw_s_a_max',
             formel: 'a \u2264 a_max = 0,7 \u00b7 t_min',
@@ -715,10 +725,11 @@
             werte: [{ v: aGross, nk: 2 }, { v: aMaxKlein, nk: 2 }],
             ergebnis: aMaxKlein, einheit: 'unit_mm',
             quelle: 'qu_praxis',
-            erfuellt: (istZahl(aGross) && istZahl(aMaxKlein))
+            erfuellt: (aGrenzen && istZahl(aGross) && istZahl(aMaxKlein))
                    ? (aGross <= aMaxKlein + 1e-9) : null,
-            hinweis: (istZahl(aGross) && istZahl(aMaxKlein) && aGross > aMaxKlein + 1e-9)
-                     ? 'msg_sv_a_ueber_amax' : null });
+            hinweis: !aGrenzen ? 'msg_sv_a_grenzen_stumpf_voll'
+                   : ((istZahl(aGross) && istZahl(aMaxKlein) && aGross > aMaxKlein + 1e-9)
+                     ? 'msg_sv_a_ueber_amax' : null) });
 
     /* BEWUSST KEIN Nachweis-Haken (erfuellt bleibt null), sondern eine
        WARNUNG — Dieters fachliche Entscheidung vom 2026-08-03, Plan 5.1-0.

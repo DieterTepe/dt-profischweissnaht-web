@@ -632,9 +632,13 @@ function lauf(edition) {
      Die Beispielauswahl ist jetzt verdrahtet. Geprueft wird, dass die Liste
      steht, dass ein Beispiel wirklich Auswahl UND Felder fuellt, dass vorher
      geleert wird und dass der geladene Fall die Pruefung besteht. */
-  ok(d.byId.presetSel.children.length === 4,
-     'N5c-1: die Beispielliste hat einen Platzhalter und drei Beispiele');
-  ok(s.beispiele().length === 3, 'N5c-1: und die Sitzung kennt genau diese drei');
+  /* Seit N7 sind es zwoelf, und die Liste ist KONTEXTBEZOGEN (Plan 3.2):
+     im leeren Startzustand steht alles da, sobald links etwas gewaehlt ist,
+     schrumpft sie. */
+  ok(d.byId.presetSel.children.length === 13,
+     'N7: die Beispielliste hat einen Platzhalter und zwoelf Beispiele (ist ' +
+     d.byId.presetSel.children.length + ')');
+  ok(s.beispiele().length === 12, 'N7: und die Sitzung kennt genau diese zwoelf');
 
   d.byId.dtLabel.value = 'Rest aus einer alten Rechnung';
   s.beispielLaden('rhs');
@@ -653,11 +657,86 @@ function lauf(edition) {
   ok(bpr && bpr.ok === true, 'N5c-1: das geladene Beispiel besteht die Pruefung' +
      (bpr && bpr.fehler.length ? ' — offen: ' + JSON.stringify(bpr.fehler) : ''));
 
-  var bsp3 = ['rhs', 'traeger', 'blech'];
-  for (i = 0; i < bsp3.length; i++) {
-    s.beispielLaden(bsp3[i]);
-    ok(s.pruefen().ok === true, 'N5c-1: Beispiel ist vollstaendig und rechenbar: ' + bsp3[i]);
+  /* ALLE ZWOELF werden an der echten Oberflaeche durchgeklickt — Laden,
+     Pruefen, Rechnen. Das ist die Probe, dass ein Beispiel nicht nur als
+     Datensatz stimmt, sondern auch durch das Formular passt. */
+  var bspAlle = [], bspI;
+  for (bspI = 0; bspI < Opt.BEISPIELE.length; bspI++) bspAlle.push(Opt.BEISPIELE[bspI].code);
+  ok(bspAlle.length === 12, 'N7: zwoelf Beispiele werden durchgeklickt');
+  for (i = 0; i < bspAlle.length; i++) {
+    s.beispielLaden(bspAlle[i]);
+    var bpAll = s.pruefen();
+    ok(bpAll && bpAll.ok === true, 'N7: Beispiel ist vollstaendig und rechenbar: ' + bspAlle[i] +
+       (bpAll && bpAll.fehler.length ? ' — offen: ' + JSON.stringify(bpAll.fehler) : ''));
+    var beAll = s.rechnen();
+    ok(beAll && beAll.ok === true, 'N7: und es rechnet an der Oberflaeche durch: ' + bspAlle[i]);
+    if (beAll && beAll.ok) {
+      ok(beAll.ampel === 'gruen', 'N7: mit gruener Ampel: ' + bspAlle[i]);
+      ok(beAll.warnungen.length === 0, 'N7: und ohne Warnung: ' + bspAlle[i]);
+    }
+    ok(d.byId.grafikSvg && d.byId.grafikSvg.inhalt().indexOf('<svg') >= 0,
+       'N7: das Nahtbild wird gezeichnet: ' + bspAlle[i]);
   }
+  s.leeren();
+
+  /* ---- KONTEXTBEZOGENE BEISPIELLISTE N7 (Plan 3.2) --------------------
+     Die Liste richtet sich nach dem, was links gewaehlt ist. Passt nichts,
+     stehen wieder alle da — eine leere Liste waere eine Sackgasse (3.4). */
+  d.byId.sel_welt.value = 'A';
+  s.aktualisiere();
+  ok(s.beispiele().length === 6, 'N7: Welt A laesst sechs Beispiele stehen (ist ' + s.beispiele().length + ')');
+  ok(d.byId.presetSel.children.length === 7, 'N7: und der Kasten zeigt genau die');
+  d.byId.sel_welt.value = 'B';
+  s.aktualisiere();
+  ok(s.beispiele().length === 6, 'N7: Welt B ebenso');
+  d.byId.sel_welt.value = 'A';
+  d.byId.sel_werkstoffgruppe.value = 'alu';
+  s.aktualisiere();
+  ok(s.beispiele().length === 12,
+     'N7: passt nichts, stehen wieder alle zwoelf da statt einer leeren Liste');
+  s.leeren();
+  ok(s.beispiele().length === 12, 'N7: nach dem Leeren stehen wieder alle da');
+
+  /* Das geladene Beispiel bleibt in der Liste, auch wenn die Auswahl
+     inzwischen weggedreht wurde — sonst stuende der Kasten auf "waehlen",
+     waehrend die Felder voll sind. */
+  s.beispielLaden('stoss');
+  d.byId.sel_welt.value = 'B';
+  s.aktualisiere();
+  var nochDrin = false;
+  for (i = 0; i < d.byId.presetSel.children.length; i++) {
+    if (d.byId.presetSel.children[i].value === 'stoss') nochDrin = true;
+  }
+  ok(nochDrin === true, 'N7: das geladene Beispiel verschwindet nicht aus der Liste');
+  s.leeren();
+
+  /* ---- DIE VIER BEFUNDE AN DER OBERFLAECHE N7 -------------------------
+     Auslegung und Stumpfnaht waren bis N7 ueber das Formular gar nicht
+     erreichbar. Hier wird beides angeklickt. */
+  s.beispielLaden('konsole');
+  ok(d.byId.fld_a.value === '', 'N7: der Auslegungsfall traegt kein a-Mass — es wird gesucht');
+  var ergAus = s.rechnen();
+  ok(ergAus && ergAus.ok === true, 'N7 Befund 1: die Auslegung rechnet an der Oberflaeche durch');
+  ok(ergAus && ergAus.auslegung && ergAus.auslegung.a_gewaehlt > 0,
+     'N7 Befund 1: und nennt ein gewaehltes a-Mass');
+  ok(d.byId.grafikSvg && d.byId.grafikSvg.inhalt().indexOf('<svg') >= 0,
+     'N7 Befund 4: und das Nahtbild bleibt nicht leer');
+
+  s.beispielLaden('stoss');
+  var ergSt = s.rechnen();
+  ok(ergSt && ergSt.ok === true, 'N7 Befund 2: die durchgeschweisste Stumpfnaht rechnet');
+  ok(ergSt && ergSt.warnungen.length === 0,
+     'N7 Befund 2: ohne die falsche Warnung a > 0,7*t');
+  ok(ergSt && ergSt.erfuellt === true && s.rechenweg().nachweis_ok === true,
+     'N7 Befund 2: Ampel und Rechenweg sagen dasselbe');
+
+  /* Die Ausfuehrungsklasse kommt mit, die Bewertungsgruppe ueber den
+     Vorschlag aus N5d — nicht aus dem Beispiel. */
+  var zAusf = s.zustand();
+  ok(!!zAusf.exc, 'N7: das Beispiel belegt die Ausfuehrungsklasse');
+  ok(!!zAusf.iso5817, 'N7: und die Bewertungsgruppe steht ueber den Vorschlag daneben');
+  ok(s.istSelbstGewaehlt('iso5817') === false,
+     'N7: sie ist vorgeschlagen, nicht selbst gewaehlt — bleibt also ueberschreibbar');
   s.leeren();
 
   /* ---- RECHNEN UND ERGEBNIS N5c-1 (Plan 5.1, Schritte 4 und 5) --------
@@ -982,8 +1061,12 @@ function lauf(edition) {
   /* Versionszeile im Info-ⓘ (Plan 3.6) — aus den geladenen Modulen gebaut. */
   d.byId.infoBtn.click();
   var n5dVz = d.byId.infoVersion.inhalt();
-  ok(/N6b/.test(n5dVz), 'N6b: der Info-Dialog nennt den AKTUELLEN Programmstand — nicht den vorigen');
-  ok(/2\.36/.test(n5dVz), 'N6b: und die aktuelle Planversion');
+  /* NICHT gegen eine feste Zeichenkette pruefen — genau so meldete diese
+     Stelle in v2.36 gruen, waehrend am Handy ein alter Stand stand. Geprueft
+     wird gegen die Kennungen, die ui.js selbst traegt. */
+  ok(n5dVz.indexOf(UI.ETAPPE) >= 0,
+     'N7: der Info-Dialog nennt den Programmstand, den ui.js selbst traegt (' + UI.ETAPPE + ')');
+  ok(n5dVz.indexOf(UI.PLAN) >= 0, 'N7: und die Planversion aus ui.js (' + UI.PLAN + ')');
   var n5dInfo = s.version();
   ok(n5dInfo.n === 14,
      'N6b: die Zeile wird aus allen 14 geladenen Modulen gebaut (ist ' + n5dInfo.n + ')');
@@ -1004,7 +1087,8 @@ function lauf(edition) {
      (n5dAbw.length ? ' — Abweichung: ' + n5dAbw.join(', ') : ''));
   ok(/symbol 0\.1\.0-N6b/.test(n5dMl) && /kern 0\.1\.0/.test(n5dMl) && /hilfe 0\.1\.0/.test(n5dMl),
      'N5d: auch die drei nachgeruesteten i18n-Module erscheinen mit Kennung');
-  ok(/ui 0\.8\.0/.test(n5dMl), 'N6b: und die Oberflaeche selbst');
+  ok(n5dMl.indexOf('ui ' + UI.VERSION) >= 0,
+     'N7: und die Oberflaeche mit ihrer eigenen Kennung (ui ' + UI.VERSION + ')');
   d.byId.infoClose.click();
 
   /* Dreisprachig ist auch der neue Block. */

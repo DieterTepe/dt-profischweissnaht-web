@@ -2157,13 +2157,28 @@ sek('S31 · N5c-1 Beispiele — vollstaendig, rechenbar und nachgerechnet');
    Ein Beispiel, das warnt oder nicht traegt, waere als Einstieg wertlos. */
 
 var S31_MASSE = ['b', 'h', 'd', 'tw', 'tf', 't1', 'r_ecke'];
+/* ALLE ZWOELF sind einzeln nachgerechnet — die Zahlen unten sind gemessen,
+   nicht geschaetzt. Wer ein Beispiel aendert, sieht es hier sofort. */
 var S31_SOLL = {
-  rhs:     { n_seg: 4, l: 328, eta: 0.359 },
-  traeger: { n_seg: 2, l: 324, eta: 0.626 },
-  blech:   { n_seg: 2, l: 140, eta: 0.842 }
+  rhs:       { n_seg: 4,  l: 328,   eta: 0.359 },
+  traeger:   { n_seg: 2,  l: 324,   eta: 0.626 },
+  blech:     { n_seg: 2,  l: 140,   eta: 0.842 },
+  konsole:   { n_seg: 12, l: 764,   eta: 0.837, a_erf: 2.504, a_gewaehlt: 3 },
+  rohr:      { n_seg: 1,  l: 359.1, eta: 0.545 },
+  stoss:     { n_seg: 1,  l: 126,   eta: 0.714 },
+  lasche_b:  { n_seg: 2,  l: 140,   eta: 0.714 },
+  konsole_b: { n_seg: 8,  l: 594,   eta: 0.673 },
+  rhs_b:     { n_seg: 4,  l: 328,   eta: 0.686 },
+  rohr_b:    { n_seg: 1,  l: 359.1, eta: 0.540 },
+  bolzen_b:  { n_seg: 1,  l: 188.5, eta: 0.846, a_erf: 3.356, a_gewaehlt: 4 },
+  stoss_b:   { n_seg: 1,  l: 126,   eta: 0.703 }
 };
 
-eq(Options.BEISPIELE.length, 3, 'N5c-1: es gibt genau drei Beispiele');
+/* Aus drei sind mit N7 zwoelf geworden — sechs je Bemessungswelt. Die Zahl
+   steht hier NICHT mehr fest verdrahtet, sondern wird gegen die Aufteilung
+   geprueft: eine festgeschriebene Zahl war schon einmal der Grund, warum
+   eine Assertion gruen meldete und trotzdem nichts pruefte (Plan 3.6, v2.36). */
+eq(Options.BEISPIELE.length, 12, 'N7: es gibt zwoelf Beispiele');
 ok(typeof Options.beispiel === 'function', 'N5c-1: und einen benannten Zugriff darauf');
 ok(Options.beispiel('gibtesnicht') === null,
    'N5c-1: ein unbekanntes Beispiel liefert null, keinen Notbehelf');
@@ -2229,7 +2244,7 @@ for (s31i = 0; s31i < Options.BEISPIELE.length; s31i++) {
 /* Die Ausnutzung ist bewusst gestaffelt: wer die drei durchklickt, sieht
    einmal reichlich Reserve und einmal, wie es eng wird. */
 ok(S31_SOLL.rhs.eta < S31_SOLL.traeger.eta && S31_SOLL.traeger.eta < S31_SOLL.blech.eta,
-   'N5c-1: die drei Beispiele sind in der Ausnutzung gestaffelt');
+   'N5c-1: die drei Beispiele der ersten Stunde sind in der Ausnutzung gestaffelt');
 
 /* Dreisprachigkeit der Beispielnamen — sonst stuende die Liste auf EN leer. */
 var s31Fehlt = [];
@@ -2264,7 +2279,12 @@ for (s32i = 0; s32i < Options.BEISPIELE.length; s32i++) {
     var roh = Weg.ausErgebnis(erg, ein);
 
     ok(roh.ok === true, wo + 'der Rechenweg entsteht');
-    eq(roh.abschnitte.length, 10, wo + 'er hat zehn Abschnitte');
+    /* Der AUSLEGUNGSFALL hat einen Abschnitt mehr — 'rw_ab_auslegung' kommt
+       hinzu (Plan 4.9, elf Abschnitte in fester Reihenfolge). Vor N7 gab es
+       kein Auslegungsbeispiel, deshalb stand hier eine feste Zehn. */
+    eq(roh.abschnitte.length,
+       bsp.auswahl.rechenrichtung === 'auslegung' ? 11 : 10,
+       wo + 'er hat die erwartete Zahl Abschnitte');
 
     /* --- Die zwei Haekchenarten sind zwei verschiedene Dinge ------------ */
     ok(roh.n_haken > 0, wo + 'es gibt Rechenproben (' + roh.n_haken + ')');
@@ -2307,7 +2327,8 @@ for (s32i = 0; s32i < Options.BEISPIELE.length; s32i++) {
     }
 
     /* --- Nahtbild-Grafik ------------------------------------------------ */
-    var bild = Bild.ausProfil(ein.profil_eingabe, { sprache: 'de' });
+    var bild = Bild.ausProfil(erg.nahtbild.profil_eingabe || ein.profil_eingabe,
+                              { sprache: 'de' });
     ok(bild.ok === true, wo + 'das Nahtbild wird gezeichnet');
     ok(typeof bild.svg === 'string' && bild.svg.indexOf('<svg') >= 0, wo + 'und ist wirklich ein SVG');
     eq(bild.n_seg, erg.nahtbild.n_seg, wo + 'es zeigt so viele Abschnitte, wie gerechnet wurden');
@@ -2495,9 +2516,6 @@ eq(s34OhneVersion.length, 0,
 eq(Kern.VERSION, '0.1.0-N1', 'N5d: i18n_kern.js hat jetzt eine Kennung');
 eq(Hilfe.VERSION, '0.1.0-N1', 'N5d: i18n_hilfe.js hat jetzt eine Kennung');
 eq(Kerb.VERSION, '0.1.0-N1', 'N5d: i18n_kerbfall.js hat jetzt eine Kennung');
-eq(Ui34.ETAPPE, 'N6b', 'N6b: ui.js nennt seinen Stand');
-eq(Ui34.VERSION, '0.8.0', 'N6b: die ui-Kennung ist mitgewachsen');
-
 /* --- DER FUND VOM 2026-08-04 -------------------------------------------
    Die Versionszeile liest die Module selbst aus — aber Etappe und
    Planversion sind von Hand gepflegt, und genau die blieben nach N6b auf
@@ -2519,6 +2537,18 @@ ok(!!s34PlanNr, 'N6b: das Kopffeld Codestand ist aus der Plandatei lesbar');
 eq(Ui34.PLAN, s34PlanNr,
    'N6b: die Planversion in ui.js ist DIESELBE wie im Kopffeld Codestand (ui: ' +
    Ui34.PLAN + ', Plan: ' + s34PlanNr + ')');
+
+/* AUCH ETAPPE UND VERSION WERDEN GEGEN IHRE QUELLE GEPRUEFT (N7).
+   In v2.36 hatte hier eine feste Zeichenkette gestanden — sie meldete gruen,
+   waehrend die Versionszeile am Handy einen zwei Bausteine alten Stand zeigte.
+   Eine Assertion, die einen Handwert gegen eine Konstante prueft, prueft
+   nichts. Das Kopffeld `Codestand` traegt alle drei Angaben, also wird auch
+   gegen alle drei verglichen. */
+var s34Cod = (s34PlanTxt.match(/Codestand\s*:\s*Plan\s+([0-9]+\.[0-9]+)\s*\u00b7\s*ui\s+([0-9.]+)\s*\u00b7\s*(\S+)/) || []);
+ok(s34Cod.length === 4, 'N7: das Kopffeld Codestand nennt Planversion, ui-Kennung und Etappe');
+eq(Ui34.VERSION, s34Cod[2], 'N7: die ui-Kennung ist dieselbe wie im Kopffeld Codestand');
+eq(Ui34.ETAPPE, s34Cod[3], 'N7: und die Etappe ebenfalls');
+
 
 /* --- 2) EXC schlaegt die Bewertungsgruppe vor (5.1-1) ------------------- */
 ok(Opt34.istVorschlagsZiel('iso5817'), 'N5d: die Bewertungsgruppe ist ein Vorschlagsziel');
@@ -3045,6 +3075,228 @@ ok(Data.fugenformen().length === 16 && Data.nahtvorbereitung('stumpf_u').radius 
    'N6b: weil die Tabelle sie ersetzt — nachgeprueft an der U-Fuge');
 ok(Kern.has('ng_pruefumfang_zfp') && Kern.has('ng_toleranzen') && Kern.has('ng_herstellerqualifikation'),
    'N6b: die drei verbliebenen Luecken stehen unveraendert');
+
+sek('S38 · N7 Beispielkatalog — zwoelf Faelle, beide Welten, vier Reparaturen');
+
+/* N7 hat den Katalog von drei auf zwoelf gebracht — sechs je Bemessungswelt.
+   Beim Durchrechnen sind VIER Fehler aufgefallen, die es seit N5c gab und die
+   nie jemand gesehen hat, weil kein Beispiel den Auslegungs- und den
+   Stumpfnahtpfad je beruehrt hatte. Genau davor warnt Plan 9.2: ein Beispiel
+   darf nie gewaehlt werden, um einem Verhalten auszuweichen. Die Anker unten
+   halten alle vier fest. */
+
+var s38O = Options, s38V = Valid, s38S = Solver, s38W = Weg, s38B = Bild;
+
+/* --- 1) Der Katalog: Aufteilung und Merkmale ---------------------------- */
+var s38A = 0, s38Bz = 0, s38i, s38j, s38b;
+for (s38i = 0; s38i < s38O.BEISPIELE.length; s38i++) {
+  if (s38O.BEISPIELE[s38i].auswahl.welt === 'A') s38A++;
+  if (s38O.BEISPIELE[s38i].auswahl.welt === 'B') s38Bz++;
+}
+eq(s38A, 6, 'N7: sechs Beispiele in Welt A');
+eq(s38Bz, 6, 'N7: sechs Beispiele in Welt B');
+eq(s38A + s38Bz, s38O.BEISPIELE.length, 'N7: und keins ohne Welt');
+
+/* Kein Merkmal darf doppeln, was ohnehin in der Auswahl steht — sonst gaebe
+   es zwei Quellen fuer dieselbe Angabe (Plan 3.4, eine Quelle je Sache). */
+var s38Dopp = [];
+for (s38i = 0; s38i < s38O.BEISPIELE.length; s38i++) {
+  s38b = s38O.BEISPIELE[s38i];
+  if (!s38b.merkmale) continue;
+  for (var s38m in s38b.merkmale) {
+    if (!Object.prototype.hasOwnProperty.call(s38b.merkmale, s38m)) continue;
+    if (Object.prototype.hasOwnProperty.call(s38b.auswahl, s38m)) s38Dopp.push(s38b.code + '/' + s38m);
+  }
+}
+eq(s38Dopp.length, 0, 'N7: kein Merkmal doppelt eine Auswahl (' + s38Dopp.join(',') + ')');
+
+/* --- 2) Jeder Rechenpfad ist mindestens einmal belegt (Plan 2.11) ------- */
+function s38Hat(pruef) {
+  for (var i = 0; i < s38O.BEISPIELE.length; i++) if (pruef(s38O.BEISPIELE[i])) return true;
+  return false;
+}
+ok(s38Hat(function (b) { return b.auswahl.rechenrichtung === 'auslegung' && b.auswahl.welt === 'A'; }),
+   'N7: die Auslegung ist in Welt A belegt');
+ok(s38Hat(function (b) { return b.auswahl.rechenrichtung === 'auslegung' && b.auswahl.welt === 'B'; }),
+   'N7: und in Welt B');
+ok(s38Hat(function (b) { return Solver.nahtTyp(b.auswahl.nahtart) === 'stumpf_voll' && b.auswahl.welt === 'A'; }),
+   'N7: die durchgeschweisste Stumpfnaht ist in Welt A belegt');
+ok(s38Hat(function (b) { return Solver.nahtTyp(b.auswahl.nahtart) === 'stumpf_voll' && b.auswahl.welt === 'B'; }),
+   'N7: und in Welt B');
+ok(s38Hat(function (b) { return b.auswahl.profil === 'rohr_rund'; }), 'N7: die Kreisnaht ist belegt');
+ok(s38Hat(function (b) { return b.auswahl.profil === 'vollrund'; }), 'N7: das Vollprofil ebenso');
+ok(s38Hat(function (b) { return b.felder.T > 0; }), 'N7: Torsion kommt vor');
+ok(s38Hat(function (b) { return b.felder.M > 0; }), 'N7: Biegung ebenso');
+var s38LF = ['ruhend', 'schwellend', 'wechselnd'];
+for (s38i = 0; s38i < s38LF.length; s38i++) {
+  (function (lf) {
+    ok(s38Hat(function (b) { return b.auswahl.lastfall === lf; }),
+       'N7: der Lastfall ' + lf + ' ist belegt');
+  }(s38LF[s38i]));
+}
+
+/* --- 3) Alle zwoelf tragen, warnen nicht und pruefen sich selbst -------- */
+for (s38i = 0; s38i < s38O.BEISPIELE.length; s38i++) {
+  (function (bsp) {
+    var wo = 'N7 [' + bsp.code + ']: ';
+    var w = s38V.standardwerte(bsp.auswahl), k;
+    for (k in bsp.felder) if (Object.prototype.hasOwnProperty.call(bsp.felder, k)) w[k] = bsp.felder[k];
+    var re = s38V.rechenEingabe(w, bsp.auswahl);
+    ok(re.ok === true, wo + 'die Uebersetzung ins Rechenformat gelingt');
+    var erg = s38S.rechne(re.eingabe);
+    ok(erg.ok === true, wo + 'und der Solver rechnet');
+    if (!erg.ok) return;
+    eq(erg.warnungen.length, 0, wo + 'KEINE Warnung — ein Beispiel muss sauber sein');
+    ok(erg.erfuellt === true, wo + 'der Nachweis traegt');
+    eq(erg.ampel, 'gruen', wo + 'und die Ampel ist gruen');
+    var rw = s38W.ausErgebnis(erg, re.eingabe);
+    ok(rw.selbstpruefung_ok === true, wo + 'alle Rechenproben gehen auf');
+    ok(rw.nachweis_ok === true, wo + 'und der Rechenweg sagt dasselbe wie die Ampel');
+    /* AMPEL UND RECHENWEG MUESSEN DASSELBE SAGEN (Plan 9.2) — das war der
+       Kern von zwei der vier Befunde. */
+    eq(erg.erfuellt, rw.nachweis_ok, wo + 'Ampel und Rechenweg stimmen ueberein');
+    /* Das Nahtbild wird aus dem gezeichnet, WOMIT gerechnet wurde. */
+    var bild = s38B.ausProfil(erg.nahtbild.profil_eingabe, { sprache: 'de' });
+    ok(bild.ok === true, wo + 'das Nahtbild entsteht auch im Auslegungsfall');
+    eq(bild.n_seg, erg.nahtbild.n_seg, wo + 'und zeigt so viele Abschnitte wie gerechnet');
+  }(s38O.BEISPIELE[s38i]));
+}
+
+/* --- 4) BEFUND 1: die Auslegung ist ueber das Formular erreichbar ------- */
+/* Vorher scheiterte JEDER Auslegungsfall mit Profileingabe an
+   'msg_profil_a_fehlt', weil 'a' im Auslegungsfall kein Pflichtfeld ist,
+   profil.baue() aber eins verlangt. */
+var s38Aus = s38O.beispiel('konsole');
+var s38AusW = s38V.standardwerte(s38Aus.auswahl);
+for (var s38k1 in s38Aus.felder) s38AusW[s38k1] = s38Aus.felder[s38k1];
+ok(s38AusW.a === undefined, 'N7: der Auslegungsfall traegt gar kein a-Mass — es wird gesucht');
+var s38AusE = s38S.rechne(s38V.rechenEingabe(s38AusW, s38Aus.auswahl).eingabe);
+ok(s38AusE.ok === true, 'N7 Befund 1: die Auslegung rechnet trotzdem durch');
+ok(s38AusE.auslegung && s38AusE.auslegung.a_erf > 0, 'N7 Befund 1: und liefert ein erforderliches a');
+
+/* --- 5) BEFUND 3: das Ergebnis haengt NICHT am Bezugsmass --------------- */
+/* Der Endkraterabzug 2*a haengt selbst am a-Mass, also haengt die Geometrie
+   daran. Gemessen vor der Reparatur: a_erf 1,6931 aus Bezug 3 gegen 1,8628
+   aus Bezug 10 — rund 10 % Unterschied. Ein Ergebnis, das vom Rechenanfang
+   abhaengt, ist kein Ergebnis. */
+var s38Bez = [1, 3, 5, 10, 12], s38Erf = [];
+for (s38i = 0; s38i < s38Bez.length; s38i++) {
+  var s38w2 = {}, s38k2;
+  for (s38k2 in s38AusW) s38w2[s38k2] = s38AusW[s38k2];
+  s38w2.a = s38Bez[s38i];
+  var s38e2 = s38S.rechne(s38V.rechenEingabe(s38w2, s38Aus.auswahl).eingabe);
+  ok(s38e2.ok === true, 'N7: Auslegung mit Bezugsmass ' + s38Bez[s38i] + ' rechnet');
+  if (s38e2.ok) s38Erf.push(s38e2.auslegung.a_erf);
+}
+var s38Spanne = Math.max.apply(null, s38Erf) - Math.min.apply(null, s38Erf);
+ok(s38Spanne < 1e-6,
+   'N7 Befund 3: fuenf verschiedene Bezugsmasse liefern dasselbe a_erf (Spanne ' +
+   s38Spanne.toExponential(2) + ')');
+ok(s38AusE.nahtbild.endkrater_abzug > 0,
+   'N7 Befund 3: und der Fall hat wirklich einen Endkraterabzug — sonst pruefte er nichts');
+
+/* --- 6) BEFUND 2: die a-Grenzen sind Kehlnahtregeln --------------------- */
+/* Bei der durchgeschweissten Naht ist a = t die Definition; a <= 0,7*t waere
+   dort IMMER verletzt. Dieters Entscheidung 2026-08-04: ausgenommen ist
+   ausschliesslich die durchgeschweisste Naht — die teilweise
+   durchgeschweisste (HV/HY/DHY) bleibt drin. */
+function s38Stumpf(nahtart, stossart, t, a, N) {
+  var au = { welt: 'A', rechenrichtung: 'nachweis', lasteingabe: 'direkt',
+             werkstoffgruppe: 'stahl', werkstoff: 'S235',
+             stossart: stossart, nahtart: nahtart,
+             nachweisverfahren: 'richtungsbezogen',
+             profil: 'blech', kanten: 'eine_flanke' };
+  var w = { gammaM2: 1.25, b: 150, t1: t, a: a, N: N, Q: 0 };
+  return s38S.rechne(s38V.rechenEingabe(w, au).eingabe);
+}
+var s38SV = s38Stumpf('stumpf_v', 'stumpfstoss', 12, 12, 50000);
+ok(s38SV.ok === true, 'N7 Befund 2: die durchgeschweisste Naht mit a = t rechnet');
+eq(s38SV.warnungen.length, 0, 'N7 Befund 2: und warnt nicht mehr ueber a > 0,7*t');
+ok(s38SV.grenzen.a_grenzen_gelten === false, 'N7 Befund 2: die a-Grenzen sind dort ausgesetzt');
+eq(s38SV.grenzen.a_min, null, 'N7 Befund 2: es steht auch kein a_min daneben');
+var s38SVw = s38W.ausErgebnis(s38SV, null);
+eq(s38SV.erfuellt, s38SVw.nachweis_ok,
+   'N7 Befund 2: Ampel und Rechenweg sagen dasselbe (vorher gruen gegen rot)');
+var s38kA = 0, s38kB = 0;
+for (s38i = 0; s38i < s38SVw.schritte.length; s38i++) {
+  if (s38SVw.schritte[s38i].code === 'rw_s_a_min' || s38SVw.schritte[s38i].code === 'rw_s_a_max') {
+    s38kA++;
+    if (s38SVw.schritte[s38i].erfuellt === null) s38kB++;
+  }
+}
+eq(s38kA, 2, 'N7 Befund 2: beide a-Schritte stehen weiterhin im Rechenweg');
+eq(s38kB, 2, 'N7 Befund 2: aber ohne Nachweis-Haken — sie pruefen dort nichts');
+
+/* Die teilweise durchgeschweisste Naht bleibt drin — Dieters Entscheidung. */
+var s38Teil = s38Stumpf('stumpf_hv', 't_stoss', 12, 11, 50000);
+ok(s38Teil.ok === true, 'N7: die teilweise durchgeschweisste Naht rechnet');
+ok(s38Teil.grenzen.a_grenzen_gelten === true,
+   'N7 Befund 2: bei ihr GELTEN die a-Grenzen weiterhin (Dieter, 2026-08-04)');
+/* Und die Kehlnaht sowieso. */
+var s38Kehl = s38Stumpf('kehl_doppel', 'ueberlappstoss', 10, 5, 50000);
+ok(s38Kehl.grenzen.a_grenzen_gelten === true, 'N7 Befund 2: bei der Kehlnaht ebenso');
+
+/* --- 7) Die kontextbezogene Beispielliste (Plan 3.2) -------------------- */
+ok(typeof s38O.beispieleFuer === 'function', 'N7: es gibt eine kontextbezogene Beispielliste');
+eq(s38O.beispieleFuer({}).length, 12, 'N7: ohne Auswahl stehen alle zwoelf da');
+eq(s38O.beispieleFuer({ welt: 'A' }).length, 6, 'N7: Welt A filtert auf sechs');
+eq(s38O.beispieleFuer({ welt: 'B' }).length, 6, 'N7: Welt B ebenso');
+var s38F = s38O.beispieleFuer({ welt: 'A', nahtart: 'stumpf_v' });
+eq(s38F.length, 1, 'N7: Welt A mit Stumpfnaht laesst genau eines uebrig');
+eq(s38F[0].code, 'stoss', 'N7: und zwar den Blechstoss');
+/* KEINE SACKGASSE (Plan 3.2 und 3.4): passt nichts, werden alle gezeigt. */
+eq(s38O.beispieleFuer({ werkstoffgruppe: 'alu' }).length, 12,
+   'N7: passt nichts, stehen wieder alle da — eine leere Liste waere eine Sackgasse');
+eq(s38O.beispieleFuer({ welt: 'A', werkstoffgruppe: 'alu' }).length, 12,
+   'N7: auch bei einer Kombination, die es nicht gibt');
+/* Jeder Filterschluessel ist wirklich eine Auswahlgruppe. */
+var s38FK = [];
+for (s38i = 0; s38i < s38O.BEISPIEL_FILTER.length; s38i++) {
+  if (!s38O.gruppe(s38O.BEISPIEL_FILTER[s38i])) s38FK.push(s38O.BEISPIEL_FILTER[s38i]);
+}
+eq(s38FK.length, 0, 'N7: jeder Filterschluessel ist eine echte Auswahlgruppe (' + s38FK.join(',') + ')');
+/* Jedes Beispiel findet sich unter seiner eigenen Auswahl wieder — sonst
+   verschwaende ein Beispiel genau dann, wenn es passt. */
+var s38Weg = [];
+for (s38i = 0; s38i < s38O.BEISPIELE.length; s38i++) {
+  s38b = s38O.BEISPIELE[s38i];
+  var s38L = s38O.beispieleFuer(s38b.auswahl), s38D = false;
+  for (s38j = 0; s38j < s38L.length; s38j++) if (s38L[s38j].code === s38b.code) s38D = true;
+  if (!s38D) s38Weg.push(s38b.code);
+}
+eq(s38Weg.length, 0, 'N7: jedes Beispiel steht unter seiner eigenen Auswahl in der Liste (' + s38Weg.join(',') + ')');
+
+/* --- 8) Dreisprachigkeit und Ausfuehrungsblock -------------------------- */
+var s38NF = [];
+for (s38i = 0; s38i < s38O.BEISPIELE.length; s38i++) {
+  if (!Kern.has(s38O.BEISPIELE[s38i].name)) s38NF.push(s38O.BEISPIELE[s38i].code);
+}
+eq(s38NF.length, 0, 'N7: jeder Beispielname ist dreisprachig belegt (' + s38NF.join(',') + ')');
+var s38OhneExc = [];
+for (s38i = 0; s38i < s38O.BEISPIELE.length; s38i++) {
+  if (!s38O.BEISPIELE[s38i].auswahl.exc) s38OhneExc.push(s38O.BEISPIELE[s38i].code);
+}
+eq(s38OhneExc.length, 0, 'N7: jedes Beispiel belegt die Ausfuehrungsklasse mit (' + s38OhneExc.join(',') + ')');
+/* Die Bewertungsgruppe wird NICHT mitgeliefert — sie kommt ueber die
+   Vorschlagsmechanik aus N5d. Zwei Quellen waeren eine zu viel. */
+var s38MitIso = [];
+for (s38i = 0; s38i < s38O.BEISPIELE.length; s38i++) {
+  if (s38O.BEISPIELE[s38i].auswahl.iso5817) s38MitIso.push(s38O.BEISPIELE[s38i].code);
+}
+eq(s38MitIso.length, 0,
+   'N7: kein Beispiel setzt die Bewertungsgruppe selbst — sie kommt aus dem Vorschlag (' + s38MitIso.join(',') + ')');
+ok(!!s38O.vorschlag('iso5817', { exc: s38O.BEISPIELE[0].auswahl.exc }),
+   'N7: und der Vorschlag greift bei der gewaehlten Ausfuehrungsklasse');
+
+/* --- 9) ui.js bleibt fachfrei ------------------------------------------ */
+var s38Ui = fsU.readFileSync(__dirname + '/ui.js', 'utf8');
+var s38Codes = [], s38C;
+for (s38i = 0; s38i < s38O.BEISPIELE.length; s38i++) {
+  s38C = s38O.BEISPIELE[s38i].code;
+  if (s38Ui.indexOf("'" + s38C + "'") >= 0) s38Codes.push(s38C);
+}
+eq(s38Codes.length, 0, 'N7: kein einziger Beispielcode steht in ui.js (' + s38Codes.join(',') + ')');
+ok(s38Ui.indexOf('beispieleFuer') > 0, 'N7: ui.js holt die Liste bei optionen.js');
 
 /* ========================================================================= */
 console.log('\n════════════════════════════════════════════');

@@ -86,6 +86,15 @@
   var ITER_MAX = 60;
   var ITER_TOL = 1e-12;
 
+  /* AUSLEGUNG OHNE EINGETRAGENES a (N7): Im Auslegungsfall ist 'a' kein
+     Pflichtfeld — es wird ja gesucht. profil.baue() verlangt aber eins, um
+     ueberhaupt Segmente bauen zu koennen. Deshalb wird hier ein BEZUGSMASS
+     eingesetzt, von dem aus die Iteration startet. Es ist ein reiner
+     Rechenanfang und steht in KEINEM Ergebnis: die Iteration loest nach
+     eta = 1 auf, das Bezugsmass kuerzt sich dabei heraus. Eine Assertion
+     haelt fest, dass verschiedene Bezugsmasse dasselbe a_erf liefern. */
+  var A_BEZUG_AUSLEGUNG = 5;
+
   var VERFAHREN_A = ['richtungsbezogen', 'vereinfacht'];
   var RICHTUNGEN = ['nachweis', 'auslegung'];
   var WELTEN = ['A', 'B'];
@@ -111,7 +120,8 @@
       'msg_sv_kreis_verdichtet', 'msg_sv_a_aufgerundet', 'msg_sv_a_je_segment_gerundet',
       'msg_sv_beta_lw_angewendet', 'msg_sv_beta_lw_nicht_angewendet',
       'msg_sv_umlaufend_aus_profil', 'msg_sv_sigma_senk_zusatz', 'msg_sv_schiefe_biegung',
-      'msg_sv_l_eff_je_zug'
+      'msg_sv_l_eff_je_zug', 'msg_sv_a_grenzen_stumpf_voll',
+      'msg_sv_a_bezug_auslegung', 'msg_sv_auslegung_geometrie'
     ]
   };
 
@@ -522,11 +532,23 @@
     return zuege;
   }
 
-  function grenzenPruefen(segmente, info, ein, warnungen, hinweise) {
+  function grenzenPruefen(segmente, info, ein, warnungen, hinweise, typ) {
     var G = Data.GEOMETRIE;
+    /* DIE a-GRENZEN SIND KEHLNAHT-REGELN (N7, Dieters Entscheidung 2026-08-04).
+       Bei der DURCHGESCHWEISSTEN Stumpfnaht ist a = t die Definition — dort
+       waere a <= 0,7*t rechnerisch IMMER verletzt, und a >= 3 mm wuerde jedes
+       duenne Blech falsch anzeigen. Beide Grenzen gelten deshalb nur fuer die
+       Kehlnaht UND die teilweise durchgeschweisste Naht (HV/HY/DHY), wo eine
+       Kehlnahtlage vorliegt. Ausgenommen ist ausschliesslich 'stumpf_voll'.
+       Vorher meldete der Solver gruene Ampel und der Rechenweg zugleich
+       'a_max nicht erfuellt' — genau der Widerspruch aus Plan 9.2. */
+    var aGrenzenGelten = (typ !== 'stumpf_voll');
     var a_min = oder(ein.a_min, G.a_min_ec3.wert);
-    var out = { a_min: a_min, verletzt: [], je_segment: [], je_zug: [],
+    var out = { a_min: aGrenzenGelten ? a_min : null,
+                a_grenzen_gelten: aGrenzenGelten,
+                verletzt: [], je_segment: [], je_zug: [],
                 n_zuege: 0, mehrsegmentig: false, beta_Lw: null, lange_naht: false };
+    if (!aGrenzenGelten) schiebe(hinweise, 'msg_sv_a_grenzen_stumpf_voll');
     var zuege = nahtzuege(segmente, info);
     var zugVon = {}, i, j, s, t, amax, l, lang, zg, leffmin, kurz;
     for (i = 0; i < zuege.length; i++) {
@@ -544,7 +566,7 @@
       t = null;
       if (info && info[i] && zahl(info[i].t) !== null) t = info[i].t;
       if (t === null) t = tMin(ein);
-      amax = (t === null) ? null : 0.7 * t;
+      amax = (t === null || !aGrenzenGelten) ? null : 0.7 * t;
       l = Naht.laenge(s);
       lang = l > 150 * s.a;
       if (lang) out.lange_naht = true;
@@ -552,10 +574,10 @@
         index: i, code: s.code || null, a: s.a, t: t,
         a_max: amax, l: l, zug: zugVon[i], lang: lang
       });
-      if (amax !== null && s.a > amax + 1e-9) {
+      if (aGrenzenGelten && amax !== null && s.a > amax + 1e-9) {
         out.verletzt.push({ code: 'msg_sv_a_ueber_amax', index: i, ist: s.a, grenze: amax });
       }
-      if (s.a < a_min - 1e-9) {
+      if (aGrenzenGelten && s.a < a_min - 1e-9) {
         out.verletzt.push({ code: 'msg_sv_a_unter_amin', index: i, ist: s.a, grenze: a_min });
       }
     }
@@ -596,7 +618,54 @@
   /* --------------------------------------------------------------------- */
   /* 7) HAUPTFUNKTION                                                       */
   /* --------------------------------------------------------------------- */
+  /* DIE GEOMETRIE HAENGT SELBST AM a-MASS (N7-Befund, 2026-08-04).
+     Der Endkraterabzug betraegt 2*a je offener Raupe und wird GEOMETRISCH
+     abgezogen (profil.js). Bei der Auslegung wird das Nahtbild also mit
+     einem Bezugsmass gebaut, waehrend gesucht erst noch wird — mit einem
+     anderen Bezugsmass kam ein anderes a_erf heraus (gemessen: 1,6931 bei
+     Bezug 3 gegen 1,8628 bei Bezug 10, rund 10 % Unterschied). Ein
+     Ergebnis, das vom Rechenanfang abhaengt, ist kein Ergebnis.
+     Abhilfe: die ganze Kette wird mit dem gefundenen a erneut durchlaufen,
+     bis sich das Nahtbild nicht mehr bewegt. Bei umlaufender Naht gibt es
+     keinen Endkraterabzug — dort haelt die Schleife sofort.
+     Der Aufwand ist klein, weil die Abhaengigkeit schwach ist. */
+  var AUS_ITER_MAX = 12;
+  var AUS_ITER_TOL = 1e-9;
+
   function rechne(ein) {
+    ein = ein || {};
+    var erg = rechneEinmal(ein);
+    if (!erg.ok || erg.rechenrichtung !== 'auslegung' ||
+        !ein.profil_eingabe || !erg.auslegung) return erg;
+    /* Ohne Endkraterabzug ist das Nahtbild vom a-Mass unabhaengig. */
+    if (!(erg.nahtbild && erg.nahtbild.endkrater_abzug > 0)) return erg;
+
+    var runden = 0, aVor = erg.auslegung.a_bezug, aNeu = erg.auslegung.a_erf, ein2, kopie, pk;
+    while (runden < AUS_ITER_MAX && Math.abs(aNeu - aVor) > AUS_ITER_TOL) {
+      kopie = {};
+      for (pk in ein.profil_eingabe) {
+        if (Object.prototype.hasOwnProperty.call(ein.profil_eingabe, pk)) {
+          kopie[pk] = ein.profil_eingabe[pk];
+        }
+      }
+      kopie.a = aNeu;
+      ein2 = {};
+      for (pk in ein) if (Object.prototype.hasOwnProperty.call(ein, pk)) ein2[pk] = ein[pk];
+      ein2.profil_eingabe = kopie;
+      ein2.a = undefined;
+      var erg2 = rechneEinmal(ein2);
+      if (!erg2.ok || !erg2.auslegung) return erg;
+      erg = erg2;
+      aVor = aNeu;
+      aNeu = erg2.auslegung.a_erf;
+      runden++;
+    }
+    erg.auslegung.geometrie_runden = runden;
+    if (runden > 0) schiebe(erg.hinweise, 'msg_sv_auslegung_geometrie');
+    return erg;
+  }
+
+  function rechneEinmal(ein) {
     ein = ein || {};
     var fehler = [], warnungen = [], hinweise = [], i;
 
@@ -615,9 +684,25 @@
     if (welt === 'A' && VERFAHREN_A.indexOf(verfahren) < 0) verfahren = 'richtungsbezogen';
 
     /* 7.2 Nahtbild besorgen -------------------------------------------- */
-    var segEin = null, info = null, umlaufend = null, profil = null;
+    var segEin = null, info = null, umlaufend = null, profil = null, pEin = null;
     if (ein.profil_eingabe) {
-      profil = Profil.baue(ein.profil_eingabe);
+      /* AUSLEGUNG OHNE a (N7-Befund): 'a' ist im Auslegungsfall kein
+         Pflichtfeld, profil.baue() verlangt aber eins. Ohne Bezugsmass
+         scheiterte JEDE Auslegung ueber das Formular an
+         'msg_profil_a_fehlt' — die halbe Rechenrichtung des Programms war
+         damit unerreichbar. Aufgefallen ist es erst, als N7 den ersten
+         Auslegungsfall als Beispiel bauen wollte. */
+      pEin = ein.profil_eingabe;
+      if (richtung === 'auslegung' && zahl(pEin.a) === null) {
+        var kopie = {};
+        for (var pk in pEin) {
+          if (Object.prototype.hasOwnProperty.call(pEin, pk)) kopie[pk] = pEin[pk];
+        }
+        kopie.a = A_BEZUG_AUSLEGUNG;
+        pEin = kopie;
+        schiebe(hinweise, 'msg_sv_a_bezug_auslegung');
+      }
+      profil = Profil.baue(pEin);
       if (!profil.ok) {
         for (i = 0; i < profil.fehler.length; i++) fehler.push(profil.fehler[i]);
         return abbruch(fehler, warnungen, hinweise);
@@ -759,7 +844,7 @@
 
     /* 7.9 Geometrische Grenzen ----------------------------------------- */
     var segGrenz = (richtung === 'auslegung' && auslegung) ? auslegung.segmente : segEin;
-    var grenzen = grenzenPruefen(segGrenz, info, ein, warnungen, hinweise);
+    var grenzen = grenzenPruefen(segGrenz, info, ein, warnungen, hinweise, typ);
     if (A0.eta > 1 + 1e-12) schiebe(warnungen, 'msg_sv_nicht_erfuellt');
 
     /* 7.10 Ergebnis ----------------------------------------------------- */
@@ -784,6 +869,14 @@
         Wy: aus.nb.Wy, Wz: aus.nb.Wz, Wt: aus.nb.Wt,
         rmax: aus.nb.rmax, geschlossen: aus.nb.geschlossen,
         offene_enden: aus.nb.offene_enden, umlaufend: umlaufend,
+        endkrater_abzug: profil ? profil.endkrater_abzug : 0,
+        /* DIE EINGABE, MIT DER WIRKLICH GERECHNET WURDE (N7). Im
+           Auslegungsfall traegt sie das gefundene a-Mass, nicht das leere
+           Feld des Formulars. Wer das Nahtbild zeichnet, muss dieselbe
+           Geometrie zeichnen, die gerechnet wurde — sonst zeigt das Bild
+           etwas anderes als die Zahlen, oder es bleibt (wie vor N7 im
+           Auslegungsfall) ganz leer. */
+        profil_eingabe: ein.profil_eingabe ? pEin : null,
         kontrolle: aus.nb.kontrolle
       },
       punkte: aus.punkte,

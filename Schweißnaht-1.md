@@ -7,17 +7,18 @@
 > Konzeptgespräch (2026-07-23), nach der abgeschlossenen Recherche (R1–R6), nach der
 > Abstimmung vom **2026-07-24** (alle offenen Fragen aus Abschnitt 0 geklärt) und nach den
 > abgenommenen Bausteinen **N1, N2, N2b, N2c, N3, N4 und N5 vollständig
-> (N5a, N5b, N5c-1 bis N5c-3 und N5d)** — Stand 2026-08-03.
+> (N5a, N5b, N5c-1 bis N5c-3 und N5d)** und **N6b**, dazu **N7 gebaut und
+> geliefert (Abnahme offen)** — Stand 2026-08-04.
 > Sie ist so geschrieben, dass ein **neuer Chat ohne Vorwissen** damit weiterarbeiten kann.
 > **Das WARUM steht in `Schweißnaht-Historie.md`** (Entscheidungslog + Changelog im
 > Volltext) — dort nachschlagen, bevor etwas geändert wird, das falsch aussieht.
-> Einstieg dort: **„N6b abnehmen"**, danach der nächste Baustein nach Abschnitt 5.
-> `N6b_Vorlauf-Messwerte.md` hat seinen Zweck erfüllt und kann **nach der Abnahme
-> gelöscht** werden — der Inhalt steht jetzt in 4.11 und in der Historie.
+> Einstieg dort: **„weiter mit N8"** — dann der Reihenfolge in Kickoff-Punkt 5b folgen.
+> `N6b_Vorlauf-Messwerte.md` ist nach der Abnahme **gelöscht worden** — der Inhalt steht
+> in 4.11 und in der Historie. Im Projektordner liegt **keine Vorlaufdatei** mehr.
 
 ```
-Plan-Version : 2.37 · Stand 2026-08-04
-Codestand    : Plan 2.36 · ui 0.8.0 · N6b
+Plan-Version : 2.39 · Stand 2026-08-04
+Codestand    : Plan 2.39 · ui 0.9.0 · N7
                (Die Planversion, gegen die der CODE gebaut ist. Sie steht auch
                in ui.js als PLAN und wird von einer Assertion damit verglichen.
                Sie wandert nur mit, wenn sich Code ändert — reine Plan- oder
@@ -28,25 +29,30 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                N5b (Eingabeseite), N5c-1, N5c-2, N5c-3 und **N5d
                („Ausführung & Dokumentation" + Versionszeile)** — alle von
                Dieter am Handy geprüft und ABGENOMMEN.
-               Projektordner /mnt/project/ ist auf diesem Stand — am
-               2026-08-03 gegengeprüft: Vollständigkeit gegen 8.1, die drei
-               Testläufe direkt aus dem Ordner grün, `node --check` über alle
-               16 JS sauber, beide HTMLs mit genau einer Zeile Unterschied,
-               die 13 gelieferten Dateien byteweise identisch angekommen und
-               die acht nicht angefassten Module unverändert.
                **Baustein N6b (ISO-2553-Symbolgenerator) ist von Dieter am
                Handy geprüft und ABGENOMMEN (2026-08-04).**
-               → NÄCHSTER SCHRITT: nächster Baustein nach der Tabelle in
-                 Abschnitt 5 — **Umfang vor dem Bau abstimmen**.
-                 `N6b_Vorlauf-Messwerte.md` kann aus dem Projektordner
-                 GELÖSCHT werden; ihr Inhalt steht in 4.11 und in der Historie.
+               **Baustein N7 (Beispielkatalog, 12 Fälle) ist GEBAUT und
+               GELIEFERT — Abnahme am Handy steht noch aus.** Er hat dabei
+               VIER Fehler aus N5c aufgedeckt und behoben (5.1-3).
+               Projektordner /mnt/project/ ist auf diesem Stand — am
+               2026-08-04 gegengeprüft: Vollständigkeit gegen 8.1, die drei
+               Testläufe direkt aus dem Ordner grün (1138 / 537 / 538),
+               `node --check` über alle 17 JS sauber, beide HTMLs mit genau
+               einer Zeile Unterschied, alle gelieferten Dateien byteweise
+               identisch angekommen und die acht nicht angefassten Module
+               unverändert. Es liegt NICHTS Halbes und nichts Zusätzliches
+               im Ordner.
+               → NÄCHSTER SCHRITT: **N7 am Handy abnehmen.** Danach
+                 Baustein **N8 (Assistent)** — Einstieg „weiter mit N8",
+                 **Umfang vor dem Bau abstimmen**; Etappen N8a–N8c stehen
+                 als Vorschlag in 5.2.
                  Schnittstellen: 4.5 (naht.js), 4.6 (profil.js),
                  4.7 (svglib.js + schaubild.js), 4.8 (solver.js),
                  4.9 (rechenweg.js), 4.10 / 4.10b / 4.10c / 4.10d (ui.js),
                  4.11 (symbol.js).
                Große Bausteine (N5, N8, N13, N14) werden in ETAPPEN gebaut — Regel in
                Kickoff-Punkt 5c, Etappen in Abschnitt 5.2.
-Basislinie   : 1138 Assertions · DOM-Smokes 537 (voll) + 538 (test) · i18n-Parität 0 Abweichungen
+Basislinie   : 1553 Assertions · DOM-Smokes 611 (voll) + 612 (test) · i18n-Parität 0 Abweichungen
                (VERBINDLICH. Basislinie darf nur WACHSEN — nie schrumpfen, nie gelockert werden.)
 Dateistand   : siehe Abschnitt 8.1 — dort steht, was fertig ist und was noch fehlt.
 ⚠️ SYNC       : Am 2026-08-03 lag im Projektordner eine **elf Versionen alte**
@@ -104,7 +110,7 @@ welche Dateien zu überschreiben sind** → Dieter bestätigt am Handy → erst 
 Schritt. Danach Plan-Kopf (Version/Status/Basislinie) + Changelog pflegen.
 
 **5b) WIEDEREINSTIEG IN EINEM NEUEN CHAT — genau diese Reihenfolge:**
-Einstiegssatz von Dieter: **„weiter mit N6b"**.
+Einstiegssatz von Dieter: **„weiter mit N8"**.
 1. Diese Datei komplett lesen (`Schweißnaht-1.md`, sie ist die alleinige Grundlage
    für das Bauen).
    **`Schweißnaht-Historie.md` NICHT vorab lesen** — sie enthält Entscheidungslog und
@@ -128,14 +134,14 @@ Einstiegssatz von Dieter: **„weiter mit N6b"**.
 9. Abschnitt **5.1** lesen: 5.1-1 ist der **gelieferte** Umfang von N5d (nur noch
    Begründung), 5.1-2 der **nächste** Auftrag **N6b** — **vor dem Bau mit Dieter
    bestätigen**. Abschnitt **5.2**: die Etappen von N5.
-10. **Vollständigkeit des Projektordners prüfen** (Liste in 8.1): 13 Module, `style.css`,
+10. **Vollständigkeit des Projektordners prüfen** (Liste in 8.1): 14 Module, `style.css`,
    beide HTMLs und **alle drei** DEV-ONLY-Dateien, dazu `Schweißnaht-Historie.md`.
    `dom_smoke_test.js` allein läuft nicht, sie ruft `dom_smoke_voll.js` auf — fehlt eine
    davon, zuerst bei Dieter nachfragen. **Das ist keine Formsache:** beim Austausch sind
    schon zweimal Dateien verlorengegangen, beide Male hat diese Prüfung es gefunden.
 11. Arbeitsordner herstellen (Befehl unter Punkt 6 der Kickoff-Liste), dann
    `node test_naht.js`, `node dom_smoke_voll.js`, `node dom_smoke_test.js` laufen lassen
-   und die Basislinie aus dem Plan-Kopf bestätigen (**1138 / 537 / 538 · 0 Fehler**),
+   und die Basislinie aus dem Plan-Kopf bestätigen (**1553 / 611 / 612 · 0 Fehler**),
    **bevor** etwas gebaut wird. Weicht etwas ab, erst das klären.
    ⚠️ **Diese drei Läufe sind zugleich die Probe, ob Plandatei und Code zusammenpassen.**
    Steht im Kopfblock eine andere Basislinie als gemessen, ist eine der beiden Seiten alt —
@@ -466,12 +472,22 @@ ausgewiesen. Der Assistent nutzt bevorzugt den geometrischen Weg.
 Ausgangszustand beim Öffnen der HTML ist dunkel — in **beiden** Editionen gleich.
 Umzusetzen in N5 (`ui.js` + `style.css`), im DOM-Smoke abzusichern.
 
-### 3.2 Kontextbezogene Beispiele *(neue Anforderung)*
+### 3.2 Kontextbezogene Beispiele *(✅ GEBAUT MIT N7, 2026-08-04)*
 
 Die Beispiele oben richten sich nach dem, was links ausgewählt/angehakt ist.
 **Umsetzung:** Jedes Preset trägt **Merkmale** (Nahtart, Werkstoffgruppe, Belastungsart,
 Bemessungswelt). Die Beispielliste zeigt nur passende Presets; passt nichts → alle anzeigen.
 Eine Quelle, keine Doppelpflege. Der Anwender kann ein Beispiel laden, anpassen, ausprobieren.
+
+> ✅ **Umgesetzt in N7.** Gefiltert wird über die **Auswahl, die das Beispiel
+> ohnehin trägt** (`BEISPIEL_FILTER` = `welt` · `werkstoffgruppe` · `nahtart`) —
+> es gibt **keine zweite Merkmalsliste**. Nur was im Formular gar nicht
+> auswählbar ist, steht als eigenes Merkmal daneben: die **Belastungsart**.
+> Eine Assertion verbietet, dass ein Merkmal eine Auswahl doppelt.
+> **Passt nichts, werden alle gezeigt** — eine leere Beispielliste wäre eine
+> Sackgasse nach 3.4. Das **geladene** Beispiel bleibt immer in der Liste,
+> auch wenn der Anwender die Auswahl inzwischen weggedreht hat; sonst stünde
+> der Kasten auf „wählen", während die Felder voll sind.
 
 ### 3.3 Assistent (Dialogführung)
 
@@ -953,6 +969,35 @@ nicht, gibt es eine sichtbare Warnung statt eines stillen Ergebnisses.
 `msg_sv_umlaufend_aus_profil` …). **Ergebnisgrößen** (`DTNSolver.GROESSEN`, 16 Stück)
 tragen je Code + Einheitsschlüssel, Beschriftung `sv_<code>`.
 
+**DIE a-GRENZEN SIND KEHLNAHTREGELN — SEIT N7 (nicht wieder verallgemeinern):**
+`a ≥ a_min` und `a ≤ 0,7·t` gelten für die **Kehlnaht** und die **teilweise
+durchgeschweißte** Naht (HV/HY/DHY). Bei der **durchgeschweißten** Stumpfnaht
+gelten sie **nicht** — dort *ist* `a = t` die Definition, `a ≤ 0,7·t` wäre also
+rechnerisch immer verletzt und `a ≥ 3 mm` würde jedes dünne Blech falsch
+anzeigen. `grenzen.a_grenzen_gelten` sagt es heraus, `a_min` und `a_max` stehen
+dann auf `null`, und der Hinweis `msg_sv_a_grenzen_stumpf_voll` benennt es.
+*(Dieters Entscheidung 2026-08-04: ausgenommen ist ausschließlich die
+durchgeschweißte Naht.)*
+
+**AUSLEGUNG MIT PROFILEINGABE — SEIT N7 (zwei Dinge, die zusammengehören):**
+1. **Bezugsmaß.** Im Auslegungsfall ist `a` kein Pflichtfeld, `profil.baue()`
+   verlangt aber eins. Der Solver setzt deshalb `A_BEZUG_AUSLEGUNG` ein und
+   meldet `msg_sv_a_bezug_auslegung`. **Vorher scheiterte jede Auslegung über
+   das Formular** an `msg_profil_a_fehlt`.
+2. **Die Geometrie hängt selbst am a-Maß.** Der Endkraterabzug `2·a` je offener
+   Raupe wird geometrisch abgezogen — mit anderem Bezugsmaß kam ein anderes
+   `a_erf` heraus (gemessen: **1,6931 bei Bezug 3 gegen 1,8628 bei Bezug 10**,
+   rund 10 %). Deshalb läuft die **ganze Kette erneut** mit dem gefundenen a,
+   bis sich das Nahtbild nicht mehr bewegt (`auslegung.geometrie_runden`,
+   Hinweis `msg_sv_auslegung_geometrie`). Bei umlaufender Naht gibt es keinen
+   Endkraterabzug — dort hält die Schleife sofort. Eine Assertion prüft, dass
+   **fünf verschiedene Bezugsmaße dasselbe `a_erf`** liefern.
+
+**`nahtbild.profil_eingabe`** gibt die Eingabe heraus, mit der **wirklich
+gerechnet wurde** (im Auslegungsfall mit dem gefundenen a). Wer das Nahtbild
+zeichnet, muss dieselbe Geometrie zeichnen — sonst zeigt das Bild etwas
+anderes als die Zahlen, oder es bleibt ganz leer.
+
 **DIE PRÜFEBENEN — SEIT N5c-3 GETRENNT (nicht wieder zusammenlegen):**
 | Prüfung | Ebene | warum |
 |---|---|---|
@@ -1010,7 +1055,11 @@ Ampel nicht und trägt im Rechenweg keinen Haken. Wer ihr einen gibt, holt den W
 - **`haken`** ist die **Rechenprobe**: ein zweiter, unabhängiger Rechenpfad. `false` heißt
   **Programmfehler**.
 - **`erfuellt`** ist der **Nachweis**: a ≥ a_min, a ≤ a_max, η ≤ 1. *(Die Mindestlänge
-  gehört seit N5c-3 NICHT mehr dazu — sie ist eine Warnung, 5.1-0.)* `false` heißt
+  gehört seit N5c-3 NICHT mehr dazu — sie ist eine Warnung, 5.1-0. Und die beiden
+  a-Schritte tragen seit N7 **keinen Haken**, wenn die Grenzen gar nicht gelten:
+  bei der durchgeschweißten Naht stehen sie ohne `erfuellt` da, mit dem Hinweis,
+  warum. Ein grüner Haken auf eine Regel, die nicht greift, behauptet eine
+  Prüfung, die nicht stattgefunden hat.)* `false` heißt
   **die Naht trägt so nicht** — das ist ein normales, ehrliches Ergebnis, kein Fehler.
 - Im Gesamtergebnis: `selbstpruefung_ok` (alle Rechenproben) und `nachweis_ok` (alle
   Nachweise) sind **getrennte Felder**. Die Oberfläche muss sie auch **optisch** trennen,
@@ -1292,6 +1341,22 @@ noch nicht gebaut hat), und keine der vier benannten Lücken aus 2.4.
 
 ---
 
+### 4.10e Was N7 zu `ui.js` hinzugefügt hat (Beispielkatalog)
+
+**Drei Änderungen, alle ohne einen Krümel Fachwissen:**
+
+| Stelle | Was |
+|---|---|
+| `beispieleFuellen()` | holt die Liste bei `Options.beispieleFuer(zustand())` statt den ganzen Katalog zu nehmen, und wird jetzt aus `aktualisiere()` gerufen — die Liste folgt der Auswahl (3.2) |
+| `sitzung.beispiele()` | liefert **dieselbe** gefilterte Liste wie der Kasten, nicht mehr `BEISPIELE` roh |
+| `grafikZeigen(ein, erg)` | zeichnet aus `erg.nahtbild.profil_eingabe`, also aus dem, **womit gerechnet wurde** — im Auslegungsfall steht im Formular gar kein a-Maß, und die Karte blieb vorher leer |
+
+**In `ui.js` steht kein einziger Beispielcode** — eine Assertion prüft das für
+alle zwölf. Ebenso unverändert gültig: `EXC` kommt im Quelltext **null**mal vor,
+`iso5817` **genau einmal** (in der Anordnung).
+
+---
+
 ### 4.11 `symbol.js` — Zeichnungssymbole nach EN ISO 2553 (N6b)
 
 DOM-frei, deterministisch, **kein Text im SVG**. Zeichnet auf `svglib.js`, die unverändert
@@ -1365,8 +1430,8 @@ im Wörterbuch; eine weitere Assertion verbietet einen zweiten Text daneben.
 | **N4** ✅ | **Rechenweg** *(abgenommen 2026-07-26)* | `rechenweg.js`: selbstprüfende Schrittliste für N2/N2b/N3, dreisprachig, zweiter Rechenpfad je Schritt, Rechenprobe und Nachweis getrennt. **Schnittstelle: Abschnitt 4.9.** |
 | **N5** ✅ | **UI-Basis — VOLLSTÄNDIG ABGENOMMEN: N5a, N5b, N5c-1, N5c-2, N5c-3 und N5d** | 2 HTMLs, `style.css`, Formular mit aufklappbaren Bereichen und Freischalt-Haken, Ergebnis-Kacheln, Ampel, i18n, Theme (**Start immer dunkel**), Laien-ⓘ, Block „Ausführung & Dokumentation" (ISO 5817 + EXC). **Erster Handy-Test.** |
 | **N6b** ✅ | **ISO-2553-Symbolgenerator — ABGENOMMEN 2026-08-04** | `symbol.js`: Pfeil-/Gegenseite, a- bzw. z-Maß, Länge, Rundumnaht, Baustellennaht. Nutzt `svglib.js` aus N2c. Bewusst **vor** dem Launch — Verkaufsargument. |
-| **N7** | **Presets** | Die 6 Starter als Profil-/Kantendaten auf `profil.js`, **mit Merkmalen für die kontextbezogene Beispielliste** (3.2). |
-| **N8** | **Assistent** | `assistent.js` (DOM-freie Dialoglogik) + Overlay-UI, Button-Einstieg, tabellengestützt aus `optionen.js`, mit Erklärungen/Tipps/Skizzen je Dialog, Übernahme vorhandener Eingaben. |
+| **N7** ✅ | **Beispielkatalog — GEBAUT UND GELIEFERT 2026-08-04, Abnahme offen** | **Zwölf Beispiele, sechs je Bemessungswelt**, als reine Daten in `optionen.js` auf `profil.js` aufgesetzt, mit Merkmalen für die **kontextbezogene Beispielliste** (3.2). Hat **vier Fehler aus N5c aufgedeckt und behoben** — Ergebnis in 5.1-3. |
+| **N8** ⬅ | **Assistent** *(nächster Bau — Umfang vorher abstimmen)* | `assistent.js` (DOM-freie Dialoglogik) + Overlay-UI, Button-Einstieg, tabellengestützt aus `optionen.js`, mit Erklärungen/Tipps/Skizzen je Dialog, Übernahme vorhandener Eingaben. |
 | **N9** | **Vorwärmung & t8/5** | `thermik.js` + Panel + Rechenweg + Assistenten-Schritte. |
 | **N10** | **Kosten/Zeit/Draht** | `kosten.js` + Panel + Rechenweg + Assistenten-Schritte. |
 | **N11** | **Ausgaben** | `report.js`: `.dts` speichern/öffnen (**erst leeren, dann laden** + Formatversion), Druck/PDF, Word (.rtf), `guard()`-Gating. Aktionsleiste **oben**, Dateiname trägt Bezeichnung + Datum. **Jede Ausgabe trägt die Versionszeile** (3.6) — **dabei die Modulnamen an die Dateinamen angleichen**, siehe Merkposten in 3.6. |
@@ -1377,7 +1442,7 @@ im Wörterbuch; eine weitere Assertion verbietet einen zweiten Text daneben.
 | **N15** | **Verzug & Schrumpfung** | `verzug.js` + Panel, klar als **Abschätzung** gekennzeichnet. |
 | **N16** | **Feinschliff + Build** | Presets ausbauen, Wissenstexte, Code-Audit, Bündelung + Obfuskierung (zwei Bündel, Unterschied nur `DT_EDITION`). **→ V1-Launch.** |
 
-### 5.1 Auftrag: **N6b** *(N5c-3 und N5d sind gebaut — 5.1-0 und 5.1-1 nur noch als Begründung)*
+### 5.1 Aufträge *(N5c-3, N5d, N6b und N7 sind gebaut — alles hier ist Begründung)*
 
 ---
 
@@ -1650,6 +1715,79 @@ Prozentpunkte Tokenstand. Wer bei über 40 % startet, schafft alle drei.*
 
 ---
 
+#### 5.1-3 · N7 — **GEBAUT UND GELIEFERT 2026-08-04, Abnahme offen**
+
+**Der abgestimmte Umfang** *(Dieter, 2026-08-04)*: **zwölf Beispiele, sechs je
+Bemessungswelt** — die sechs Starter aus 2.11 spiegeln sich in beiden Welten.
+Der Ausführungsblock wird mitbelegt. Gebaut einteilig mit Haltepunkten je Drittel.
+
+**Der Katalog (alle Zahlen gemessen, nicht geschätzt):**
+
+| Beispiel | Welt | Fall | Segmente | Naht | η |
+|---|---|---|---|---|---|
+| `blech` | A | Laschenanschluss, Flankenkehlnähte, Zug | 2 | 140 mm | 0,842 |
+| `traeger` | A | Träger an Stütze, nur Steg, Zug | 2 | 324 mm | 0,626 |
+| `rhs` | A | Rechteckprofil, umlaufend, Zug | 4 | 328 mm | 0,359 |
+| `konsole` | A | Kragarm, Flansche + Steg, M + Q, **Auslegung** | 12 | 764 mm | 0,837 (a_erf 2,504 → 3) |
+| `rohr` | A | Rohr auf Platte, Kreisnaht, **Torsion** | 1 | 359,1 mm | 0,545 |
+| `stoss` | A | Blechstoß, **durchgeschweißte V-Naht** | 1 | 126 mm | 0,714 |
+| `lasche_b` | B | Laschenanschluss, **ruhend** | 2 | 140 mm | 0,714 |
+| `konsole_b` | B | Kragarm U-Profil, **schwellend**, M + Q | 8 | 594 mm | 0,673 |
+| `rhs_b` | B | Rechteckprofil, **wechselnd** | 4 | 328 mm | 0,686 |
+| `rohr_b` | B | Rohr auf Platte, Torsion | 1 | 359,1 mm | 0,540 |
+| `bolzen_b` | B | Bolzen ⌀60, Torsion + Biegung, **Auslegung** | 1 | 188,5 mm | 0,846 (a_erf 3,356 → 4) |
+| `stoss_b` | B | Blechstoß, durchgeschweißt und geprüft | 1 | 126 mm | 0,703 |
+
+**Alle zwölf:** grüne Ampel · keine Warnung · alle Rechenproben auf · Ampel und
+Rechenweg einig. Jeder Rechenpfad ist mindestens einmal belegt — beide Welten,
+beide Rechenrichtungen, Kehl- und Stumpfnaht, Linien- und Kreisnaht, alle drei
+Lastfälle. **Draußen geblieben:** Edelstahl und Aluminium mit WEZ-Entfestigung.
+Das sind eigene Rechenpfade und je zwei weitere Beispiele — sie stehen als
+**benannte Lücke für N16** hier, nicht verschwiegen.
+
+**VIER FEHLER AUS N5c — vom Katalog aufgedeckt, in N7 behoben.**
+Alle vier lagen auf den zwei Pfaden, die **kein Beispiel je berührt hatte**:
+der Auslegung und der durchgeschweißten Stumpfnaht. Das ist genau das Muster
+aus 5.1-0 — und genau davor warnt 9.2.
+
+1. **Die Auslegung war über das Formular unerreichbar.** `a` ist dort kein
+   Pflichtfeld, `profil.baue()` verlangt aber eins → `msg_profil_a_fehlt` bei
+   **jedem** Auslegungsfall mit Profileingabe. Damit war die halbe
+   Rechenrichtung des Programms tot (2.3: „beide Rechenrichtungen im Kern").
+   → Bezugsmaß im Solver, `validate.js` bleibt dumm.
+2. **Die a-Grenzen griffen bei der durchgeschweißten Naht.** Dort ist `a = t`
+   die Definition, `a ≤ 0,7·t` also immer verletzt. Folge war zusätzlich der
+   verbotene Widerspruch aus 9.2: **grüne Ampel (η 0,128) neben rotem
+   `rw_s_a_max`**. → Grenzen gelten nur noch für Kehl- und teilweise
+   durchgeschweißte Naht; die beiden Rechenwegschritte tragen dort keinen Haken.
+3. **Das Auslegungsergebnis hing vom Bezugsmaß ab** — 1,6931 aus Bezug 3 gegen
+   1,8628 aus Bezug 10. Ursache: der Endkraterabzug hängt selbst am a-Maß.
+   → Geometrie wird nachgezogen; jetzt aus Bezug 1/3/5/10/12 identisch.
+4. **Die Nahtbild-Grafik blieb im Auslegungsfall leer**, weil `ui.js` aus der
+   rohen Formulareingabe zeichnete. → Der Solver gibt das benutzte Nahtbild
+   heraus, `ui.js` zeichnet daraus.
+
+**Was beim Bauen sonst noch zuschnappte:** Die Verträglichkeitsregel aus 3.4 hat
+einen Entwurf abgewiesen — `kehl_umlaufend` zusammen mit „Flansche + Steg".
+Zu Recht: eine umlaufende Naht läuft um. Richtig ist die Doppelkehlnaht.
+**Die Regel hat getan, wofür sie gebaut wurde.**
+
+**Basislinie 1138 → 1553 Assertions · Smokes 537/538 → 611/612 · i18n-Parität 0.**
+Neue Harness-Sektion **S38**; S31/S32 auf zwölf erweitert; **die festgeschriebenen
+Handwerte für `ETAPPE` und `VERSION` sind durch Prüfungen gegen das Kopffeld
+`Codestand` ersetzt** — dieselbe Lehre wie bei `PLAN` in v2.36, nur konsequent
+zu Ende geführt. Auch der DOM-Smoke prüft die Versionszeile jetzt gegen die
+Kennungen aus `ui.js` statt gegen feste Zeichenketten.
+
+**Erwarteter Beleg am Handy:** Die Beispielliste wird kürzer, sobald links eine
+Welt gewählt ist. `konsole` antippen und „Berechnen" liefert ein **gesuchtes
+a-Maß** samt Nahtbild. `stoss` antippen liefert eine **grüne durchgeschweißte
+Stumpfnaht ohne Warnung**.
+
+**Offen für N16:** Beispiele für Edelstahl und Aluminium.
+
+---
+
 ### 5.1a Auftrag für N5c-1 — „Es rechnet" *(ERLEDIGT 2026-07-28, hier nur noch als Begründung)*
 
 > **Dieser Auftrag ist entschieden, nicht mehr Vorschlag.** Dieter hat die offenen Fragen
@@ -1881,7 +2019,9 @@ AWS/US-Normen, EN 1993-1-8:2024 (2. Generation, β_w,mod — Werte noch nicht be
 getragen: jede war einzeln lauffähig, einzeln prüfbar und einzeln abnehmbar.
 
 **Nicht geteilt** (einteilig): N6b, N7, N9, N10, N11, N12, N15 — bei N4 hat sich die
-Einschätzung bestätigt.
+Einschätzung bestätigt. **N7 hat sie ein zweites Mal bestätigt**, obwohl der
+Baustein unterwegs vier Reparaturen mit aufnehmen musste: die Haltepunkte je
+Drittel haben gereicht, geteilt werden musste nicht.
 Erweist sich das beim Bauen als falsch, wird **geteilt statt gehetzt** — eine unfertige
 Lieferung ist teurer als eine zusätzliche.
 
@@ -1967,7 +2107,34 @@ Volltext (ab 2026-07-28 ausgelagert). **Nur bei Bedarf lesen**, Regel in Abschni
 **Referenzdateien (read-only, nur Muster):** `DT-ProfiPassung_Testversion-Orginal.html` ·
 `DT-ProfiPassung.html` · `DT-ProfiPassung_Test.html`
 
-### 8.1 Dateistand nach N6b *(Stand 2026-08-04)*
+### 8.1 Dateistand nach N7 *(Stand 2026-08-04)*
+
+**N7-Lieferung — 7 Dateien zu überschreiben:** `solver.js`, `rechenweg.js`,
+`optionen.js`, `i18n_kern.js`, `ui.js`, `test_naht.js`, `dom_smoke_voll.js`
+— dazu diese Plandatei und `Schweißnaht-Historie.md`.
+**Von N7 nicht angefasst:** `naht.js`, `profil.js`, `svglib.js`, `schaubild.js`,
+`validate.js`, `daten.js`, `symbol.js`, `i18n_hilfe.js`, `i18n_kerbfall.js`,
+`style.css`, **beide HTMLs** und `dom_smoke_test.js`.
+**Kein neues Modul, keine neue HTML-Zeile, keine neue CSS-Zeile** — die zwölf
+Beispiele sind reine Daten, und die Beispielliste stand seit N5a.
+`validate.js` blieb unberührt: das Feldschema hat gestimmt, der Fehler saß im
+Solver.
+
+| Datei | Was N7 geändert hat |
+|---|---|
+| `optionen.js` | `BEISPIELE` 3 → **12** mit `merkmale` und Ausführungsklasse · neu `BEISPIEL_FILTER` und `beispieleFuer(zustand)` (3.2) |
+| `solver.js` | Bezugsmaß für die Auslegung · Außeniteration der Geometrie · a-Grenzen nur bei Kehl- und teilweise durchgeschweißter Naht · `nahtbild.profil_eingabe` · drei neue Hinweiscodes. `VERSION` unverändert `0.1.0-N3` |
+| `rechenweg.js` | `rw_s_a_min` / `rw_s_a_max` ohne Nachweis-Haken, wo die Grenzen nicht gelten |
+| `i18n_kern.js` | neun Beispielnamen und drei Meldungstexte, alle dreisprachig |
+| `ui.js` | kontextbezogene Beispielliste · `beispiele()` gefiltert · `grafikZeigen(ein, erg)` · `VERSION` **0.9.0**, `ETAPPE` **N7**, `PLAN` **2.39** |
+| `test_naht.js` | neue Sektion **S38** · S31/S32 auf zwölf · `ETAPPE`/`VERSION` gegen `Codestand` statt gegen Konstanten |
+| `dom_smoke_voll.js` | alle zwölf an der Oberfläche durchgeklickt · Filterprüfungen · die vier Befunde · Versionszeile gegen die Kennungen aus `ui.js` |
+
+**Basislinie nach N7: 1553 Assertions · 611 / 612 DOM-Smokes · i18n-Parität 0.**
+
+---
+
+### 8.1b Dateistand nach N6b *(Stand 2026-08-04)*
 
 **N6b-Lieferung — 11 Dateien:** `symbol.js` (**NEU**), `daten.js`, `optionen.js`, `ui.js`,
 `i18n_kern.js`, `i18n_hilfe.js`, `style.css`, beide HTMLs, `test_naht.js`,
@@ -2064,9 +2231,9 @@ Versionen alt). Deshalb ist die Vollständigkeitsprüfung gegen die Tabelle oben
 Formsache, und der Basislinien-Abgleich aus Kickoff-Punkt 11 ebenso wenig.
 
 **Erste Handlung im neuen Chat:** Vollständigkeit gegen die Tabelle oben prüfen
-(**13 Module**, `style.css`, beide HTMLs, **alle drei** DEV-ONLY-Dateien, dazu Plandatei und
+(**14 Module**, `style.css`, beide HTMLs, **alle drei** DEV-ONLY-Dateien, dazu Plandatei und
 `Schweißnaht-Historie.md`), Arbeitsordner herstellen, die drei Testläufe starten.
-Melden müssen sie **1138 / 537 / 538 · 0 Fehler**. Weicht etwas ab, erst das klären —
+Melden müssen sie **1553 / 611 / 612 · 0 Fehler**. Weicht etwas ab, erst das klären —
 nicht bauen.
 
 **Was N6b überschreiben wird** (zur Vorwarnung, nicht als Auftrag): neu `symbol.js`,
@@ -2167,6 +2334,28 @@ will. Also: Vorschriften und Wegweiser bleiben hier, die Erzählung wandert.
   Die gestrichelte Identifikationslinie war zuerst durchgezogen gezeichnet, während die
   Legende „gestrichelt" sagte. Assertions auf Legendeneinträge reichen nicht; **das Merkmal
   ist im SVG-String selbst zu prüfen.**
+- **Die a-Grenzen sind Kehlnahtregeln** (N7, Dieter 2026-08-04, 4.8): `a ≥ a_min`
+  und `a ≤ 0,7·t` gelten für die Kehlnaht **und** die teilweise durchgeschweißte
+  Naht — bei der **durchgeschweißten** nicht, dort ist `a = t` die Definition.
+  Wo eine Regel nicht greift, steht **kein Haken** im Rechenweg: weder ein
+  grüner (er behauptete eine Prüfung, die es nicht gab) noch ein roter (er wäre
+  der Widerspruch „grüne Ampel, roter Nachweis").
+- **Ein Auslegungsergebnis darf nicht vom Rechenanfang abhängen** (N7, 4.8):
+  Die Geometrie hängt über den Endkraterabzug selbst am a-Maß, also wird die
+  Kette mit dem gefundenen a erneut durchlaufen. Wer die Schleife entfernt,
+  bekommt ein Ergebnis, das je nach Bezugsmaß um rund 10 % schwankt.
+- **Gezeichnet wird, WOMIT gerechnet wurde** (N7, 4.10e): Das Nahtbild kommt aus
+  `ergebnis.nahtbild.profil_eingabe`, nie aus der rohen Formulareingabe. Sonst
+  zeigt das Bild etwas anderes als die Zahlen — oder gar nichts.
+- **Eine Assertion prüft gegen die QUELLE, nie gegen eine abgeschriebene Zahl**
+  (v2.36 und N7): `PLAN`, `VERSION` und `ETAPPE` in `ui.js` werden alle drei
+  gegen das Kopffeld `Codestand` dieser Datei geprüft, und der DOM-Smoke prüft
+  die Versionszeile gegen die Kennungen aus `ui.js`. Eine festgeschriebene
+  Zeichenkette hat hier schon einmal grün gemeldet, während am Handy ein zwei
+  Bausteine alter Stand stand.
+- **Jeder neue Beispielkatalog ist zugleich ein Fehlersuchlauf** (N7): Die vier
+  Befunde aus 5.1-3 lagen alle auf Pfaden, die kein Beispiel je berührt hatte.
+  Wer Beispiele nur als Bequemlichkeit sieht, verschenkt ihren halben Wert.
 - **Token-Pause: 4 Stunden.**
 
 ---
@@ -2204,6 +2393,7 @@ Die Blöcke stehen dort in dieser Reihenfolge; jeder nennt Datum und Baustein:
 - Aus N5d (2026-08-03) — Ausführung & Dokumentation, Versionszeile, Vorschlag statt Zwang
 - Aus der Rückmeldung 2026-08-03 (N5d abgenommen)
 - Aus N6b (2026-08-04) — ISO-2553-Katalog, Nahtvorbereitung, Symbolgenerator
+- Aus N7 (2026-08-04) — Beispielkatalog, vier Befunde aus N5c, Prüfkultur
 - Aus der Rückmeldung 2026-07-27 (N5a abgenommen)
 - Aus N5a (2026-07-26)
 - Aus der Rückmeldung 2026-07-26 (N2c abgenommen)
@@ -2221,75 +2411,6 @@ Changelog — **die vollständige Fassung ab v1.0 steht in `Schweißnaht-Histori
 Hier stehen nur die letzten drei Einträge. Wer wissen will, wie eine Entscheidung
 zustande kam, findet die Kette dort — lückenlos ab der Erstfassung vom 2026-07-23.
 
-**v2.33 (2026-08-03):** **Etappe N5d von Dieter am Handy geprüft und ABGENOMMEN — ohne
-Nacharbeit. Damit ist Baustein N5 vollständig abgeschlossen.** Belegt wurde am Handy, was
-in 5.1-1 gefordert war: die Versionszeile im Info-ⓘ nennt **13 von 13 Modulen mit Kennung**
-(kein Fragezeichen, alle Nummern stimmen mit der Lieferung überein), und der Block
-„Ausführung & Dokumentation" verhält sich wie beschrieben. Der Projektordner wurde
-gegengeprüft: Vollständigkeit gegen 8.1, die drei Testläufe direkt aus dem Ordner grün
-(984 / 513 / 514 · 0 Fehler), `node --check` über alle 16 JS sauber, beide HTMLs mit genau
-einer Zeile Unterschied, die **13 gelieferten Dateien byteweise identisch** angekommen und
-die **acht nicht angefassten Module unverändert**. Ein einziger Punkt ist weitergereicht
-worden: die Versionszeile zeigt **Modulnamen statt Dateinamen** (`data` statt `daten.js`,
-`options` statt `optionen.js`, `kern`/`hilfe`/`kerbfall` statt der drei `i18n_*.js`) — das
-wird in **N11** mitgemacht, wenn die Zeile in Druck, PDF, Word und `.dts` wandert
-(Merkposten in 3.6, Hinweis in der Bausteintabelle bei N11). Plandatei auf den abgenommenen
-Stand gesetzt (Kopfblock, Kickoff 5b, Bausteintabelle, 3.6, 5.1-1, 5.2, 8.1, Wegweiser 9.3).
-**Code unverändert.**
-**Basislinie unverändert und verbindlich: 984 Assertions · Smokes 513/514 · i18n-Parität 0.**
-**Nächster Schritt: N6b (ISO-2553-Symbolgenerator) — Einstieg „weiter mit N6b",
-Umfang vor dem Bau abstimmen (5.1-2).**
-
-
-
-**v2.34 (2026-08-03):** **Umfang von N6b abgestimmt und in 5.1-2 festgeschrieben; erster
-Bauanlauf nach Regel 5c verworfen.** Dieters drei Antworten: **voller ISO-2553-Katalog**,
-**Nahtvorbereitung EN ISO 9692-1 kommt mit hinein** (damit fällt `ng_nahtvorbereitung`
-aus Liste 2.4, 14 → 13), **einteilig mit Haltepunkten nach je einem Drittel** — Dieter
-beobachtet den Tokenstand und entscheidet an jedem Haltepunkt „weiter" oder „Stopp".
-Gebaut wurden Drittel 1 (Katalog mit 32 Einträgen, `FUGENFORMEN` von 7 auf 16 Fugenformen
-mit Bändern, dreisprachige Texte — 984 → 1067 Assertions) und Drittel 2 (`symbol.js`
-zeichnet alle 23 Grundsymbole, 6 Zusatzzeichen und 3 Angaben an der Pfeillinie — → 1116
-Assertions), beide grün. Bei 55 % Tokenstand hat Dieter am zweiten Haltepunkt „Stopp"
-gesagt. **Es wurde KEIN Code ausgeliefert**; die geprüften Werte stehen in der neuen
-Datei **`N6b_Vorlauf-Messwerte.md`**. **Der Projektordner bleibt unverändert auf N5d,
-Basislinie 984 · 513 · 514.** Nächster Schritt: **N6b von vorn**, Einstieg
-„weiter mit N6b" plus Vorlaufdatei mitlesen — der Umfang steht, es ist nichts mehr zu
-entscheiden.
-
-
-
-**v2.35 (2026-08-04):** **Baustein N6b (ISO-2553-Symbolgenerator) gebaut und grün
-ausgeliefert.** Neu `symbol.js` mit dem **vollen Katalog: 32 Einträge** (23 Grundsymbole,
-6 Zusatzzeichen, 3 Angaben an der Pfeillinie) und dem Zeichenteil auf `svglib.js`, die
-**unverändert** blieb. `FUGENFORMEN` in `daten.js` von 7 auf **16 Fugenformen** nach
-EN ISO 9692-1 erweitert (Richtwerte **und** Bänder, Dickenbereich, Radius, Zugänglichkeit,
-Verfahren) — **die sieben alten Richtwerte unverändert**, per Regression abgesichert.
-**Die Lücke „Nahtvorbereitung" ist damit GESCHLOSSEN: Liste 2.4 von 14 auf 13 Punkte** —
-gefüllt, nicht umbenannt. Fünf neue Auswahlen im Block „Ausführung & Dokumentation" mit
-Livebild, Legende und Bemaßung; **kein Text im SVG**, die Zahlen stehen darunter. **In
-`ui.js` steht kein einziger Symbolcode** (Assertion über alle 23). Die Codeliste in
-`optionen.js` ist eine **bewachte Doppelung** — Assertion in beide Richtungen; die
-Optionsnamen zeigen über `schluessel` auf den Katalogtext, sodass sie nur einmal im
-Wörterbuch stehen. Neue Harness-Sektionen **S35** (Katalog), **S36** (Zeichnen), **S37**
-(Anbindung), neuer N6b-Durchklick im DOM-Smoke, Planabschnitt **4.11**, zwei Festlegungen
-in 9.2. Beide HTMLs binden jetzt 14 Module ein; S34 und der Smoke auf 14 nachgezogen.
-**Basislinie 984 → 1135 Assertions · Smokes 513/514 → 537/538 · i18n-Parität 0.**
-
-**v2.36 (2026-08-04):** **Nachbesserung aus der Abnahme von N6b.** Dieter hat am Handy
-gesehen, dass die Versionszeile „Programmstand **N5d** · Plan **2.32**" zeigte, obwohl
-alle 14 Module richtig gelistet waren: `VERSION`, `ETAPPE` und `PLAN` in `ui.js` wurden
-beim Bau von N6b nicht mitgezogen — und **die Assertion darauf hatte den alten Wert
-festgeschrieben und meldete grün**. Jetzt `0.8.0` / `N6b` / `2.36`; `PLAN` ist exportiert,
-und der Harness **liest die Planversion aus dem Kopfblock der Plandatei und vergleicht
-sie** — ein Handwert wird nicht mehr gegen eine Konstante geprüft, sondern gegen seine
-Quelle. Der Befund steht in 3.6. Geändert: `ui.js`, `test_naht.js`, `dom_smoke_voll.js`.
-**Basislinie 1135 → 1138 Assertions · Smokes unverändert 537/538.**
-**Nächster Schritt: N6b am Handy abnehmen.** `N6b_Vorlauf-Messwerte.md` kann danach
-gelöscht werden — ihr Inhalt steht in 4.11 und in der Historie.
-
-
-
 **v2.37 (2026-08-04):** **Baustein N6b von Dieter am Handy geprüft und ABGENOMMEN.** Die
 Versionszeile zeigt „Programmstand N6b · Plan 2.36 · 14 Module" mit `ui 0.8.0` und
 `symbol 0.1.0-N6b`; alle zwölf übrigen Kennungen unverändert. Projektordner gegengeprüft:
@@ -2299,8 +2420,42 @@ unverändert, `node --check` über 17 Dateien sauber, Testläufe aus dem Ordner
 `Codestand`** — die Planversion, gegen die der Code gebaut ist. Der Harness vergleicht
 `PLAN` aus `ui.js` ab jetzt damit statt mit `Plan-Version`, damit reine Plan- oder
 Abnahmeeinträge nicht jedes Mal eine Codeänderung erzwingen. **Code unverändert.**
-`N6b_Vorlauf-Messwerte.md` hat ihren Zweck erfüllt und kann gelöscht werden.
 **Nächster Schritt: nächster Baustein nach Abschnitt 5 — Umfang vorher abstimmen.**
+
+
+
+**v2.38 (2026-08-04):** **Aufräumen nach der Abnahme von N6b — keine Codeänderung.** Die
+Historie war zwei Einträge hinterher: **v2.34 fehlte ganz** (sie war beim Stopp am
+2026-08-03 nie nachgetragen worden), **v2.36 und v2.37 ebenfalls**. Alle drei sind jetzt
+dort, dazu zwei neue Erfahrungsblöcke (was ein Haltepunkt wert ist; was die Abnahme über
+Assertions gelehrt hat). Im Changelog dieser Datei sind **v2.33 bis v2.35 ausgerollt** —
+Volltext steht in `Schweißnaht-Historie.md`. `N6b_Vorlauf-Messwerte.md` ist **gelöscht**;
+die Verweise darauf sind auf Vergangenheit gesetzt. **`Codestand` bleibt 2.36** — das ist
+der erste Beleg, dass eine reine Planversion den Code nicht mehr anfassen muss.
+**Basislinie unverändert: 1138 Assertions · Smokes 537 / 538 · i18n-Parität 0.**
+**Nächster Schritt: nächster Baustein nach der Tabelle in Abschnitt 5 — Umfang vor dem Bau
+mit Dieter abstimmen. Einstieg: „weiter mit N…".**
+
+
+
+**v2.39 (2026-08-04):** **Baustein N7 (Beispielkatalog) gebaut und geliefert — und
+mit ihm vier Fehler aus N5c behoben.** Der Katalog ist von drei auf **zwölf**
+Beispiele gewachsen, sechs je Bemessungswelt (Dieters Festlegung), mit Merkmalen
+für die **kontextbezogene Beispielliste** (3.2, `beispieleFuer()`), dreisprachigen
+Namen und vorbelegter Ausführungsklasse; die Bewertungsgruppe kommt weiterhin über
+die Vorschlagsmechanik aus N5d, nicht aus dem Beispiel. Beim Durchrechnen fielen
+**vier Fehler** auf, alle auf den zwei Pfaden, die nie ein Beispiel berührt hatte:
+die **Auslegung war über das Formular unerreichbar**, die **a-Grenzen griffen bei
+der durchgeschweißten Naht** (samt grüner Ampel neben rotem Nachweis), das
+**Auslegungsergebnis hing vom Bezugsmaß ab** (rund 10 %) und die **Nahtbild-Grafik
+blieb im Auslegungsfall leer**. Alle vier sind behoben und mit Ankern in **S38**
+festgehalten. Zusätzlich sind die festgeschriebenen Handwerte für `ETAPPE` und
+`VERSION` durch Prüfungen gegen das Kopffeld `Codestand` ersetzt — die Lehre aus
+v2.36, konsequent zu Ende geführt. Geändert: `solver.js`, `rechenweg.js`,
+`optionen.js`, `i18n_kern.js`, `ui.js`, `test_naht.js`, `dom_smoke_voll.js`.
+**Basislinie 1138 → 1553 Assertions · Smokes 537/538 → 611/612 · i18n-Parität 0.**
+**Codestand 2.36 → 2.39** (`ui` 0.8.0 → 0.9.0, Etappe N6b → N7).
+**Nächster Schritt: N7 am Handy abnehmen.**
 
 
 ═══════════════════════════════════════════════════════════════════════════

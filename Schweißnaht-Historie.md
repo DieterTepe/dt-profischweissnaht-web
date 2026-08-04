@@ -1271,6 +1271,31 @@ steht hier. **Code unverändert.**
   Zeile war gebaut worden, um Auseinanderdriften sichtbar zu machen — und drifteten
   ausgerechnet ihre eigenen drei Zahlen.
 
+**v2.34 (2026-08-03):** **Umfang von N6b abgestimmt; erster Bauanlauf nach Regel 5c
+verworfen.** Dieters drei Antworten: **voller ISO-2553-Katalog**, **Nahtvorbereitung
+EN ISO 9692-1 kommt mit hinein**, **einteilig mit Haltepunkten nach je einem Drittel** —
+Dieter beobachtet den Tokenstand und entscheidet an jedem Haltepunkt „weiter" oder
+„Stopp". Gebaut wurden Drittel 1 (Katalog, 984 → 1067 Assertions) und Drittel 2
+(Zeichnen, → 1116), beide grün; bei 55 % Tokenstand kam „Stopp". **Es wurde KEIN Code
+ausgeliefert**, nur die Plandatei und `N6b_Vorlauf-Messwerte.md` mit den geprüften Werten.
+Projektordner blieb auf N5d, Basislinie 984 · 513 · 514.
+
+**Aus dem Stopp (2026-08-03) — was ein Haltepunkt wert ist:**
+
+- **Der Haltepunkt hat funktioniert, weil er VOR der Grenze lag, nicht dahinter.** Bei 55 %
+  war Drittel 3 rechnerisch machbar — aber ohne Polster für einen zähen Fehler in der
+  Oberfläche. Genau dort ist am nächsten Tag auch tatsächlich dreimal etwas hakengeblieben
+  (`var`-Hoisting, `Sym` vor der Deklaration, `fld_` statt `f_`). **Die Schätzung „geht
+  sich aus" war richtig, die Entscheidung dagegen war trotzdem besser.**
+- **Eine Vorlaufdatei ist kein Code-Ersatz, sondern ein Entscheidungsspeicher.** Was sie
+  gerettet hat, waren nicht Zeilen, sondern **Festlegungen**: die Seitenregel, die
+  `DOPPEL`-Zuordnung, die Bänder der 16 Fugenformen, vier bereits zugeschnappte Fallen und
+  die Liste dessen, was Drittel 3 nachziehen muss. Beim Neuaufbau musste nichts noch
+  einmal entschieden oder nachgeschlagen werden.
+- **Messwerte in die Datei, Zeilen nicht.** Die Grenze ist scharf: Tabellen, Zahlen,
+  Namen, Regeln — ja. Quelltext — nein. Sonst wäre es eine Auslieferung unter falschem
+  Namen.
+
 **v2.35 (2026-08-04):** **Baustein N6b gebaut und grün ausgeliefert.** Neu `symbol.js`
 (32 Katalogeinträge + Zeichnen auf der unveränderten `svglib.js`), `FUGENFORMEN` von 7 auf
 16 Fugenformen nach EN ISO 9692-1, **Liste 2.4 von 14 auf 13 Punkte** (Nahtvorbereitung
@@ -1279,6 +1304,104 @@ Sektionen S35/S36/S37, Planabschnitt 4.11, zwei Festlegungen in 9.2. Beide HTMLs
 14 Module ein. **Basislinie 984 → 1135 Assertions · Smokes 513/514 → 537/538 ·
 i18n-Parität 0.** Im Plan-Changelog ist v2.32 herausgerollt — Volltext steht hier.
 **Nächster Schritt: N6b am Handy abnehmen.**
+
+
+
+---
+
+**Aus der Abnahme von N6b (2026-08-04):**
+
+- **Zum zweiten Mal hat der Mensch gefunden, was der Harness nicht sah.** Erst die
+  gestrichelte Linie, die nicht gestrichelt war — dann der Programmstand, der auf „N5d ·
+  Plan 2.32" stehen blieb. Beide Male war die Prüfung formal grün. **Die Lehre ist nicht
+  „mehr Assertions", sondern: Assertions, die gegen eine wiederholte Konstante prüfen,
+  prüfen nichts.** Sie schreiben den Zustand fest, statt ihn zu vergleichen.
+- **Die Nachbesserung hatte selbst eine Nebenwirkung — und die fiel rechtzeitig auf.** Der
+  neue Abgleich verglich `PLAN` in `ui.js` mit `Plan-Version` im Kopfblock. Damit hätte
+  **jeder reine Abnahme- oder Dokumentationseintrag eine Codeänderung erzwungen**, nur
+  damit eine Zahl wieder passt. Eine Prüfung, die Pflichtänderungen am Code erzeugt,
+  produziert genau die Flüchtigkeitsfehler, gegen die sie gebaut wurde. **Abhilfe: das
+  neue Kopffeld `Codestand`** — die Planversion, gegen die der *Code* gebaut ist. Sie
+  wandert nur mit, wenn sich Code ändert; `Plan-Version` läuft frei weiter.
+- **Diese Plandatei-Version ist der erste Beleg dafür, dass es trägt:** v2.38 ist eine
+  reine Aufräumversion, `Codestand` steht unverändert auf 2.36 — und der Harness bleibt
+  grün, ohne dass eine einzige Programmzeile angefasst wurde.
+
+**v2.36 (2026-08-04):** **Nachbesserung aus der Abnahme von N6b.** `VERSION`, `ETAPPE` und
+`PLAN` in `ui.js` waren beim Bau von N6b nicht mitgezogen worden — die Versionszeile zeigte
+„N5d · Plan 2.32", obwohl alle 14 Module richtig gelistet waren. **Die Assertion darauf
+hatte den alten Wert festgeschrieben und meldete grün.** Jetzt `0.8.0` / `N6b` / `2.36`;
+`PLAN` ist exportiert und wird vom Harness gegen die Plandatei geprüft. Geändert: `ui.js`,
+`test_naht.js`, `dom_smoke_voll.js`. **Basislinie 1135 → 1138 Assertions.**
+
+**v2.37 (2026-08-04):** **Baustein N6b von Dieter am Handy geprüft und ABGENOMMEN.**
+Versionszeile „Programmstand N6b · Plan 2.36 · 14 Module", `ui 0.8.0`,
+`symbol 0.1.0-N6b`. Projektordner gegengeprüft: alle gelieferten Dateien byteweise
+identisch, die acht nicht angefassten Module unverändert, Testläufe aus dem Ordner
+**1138 / 537 / 538 · 0 Fehler**. **Neu im Kopfblock: `Codestand`** — der Harness vergleicht
+`PLAN` ab jetzt damit statt mit `Plan-Version`. **Code unverändert.**
+
+**v2.38 (2026-08-04):** **Aufräumen nach der Abnahme, keine Codeänderung.** Historie um
+v2.34, v2.36 und v2.37 ergänzt (v2.34 war beim Stopp nie nachgetragen worden); im
+Plan-Changelog v2.33 bis v2.35 ausgerollt — Volltext steht hier. `N6b_Vorlauf-Messwerte.md`
+ist gelöscht, die Verweise darauf sind im Plan auf Vergangenheit gesetzt.
+**`Codestand` bleibt 2.36** — der erste Beleg, dass eine reine Planversion den Code nicht
+mehr anfassen muss. **Basislinie unverändert: 1138 · 537 · 538.**
+
+
+**v2.39 (2026-08-04):** **Baustein N7 — der Beispielkatalog, und was er ans Licht
+gebracht hat.** Aus drei Beispielen sind zwölf geworden, sechs je Bemessungswelt.
+Der eigentliche Ertrag waren aber nicht die Beispiele, sondern **vier Fehler aus
+N5c**, die seit dem 28. Juli im Programm standen und die niemand hätte finden
+können, weil kein Beispiel je die Auslegung oder die durchgeschweißte Stumpfnaht
+berührt hat. Genau dieses Muster hatte 5.1-0 schon einmal gezeigt.
+
+**Aus N7 (2026-08-04) — Entscheidungen und Erfahrungen**
+
+**Dieters Festlegungen:**
+- **Zwölf Beispiele, sechs je Welt.** Claudes Vorschlag waren acht (vier je Welt,
+  mit gemischten Fällen). Dieter hat auf sechs erhöht, damit sich die sechs
+  Starter aus 2.11 in *beiden* Welten spiegeln. Das ist der bessere Schnitt:
+  derselbe Fall einmal nach EC3 und einmal klassisch nebeneinander ist genau der
+  Vergleich, den das Programm können soll — und die kontextbezogene Liste hat
+  nach dem Filtern noch etwas zu zeigen.
+- **Die a-Grenzen gelten für Kehlnaht UND teilweise durchgeschweißte Naht.**
+  Claude hatte gefragt, ob HV/HY mit ausgenommen werden soll. Dieters Antwort:
+  nein — ausgenommen ist ausschließlich die durchgeschweißte Naht. Dort ist
+  `a = t` die Definition; bei der teilweise durchgeschweißten liegt eine
+  Kehlnahtlage vor, also gilt die Regel weiter.
+- **Beide Fehler in N7 mit beheben**, statt sie in einen Folgebaustein zu
+  schieben. Damit belegt der Katalog zugleich, dass die reparierten Pfade tragen.
+
+**Was die vier Befunde gelehrt haben:**
+1. Eine ganze Rechenrichtung kann tot sein, ohne dass es auffällt, solange kein
+   Beispiel sie betritt. Die Auslegung scheiterte über das Formular seit N5c-1
+   an `msg_profil_a_fehlt`.
+2. Eine Regel, die für einen Nahttyp nicht gilt, darf dort **keinen Haken**
+   tragen — weder grün noch rot. Der grüne behauptet eine Prüfung, die nicht
+   stattgefunden hat; der rote holt den Widerspruch aus 9.2 zurück.
+3. **Iteration heilt nicht, was in der Geometrie sitzt.** Der erste Anlauf gegen
+   Befund 1 setzte nur ein Bezugsmaß ein — und lieferte je nach Bezugsmaß ein um
+   rund 10 % anderes `a_erf`, weil der Endkraterabzug selbst am a-Maß hängt.
+   Gefunden wurde das nur, weil die Reparatur mit *mehreren* Bezugswerten
+   gegengeprüft wurde. **Wer eine Reparatur nur mit einem Wert prüft, prüft die
+   Reparatur, nicht die Sache.**
+4. Ein Bild, das aus einer anderen Quelle kommt als die Zahlen, wird früher oder
+   später etwas anderes zeigen — hier zeigte es gar nichts.
+
+**Und eine Bestätigung:** Die Verträglichkeitsregel aus 3.4 hat beim Bauen einen
+Entwurf abgewiesen (`kehl_umlaufend` mit „Flansche + Steg"). Sie hat damit einen
+fachlichen Fehler gefangen, den sonst erst Dieter am Handy gesehen hätte.
+
+**Zur Prüfkultur:** Die festgeschriebenen Handwerte für `ETAPPE` und `VERSION`
+in den Assertions sind gefallen — sie werden jetzt wie `PLAN` gegen das Kopffeld
+`Codestand` geprüft, und der DOM-Smoke prüft die Versionszeile gegen die
+Kennungen aus `ui.js`. Damit ist die Lehre aus v2.36 überall durchgezogen, nicht
+nur an der einen Stelle, an der sie aufgefallen war.
+
+**Basislinie 1138 → 1553 Assertions · Smokes 537/538 → 611/612 · i18n-Parität 0.**
+**Nächster Schritt: N7 am Handy abnehmen.**
+
 
 
 ═══════════════════════════════════════════════════════════════════════════

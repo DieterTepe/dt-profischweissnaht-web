@@ -35,12 +35,12 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.8.0';
-  var ETAPPE = 'N6b';
+  var VERSION = '0.9.0';
+  var ETAPPE = 'N7';
   /* Plan-Version, die zu diesem Stand gehoert. Sie ist die EINZIGE von Hand
      gepflegte Zahl der Versionszeile — alles andere kommt aus den geladenen
      Modulen selbst (Plan 3.6). */
-  var PLAN = '2.36';
+  var PLAN = '2.39';
   var SPRACHEN = ['de', 'en', 'pt'];
 
   /* Plan 3.1 (bindend): die Oberflaeche startet IMMER im dunklen Design —
@@ -632,6 +632,7 @@
       }
       vorschlaegeAnwenden(z);
       symbolZeigen(z);
+      beispieleFuellen();   /* Plan 3.2: die Liste folgt der Auswahl */
       return z;
     }
 
@@ -788,6 +789,14 @@
     /* ------------------------------------------------------- Beispiele */
     /* N5c-1, Plan 5.1. Die Daten stehen in optionen.js — ui.js kennt weder
        Werkstoffe noch Profile, es traegt nur ein, was dort steht. */
+    /* KONTEXTBEZOGEN seit N7 (Plan 3.2): gezeigt wird, was zur getroffenen
+       Auswahl passt. WELCHE Merkmale das sind, weiss allein optionen.js —
+       ui.js reicht nur den Zustand hin und traegt ein, was zurueckkommt.
+       Passt nichts, liefert optionen.js alle zurueck; eine leere Liste
+       gibt es nie (Sackgassenverbot, Plan 3.4).
+       Das GELADENE Beispiel bleibt immer in der Liste, auch wenn der
+       Anwender die Auswahl inzwischen weggedreht hat — sonst stuende der
+       Kasten auf "waehlen", waehrend die Felder voll sind. */
     function beispieleFuellen() {
       var sel = el(doc, 'presetSel');
       if (!sel || !Options || !Options.BEISPIELE) return 0;
@@ -799,8 +808,17 @@
       beschrifte(leerOpt, 'bspWaehlen');
       sel.appendChild(leerOpt);
 
-      for (var i = 0; i < Options.BEISPIELE.length; i++) {
-        var b = Options.BEISPIELE[i];
+      var liste = Options.beispieleFuer ? Options.beispieleFuer(zustand())
+                                        : Options.BEISPIELE;
+      var i, b, drin = false;
+      for (i = 0; i < liste.length; i++) if (liste[i].code === vorher) drin = true;
+      if (vorher && !drin) {
+        b = Options.beispiel(vorher);
+        if (b) { liste = liste.slice(0); liste.push(b); }
+      }
+
+      for (i = 0; i < liste.length; i++) {
+        b = liste[i];
         var opt = doc.createElement('option');
         opt.setAttribute('value', b.code);
         opt.value = b.code;
@@ -808,7 +826,7 @@
         sel.appendChild(opt);
       }
       sel.value = vorher || '';
-      return Options.BEISPIELE.length;
+      return liste.length;
     }
 
     /* Plan 3.5, sinngemaess: ERST ALLES LEEREN, DANN LADEN — nie duerfen
@@ -1084,7 +1102,7 @@
       S.letzteEingabe = ue.eingabe;
       ergebnisZeigen(erg);
       rechenwegZeigen(erg, ue.eingabe);
-      grafikZeigen(ue.eingabe);
+      grafikZeigen(ue.eingabe, erg);
       if (erg && erg.ok) gesperrteFuellen(erg);
       meldung(txt(win, (erg && erg.ok) ? 'uiGerechnet' : 'uiRechnenFehler', S.sprache));
       S.letztesErgebnis = erg;
@@ -1255,7 +1273,7 @@
     }
 
     /* ------------------------------------------------ Nahtbild-Grafik (N5c-2) */
-    function grafikZeigen(ein) {
+    function grafikZeigen(ein, erg) {
       var host = grafikBox();
       if (!host) return false;
       host.innerHTML = '';
@@ -1264,7 +1282,12 @@
       var Sb = win.DTNSchaubild;
       if (!Sb || !ein || !ein.profil_eingabe) { zeige(el(doc, 'vizIdle'), true); return false; }
 
-      var bild = Sb.ausProfil(ein.profil_eingabe, { sprache: S.sprache });
+      /* Gezeichnet wird das Nahtbild, mit dem GERECHNET wurde — der Solver
+         gibt es heraus. Im Auslegungsfall steht im Formular gar kein a-Mass;
+         vor N7 blieb die Karte dort deshalb leer. */
+      var pe = (erg && erg.nahtbild && erg.nahtbild.profil_eingabe)
+             ? erg.nahtbild.profil_eingabe : ein.profil_eingabe;
+      var bild = Sb.ausProfil(pe, { sprache: S.sprache });
       if (!bild || !bild.ok || !bild.svg) {
         zeige(el(doc, 'vizIdle'), true);
         return false;
@@ -1372,7 +1395,7 @@
       if (S.letztesErgebnis) {
         ergebnisZeigen(S.letztesErgebnis);
         rechenwegZeigen(S.letztesErgebnis, S.letzteEingabe);
-        grafikZeigen(S.letzteEingabe);
+        grafikZeigen(S.letzteEingabe, S.letztesErgebnis);
       }
       return S.sprache;
     }
@@ -1654,7 +1677,13 @@
       hilfeZeigen: hilfeZeigen,
       hilfeSchliessen: hilfeSchliessen,
       /* N5c-1 */
-      beispiele: function () { return (Options && Options.BEISPIELE) ? Options.BEISPIELE.slice() : []; },
+      /* KONTEXTBEZOGEN seit N7 (Plan 3.2): dieselbe Liste, die im Kasten
+         steht — nicht der ganze Katalog. */
+      beispiele: function () {
+        if (!Options || !Options.BEISPIELE) return [];
+        return Options.beispieleFuer ? Options.beispieleFuer(zustand())
+                                     : Options.BEISPIELE.slice();
+      },
       beispielLaden: beispielLaden,
       rechnen: rechnen,
       ergebnisLeeren: ergebnisLeeren,
