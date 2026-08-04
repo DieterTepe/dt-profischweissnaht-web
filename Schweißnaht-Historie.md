@@ -1442,3 +1442,66 @@ Probe darauf, dass Code und Plan zusammenpassen.
 **Zum Verfahren:** `Codestand` bleibt bei 2.39, obwohl die Planversion auf 2.40
 steigt. Das ist der zweite Beleg dafür, dass ein reiner Abnahmeeintrag den Code
 nicht mehr anfassen muss — die Trennung aus v2.37 trägt.
+
+
+**v2.41 (2026-08-04):** **S39 — die Prüfung, die vorher fehlte.**
+
+**Aus S39 (2026-08-04) — Verifikation gegen publizierte Rechenbeispiele**
+
+Der Anstoß kam von Dieter, und er traf einen wunden Punkt: Alle Hand-Anker
+dieses Projekts prüfen **Bauteile** — I_y gegen die Steiner-Formel, W_t gegen
+I_p/r_max, die Aufteilung mit 1/√2. Was keiner davon findet, ist ein
+**Verdrahtungsfehler**: wenn jedes Stück für sich stimmt und die Kette sie
+falsch zusammensteckt. Genau diese Sorte Fehler war der Segment-Fehler aus
+N5c-3, und genau diese Sorte waren die vier N7-Befunde. Ein vollständig
+durchgerechneter fremder Fall, Zahl für Zahl verglichen, ist die einzige
+Prüfung, die sie fängt.
+
+**Ergebnis: vier Anker stimmen auf die letzte publizierte Stelle.** Geometrie
+einer geschlossenen Nahtgruppe (J_u = 2.604.166,66 mm³), zwei EC3-Fälle über
+die ganze Kette einschließlich Widerständen und Ausnutzung, ein klassischer
+Maschinenbaufall in Welt B. Das ist der erste unabhängige Beleg, dass die
+Kette als Ganzes richtig verdrahtet ist — bisher war nur belegt, dass die
+Einzelteile stimmen.
+
+**Der fünfte Anker war fehlerhaft — in der Quelle, nicht bei uns.** Das
+publizierte σ₉₀ = 145,8 N/mm² ließ sich mit unserem Programm nicht
+reproduzieren; wir kamen auf 121,5. Statt den eigenen Code zu ändern, wurde
+die Quelle nachgerechnet. Befund: dieselbe Seite rechnet dasselbe System mit
+demselben a-Maß noch einmal nach dem vereinfachten Verfahren und kommt auf
+171,9 — **exakt unser Wert**, denn 171,9/√2 = 121,5. Ihr σ₉₀ gehört zu
+**a = 2,5 mm**, ihr τ₀ = 0,83 dagegen zu a = 3 mm; und die dort abgedruckte
+Formel (mit N/2 und V/2) reproduziert weder ihr eigenes Ergebnis noch die
+Formel aus dem Theorieteil derselben Seite.
+
+**Daraus die Regel, die jetzt in 9.2 steht:** *Ein publiziertes Beispiel ist
+ein Anker, kein Beweis.* Weicht das Programm ab, wird zuerst die Quelle
+nachgerechnet. Wer eine Abweichung reflexhaft im eigenen Code sucht, baut
+einen richtigen Rechenweg kaputt — das wäre hier fast passiert.
+
+**Drei Konventionen entscheiden über die Vergleichbarkeit** und mussten erst
+gefunden werden, weil der naive Vergleich zunächst überall danebenlag:
+1. **Endkraterabzug.** Unser Programm zieht 2·a je offener Raupe ab, die
+   Lehrbücher nicht — rund **15 %** Unterschied. Wir sind die konservative
+   Seite. Daraus die neue offene Frage in 2.2b: Soll das ein Ankreuzfeld
+   werden? Im Formular ist der Abzug heute nicht abschaltbar, und wer
+   nachrechnet, findet den Unterschied ohne Erklärung.
+2. **Rechenmodell.** Die Quellen rechnen dünnwandig.
+3. **Beiwerte**, wo die Quelle abweichend einstuft.
+
+**Nebenbefund am Plan selbst:** Abschnitt 4.5 behauptete pauschal, exakt und
+dünnwandig unterschieden sich um weniger als 0,1 %. Für die Flächenmomente
+stimmt das (0,02 %), für die **Widerstandsmomente nicht** — dort liegt die
+Randfaser im exakten Modell um a/2 weiter außen, gemessen **2,9 %**. Eine
+Aussage, die neun Bausteine lang unwidersprochen im Plan stand, ist beim
+ersten Vergleich mit einer fremden Zahl gefallen. Korrigiert und mit zwei
+Assertions belegt.
+
+**Ehrliche Lücke, die die Recherche selbst benannt hat:** Für die **Kreisnaht
+unter reiner Torsion** existiert kein frei zugängliches, vollständig
+durchgerechnetes Beispiel. Der Torsionspfad ist damit über die Geometrie
+(Anker 7) und die Formeln belegt, aber nicht über einen publizierten
+Ende-zu-Ende-Fall. Bleibt offen.
+
+**Geändert: nur `test_naht.js`** — kein Produktmodul, `Codestand` bleibt 2.39.
+**Basislinie 1553 → 1589 Assertions · Smokes unverändert 611 / 612.**

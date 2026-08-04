@@ -3298,6 +3298,246 @@ for (s38i = 0; s38i < s38O.BEISPIELE.length; s38i++) {
 eq(s38Codes.length, 0, 'N7: kein einziger Beispielcode steht in ui.js (' + s38Codes.join(',') + ')');
 ok(s38Ui.indexOf('beispieleFuer') > 0, 'N7: ui.js holt die Liste bei optionen.js');
 
+sek('S39 · Verifikation gegen PUBLIZIERTE Rechenbeispiele (Ende-zu-Ende)');
+
+/* WARUM DIESE SEKTION EXISTIERT (Dieters Anstoss, 2026-08-04):
+   Alle uebrigen Hand-Anker pruefen BAUTEILE — I_y gegen die Steiner-Formel,
+   W_t gegen I_p/r_max, die Aufteilung mit 1/sqrt(2). Was kein Bauteiltest
+   findet, ist ein VERDRAHTUNGSFEHLER: wenn jedes Stueck fuer sich stimmt,
+   die Kette sie aber falsch zusammensteckt. Genau so lag der Segment-Fehler
+   aus N5c-3 acht Tage unentdeckt, und genau so waren die vier N7-Befunde
+   jedem Bauteiltest entgangen.
+   Hier wird deshalb die GANZE KETTE gegen fremde, veroeffentlichte Zahlen
+   gehalten: Eingabe rein, Ergebnis raus, Zahl fuer Zahl verglichen.
+
+   DREI EINSTELLUNGEN MUESSEN DAFUER STIMMEN — es sind Konventionen, keine
+   Fehler, und sie sind der Grund, warum ein naiver Vergleich scheitert:
+   1. ENDKRATERABZUG AUS. Unser profil.js zieht 2*a je offener Raupe ab, die
+      Lehrbuecher nicht. Bei Anker 1 sind das 198,1 statt 171,9 N/mm^2 —
+      15 Prozent. Wir sind die konservative Seite (Plan 2.2b).
+   2. MODELL 'duennwandig'. Die Quellen rechnen das Linienmodell.
+   3. Beiwerte wie in der Quelle, wo sie abweichend eingestuft wird.
+
+   Die Zahlen unten sind aus den Quellen ABGELESEN, nicht gerundet
+   nachgefuehrt. Weicht kuenftig etwas ab, ist zuerst unser Code verdaechtig. */
+
+var s39i;
+function s39Nah(ist, soll, rel) {
+  if (typeof ist !== 'number' || !isFinite(ist)) return false;
+  return Math.abs(ist - soll) <= Math.abs(soll) * (rel || 1e-3);
+}
+/* Eine Rechnung wie im Formular, aber mit den Konventionen der Quelle. */
+function s39Rechne(auswahl, werte, opt) {
+  opt = opt || {};
+  var w = Valid.standardwerte(auswahl), k;
+  for (k in werte) if (Object.prototype.hasOwnProperty.call(werte, k)) w[k] = werte[k];
+  var re = Valid.rechenEingabe(w, auswahl);
+  if (!re.ok) return { ok: false, fehler: re.fehler };
+  var ein = re.eingabe;
+  if (ein.profil_eingabe && opt.endkrater === false) ein.profil_eingabe.endkrater = false;
+  if (opt.modell) ein.modell = opt.modell;
+  return Solver.rechne(ein);
+}
+
+/* --- ANKER 7: reine Geometrie einer geschlossenen Nahtgruppe ------------
+   Quelle: mechGuru, "Fillet weld in torsion", 2012 (BS 5950). Publiziert
+   fuer die geschlossene Rechtecknahtgruppe 150 x 100 bei Einheitskehldicke:
+   A_u = 500 mm^2 und J_u = 2.604.166,66 mm^3. Die Quellenformel lautet
+   J_u = (b+d)^3/6. Das prueft Umfang, Schwerpunkt und polares Moment in
+   einem Zug — und zwar gegen eine fremde, unabhaengige Herleitung. */
+var s39b = 100, s39h = 150;
+var s39Seg = [
+  Naht.linie(-s39b / 2, -s39h / 2, s39b / 2, -s39h / 2, 1, 'u'),
+  Naht.linie(s39b / 2, -s39h / 2, s39b / 2, s39h / 2, 1, 'r'),
+  Naht.linie(s39b / 2, s39h / 2, -s39b / 2, s39h / 2, 1, 'o'),
+  Naht.linie(-s39b / 2, s39h / 2, -s39b / 2, -s39h / 2, 1, 'l')
+];
+var s39D = Naht.rechne(s39Seg, { modell: 'duennwandig' });
+var s39E = Naht.rechne(s39Seg, { modell: 'exakt' });
+ok(s39D.ok === true, 'S39 Anker 7: die Nahtgruppe rechnet');
+ok(s39Nah(s39D.A, 500, 1e-9), 'S39 Anker 7: A_u = 500 mm2 wie publiziert (ist ' + s39D.A.toFixed(2) + ')');
+ok(s39Nah(s39D.Ip, 2604166.66, 1e-6),
+   'S39 Anker 7: J_u = 2.604.166,66 mm3 wie publiziert (ist ' + s39D.Ip.toFixed(2) + ')');
+ok(s39Nah(s39D.Ip, Math.pow(s39b + s39h, 3) / 6, 1e-9),
+   'S39 Anker 7: und deckt sich mit der Quellenformel (b+d)^3/6');
+/* Das exakte Modell darf hier nur um den Dickenanteil abweichen. */
+ok(Math.abs(s39E.Ip - s39D.Ip) / s39D.Ip < 1e-4,
+   'S39 Anker 7: das exakte Modell weicht nur um den Dickenanteil ab (' +
+   (100 * (s39E.Ip - s39D.Ip) / s39D.Ip).toFixed(4) + ' %)');
+
+/* --- ANKER 2: Structural Basics, vereinfachtes Verfahren -----------------
+   Quelle: L. Ernst, "Fillet Weld Design", structuralbasics.com, Stand
+   2026-02-08. Steifenblech, zwei Kehlnaehte l = 80 mm, a = 3 mm, S235,
+   M = 0,9 kNm, N = 15 kN, V = 0,4 kN, gamma_M2 = 1,25.
+   Publiziert: I = 2,56e5 mm4 · W = 6,4e3 mm3 · sigma_N = 171,9 N/mm2 ·
+   f_vw,d = 207,9 N/mm2 · eta = 82,7 %.
+   Das Nahtbild liegt in der Fuegeebene: zwei Linien der Laenge 80 in
+   y-Richtung, das Moment biegt um z — deshalb Mz, nicht My. */
+var s39A2 = { welt: 'A', rechenrichtung: 'nachweis', lasteingabe: 'direkt',
+              werkstoffgruppe: 'stahl', werkstoff: 'S235',
+              stossart: 'ueberlappstoss', nahtart: 'kehl_doppel',
+              nachweisverfahren: 'vereinfacht', profil: 'blech', kanten: 'flanken' };
+var s39W2 = { gammaM2: 1.25, b: 80, t1: 10, a: 3, N: 15000, Q: 0, Mz: 900 };
+var s39E2 = s39Rechne(s39A2, s39W2, { endkrater: false, modell: 'duennwandig' });
+ok(s39E2.ok === true, 'S39 Anker 2: das Beispiel rechnet durch');
+if (s39E2.ok) {
+  ok(s39Nah(s39E2.nahtbild.Iz, 2.56e5, 1e-6),
+     'S39 Anker 2: I = 2,56e5 mm4 wie publiziert (ist ' + s39E2.nahtbild.Iz.toFixed(0) + ')');
+  ok(s39Nah(s39E2.nahtbild.Wz, 6.4e3, 1e-6),
+     'S39 Anker 2: W = 6,4e3 mm3 wie publiziert (ist ' + s39E2.nahtbild.Wz.toFixed(1) + ')');
+  ok(s39Nah(s39E2.massgebend.sigma_res, 171.9, 1e-3),
+     'S39 Anker 2: F_w,Ed = 171,9 N/mm2 wie publiziert (ist ' + s39E2.massgebend.sigma_res.toFixed(2) + ')');
+  ok(s39Nah(s39E2.widerstand.R_d_vereinfacht, 207.9, 1e-3),
+     'S39 Anker 2: f_vw,d = 207,9 N/mm2 wie publiziert (ist ' + s39E2.widerstand.R_d_vereinfacht.toFixed(2) + ')');
+  ok(s39Nah(s39E2.eta, 0.827, 2e-3),
+     'S39 Anker 2: Ausnutzung 82,7 % wie publiziert (ist ' + (100 * s39E2.eta).toFixed(1) + ' %)');
+  /* Die beiden Widerstaende des richtungsbezogenen Verfahrens stehen auf
+     derselben Seite und muessen ebenfalls stimmen. */
+  ok(s39Nah(s39E2.widerstand.R_d, 360, 1e-9), 'S39 Anker 2: f_u/(beta_w*gamma_M2) = 360 N/mm2');
+  ok(s39Nah(s39E2.widerstand.R_d_sigma_senk, 259.2, 1e-6), 'S39 Anker 2: 0,9*f_u/gamma_M2 = 259,2 N/mm2');
+}
+
+/* --- ANKER 1: dieselbe Quelle, richtungsbezogenes Verfahren -------------
+   ⚠ DIESER ANKER IST IN DER QUELLE FEHLERHAFT — und das ist beweisbar,
+   weil dieselbe Seite dasselbe System mit demselben a-Mass noch einmal
+   vereinfacht rechnet (Anker 2) und dort auf 171,9 kommt.
+   Publiziert richtungsbezogen: sigma_90 = tau_90 = 145,8; tau_0 = 0,83.
+   Nachgerechnet: 145,8 * sqrt(2) = 206,2 — das entspricht a = 2,5 mm,
+   nicht den angegebenen 3 mm. Ihr tau_0 = 0,83 entspricht dagegen a = 3.
+   Die Quelle mischt also zwei Kehldicken.
+   Gepruft wird deshalb NICHT gegen 145,8, sondern gegen die eigene
+   Gegenrechnung der Quelle: unser sigma_senk muss 171,9/sqrt(2) sein. */
+var s39A1 = {}; for (s39i in s39A2) if (Object.prototype.hasOwnProperty.call(s39A2, s39i)) s39A1[s39i] = s39A2[s39i];
+s39A1.nachweisverfahren = 'richtungsbezogen';
+var s39E1 = s39Rechne(s39A1, s39W2, { endkrater: false, modell: 'duennwandig' });
+ok(s39E1.ok === true, 'S39 Anker 1: das Beispiel rechnet durch');
+if (s39E1.ok) {
+  ok(s39Nah(s39E1.massgebend.sigma_senk, 171.875 / Math.SQRT2, 1e-6),
+     'S39 Anker 1: sigma_90 deckt sich mit der eigenen Gegenrechnung der Quelle (ist ' +
+     s39E1.massgebend.sigma_senk.toFixed(2) + ', erwartet 121,53)');
+  ok(s39Nah(s39E1.massgebend.tau_senk, s39E1.massgebend.sigma_senk, 1e-9),
+     'S39 Anker 1: tau_90 = sigma_90 beim Umklappen der Kehlnaht');
+  /* Und der Gegenbeweis zur Quelle: ihr Wert gehoert zu a = 2,5 mm. */
+  var s39W25 = {}; for (s39i in s39W2) if (Object.prototype.hasOwnProperty.call(s39W2, s39i)) s39W25[s39i] = s39W2[s39i];
+  s39W25.a = 2.5;
+  var s39E25 = s39Rechne(s39A1, s39W25, { endkrater: false, modell: 'duennwandig' });
+  ok(s39E25.ok === true && s39Nah(s39E25.massgebend.sigma_senk, 145.8, 2e-3),
+     'S39 Anker 1: die publizierten 145,8 gehoeren zu a = 2,5 mm — der Fehler liegt in der Quelle (ist ' +
+     (s39E25.ok ? s39E25.massgebend.sigma_senk.toFixed(2) : '-') + ')');
+}
+
+/* --- ANKER 3: Structural Basics, Hohlprofil, vereinfachtes Verfahren -----
+   Quelle: L. Ernst, "Butt Weld Design", structuralbasics.com.
+   SHS 100x100x5, umlaufende Naht a = 3 mm, M = 5 kNm, N = 8 kN, V = 2 kN,
+   f_u = 360, beta_w = 1,0 (die Quelle stuft als Stumpfnaht ein),
+   gamma_M2 = 1,35 (abweichend!). Publiziert: I_y = 2,0e6 mm4 ·
+   W_y = 4,0e4 mm3 · F_w,d = 131,67 · f_vw,d = 154 · eta = 85,5 %.
+   Umlaufend = kein Endkraterabzug, der Schalter aendert hier nichts. */
+var s39A3 = { welt: 'A', rechenrichtung: 'nachweis', lasteingabe: 'direkt',
+              werkstoffgruppe: 'stahl', werkstoff: 'S235',
+              stossart: 't_stoss', nahtart: 'kehl_umlaufend',
+              nachweisverfahren: 'vereinfacht', profil: 'rohr_rechteck', kanten: 'rundum' };
+var s39W3 = { gammaM2: 1.35, betaW: 1.0, b: 100, h: 100, t1: 5, r_ecke: 0,
+              a: 3, N: 8000, Q: 2000, M: 5000 };
+var s39E3 = s39Rechne(s39A3, s39W3, { endkrater: false, modell: 'duennwandig' });
+ok(s39E3.ok === true, 'S39 Anker 3: das Beispiel rechnet durch');
+if (s39E3.ok) {
+  ok(s39Nah(s39E3.nahtbild.l_ges, 400, 1e-9),
+     'S39 Anker 3: l_w = 400 mm wie publiziert (ist ' + s39E3.nahtbild.l_ges.toFixed(1) + ')');
+  ok(s39Nah(s39E3.nahtbild.Iy, 2.0e6, 1e-6),
+     'S39 Anker 3: I_y = 2,0e6 mm4 wie publiziert (ist ' + s39E3.nahtbild.Iy.toFixed(0) + ')');
+  ok(s39Nah(s39E3.nahtbild.Wy, 4.0e4, 1e-6),
+     'S39 Anker 3: W_y = 4,0e4 mm3 wie publiziert (ist ' + s39E3.nahtbild.Wy.toFixed(1) + ')');
+  ok(s39Nah(s39E3.massgebend.sigma_res, 131.67, 1e-3),
+     'S39 Anker 3: F_w,d = 131,67 N/mm2 wie publiziert (ist ' + s39E3.massgebend.sigma_res.toFixed(2) + ')');
+  ok(s39Nah(s39E3.widerstand.R_d_vereinfacht, 154, 2e-3),
+     'S39 Anker 3: f_vw,d = 154 N/mm2 wie publiziert (ist ' + s39E3.widerstand.R_d_vereinfacht.toFixed(2) + ')');
+  ok(s39Nah(s39E3.eta, 0.855, 2e-3),
+     'S39 Anker 3: Ausnutzung 85,5 % wie publiziert (ist ' + (100 * s39E3.eta).toFixed(1) + ' %)');
+}
+
+/* --- ANKER 8: klassischer Maschinenbau (Welt B) --------------------------
+   Quelle: D. Stjepic, "Schweissnahtberechnung", dswerk.de (nach
+   Decker / Roloff-Matek). T-Stoss, zwei Kehlnaehte l = 80 mm, a = 4 mm,
+   Blech t = 10 mm, S235, F = 50 kN Zug.
+   Publiziert: sigma = F/A_w = 50.000/640 = 78,1 N/mm2.
+   Wichtig: In Welt B faellt das Umklappen in der Vergleichsspannung wieder
+   heraus, weil dort OHNE den Faktor 3 gerechnet wird — sigma_res muss also
+   exakt der Quellenwert sein. Genau das prueft dieser Anker. */
+var s39A8 = { welt: 'B', rechenrichtung: 'nachweis', lasteingabe: 'direkt',
+              werkstoffgruppe: 'stahl', werkstoff: 'S235',
+              stossart: 't_stoss', nahtart: 'kehl_doppel',
+              nahtguete: 'kehlnaht_allgemein', weltb_nahtgruppe: 'kehl_flach',
+              lastfall: 'ruhend', profil: 'blech', kanten: 'flanken' };
+var s39E8 = s39Rechne(s39A8, { S: 1.5, b: 80, t1: 10, a: 4, N: 50000, Q: 0 },
+                      { endkrater: false, modell: 'duennwandig' });
+ok(s39E8.ok === true, 'S39 Anker 8: das Beispiel rechnet durch');
+if (s39E8.ok) {
+  ok(s39Nah(s39E8.nahtbild.A, 640, 1e-9),
+     'S39 Anker 8: A_w = 640 mm2 wie publiziert (ist ' + s39E8.nahtbild.A.toFixed(0) + ')');
+  ok(s39Nah(s39E8.massgebend.sigma_res, 78.1, 2e-3),
+     'S39 Anker 8: sigma = 78,1 N/mm2 wie publiziert (ist ' + s39E8.massgebend.sigma_res.toFixed(2) + ')');
+  ok(s39E8.widerstand.betaW === undefined && s39E8.widerstand.gammaM2 === undefined,
+     'S39 Anker 8: und der Welt-B-Widerstand kennt kein beta_w und kein gamma_M2 (Plan 4.8)');
+}
+
+/* --- DER ENDKRATERABZUG IST DER GROSSE UNTERSCHIED ----------------------
+   Festgehalten, damit niemand ihn spaeter fuer einen Fehler haelt: mit
+   Abzug rechnet unser Programm dasselbe Beispiel deutlich unguenstiger.
+   Das ist unsere bewusste Festlegung (Plan 2.2b), nicht ein Fehler der
+   Quelle — aber wer vergleicht, muss es wissen. */
+var s39MitEK = s39Rechne(s39A2, s39W2, { modell: 'duennwandig' });
+ok(s39MitEK.ok === true && s39MitEK.massgebend.sigma_res > s39E2.massgebend.sigma_res,
+   'S39: mit Endkraterabzug rechnet unser Programm unguenstiger als die Quelle');
+ok(s39MitEK.ok === true && s39Nah(s39MitEK.nahtbild.l_ges, 148, 1e-9),
+   'S39: der Abzug betraegt 2*a je offener Raupe — 148 statt 160 mm');
+ok(s39MitEK.ok === true &&
+   (s39MitEK.massgebend.sigma_res - s39E2.massgebend.sigma_res) / s39E2.massgebend.sigma_res > 0.1,
+   'S39: das sind hier ueber 10 Prozent (' +
+   (s39MitEK.ok ? (100 * (s39MitEK.massgebend.sigma_res - s39E2.massgebend.sigma_res) / s39E2.massgebend.sigma_res).toFixed(1) : '-') +
+   ' %) — der Schalter entscheidet ueber die Vergleichbarkeit');
+
+/* --- WO EXAKT UND DUENNWANDIG WIRKLICH AUSEINANDERGEHEN ------------------
+   Plan 4.5 sagte "Unterschied < 0,1 %". Fuer die FLAECHENMOMENTE stimmt
+   das; fuer die WIDERSTANDSMOMENTE nicht — dort liegt die Randfaser im
+   exakten Modell um a/2 weiter aussen. Am Anker 3 gemessen: I_y 0,02 %,
+   W_y 2,9 %. Festgehalten, damit die Aussage im Plan nicht wieder
+   pauschal wird. */
+var s39E3x = s39Rechne(s39A3, s39W3, { endkrater: false, modell: 'exakt' });
+ok(s39E3x.ok === true, 'S39: dasselbe Beispiel laeuft auch im exakten Modell');
+if (s39E3x.ok) {
+  var s39dI = Math.abs(s39E3x.nahtbild.Iy - s39E3.nahtbild.Iy) / s39E3.nahtbild.Iy;
+  var s39dW = Math.abs(s39E3x.nahtbild.Wy - s39E3.nahtbild.Wy) / s39E3.nahtbild.Wy;
+  ok(s39dI < 1e-3, 'S39: die Flaechenmomente unterscheiden sich kaum (' + (100 * s39dI).toFixed(3) + ' %)');
+  ok(s39dW > 0.02 && s39dW < 0.05,
+     'S39: die Widerstandsmomente aber messbar (' + (100 * s39dW).toFixed(1) +
+     ' %) — die Randfaser liegt um a/2 weiter aussen');
+}
+
+/* --- WAS DIESE SEKTION BEWUSST NICHT PRUEFT ------------------------------
+   Zwei der recherchierten Beispiele pruefen Dinge, die dieses Programm
+   ABSICHTLICH anders macht. Sie sind deshalb keine Anker, und das gehoert
+   festgehalten statt uebergangen:
+   - Petersen/Dlubal verteilt die Querkraft ueber den Schubfluss
+     V*S_y/(I_y*Summe a). Wir setzen sie gleichmaessig an (Q/A_w) und sagen
+     es im Rechenweg.
+   - SCI/NSC rechnet mit dem PLASTISCHEN Widerstandsmoment 2*l^2/4 nach
+     EN 1993-1-8 4.9(1). Wir rechnen elastisch mit 2*l^2/6, also
+     konservativer.
+   Beides wird hier nur nachgewiesen, nicht verglichen. */
+var s39Q = s39Rechne(s39A1, { gammaM2: 1.25, b: 80, t1: 10, a: 3, N: 0, Q: 10000 },
+                     { endkrater: false, modell: 'duennwandig' });
+var s39QH = false;
+if (s39Q.ok) {
+  for (s39i = 0; s39i < s39Q.hinweise.length; s39i++) {
+    if (s39Q.hinweise[s39i].code === 'msg_sv_querkraft_mittelwert') s39QH = true;
+  }
+}
+ok(s39QH === true,
+   'S39: das Programm sagt selbst, dass es die Querkraft gleichmaessig ansetzt — kein Schubfluss');
+ok(s39Nah(s39E2.nahtbild.Wz, 2 * 3 * 80 * 80 / 6, 1e-9),
+   'S39: und dass es ELASTISCH rechnet (W = 2*a*l^2/6), nicht plastisch');
+
 /* ========================================================================= */
 console.log('\n════════════════════════════════════════════');
 console.log(' Assertions: ' + N + '   ·   Fehler: ' + FAIL.length);

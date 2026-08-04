@@ -16,7 +16,7 @@
 > in 4.11 und in der Historie. Im Projektordner liegt **keine Vorlaufdatei** mehr.
 
 ```
-Plan-Version : 2.40 · Stand 2026-08-04
+Plan-Version : 2.41 · Stand 2026-08-04
 Codestand    : Plan 2.39 · ui 0.9.0 · N7
                (Die Planversion, gegen die der CODE gebaut ist. Sie steht auch
                in ui.js als PLAN und wird von einer Assertion damit verglichen.
@@ -50,7 +50,7 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                  4.11 (symbol.js).
                Große Bausteine (N5, N8, N13, N14) werden in ETAPPEN gebaut — Regel in
                Kickoff-Punkt 5c, Etappen in Abschnitt 5.2.
-Basislinie   : 1553 Assertions · DOM-Smokes 611 (voll) + 612 (test) · i18n-Parität 0 Abweichungen
+Basislinie   : 1589 Assertions · DOM-Smokes 611 (voll) + 612 (test) · i18n-Parität 0 Abweichungen
                (VERBINDLICH. Basislinie darf nur WACHSEN — nie schrumpfen, nie gelockert werden.)
 Dateistand   : siehe Abschnitt 8.1 — dort steht, was fertig ist und was noch fehlt.
 ⚠️ SYNC       : Am 2026-08-03 lag im Projektordner eine **elf Versionen alte**
@@ -139,7 +139,7 @@ Einstiegssatz von Dieter: **„weiter mit N8"**.
    schon zweimal Dateien verlorengegangen, beide Male hat diese Prüfung es gefunden.
 11. Arbeitsordner herstellen (Befehl unter Punkt 6 der Kickoff-Liste), dann
    `node test_naht.js`, `node dom_smoke_voll.js`, `node dom_smoke_test.js` laufen lassen
-   und die Basislinie aus dem Plan-Kopf bestätigen (**1553 / 611 / 612 · 0 Fehler**),
+   und die Basislinie aus dem Plan-Kopf bestätigen (**1589 / 611 / 612 · 0 Fehler**),
    **bevor** etwas gebaut wird. Weicht etwas ab, erst das klären.
    ⚠️ **Diese drei Läufe sind zugleich die Probe, ob Plandatei und Code zusammenpassen.**
    Steht im Kopfblock eine andere Basislinie als gemessen, ist eine der beiden Seiten alt —
@@ -321,6 +321,14 @@ Dieselben Segmente, die gerechnet werden, werden gezeichnet — eine Quelle, kan
 auseinanderlaufen. Ändert der Anwender die Kantenauswahl, erscheint bzw. verschwindet die
 Naht sofort. **Folge für die Reihenfolge:** `svglib.js` + `schaubild.js` werden von N6 auf
 **N2c vorgezogen**.
+
+> ❓ **OFFENE FRAGE AUS S39 (2026-08-04), für Dieter:** Der Endkraterabzug
+> lässt sich in `profil.js` abschalten (`endkrater: false`), im **Formular
+> aber nicht** — dort ist er immer an. Ein Anwender, der ein Lehrbuchbeispiel
+> nachrechnet, findet rund **15 % Unterschied und keinen Schalter**. Soll das
+> ein Ankreuzfeld im Bereich *Geometrie* werden (mit Laien-ⓘ, der die
+> Auswirkung benennt)? **Noch nicht entschieden — nicht bauen, bevor Dieter
+> es sagt.**
 
 **Die errechnete Länge ist ein VORSCHLAG**, mit „eigener Wert"-Haken überschreibbar
 (Regel 3.1). Erklärungen laufen über die vorhandene Laien-ⓘ-Struktur
@@ -748,7 +756,15 @@ Restwerte `rest_Sy`/`rest_Sz`) ·
 
 **Zwei benannte Rechenmodelle** (`{modell:'exakt'}` ist Voreinstellung):
 `exakt` = Rechteckfläche a × l samt Eigenanteil in Dickenrichtung (deckt sich mit Voigt),
-`duennwandig` = klassisches Linienmodell (deckt sich mit Roloff/Matek). Unterschied < 0,1 %.
+`duennwandig` = klassisches Linienmodell (deckt sich mit Roloff/Matek).
+
+> ⚠️ **KORRIGIERT MIT S39 (2026-08-04).** Hier stand bisher pauschal
+> „Unterschied < 0,1 %". Das gilt für die **Flächenmomente** (am SHS
+> 100×100×5 mit a = 3 gemessen: I_y **0,02 %**), **nicht aber für die
+> Widerstandsmomente**: dort liegt die Randfaser im exakten Modell um a/2
+> weiter außen, gemessen **2,9 %** (W_y 38.844 gegen 40.000 mm³). Wer ein
+> Lehrbuchbeispiel nachrechnet, findet genau diese Differenz. Zwei
+> Assertions in S39 halten beide Zahlen fest.
 Das gewählte Modell **muss** im Rechenweg genannt werden (Schlüssel `nb_modell_*`).
 
 **Meldungscodes** (`DTNNaht.CODES`, alle dreisprachig in `i18n_kern.js` vorhanden):
@@ -2105,6 +2121,51 @@ Freischalt-Haken, Laien-ⓘ in allen drei Sprachen, kontextbezogene Beispiellist
 füllen die Felder, Assistent-Durchlauf inkl. Übernahme vorhandener Eingaben, Ausgabe-Buttons
 verdrahtet, Sperr-Overlay in der Testversion, Registrierung + Long-Press-Reset.
 
+**Verifikation gegen publizierte Rechenbeispiele (S39, ab 2026-08-04):**
+Die übrigen Hand-Anker prüfen **Bauteile** — I_y gegen Steiner, W_t gegen
+I_p/r_max, die Aufteilung mit 1/√2. Was kein Bauteiltest findet, ist ein
+**Verdrahtungsfehler**: wenn jedes Stück für sich stimmt, die Kette sie aber
+falsch zusammensteckt. Genau so lag der Segment-Fehler aus N5c-3 acht Tage
+unentdeckt, und genau so entgingen die vier N7-Befunde jedem Bauteiltest.
+S39 hält deshalb die **ganze Kette** gegen fremde, veröffentlichte Zahlen.
+
+| Anker | Quelle | Was er prüft | Ergebnis |
+|---|---|---|---|
+| 7 | mechGuru (BS 5950) | Geometrie einer geschlossenen Nahtgruppe: A_u = 500 mm², J_u = 2.604.166,66 mm³ | **auf 6 Stellen gleich** |
+| 2 | Structural Basics, vereinfacht | ganze Kette: I, W, F_w,Ed = 171,9 · f_vw,d = 207,9 · η = 82,7 % | **alle vier gleich** |
+| 3 | Structural Basics, Hohlprofil | ganze Kette mit γ_M2 = 1,35: F_w,d = 131,67 · f_vw,d = 154 · η = 85,5 % | **alle drei gleich** |
+| 8 | DS Werk (Decker/Roloff-Matek) | Welt B: A_w = 640 mm² · σ = 78,1 N/mm² | **gleich** |
+| 1 | Structural Basics, richtungsbezogen | — | **Quelle fehlerhaft**, siehe unten |
+
+**Drei Konventionen müssen dafür stimmen — sie sind der Grund, warum ein
+naiver Vergleich scheitert:**
+1. **Endkraterabzug AUS.** Unser `profil.js` zieht 2·a je offener Raupe ab,
+   die Lehrbücher nicht. Am Anker 2 gemessen: **198,1 statt 171,9 N/mm², rund
+   15 %.** Wir sind die konservative Seite (2.2b) — aber wer vergleicht, muss
+   es wissen. Eine Assertion hält den Unterschied fest.
+2. **Modell `duennwandig`** — die Quellen rechnen das Linienmodell.
+3. **Beiwerte wie in der Quelle**, wo sie abweichend einstuft (Anker 3
+   verwendet β_w = 1,0, weil dort als Stumpfnaht eingestuft).
+
+**Anker 1 ist in der Quelle fehlerhaft — und das ist beweisbar.** Dieselbe
+Seite rechnet dasselbe System mit demselben a-Maß noch einmal vereinfacht
+und kommt auf σ_N = 171,9 — **genau unser Wert**. Ihr richtungsbezogenes
+σ₉₀ = 145,8 entspräche **a = 2,5 mm** statt der angegebenen 3 mm, ihr
+τ₀ = 0,83 dagegen a = 3. Die Quelle mischt zwei Kehldicken; zusätzlich
+reproduziert die dort abgedruckte Formel (mit N/2 und V/2) weder ihr eigenes
+Ergebnis noch die Formel aus dem Theorieteil derselben Seite. S39 prüft
+deshalb **nicht** gegen 145,8, sondern gegen die Gegenrechnung der Quelle —
+und weist zusätzlich nach, dass 145,8 zu a = 2,5 mm gehört.
+**Lehre: ein publiziertes Beispiel ist ein Anker, kein Beweis.** Bevor eine
+Abweichung dem eigenen Code angelastet wird, ist die Quelle gegenzurechnen.
+
+**Zwei recherchierte Beispiele sind BEWUSST keine Anker** (in S39 benannt,
+nicht übergangen): Petersen/Dlubal verteilt die Querkraft über den
+**Schubfluss** V·S_y/(I_y·Σa), wir setzen sie gleichmäßig an (Q/A_w) und
+sagen es im Rechenweg; SCI/NSC rechnet mit dem **plastischen**
+Widerstandsmoment 2·l²/4 nach EN 1993-1-8 4.9(1), wir elastisch mit 2·l²/6
+und damit konservativer.
+
 **i18n-Parität:** jeder Schlüssel in allen drei Sprachen — automatisiert, 0 Abweichungen.
 
 ---
@@ -2118,6 +2179,8 @@ verdrahtet, Sperr-Overlay in der Testversion, Registrierung + Long-Press-Reset.
 | `Ermüdungsnachweis_von_Schweißverbindungen__Rechenkern_und_Kerbfa.md` | R4: Rechenkern Stahl (EN 1993-1-9), Kerbfallkatalog Stahl, Aluminium (EN 1999-1-3), Vergleichsregelwerke, **offene Lücken dokumentiert** |
 | `Wärmeführung_und_Schweißtechnologie_nach_EN_1011-2__Datengrundla.md` | R5: CET/CEV inkl. Auswahl-Logik und Grenzwerte, Vorwärmung Methode A und B mit durchgerechnetem Beispiel, kombinierte Dicke, Wasserstoff |
 | `Schweißzeit__Schweißkosten_und_Schweißverzug__Datengrundlage_und.md` | R6: Mengengerüst, Zeitermittlung, Kostenrechnung mit **durchgerechnetem Verifizierungsfall** · Verzugsarten, Näherungsformeln, Gegenmaßnahmen |
+
+| `Referenzbeispiele_zur_Verifikation_eines_Schweißnaht-Bemessungsp.md` | **Verifikation (2026-08-04):** neun publizierte, durchgerechnete Schweißnahtbeispiele mit Quellenangabe — Grundlage der Harness-Sektion **S39**. Enthält auch die benannte Lücke: für die **Kreisnaht unter reiner Torsion** gibt es kein frei zugängliches vollständiges Beispiel |
 
 **Begleitdatei zum Plan:** `Schweißnaht-Historie.md` — Entscheidungslog und Changelog im
 Volltext (ab 2026-07-28 ausgelagert). **Nur bei Bedarf lesen**, Regel in Abschnitt 9.
@@ -2149,6 +2212,13 @@ Solver.
 | `dom_smoke_voll.js` | alle zwölf an der Oberfläche durchgeklickt · Filterprüfungen · die vier Befunde · Versionszeile gegen die Kennungen aus `ui.js` |
 
 **Basislinie nach N7: 1553 Assertions · 611 / 612 DOM-Smokes · i18n-Parität 0.**
+
+**Nachtrag S39 (2026-08-04) — 1 Datei:** `test_naht.js` (neue Sektion **S39**,
+Verifikation gegen publizierte Rechenbeispiele, 1553 → **1589** Assertions).
+**Kein Produktmodul angefasst** — `Codestand` bleibt deshalb **2.39**. Die
+Recherchegrundlage liegt als
+`Referenzbeispiele_zur_Verifikation_eines_Schweißnaht-Bemessungsp.md`
+im Projektordner (sechste Recherchedatei, Abschnitt 8).
 
 ---
 
@@ -2251,7 +2321,7 @@ Formsache, und der Basislinien-Abgleich aus Kickoff-Punkt 11 ebenso wenig.
 **Erste Handlung im neuen Chat:** Vollständigkeit gegen die Tabelle oben prüfen
 (**14 Module**, `style.css`, beide HTMLs, **alle drei** DEV-ONLY-Dateien, dazu Plandatei und
 `Schweißnaht-Historie.md`), Arbeitsordner herstellen, die drei Testläufe starten.
-Melden müssen sie **1553 / 611 / 612 · 0 Fehler**. Weicht etwas ab, erst das klären —
+Melden müssen sie **1589 / 611 / 612 · 0 Fehler**. Weicht etwas ab, erst das klären —
 nicht bauen.
 
 **Was N6b überschreiben wird** (zur Vorwarnung, nicht als Auftrag): neu `symbol.js`,
@@ -2377,6 +2447,14 @@ will. Also: Vorschriften und Wegweiser bleiben hier, die Erzählung wandert.
 - **Ein geändertes Modul muss seine Kennung mitziehen** (offen bis N11, 3.6):
   Solange das nicht abgesichert ist, sagt die Versionszeile nur für `ui.js`
   die Wahrheit. Wer sich auf sie verlässt, prüft weniger, als er glaubt.
+- **Ein publiziertes Beispiel ist ein Anker, kein Beweis** (S39, 2026-08-04):
+  Weicht das Programm von einer Quelle ab, wird **zuerst die Quelle
+  nachgerechnet**. Bei Anker 1 lag der Fehler dort — nachgewiesen über die
+  Gegenrechnung derselben Seite. Wer eine Abweichung reflexhaft im eigenen
+  Code sucht, baut einen richtigen Rechenweg kaputt.
+- **Beim Vergleich mit Lehrbüchern gehören drei Schalter genannt** (S39):
+  Endkraterabzug, Rechenmodell und die Beiwerte. Ohne sie ist jeder Vergleich
+  wertlos — der Endkraterabzug allein macht rund 15 % aus.
 - **Token-Pause: 4 Stunden.**
 
 ---
@@ -2416,6 +2494,7 @@ Die Blöcke stehen dort in dieser Reihenfolge; jeder nennt Datum und Baustein:
 - Aus N6b (2026-08-04) — ISO-2553-Katalog, Nahtvorbereitung, Symbolgenerator
 - Aus N7 (2026-08-04) — Beispielkatalog, vier Befunde aus N5c, Prüfkultur
 - Aus der Rückmeldung 2026-08-04 (N7 abgenommen)
+- Aus S39 (2026-08-04) — Verifikation gegen publizierte Rechenbeispiele
 - Aus der Rückmeldung 2026-07-27 (N5a abgenommen)
 - Aus N5a (2026-07-26)
 - Aus der Rückmeldung 2026-07-26 (N2c abgenommen)
@@ -2432,20 +2511,6 @@ Changelog — **die vollständige Fassung ab v1.0 steht in `Schweißnaht-Histori
 
 Hier stehen nur die letzten drei Einträge. Wer wissen will, wie eine Entscheidung
 zustande kam, findet die Kette dort — lückenlos ab der Erstfassung vom 2026-07-23.
-
-**v2.38 (2026-08-04):** **Aufräumen nach der Abnahme von N6b — keine Codeänderung.** Die
-Historie war zwei Einträge hinterher: **v2.34 fehlte ganz** (sie war beim Stopp am
-2026-08-03 nie nachgetragen worden), **v2.36 und v2.37 ebenfalls**. Alle drei sind jetzt
-dort, dazu zwei neue Erfahrungsblöcke (was ein Haltepunkt wert ist; was die Abnahme über
-Assertions gelehrt hat). Im Changelog dieser Datei sind **v2.33 bis v2.35 ausgerollt** —
-Volltext steht in `Schweißnaht-Historie.md`. `N6b_Vorlauf-Messwerte.md` ist **gelöscht**;
-die Verweise darauf sind auf Vergangenheit gesetzt. **`Codestand` bleibt 2.36** — das ist
-der erste Beleg, dass eine reine Planversion den Code nicht mehr anfassen muss.
-**Basislinie unverändert: 1138 Assertions · Smokes 537 / 538 · i18n-Parität 0.**
-**Nächster Schritt: nächster Baustein nach der Tabelle in Abschnitt 5 — Umfang vor dem Bau
-mit Dieter abstimmen. Einstieg: „weiter mit N…".**
-
-
 
 **v2.39 (2026-08-04):** **Baustein N7 (Beispielkatalog) gebaut und geliefert — und
 mit ihm vier Fehler aus N5c behoben.** Der Katalog ist von drei auf **zwölf**
@@ -2484,6 +2549,29 @@ Abnahmeeintrag den Code nicht mehr anfassen muss.
 **Basislinie unverändert: 1553 Assertions · Smokes 611 / 612 · i18n-Parität 0.**
 **Nächster Schritt: Baustein N8 (Assistent) — Etappen vor dem Bau festschreiben.
 Einstieg: „weiter mit N8".**
+
+
+
+**v2.41 (2026-08-04):** **Neue Harness-Sektion S39 — Verifikation gegen
+publizierte Rechenbeispiele.** Dieters Anstoß: alle bisherigen Hand-Anker
+prüfen *Bauteile*; was fehlte, war ein vollständig durchgerechneter fremder
+Fall, Zahl für Zahl verglichen — der einzige Test, der einen
+**Verdrahtungsfehler** findet. Nach Recherche (neun publizierte Beispiele,
+sechste Recherchedatei im Ordner) sind **vier Anker** eingebaut: Geometrie
+einer geschlossenen Nahtgruppe (J_u), zwei EC3-Fälle über die ganze Kette und
+ein klassischer Maschinenbaufall. **Alle vier stimmen auf die letzte
+publizierte Stelle.** Ein fünfter Anker erwies sich als **in der Quelle
+fehlerhaft** — nachgewiesen über die Gegenrechnung derselben Seite: das
+publizierte σ₉₀ gehört zu a = 2,5 mm statt der angegebenen 3 mm. Nebenbefund:
+die Aussage in 4.5, exakt und dünnwandig unterschieden sich um < 0,1 %, war zu
+pauschal — für die **Widerstandsmomente** sind es **2,9 %**; korrigiert und mit
+Assertion belegt. Neu benannt in 9.2: eine Quelle wird gegengerechnet, bevor
+eine Abweichung dem eigenen Code angelastet wird. Neue offene Frage in 2.2b:
+soll der Endkraterabzug ein Ankreuzfeld werden (er macht rund 15 % aus und ist
+im Formular nicht abschaltbar)? Geändert: **nur `test_naht.js`** —
+**kein Produktmodul, `Codestand` bleibt 2.39.**
+**Basislinie 1553 → 1589 Assertions · Smokes unverändert 611 / 612 · i18n-Parität 0.**
+**Nächster Schritt: Baustein N8 (Assistent) — Etappen vor dem Bau festschreiben.**
 
 
 ═══════════════════════════════════════════════════════════════════════════
