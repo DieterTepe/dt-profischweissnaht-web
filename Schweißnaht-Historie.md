@@ -1407,3 +1407,38 @@ nur an der einen Stelle, an der sie aufgefallen war.
 ═══════════════════════════════════════════════════════════════════════════
 Ende Schweißnaht-Historie.md · DT-ProfiSchweissnaht
 ═══════════════════════════════════════════════════════════════════════════
+
+
+**v2.40 (2026-08-04):** **N7 abgenommen — und was die Versionszeile dabei
+verraten hat.**
+
+**Aus der Rückmeldung 2026-08-04 (N7 abgenommen)**
+
+Dieter hat den Katalog am Handy durchgeklickt und keinen Fehler gefunden. Die
+Abnahme ging ohne Nacharbeit durch — die zweite in Folge. Der Projektordner ist
+gegengeprüft: alle 30 Dateien byteweise identisch, die zwölf nicht angefassten
+Module unverändert, Testläufe direkt aus dem Ordner 1553 / 611 / 612 · 0 Fehler.
+
+**Der Fund kam nicht aus einer Rechnung, sondern aus der Versionszeile.** Dieter
+hat sie nach dem Start abgetippt und mitgeschickt. Dabei fiel auf: `solver.js`
+meldet `0.1.0-N3` und `rechenweg.js` `0.1.0-N4` — obwohl N7 in beiden Modulen
+tief eingegriffen hat (Bezugsmaß, Außeniteration, a-Grenzen, das herausgegebene
+Nahtbild; im Rechenweg die zwei Schritte ohne Haken). **Nur `ui.js` wächst mit.**
+
+Das ist kein Schönheitsfehler. Die Zeile hat genau einen Zweck: ein altes oder
+fehlendes Modul erkennbar machen. Solange die Kennungen nicht mitwandern, könnte
+man heute `solver.js` in der Fassung von vor N7 einspielen, und die Zeile sähe
+unverändert richtig aus. **Sie prüft weniger, als sie zu prüfen scheint** — und
+das ist dieselbe Klasse von Fehler wie die festgeschriebene Assertion aus v2.36:
+etwas meldet grün, ohne die Sache zu berühren.
+
+Nicht sofort repariert, sondern **benannt und terminiert**: gehört zu N11, wo
+die Zeile ohnehin angefasst wird (Modulnamen an Dateinamen angleichen). Dort
+soll jedes geänderte Modul seine `VERSION` mitziehen und eine Assertion
+festhalten, dass eine Änderung ohne Kennungswechsel nicht durchgeht. Bis dahin
+bleibt der Basislinien-Abgleich aus Kickoff-Punkt 11 die einzige verlässliche
+Probe darauf, dass Code und Plan zusammenpassen.
+
+**Zum Verfahren:** `Codestand` bleibt bei 2.39, obwohl die Planversion auf 2.40
+steigt. Das ist der zweite Beleg dafür, dass ein reiner Abnahmeeintrag den Code
+nicht mehr anfassen muss — die Trennung aus v2.37 trägt.

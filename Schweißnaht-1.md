@@ -7,8 +7,7 @@
 > Konzeptgespräch (2026-07-23), nach der abgeschlossenen Recherche (R1–R6), nach der
 > Abstimmung vom **2026-07-24** (alle offenen Fragen aus Abschnitt 0 geklärt) und nach den
 > abgenommenen Bausteinen **N1, N2, N2b, N2c, N3, N4 und N5 vollständig
-> (N5a, N5b, N5c-1 bis N5c-3 und N5d)** und **N6b**, dazu **N7 gebaut und
-> geliefert (Abnahme offen)** — Stand 2026-08-04.
+> (N5a, N5b, N5c-1 bis N5c-3 und N5d)**, **N6b** und **N7** — Stand 2026-08-04.
 > Sie ist so geschrieben, dass ein **neuer Chat ohne Vorwissen** damit weiterarbeiten kann.
 > **Das WARUM steht in `Schweißnaht-Historie.md`** (Entscheidungslog + Changelog im
 > Volltext) — dort nachschlagen, bevor etwas geändert wird, das falsch aussieht.
@@ -17,7 +16,7 @@
 > in 4.11 und in der Historie. Im Projektordner liegt **keine Vorlaufdatei** mehr.
 
 ```
-Plan-Version : 2.39 · Stand 2026-08-04
+Plan-Version : 2.40 · Stand 2026-08-04
 Codestand    : Plan 2.39 · ui 0.9.0 · N7
                (Die Planversion, gegen die der CODE gebaut ist. Sie steht auch
                in ui.js als PLAN und wird von einer Assertion damit verglichen.
@@ -31,21 +30,20 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                Dieter am Handy geprüft und ABGENOMMEN.
                **Baustein N6b (ISO-2553-Symbolgenerator) ist von Dieter am
                Handy geprüft und ABGENOMMEN (2026-08-04).**
-               **Baustein N7 (Beispielkatalog, 12 Fälle) ist GEBAUT und
-               GELIEFERT — Abnahme am Handy steht noch aus.** Er hat dabei
-               VIER Fehler aus N5c aufgedeckt und behoben (5.1-3).
-               Projektordner /mnt/project/ ist auf diesem Stand — am
-               2026-08-04 gegengeprüft: Vollständigkeit gegen 8.1, die drei
-               Testläufe direkt aus dem Ordner grün (1138 / 537 / 538),
+               **Baustein N7 (Beispielkatalog, 12 Fälle) ist von Dieter am
+               Handy geprüft und ABGENOMMEN (2026-08-04), ohne Nacharbeit.**
+               Er hat dabei VIER Fehler aus N5c aufgedeckt und behoben (5.1-3).
+               Projektordner /mnt/project/ ist auf diesem Stand — nach N7
+               am 2026-08-04 gegengeprüft: Vollständigkeit gegen 8.1, die
+               drei Testläufe direkt aus dem Ordner grün (1553 / 611 / 612),
                `node --check` über alle 17 JS sauber, beide HTMLs mit genau
-               einer Zeile Unterschied, alle gelieferten Dateien byteweise
-               identisch angekommen und die acht nicht angefassten Module
-               unverändert. Es liegt NICHTS Halbes und nichts Zusätzliches
-               im Ordner.
-               → NÄCHSTER SCHRITT: **N7 am Handy abnehmen.** Danach
-                 Baustein **N8 (Assistent)** — Einstieg „weiter mit N8",
-                 **Umfang vor dem Bau abstimmen**; Etappen N8a–N8c stehen
-                 als Vorschlag in 5.2.
+               einer Zeile Unterschied, alle 30 Dateien byteweise identisch
+               angekommen und die zwölf nicht angefassten Module unverändert.
+               Es liegt NICHTS Halbes und nichts Zusätzliches im Ordner.
+               → NÄCHSTER SCHRITT: Baustein **N8 (Assistent)** — Einstieg
+                 „weiter mit N8", **Umfang vor dem Bau abstimmen**; die
+                 Etappen N8a–N8c stehen als Vorschlag in 5.2 und sind vor
+                 dem Bau festzuschreiben (Regel 5c).
                  Schnittstellen: 4.5 (naht.js), 4.6 (profil.js),
                  4.7 (svglib.js + schaubild.js), 4.8 (solver.js),
                  4.9 (rechenweg.js), 4.10 / 4.10b / 4.10c / 4.10d (ui.js),
@@ -577,6 +575,19 @@ aber **nichts davon ist sichtbar** — der Info-ⓘ nennt bisher nur die Edition
 > fehlenden oder alten Moduls reicht das; sobald die Zeile aber in Druck, PDF, Word und
 > `.dts` wandert, sollen die Namen den Dateinamen entsprechen. Das ist **eine Zeile je
 > Modul** (`NAME`) und gehört **in N11 mitgemacht**, nicht als eigener Bau.
+
+> **Zweiter offener Punkt für N11 (aus der Abnahme von N7, 2026-08-04):** Die
+> Modulkennungen sind **nicht alle mitgewachsen**. N7 hat in `solver.js` und
+> `rechenweg.js` tief eingegriffen — beide melden aber weiterhin `0.1.0-N3`
+> bzw. `0.1.0-N4`. Nur `ui.js` wandert mit, weil es als einziges eine gepflegte
+> Kennung trägt. **Damit könnte man heute einen Stand von vor N7 einspielen,
+> ohne dass die Zeile es verrät** — und genau das Erkennen eines alten Moduls
+> ist ihr einziger Zweck. Aufgefallen ist es Dieter beim Lesen der Zeile nach
+> der N7-Abnahme. **Gehört zusammen mit dem Namensabgleich in N11 gemacht:**
+> jedes geänderte Modul zieht seine `VERSION` mit, und eine Assertion hält
+> fest, dass eine Änderung ohne Kennungswechsel nicht durchgeht. Solange das
+> offen ist, bleibt der Basislinien-Abgleich aus Kickoff-Punkt 11 die einzige
+> verlässliche Probe.
 
 **Warum das mehr ist als Kosmetik:** Die Prüfdateien (`test_naht.js`, beide DOM-Smokes)
 sind **DEV-ONLY** und liegen nach V1 nur noch im Archiv, nicht beim ausgelieferten
@@ -1430,11 +1441,11 @@ im Wörterbuch; eine weitere Assertion verbietet einen zweiten Text daneben.
 | **N4** ✅ | **Rechenweg** *(abgenommen 2026-07-26)* | `rechenweg.js`: selbstprüfende Schrittliste für N2/N2b/N3, dreisprachig, zweiter Rechenpfad je Schritt, Rechenprobe und Nachweis getrennt. **Schnittstelle: Abschnitt 4.9.** |
 | **N5** ✅ | **UI-Basis — VOLLSTÄNDIG ABGENOMMEN: N5a, N5b, N5c-1, N5c-2, N5c-3 und N5d** | 2 HTMLs, `style.css`, Formular mit aufklappbaren Bereichen und Freischalt-Haken, Ergebnis-Kacheln, Ampel, i18n, Theme (**Start immer dunkel**), Laien-ⓘ, Block „Ausführung & Dokumentation" (ISO 5817 + EXC). **Erster Handy-Test.** |
 | **N6b** ✅ | **ISO-2553-Symbolgenerator — ABGENOMMEN 2026-08-04** | `symbol.js`: Pfeil-/Gegenseite, a- bzw. z-Maß, Länge, Rundumnaht, Baustellennaht. Nutzt `svglib.js` aus N2c. Bewusst **vor** dem Launch — Verkaufsargument. |
-| **N7** ✅ | **Beispielkatalog — GEBAUT UND GELIEFERT 2026-08-04, Abnahme offen** | **Zwölf Beispiele, sechs je Bemessungswelt**, als reine Daten in `optionen.js` auf `profil.js` aufgesetzt, mit Merkmalen für die **kontextbezogene Beispielliste** (3.2). Hat **vier Fehler aus N5c aufgedeckt und behoben** — Ergebnis in 5.1-3. |
+| **N7** ✅ | **Beispielkatalog — ABGENOMMEN 2026-08-04** | **Zwölf Beispiele, sechs je Bemessungswelt**, als reine Daten in `optionen.js` auf `profil.js` aufgesetzt, mit Merkmalen für die **kontextbezogene Beispielliste** (3.2). Hat **vier Fehler aus N5c aufgedeckt und behoben** — Ergebnis in 5.1-3. |
 | **N8** ⬅ | **Assistent** *(nächster Bau — Umfang vorher abstimmen)* | `assistent.js` (DOM-freie Dialoglogik) + Overlay-UI, Button-Einstieg, tabellengestützt aus `optionen.js`, mit Erklärungen/Tipps/Skizzen je Dialog, Übernahme vorhandener Eingaben. |
 | **N9** | **Vorwärmung & t8/5** | `thermik.js` + Panel + Rechenweg + Assistenten-Schritte. |
 | **N10** | **Kosten/Zeit/Draht** | `kosten.js` + Panel + Rechenweg + Assistenten-Schritte. |
-| **N11** | **Ausgaben** | `report.js`: `.dts` speichern/öffnen (**erst leeren, dann laden** + Formatversion), Druck/PDF, Word (.rtf), `guard()`-Gating. Aktionsleiste **oben**, Dateiname trägt Bezeichnung + Datum. **Jede Ausgabe trägt die Versionszeile** (3.6) — **dabei die Modulnamen an die Dateinamen angleichen**, siehe Merkposten in 3.6. |
+| **N11** | **Ausgaben** | `report.js`: `.dts` speichern/öffnen (**erst leeren, dann laden** + Formatversion), Druck/PDF, Word (.rtf), `guard()`-Gating. Aktionsleiste **oben**, Dateiname trägt Bezeichnung + Datum. **Jede Ausgabe trägt die Versionszeile** (3.6) — **dabei die Modulnamen an die Dateinamen angleichen UND die Modulkennungen mitwachsen lassen**, beide Merkposten in 3.6. |
 | **N12** | **Edition/Registrierung/Impressum** | Testbalken, Aktivierungsdialog beim Erststart (Name + Schlüssel, **keine Formatprüfung**), „Vollversion · lizenziert für <Name>", **10-s-Long-Press** = Reset, Info-ⓘ mit Impressum. |
 | **★** | **LAUNCH-CHECKPOINT** | **Ab hier verkaufsfähig.** Dieter entscheidet: weiterbauen oder veröffentlichen. |
 | **N13** | **Ermüdung — Rechenkern** | `ermuedung.js`: Wöhlerlinie m=3/5, γ_Mf, Miner, Kollektive + Rechenweg. **Hier Dieter nach seinen Praxis-Kerbfällen fragen.** |
@@ -1715,7 +1726,12 @@ Prozentpunkte Tokenstand. Wer bei über 40 % startet, schafft alle drei.*
 
 ---
 
-#### 5.1-3 · N7 — **GEBAUT UND GELIEFERT 2026-08-04, Abnahme offen**
+#### 5.1-3 · N7 — **GEBAUT, GELIEFERT UND ABGENOMMEN 2026-08-04**
+
+> ✅ **Von Dieter am Handy geprüft und ABGENOMMEN — ohne Nacharbeit.**
+> Belegt: die Versionszeile nennt „Programmstand N7 · Plan 2.39 · 14 Module"
+> mit `ui 0.9.0` und allen vierzehn Kennungen. Was unten steht, bleibt als
+> **Begründung** stehen — gebaut wird daraus nichts mehr.
 
 **Der abgestimmte Umfang** *(Dieter, 2026-08-04)*: **zwölf Beispiele, sechs je
 Bemessungswelt** — die sechs Starter aus 2.11 spiegeln sich in beiden Welten.
@@ -1785,6 +1801,8 @@ a-Maß** samt Nahtbild. `stoss` antippen liefert eine **grüne durchgeschweißte
 Stumpfnaht ohne Warnung**.
 
 **Offen für N16:** Beispiele für Edelstahl und Aluminium.
+**An N11 weitergereicht:** die Modulkennungen von `solver.js` und `rechenweg.js`
+(siehe Merkposten in 3.6).
 
 ---
 
@@ -2356,6 +2374,9 @@ will. Also: Vorschriften und Wegweiser bleiben hier, die Erzählung wandert.
 - **Jeder neue Beispielkatalog ist zugleich ein Fehlersuchlauf** (N7): Die vier
   Befunde aus 5.1-3 lagen alle auf Pfaden, die kein Beispiel je berührt hatte.
   Wer Beispiele nur als Bequemlichkeit sieht, verschenkt ihren halben Wert.
+- **Ein geändertes Modul muss seine Kennung mitziehen** (offen bis N11, 3.6):
+  Solange das nicht abgesichert ist, sagt die Versionszeile nur für `ui.js`
+  die Wahrheit. Wer sich auf sie verlässt, prüft weniger, als er glaubt.
 - **Token-Pause: 4 Stunden.**
 
 ---
@@ -2394,6 +2415,7 @@ Die Blöcke stehen dort in dieser Reihenfolge; jeder nennt Datum und Baustein:
 - Aus der Rückmeldung 2026-08-03 (N5d abgenommen)
 - Aus N6b (2026-08-04) — ISO-2553-Katalog, Nahtvorbereitung, Symbolgenerator
 - Aus N7 (2026-08-04) — Beispielkatalog, vier Befunde aus N5c, Prüfkultur
+- Aus der Rückmeldung 2026-08-04 (N7 abgenommen)
 - Aus der Rückmeldung 2026-07-27 (N5a abgenommen)
 - Aus N5a (2026-07-26)
 - Aus der Rückmeldung 2026-07-26 (N2c abgenommen)
@@ -2410,19 +2432,6 @@ Changelog — **die vollständige Fassung ab v1.0 steht in `Schweißnaht-Histori
 
 Hier stehen nur die letzten drei Einträge. Wer wissen will, wie eine Entscheidung
 zustande kam, findet die Kette dort — lückenlos ab der Erstfassung vom 2026-07-23.
-
-**v2.37 (2026-08-04):** **Baustein N6b von Dieter am Handy geprüft und ABGENOMMEN.** Die
-Versionszeile zeigt „Programmstand N6b · Plan 2.36 · 14 Module" mit `ui 0.8.0` und
-`symbol 0.1.0-N6b`; alle zwölf übrigen Kennungen unverändert. Projektordner gegengeprüft:
-alle 13 gelieferten Dateien byteweise identisch, die acht nicht angefassten Module
-unverändert, `node --check` über 17 Dateien sauber, Testläufe aus dem Ordner
-**1138 / 537 / 538 · 0 Fehler**, HTML-Diff genau eine Zeile. **Neu im Kopfblock: das Feld
-`Codestand`** — die Planversion, gegen die der Code gebaut ist. Der Harness vergleicht
-`PLAN` aus `ui.js` ab jetzt damit statt mit `Plan-Version`, damit reine Plan- oder
-Abnahmeeinträge nicht jedes Mal eine Codeänderung erzwingen. **Code unverändert.**
-**Nächster Schritt: nächster Baustein nach Abschnitt 5 — Umfang vorher abstimmen.**
-
-
 
 **v2.38 (2026-08-04):** **Aufräumen nach der Abnahme von N6b — keine Codeänderung.** Die
 Historie war zwei Einträge hinterher: **v2.34 fehlte ganz** (sie war beim Stopp am
@@ -2456,6 +2465,25 @@ v2.36, konsequent zu Ende geführt. Geändert: `solver.js`, `rechenweg.js`,
 **Basislinie 1138 → 1553 Assertions · Smokes 537/538 → 611/612 · i18n-Parität 0.**
 **Codestand 2.36 → 2.39** (`ui` 0.8.0 → 0.9.0, Etappe N6b → N7).
 **Nächster Schritt: N7 am Handy abnehmen.**
+
+
+
+**v2.40 (2026-08-04):** **Baustein N7 von Dieter am Handy geprüft und ABGENOMMEN —
+ohne Nacharbeit.** Die Versionszeile zeigt „Programmstand N7 · Plan 2.39 ·
+14 Module" mit `ui 0.9.0`; alle vierzehn Kennungen stehen da. Projektordner
+gegengeprüft: **alle 30 Dateien byteweise identisch**, die zwölf nicht
+angefassten Module unverändert, `node --check` über 17 Dateien sauber, Testläufe
+direkt aus dem Ordner **1553 / 611 / 612 · 0 Fehler**, HTML-Diff genau eine Zeile.
+**Beim Lesen der Zeile ist ein zweiter Punkt für N11 aufgefallen:** `solver.js`
+und `rechenweg.js` melden weiterhin `0.1.0-N3` bzw. `0.1.0-N4`, obwohl N7 in
+beiden tief eingegriffen hat — **die Kennungen wachsen nicht mit**, nur `ui.js`
+tut es. Damit könnte ein alter Stand unbemerkt eingespielt werden, und genau das
+soll die Zeile verhindern. Festgehalten in 3.6 und 9.2, zu erledigen mit N11.
+**Code unverändert, `Codestand` bleibt 2.39** — der zweite Beleg, dass ein reiner
+Abnahmeeintrag den Code nicht mehr anfassen muss.
+**Basislinie unverändert: 1553 Assertions · Smokes 611 / 612 · i18n-Parität 0.**
+**Nächster Schritt: Baustein N8 (Assistent) — Etappen vor dem Bau festschreiben.
+Einstieg: „weiter mit N8".**
 
 
 ═══════════════════════════════════════════════════════════════════════════
