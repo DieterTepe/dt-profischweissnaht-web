@@ -14,7 +14,7 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.3.0-N9c';
+  var VERSION = '0.4.0-N10b';
   var SPRACHEN = ['de', 'en', 'pt'];
   var FELDER = ['was', 'bereich', 'tipp'];
 
@@ -735,6 +735,204 @@
       pt: { was: 'Teor de níquel.',
             bereich: 'Aços não ligados abaixo de 0,3 %, aços de grão fino mais.',
             tipp: 'Em S460N o níquel pode contribuir sensivelmente para o CET.' }
+    },
+    fld_drahtdm: {
+      de: { was: 'Der Durchmesser des Schweißdrahts.',
+            bereich: 'Übliche Durchmesser 0,8 · 1,0 · 1,2 · 1,6 mm. Er bestimmt beim MAG-Schweißen auch den Gasdurchfluss (Faustformel: Durchmesser × 10 l/min).',
+            tipp: '1,2 mm ist der häufigste Draht im Stahlbau.' },
+      en: { was: 'The diameter of the welding wire.',
+            bereich: 'Common diameters 0.8 · 1.0 · 1.2 · 1.6 mm. In MAG welding it also sets the gas flow (rule of thumb: diameter × 10 l/min).',
+            tipp: '1.2 mm is the most common wire in structural steelwork.' },
+      pt: { was: 'O diâmetro do fio de soldadura.',
+            bereich: 'Diâmetros usuais 0,8 · 1,0 · 1,2 · 1,6 mm. Em MAG define também o caudal de gás (regra: diâmetro × 10 l/min).',
+            tipp: '1,2 mm é o fio mais comum na construção metálica.' }
+    },
+    fld_eta_quelle: {
+      de: { was: 'Wie viel der aufgenommenen elektrischen Leistung am Lichtbogen ankommt.',
+            bereich: 'Moderne Inverter etwa 0,85. Ältere Trafo- und Thyristorquellen liegen darunter.',
+            tipp: '0,85 lassen, wenn Sie das Gerät nicht kennen. Der Wert beeinflusst nur den Stromverbrauch, nicht die Naht.' },
+      en: { was: 'How much of the drawn electrical power reaches the arc.',
+            bereich: 'Modern inverters about 0.85. Older transformer and thyristor sources are lower.',
+            tipp: 'Leave it at 0.85 if you do not know the machine. It affects only the energy consumption, not the weld.' },
+      pt: { was: 'Quanto da potência elétrica consumida chega ao arco.',
+            bereich: 'Inversores modernos cerca de 0,85. Fontes antigas ficam abaixo.',
+            tipp: 'Deixe 0,85 se não conhecer o equipamento. Afeta só o consumo, não o cordão.' }
+    },
+    fld_A_fuge: {
+      de: { was: 'Die Querschnittsfläche der Naht, die mit Schweißgut gefüllt wird.',
+            bereich: 'Bei einer Kehlnaht rechnet das Programm sie selbst: a². Bei Stumpfnähten hängt sie an Öffnungswinkel, Spalt und Steghöhe und wird geschätzt.',
+            tipp: 'Nur eintragen, wenn Sie den Querschnitt aus der Zeichnung oder der Schweißanweisung kennen — dann wird nicht geschätzt.' },
+      en: { was: 'The cross-sectional area of the weld that is filled with weld metal.',
+            bereich: 'For a fillet weld the program computes it itself: a². For butt welds it depends on included angle, gap and root face and is estimated.',
+            tipp: 'Enter it only if you know the section from the drawing or procedure — then nothing is estimated.' },
+      pt: { was: 'A área da secção do cordão que é preenchida com metal depositado.',
+            bereich: 'Num filete o programa calcula-a: a². Em juntas de topo depende do ângulo, folga e nariz, sendo estimada.',
+            tipp: 'Indique-a só se a conhecer do desenho ou da especificação — então nada é estimado.' }
+    },
+    fld_ueberhoehung: {
+      de: { was: 'Zuschlag auf den theoretischen Querschnitt, weil eine Naht nie exakt bündig abschließt.',
+            bereich: 'Üblich rund 15 %. Bei Zwangslagen, Nacharbeit und vielen kurzen Nähten 20 % und mehr.',
+            tipp: '15 % ist der Erfahrungswert für normale Werkstattbedingungen.' },
+      en: { was: 'Allowance on the theoretical cross-section, because a weld never finishes exactly flush.',
+            bereich: 'Usually about 15 %. Out-of-position work, rework and many short welds warrant 20 % and more.',
+            tipp: '15 % is the practical value for normal shop conditions.' },
+      pt: { was: 'Acréscimo sobre a secção teórica, porque um cordão nunca fica exatamente rente.',
+            bereich: 'Habitualmente cerca de 15 %. Posições difíceis e cordões curtos justificam 20 % ou mais.',
+            tipp: '15 % é o valor prático para condições normais de oficina.' }
+    },
+    fld_ausbringung: {
+      de: { was: 'Wie viel vom eingesetzten Draht als Schweißgut in der Naht bleibt.',
+            bereich: 'MAG Massivdraht 92–98 % · Fülldraht 80–90 % · Stabelektrode rund 65 % (Stummelverluste) · Unterpulver rund 99 %.',
+            tipp: '95 % gilt für MAG mit Massivdraht. Bei Stabelektroden deutlich heruntersetzen.' },
+      en: { was: 'How much of the wire used remains as weld metal in the joint.',
+            bereich: 'MAG solid wire 92–98 % · flux-cored 80–90 % · stick electrode about 65 % (stub loss) · submerged arc about 99 %.',
+            tipp: '95 % applies to MAG with solid wire. Reduce it considerably for stick electrodes.' },
+      pt: { was: 'Quanto do fio usado permanece como metal depositado.',
+            bereich: 'MAG fio maciço 92–98 % · fluxado 80–90 % · elétrodo revestido cerca de 65 % · arco submerso cerca de 99 %.',
+            tipp: '95 % aplica-se a MAG com fio maciço. Reduza bastante para elétrodos revestidos.' }
+    },
+    fld_abschmelz: {
+      de: { was: 'Wie viel Schweißgut je Stunde reiner Lichtbogenzeit abgeschmolzen wird.',
+            bereich: 'E-Hand 0,4–2,5 · MAG Kurzlichtbogen 1–3 · MAG Sprühlichtbogen 3–6 · WIG 0,3–1 · Unterpulver 10–20 kg/h.',
+            tipp: '3 kg/h entspricht MAG im Sprühlichtbogen. Der Wert bezieht sich auf 100 % Einschaltdauer.' },
+      en: { was: 'How much weld metal is deposited per hour of pure arc time.',
+            bereich: 'MMA 0.4–2.5 · MAG short arc 1–3 · MAG spray 3–6 · TIG 0.3–1 · submerged arc 10–20 kg/h.',
+            tipp: '3 kg/h corresponds to MAG spray transfer. The figure refers to 100 % duty cycle.' },
+      pt: { was: 'Quanto metal é depositado por hora de arco puro.',
+            bereich: 'Elétrodo 0,4–2,5 · MAG curto 1–3 · MAG spray 3–6 · TIG 0,3–1 · arco submerso 10–20 kg/h.',
+            tipp: '3 kg/h corresponde a MAG em spray. Refere-se a 100 % de fator de marcha.' }
+    },
+    fld_brennzeit: {
+      de: { was: 'Der Anteil der reinen Lichtbogenzeit an der gesamten Arbeitszeit. Heften, Positionieren, Schlacke entfernen und Prüfen zählen nicht dazu.',
+            bereich: 'Industriedurchschnitt rund 20 % · Einzelfertigung 20–35 % · getaktetes Fertigschweißen 40 % · mechanisiert 60–80 % · Unterpulver vollautomatisch nahe 100 %.',
+            tipp: 'Das ist der größte Hebel auf die Kosten: Halbe Brennzeit bedeutet doppelte Gesamtzeit und damit doppelten Lohn.' },
+      en: { was: 'The share of pure arc time in the total working time. Tacking, positioning, slag removal and inspection do not count.',
+            bereich: 'Industry average about 20 % · one-off work 20–35 % · cycled finish welding 40 % · mechanised 60–80 % · submerged arc near 100 %.',
+            tipp: 'This is the biggest lever on cost: half the arc-on time means double the total time and double the labour.' },
+      pt: { was: 'A fração de tempo de arco puro no tempo total. Pingar, posicionar, remover escória e inspecionar não contam.',
+            bereich: 'Média industrial cerca de 20 % · peça única 20–35 % · soldadura em ciclo 40 % · mecanizada 60–80 % · arco submerso perto de 100 %.',
+            tipp: 'É a maior alavanca no custo: metade do tempo de arco duplica o tempo total e a mão de obra.' }
+    },
+    fld_gasfluss: {
+      de: { was: 'Der eingestellte Schutzgasdurchfluss.',
+            bereich: 'MAG Stahl: Drahtdurchmesser × 10 l/min · MIG Aluminium × 15 · WIG 6,5–9,5 l/min je nach Strom.',
+            tipp: 'Leer lassen — das Programm rechnet ihn aus dem Drahtdurchmesser. Nur eintragen, wenn Sie am Gerät etwas anderes eingestellt haben.' },
+      en: { was: 'The shielding gas flow rate set on the machine.',
+            bereich: 'MAG steel: wire diameter × 10 l/min · MIG aluminium × 15 · TIG 6.5–9.5 l/min depending on current.',
+            tipp: 'Leave it empty — the program derives it from the wire diameter. Enter it only if your machine is set differently.' },
+      pt: { was: 'O caudal de gás de proteção regulado.',
+            bereich: 'MAG aço: diâmetro × 10 l/min · MIG alumínio × 15 · TIG 6,5–9,5 l/min conforme a corrente.',
+            tipp: 'Deixe vazio — o programa deriva-o do diâmetro. Indique só se o equipamento estiver regulado de outro modo.' }
+    },
+    fld_preis_lohn: {
+      de: { was: 'Ihr Fertigungsstundensatz für den Schweißer, einschließlich Lohnnebenkosten.',
+            bereich: 'Der vorbelegte Wert stammt aus einer Quelle von 2019 und ist inzwischen sicher zu niedrig.',
+            tipp: 'Unbedingt durch Ihren eigenen Satz ersetzen. Der Lohn macht in der Regel rund 80 % der Schweißkosten aus.' },
+      en: { was: 'Your shop hourly rate for the welder, including on-costs.',
+            bereich: 'The preset comes from a 2019 source and is certainly too low by now.',
+            tipp: 'Replace it with your own rate. Labour typically accounts for about 80 % of welding cost.' },
+      pt: { was: 'O seu custo horário de fabrico do soldador, incluindo encargos.',
+            bereich: 'O valor predefinido vem de uma fonte de 2019 e está certamente desatualizado.',
+            tipp: 'Substitua pelo seu valor. A mão de obra representa tipicamente cerca de 80 % do custo.' }
+    },
+    fld_preis_draht: {
+      de: { was: 'Der Preis je Kilogramm Schweißdraht.',
+            bereich: 'Für diesen Preis ließ sich keine zweifach belegte Quelle finden — der vorbelegte Wert ist eine reine Annahme.',
+            tipp: 'Aus Ihrer letzten Rechnung übernehmen. Der Drahtanteil liegt meist unter 10 % der Gesamtkosten.' },
+      en: { was: 'The price per kilogram of welding wire.',
+            bereich: 'No doubly sourced figure could be found for this price — the preset is a plain assumption.',
+            tipp: 'Take it from your last invoice. Wire usually accounts for under 10 % of total cost.' },
+      pt: { was: 'O preço por quilograma de fio.',
+            bereich: 'Não foi possível encontrar fonte dupla para este preço — o valor é um mero pressuposto.',
+            tipp: 'Retire-o da sua última fatura. O fio representa normalmente menos de 10 % do custo.' }
+    },
+    fld_preis_gas: {
+      de: { was: 'Der Preis je Liter Schutzgas.',
+            bereich: 'Herstellerannahme aus 2025. Flaschenpreise und Mietkosten schwanken stark und regional.',
+            tipp: 'Aus Flaschenpreis geteilt durch Füllmenge rechnen. Reines Argon ist teurer als Mischgas, Helium deutlich teurer.' },
+      en: { was: 'The price per litre of shielding gas.',
+            bereich: 'Manufacturer assumption from 2025. Cylinder prices and rental vary strongly and regionally.',
+            tipp: 'Derive it from cylinder price divided by content. Pure argon costs more than mixed gas, helium much more.' },
+      pt: { was: 'O preço por litro de gás de proteção.',
+            bereich: 'Pressuposto de fabricante de 2025. Preços de garrafa e aluguer variam muito e por região.',
+            tipp: 'Calcule a partir do preço da garrafa a dividir pelo conteúdo. Árgon puro custa mais que mistura.' }
+    },
+    fld_preis_energie: {
+      de: { was: 'Ihr Strompreis je Kilowattstunde.',
+            bereich: 'Herstellerannahme aus 2025 für Industriestrom. Energiepreise sind besonders volatil.',
+            tipp: 'Aus Ihrer Stromrechnung übernehmen. Der Energieanteil liegt meist bei ein bis zwei Prozent der Schweißkosten.' },
+      en: { was: 'Your electricity price per kilowatt-hour.',
+            bereich: 'Manufacturer assumption from 2025 for industrial power. Energy prices are especially volatile.',
+            tipp: 'Take it from your electricity bill. Energy usually accounts for one to two percent of welding cost.' },
+      pt: { was: 'O seu preço de eletricidade por quilowatt-hora.',
+            bereich: 'Pressuposto de fabricante de 2025 para energia industrial. Muito volátil.',
+            tipp: 'Retire-o da sua fatura. A energia representa normalmente um a dois por cento do custo.' }
+    },
+    fld_kosten_maschine: {
+      de: { was: 'Abschreibung und Wartung der Schweißanlage, umgelegt auf diese Naht.',
+            bereich: 'Kein allgemeiner Richtwert möglich — hängt an Anlage, Auslastung und Abschreibungsdauer.',
+            tipp: 'Steht auf null. Das Programm kann diesen Betrag nicht herleiten; wer ihn kennt, trägt ihn ein.' },
+      en: { was: 'Depreciation and maintenance of the welding equipment, apportioned to this weld.',
+            bereich: 'No general guide value is possible — it depends on equipment, utilisation and depreciation period.',
+            tipp: 'Stands at zero. The program cannot derive this amount; enter it if you know it.' },
+      pt: { was: 'Amortização e manutenção do equipamento, imputadas a este cordão.',
+            bereich: 'Não é possível um valor geral — depende do equipamento, utilização e amortização.',
+            tipp: 'Está a zero. O programa não pode deduzir este montante; introduza-o se o conhecer.' }
+    },
+    fld_kosten_vorbereitung: {
+      de: { was: 'Schneiden, Fasen, Reinigen und Heften vor dem Schweißen.',
+            bereich: 'Kein allgemeiner Richtwert möglich — hängt an Fugenform, Blechdicke und Verfahren.',
+            tipp: 'Steht auf null. Bei Stumpfnähten mit aufwändiger Fugenvorbereitung kann dieser Posten erheblich sein.' },
+      en: { was: 'Cutting, bevelling, cleaning and tacking before welding.',
+            bereich: 'No general guide value is possible — it depends on groove form, plate thickness and process.',
+            tipp: 'Stands at zero. For butt welds with elaborate preparation this item can be substantial.' },
+      pt: { was: 'Corte, chanfragem, limpeza e pingagem antes de soldar.',
+            bereich: 'Não é possível um valor geral — depende do chanfro, espessura e processo.',
+            tipp: 'Está a zero. Em juntas de topo com preparação elaborada pode ser considerável.' }
+    },
+    fld_kosten_vorwaermen: {
+      de: { was: 'Energie und Zeit für das Vorwärmen des Bauteils.',
+            bereich: 'Kein allgemeiner Richtwert möglich — hängt an Bauteilmasse, Zieltemperatur und Heizverfahren.',
+            tipp: 'Steht auf null. Ob überhaupt vorgewärmt werden muss, sagt Ihnen der Bereich Vorwärmung und t8/5.' },
+      en: { was: 'Energy and time for preheating the component.',
+            bereich: 'No general guide value is possible — it depends on component mass, target temperature and heating method.',
+            tipp: 'Stands at zero. Whether preheating is needed at all is answered by the Preheating & t8/5 section.' },
+      pt: { was: 'Energia e tempo para pré-aquecer a peça.',
+            bereich: 'Não é possível um valor geral — depende da massa, temperatura alvo e método.',
+            tipp: 'Está a zero. Se é sequer necessário, di-lo a secção Pré-aquecimento e t8/5.' }
+    },
+    fld_kosten_nacharbeit: {
+      de: { was: 'Schleifen, Richten und Ausbessern nach dem Schweißen.',
+            bereich: 'Kein allgemeiner Richtwert möglich — hängt an Qualitätsanforderung und Ausführung.',
+            tipp: 'Steht auf null. Bei hoher Bewertungsgruppe und sichtbaren Nähten deutlich mehr einplanen.' },
+      en: { was: 'Grinding, straightening and repair after welding.',
+            bereich: 'No general guide value is possible — it depends on quality requirement and workmanship.',
+            tipp: 'Stands at zero. Allow considerably more for high quality levels and visible welds.' },
+      pt: { was: 'Esmerilagem, endireitamento e reparação após soldar.',
+            bereich: 'Não é possível um valor geral — depende do nível de qualidade e da execução.',
+            tipp: 'Está a zero. Preveja bastante mais para níveis exigentes e cordões visíveis.' }
+    },
+    fld_kosten_pruefung: {
+      de: { was: 'Sichtprüfung, Oberflächen- und Volumenprüfung.',
+            bereich: 'Kein allgemeiner Richtwert möglich — hängt an Prüfumfang, Verfahren und Prüfstelle.',
+            tipp: 'Steht auf null. Der Prüfumfang ergibt sich aus der Ausführungsklasse, nicht aus der Berechnung.' },
+      en: { was: 'Visual, surface and volumetric inspection.',
+            bereich: 'No general guide value is possible — it depends on scope, method and test house.',
+            tipp: 'Stands at zero. The scope follows from the execution class, not from the calculation.' },
+      pt: { was: 'Inspeção visual, superficial e volumétrica.',
+            bereich: 'Não é possível um valor geral — depende do âmbito, método e entidade.',
+            tipp: 'Está a zero. O âmbito decorre da classe de execução, não do cálculo.' }
+    },
+    fld_kosten_gemeinkosten: {
+      de: { was: 'Zuschlag für Verwaltung, Raum, Werkzeug und alles, was nicht einzeln zugeordnet wird.',
+            bereich: 'Kein allgemeiner Richtwert möglich — jeder Betrieb rechnet anders.',
+            tipp: 'Steht auf null. Häufig als Prozentsatz auf Material und Fertigung gerechnet; hier als Betrag einzutragen.' },
+      en: { was: 'Allowance for administration, premises, tooling and everything not directly attributable.',
+            bereich: 'No general guide value is possible — every company calculates differently.',
+            tipp: 'Stands at zero. Often computed as a percentage on material and production; enter it here as an amount.' },
+      pt: { was: 'Acréscimo para administração, instalações, ferramenta e tudo o que não é imputado diretamente.',
+            bereich: 'Não é possível um valor geral — cada empresa calcula de forma diferente.',
+            tipp: 'Está a zero. Muitas vezes calculado em percentagem; aqui indica-se como montante.' }
     },
     fld_d_komb: {
       de: { was: 'Die Summe der Blechdicken, die im Nahtbereich zusammenlaufen. Normalerweise rechnet das Programm sie aus Stoßart und Blechdicken.',

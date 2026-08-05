@@ -150,6 +150,31 @@
         </div>
       </section>
 
+      <!-- N10b · Geteilte Prozessgroessen: Waermefuehrung und Kosten
+           brauchen dieselben Schweissparameter. -->
+      <section class="acc" id="acc_prozess">
+        <button type="button" class="acc-head" id="accBtn_prozess" aria-expanded="false" aria-controls="accBody_prozess">
+          <span class="acc-caret" id="accCaret_prozess" aria-hidden="true">▸</span>
+          <span class="acc-titel" id="accTitel_prozess" data-i18n="sec_prozess">Schweißparameter</span>
+        </button>
+        <div class="acc-body" id="accBody_prozess" hidden>
+          <p class="acc-hint" id="accHint_prozess" data-i18n="sec_prozess_hint"></p>
+          <div class="feldgruppe" id="host_prozess"></div>
+        </div>
+      </section>
+
+      <!-- N10b · Kosten, Zeit und Drahtbedarf. -->
+      <section class="acc" id="acc_kosten">
+        <button type="button" class="acc-head" id="accBtn_kosten" aria-expanded="false" aria-controls="accBody_kosten">
+          <span class="acc-caret" id="accCaret_kosten" aria-hidden="true">▸</span>
+          <span class="acc-titel" id="accTitel_kosten" data-i18n="sec_kosten">Kosten, Zeit, Drahtbedarf</span>
+        </button>
+        <div class="acc-body" id="accBody_kosten" hidden>
+          <p class="acc-hint" id="accHint_kosten" data-i18n="sec_kosten_hint"></p>
+          <div class="feldgruppe" id="host_kosten"></div>
+        </div>
+      </section>
+
       <!-- N9b · Wärmeführung. Erscheint erst, wenn der Bereich oben
            zugeschaltet ist — eine eigene Rechnung neben dem
            Festigkeitsnachweis, kein Teil davon. -->
@@ -230,6 +255,21 @@
         <div class="th-hinweise" id="thermikHinweise"></div>
       </div>
     </section>
+
+    <!-- N10b · Ergebnis der Kostenrechnung. Mengen oben, Kosten darunter —
+         und die Liste dessen, was auf null steht. -->
+    <section class="card" id="cardKosten" aria-labelledby="kostenHead" hidden>
+      <div class="card-head">
+        <span class="eyebrow" id="kostenEyebrow" data-i18n="sec_kosten">Kosten, Zeit, Drahtbedarf</span>
+        <h2 id="kostenHead" data-i18n="ko_titel">Menge, Zeit und Kosten</h2>
+      </div>
+      <div class="card-body">
+        <div class="th-kopf" id="kostenKopf"></div>
+        <div class="th-weg" id="kostenWeg"></div>
+        <div class="th-hinweise" id="kostenHinweise"></div>
+      </div>
+    </section>
+
 
 
   </div>

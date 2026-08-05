@@ -39,7 +39,7 @@
   'use strict';
 
   var NAME = 'assistent';
-  var VERSION = '0.4.0-N9c';
+  var VERSION = '0.5.0-N10b';
 
   /* Die Bereiche, in denen Eingabefelder gebuendelt werden. Die Reihenfolge
      ist die Reihenfolge im Dialog. Welches Feld in welchen Bereich gehoert,
@@ -47,7 +47,8 @@
   /* 'thermik' erscheint nur, wenn der Bereich zugeschaltet ist — die
      Felder sind dann Pflicht, und validate.js sagt es. N9b, Prozessregel
      aus 3.3: der Baustein liefert seinen Assistenten-Schritt MIT. */
-  var FELD_BEREICHE = ['naht', 'geometrie', 'lasten', 'beiwerte', 'thermik'];
+  var FELD_BEREICHE = ['naht', 'geometrie', 'lasten', 'beiwerte',
+                       'prozess', 'thermik', 'kosten'];
 
   /* Die sechs Symbolgruppen sind NICHT rechenwirksam. Sie kommen als EIN
      freiwilliger Schritt ganz am Schluss (Dieters Festlegung 2026-08-04) —

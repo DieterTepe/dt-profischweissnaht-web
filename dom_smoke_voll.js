@@ -237,7 +237,7 @@ function lauf(edition) {
 
   var UI = win.DTNUi, Kern = win.DTNI18nKern;
   ok(UI.START_THEME === 'dark', 'ui.js traegt die bindende Vorgabe START_THEME = dark (Plan 3.1)');
-  ok(UI.BEREICHE.length === 9, 'N9b: neun aufklappbare Bereiche vorgesehen (ist ' + UI.BEREICHE.length + ')');
+  ok(UI.BEREICHE.length === 11, 'N10b: elf aufklappbare Bereiche vorgesehen (ist ' + UI.BEREICHE.length + ')');
 
   /* Pflicht-Elemente: jede Id aus ui.js muss in der HTML wirklich stehen. */
   for (i = 0; i < UI.IDS.length; i++) {
@@ -334,7 +334,7 @@ function lauf(edition) {
   ok(d.byId.accBody_grund.hidden === false, 'Startzustand: sein Inhalt ist sichtbar');
   var zu = 0;
   for (i = 1; i < UI.BEREICHE.length; i++) if (!s.istOffen(UI.BEREICHE[i])) zu++;
-  ok(zu === 8, 'N9b: Startzustand — die uebrigen acht Bereiche sind zu (ist ' + zu + ')');
+  ok(zu === 10, 'N10b: Startzustand — die uebrigen acht Bereiche sind zu (ist ' + zu + ')');
 
   for (i = 0; i < UI.BEREICHE.length; i++) {
     var code = UI.BEREICHE[i];
@@ -616,8 +616,8 @@ function lauf(edition) {
      TABELLENWERTE, dazu HD, F2 und F3 aus der Waermefuehrung — und die drei
      ANHALTSWERTE fuer Spannung, Strom und Geschwindigkeit. Die letzten drei
      stehen in keiner Norm und sind deshalb sichtbar anders gekennzeichnet. */
-  ok(Object.keys(s.werte()).length === 10,
-     'N9d: nur die zehn vorbelegten Werte stehen im Formular (ist ' +
+  ok(Object.keys(s.werte()).length === 20,
+     'N10b: nur die zwanzig vorbelegten Werte stehen im Formular (ist ' +
      Object.keys(s.werte()).length + ')');
 
   /* ------------------------------- 8) Knoepfe, die noch nicht rechnen ---- */
@@ -742,6 +742,65 @@ function lauf(edition) {
   ok(d.byId.thermikHinweise.children.length > 0, 'N9b: und der Grund steht da');
   s.leeren();
   ok(d.byId.cardThermik.hidden === true, 'N9b: Leeren raeumt auch die Waermefuehrung weg');
+
+  /* ---- N10b · KOSTENRECHNUNG AM BILDSCHIRM -----------------------------
+     Mengen oben, Kosten darunter — und die Liste dessen, was auf null
+     steht. Eine Summe, die stillschweigend etwas weglaesst, ist die
+     gefaehrlichste Zahl im Programm: Sie sieht vollstaendig aus.        */
+  s.leeren();
+  ok(d.byId.cardKosten.hidden === true, 'N10b: ohne zugeschaltete Kosten ist die Karte weg');
+  ok(d.byId.acc_kosten.hidden === true, 'N10b: und der ganze Bereich ebenso');
+  ok(d.byId.acc_prozess.hidden === true, 'N10b: auch die geteilten Schweissparameter');
+
+  s.beispielLaden('winkel_v');
+  ok(d.byId.zus_kosten.checked === true, 'N10b: das Beispiel schaltet die Kostenrechnung ein');
+  ok(d.byId.acc_kosten.hidden === false, 'N10b: der Kostenbereich erscheint');
+  ok(d.byId.acc_prozess.hidden === false,
+     'N10b: und der geteilte Prozessbereich — er gehoert zu BEIDEN Zusatzbereichen');
+  ok(!istLeerW(d.byId.fld_preis_lohn.value), 'N10b: die Preise sind vorbelegt');
+  ok(!!d.byId.prs_preis_lohn, 'N10b: und tragen den Hinweis auf ihr Jahr');
+  ok(!!d.byId.anh_abschmelz, 'N10b: die Abschmelzleistung traegt den Anhalts-Hinweis');
+  ok(!d.byId.prs_abschmelz, 'N10b: aber keinen Preis-Hinweis — die Sorten bleiben getrennt');
+
+  var koErg = s.rechnen();
+  ok(koErg && koErg.ok === true, 'N10b: winkel_v rechnet weiterhin');
+  ok(d.byId.cardKosten.hidden === false, 'N10b: die Kostenkarte steht da');
+  ok(d.byId.kostenKopf.children.length >= 3, 'N10b: mit Mengen und Summe');
+  ok(d.byId.kostenWeg.children.length > 8, 'N10b: und einem Rechenweg in fuenf Schritten');
+  var koB = s.letzteKosten ? s.letzteKosten() : null;
+  ok(koB && koB.ok === true, 'N10b: die Kostenrechnung laeuft durch');
+  ok(koB && koB.m_draht > 0 && koB.t_gesamt > 0,
+     'N10b: Drahtbedarf und Zeit sind Zahlen (' + (koB ? koB.m_draht.toFixed(0) : '-') + ' g · ' +
+     (koB ? koB.t_gesamt.toFixed(1) : '-') + ' min)');
+  ok(koB && koB.leer.length === 6,
+     'N10b: sechs Positionen stehen auf null (' + (koB ? koB.leer.join(',') : '-') + ')');
+  ok(!!d.byId.koLeer, 'N10b: UND DIE ANZEIGE SAGT ES — sonst saehe die Summe vollstaendig aus');
+
+  /* DIE NAHTLAENGE KOMMT AUS DEM GERECHNETEN NAHTBILD, nicht aus einem
+     eigenen Feld — zwei Laengen fuer dieselbe Naht waeren zwei
+     Gelegenheiten, sie verschieden anzugeben. */
+  ok(koErg && Math.abs(koErg.nahtbild.l_ges - 400) < 0.1,
+     'N10b: das Nahtbild liefert 400 mm');
+  var koVor = koB.m_draht;
+  d.byId.fld_a.value = '6';
+  s.aktualisiere();
+  s.rechnen();
+  var koB2 = s.letzteKosten();
+  ok(koB2 && koB2.m_draht > koVor,
+     'N10b: ein groesseres a-Mass erhoeht den Drahtbedarf — die Kette haengt zusammen');
+
+  /* Ein eingetragener Posten wandert in die Summe UND aus der Leerliste. */
+  s.beispielLaden('winkel_v');
+  var koA = s.rechnen() && s.letzteKosten();
+  d.byId.fld_kosten_pruefung.value = '50';
+  s.aktualisiere();
+  s.rechnen();
+  var koC = s.letzteKosten();
+  ok(koC && Math.abs(koC.summe - (koA.summe + 50)) < 0.01,
+     'N10b: ein eingetragener Posten erhoeht die Summe genau um seinen Betrag');
+  ok(koC && koC.leer.length === 5, 'N10b: und verschwindet aus der Liste der leeren');
+  s.leeren();
+  ok(d.byId.cardKosten.hidden === true, 'N10b: Leeren raeumt auch die Kostenkarte weg');
 
   /* ---- N9d · ANHALTSWERTE SIND SICHTBAR ANDERS -------------------------
      Ein Erfahrungswert, der aussieht wie ein Normwert, waere eine stille

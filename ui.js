@@ -35,12 +35,12 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.14.0';
-  var ETAPPE = 'N10a';
+  var VERSION = '0.15.0';
+  var ETAPPE = 'N10b';
   /* Plan-Version, die zu diesem Stand gehoert. Sie ist die EINZIGE von Hand
      gepflegte Zahl der Versionszeile — alles andere kommt aus den geladenen
      Modulen selbst (Plan 3.6). */
-  var PLAN = '2.57';
+  var PLAN = '2.59';
   var SPRACHEN = ['de', 'en', 'pt'];
 
   /* Plan 3.1 (bindend): die Oberflaeche startet IMMER im dunklen Design —
@@ -49,7 +49,8 @@
   var START_SPRACHE = 'de';
 
   var BEREICHE = ['grund', 'werkstoff', 'naht', 'geometrie',
-                  'lasten', 'beiwerte', 'zusatz', 'thermik', 'ausfuehrung'];
+                  'lasten', 'beiwerte', 'zusatz', 'prozess', 'thermik',
+                  'kosten', 'ausfuehrung'];
 
   /* Nur dieser eine Bereich ist beim Start offen — Handy zuerst. */
   var BEREICH_START_OFFEN = 'grund';
@@ -100,11 +101,24 @@
     /* N9b · Waermefuehrung. Erscheint erst, wenn der Bereich oben
        zugeschaltet ist — er ist eine eigene Rechnung neben dem
        Festigkeitsnachweis, kein Teil davon. */
+    /* N10b · Geteilte Prozessgroessen — beide Bereiche brauchen sie. */
+    { code: 'prozess', leit: null,
+      optional_wenn: [{ thermik_aktiv: [true] }, { kosten_aktiv: [true] }],
+      gruppen: [],
+      felder: ['sp_U', 'sp_I', 'sp_v', 'drahtdm', 'eta_quelle'] },
+
     { code: 'thermik', leit: null, optional_wenn: { thermik_aktiv: [true] },
       gruppen: [],
       felder: ['an_C', 'an_Si', 'an_Mn', 'an_Cr', 'an_Mo', 'an_V', 'an_Cu', 'an_Ni',
-               'CET', 'HD', 'd_komb', 'sp_U', 'sp_I', 'sp_v', 'T0',
-               't85_min', 't85_max', 'F2', 'F3'] },
+               'CET', 'HD', 'd_komb', 'T0', 't85_min', 't85_max', 'F2', 'F3'] },
+
+    /* N10b · Kosten, Zeit und Drahtbedarf. */
+    { code: 'kosten', leit: null, optional_wenn: { kosten_aktiv: [true] },
+      gruppen: [],
+      felder: ['A_fuge', 'ueberhoehung', 'ausbringung', 'abschmelz', 'brennzeit',
+               'gasfluss', 'preis_lohn', 'preis_draht', 'preis_gas', 'preis_energie',
+               'kosten_maschine', 'kosten_vorbereitung', 'kosten_vorwaermen',
+               'kosten_nacharbeit', 'kosten_pruefung', 'kosten_gemeinkosten'] },
 
     /* N5d: der Block "Ausfuehrung und Dokumentation" (Plan 2.7 / 5.1-1).
        hinweise    = i18n-Codes, die als Hinweiszeile unter dem Block stehen —
@@ -146,6 +160,13 @@
     'assistModal', 'assistTitel', 'assistFortschritt', 'assistSkizze',
     'assistLegende', 'assistWas', 'assistTippLbl', 'assistTipp', 'assistHost',
     'assistAbbruch', 'assistZurueck', 'assistUeber', 'assistWeiter',
+    /* N10b */
+    'cardKosten', 'kostenEyebrow', 'kostenHead', 'kostenKopf', 'kostenWeg',
+    'kostenHinweise',
+    'acc_prozess', 'accBtn_prozess', 'accBody_prozess', 'accTitel_prozess',
+    'accHint_prozess', 'accCaret_prozess', 'host_prozess',
+    'acc_kosten', 'accBtn_kosten', 'accBody_kosten', 'accTitel_kosten',
+    'accHint_kosten', 'accCaret_kosten', 'host_kosten',
     /* N9b */
     'cardThermik', 'thermikEyebrow', 'thermikHead', 'thermikKopf',
     'thermikWeg', 'thermikHinweise',
@@ -238,8 +259,18 @@
   function istLeer(v) { return v === undefined || v === null || v === ''; }
 
   /* Bedingungsformat aus optionen.js — hier nur zum Ein-/Ausblenden. */
+  /* Ein ARRAY von Bedingungen wirkt als ODER (N10b) — dieselbe Regel wie in
+     validate.js. Die Schweissparameter gehoeren zu zwei Bereichen: der
+     Waermefuehrung und der Kostenrechnung. Zweimal dasselbe Feld waeren zwei
+     Gelegenheiten, es verschieden anzugeben. */
   function bedingungPasst(bed, zustand) {
     if (!bed) return true;
+    if (Object.prototype.toString.call(bed) === '[object Array]') {
+      for (var oi = 0; oi < bed.length; oi++) {
+        if (bedingungPasst(bed[oi], zustand)) return true;
+      }
+      return false;
+    }
     for (var k in bed) {
       if (!Object.prototype.hasOwnProperty.call(bed, k)) continue;
       var ist = zustand ? zustand[k] : undefined;
@@ -414,6 +445,15 @@
         var ah = neu('div', 'gap-note anhalt-note', 'anh_' + f.code);
         beschrifte(ah, 'uiAnhaltswert');
         zeile.appendChild(ah);
+      }
+
+      /* PREISANNAHME MIT JAHR (N10b): Sie altert, und das steht daneben.
+         Ein Preis von 2019, der aussieht wie ein Normwert, waere die
+         gefaehrlichste stille Behauptung im ganzen Programm. */
+      if (f.preis) {
+        var pn = neu('div', 'gap-note anhalt-note', 'prs_' + f.code);
+        setzeText(pn, fuelle(txt(win, 'uiPreisannahme', S.sprache), [String(f.jahr)]));
+        zeile.appendChild(pn);
       }
 
       /* "eigener Wert"-Haken (Plan 3.1): Tabellenwert vorbelegen und sperren,
@@ -1449,6 +1489,128 @@
       return b;
     }
 
+    /* ==================================================================== */
+    /* N10b · KOSTEN — nur anzeigen, nichts rechnen                          */
+    /* ==================================================================== */
+
+    function kostenLeeren() {
+      var kk = el(doc, 'cardKosten');
+      if (kk) zeige(kk, false);
+      var a = el(doc, 'kostenKopf'); if (a) a.innerHTML = '';
+      var b = el(doc, 'kostenWeg'); if (b) b.innerHTML = '';
+      var c = el(doc, 'kostenHinweise'); if (c) c.innerHTML = '';
+      S.letzteKosten = null;
+      return true;
+    }
+
+    function kostenEingabe(z, w, erg) {
+      function nz(k) { return istLeer(w[k]) ? null : w[k]; }
+      var typ = (erg && erg.nahttyp === 'kehl') ? 'kehl' : 'stumpf';
+      return {
+        nahttyp: typ,
+        a: nz('a'), t: nz('t1'), A_fuge: nz('A_fuge'),
+        /* Die Nahtlaenge kommt aus dem GERECHNETEN Nahtbild — nicht aus
+           einem eigenen Feld. Zwei Laengen fuer dieselbe Naht waeren zwei
+           Gelegenheiten, sie verschieden anzugeben. */
+        l_ges: (erg && erg.nahtbild) ? erg.nahtbild.l_ges : null,
+        werkstoffgruppe: z.werkstoffgruppe, verfahren: z.schweissverfahren,
+        ueberhoehung: istLeer(w.ueberhoehung) ? null : w.ueberhoehung / 100,
+        ausbringung: istLeer(w.ausbringung) ? null : w.ausbringung / 100,
+        abschmelzleistung: nz('abschmelz'),
+        brennzeit: istLeer(w.brennzeit) ? null : w.brennzeit / 100,
+        gasdurchfluss: nz('gasfluss'), drahtdurchmesser: nz('drahtdm'),
+        U: nz('sp_U'), I: nz('sp_I'), v_schweiss: nz('sp_v'),
+        eta_quelle: nz('eta_quelle'),
+        preis_lohn: nz('preis_lohn'), preis_draht: nz('preis_draht'),
+        preis_gas: nz('preis_gas'), preis_energie: nz('preis_energie'),
+        kosten_maschine: nz('kosten_maschine'),
+        kosten_vorbereitung: nz('kosten_vorbereitung'),
+        kosten_vorwaermen: nz('kosten_vorwaermen'),
+        kosten_nacharbeit: nz('kosten_nacharbeit'),
+        kosten_pruefung: nz('kosten_pruefung'),
+        kosten_gemeinkosten: nz('kosten_gemeinkosten')
+      };
+    }
+
+    function kostenZeigen(z, w, erg) {
+      var karte = el(doc, 'cardKosten');
+      var kopf = el(doc, 'kostenKopf'), weg = el(doc, 'kostenWeg');
+      var hin = el(doc, 'kostenHinweise');
+      var K = win.DTNKosten, l = S.sprache, i, sch;
+      if (!karte) return null;
+      if (kopf) kopf.innerHTML = '';
+      if (weg) weg.innerHTML = '';
+      if (hin) hin.innerHTML = '';
+
+      if (!K || z.kosten_aktiv !== true) { zeige(karte, false); return null; }
+      zeige(karte, true);
+
+      var b = K.bericht(kostenEingabe(z, w, erg));
+      if (!b.ok) {
+        for (i = 0; i < b.fehler.length; i++) {
+          zeile(hin, 'pruef-fehler', txt(win, b.fehler[i].code, l));
+        }
+        return b;
+      }
+
+      /* MENGEN OBEN — sie altern nie. */
+      thermikZeile(kopf, txt(win, 'ko_p_zusatz', l),
+                   zahlText(b.m_draht, 0) + ' ' + txt(win, 'unit_g', l));
+      thermikZeile(kopf, txt(win, 'ko_s_zeit', l),
+                   zahlText(b.t_gesamt, 1) + ' ' + txt(win, 'unit_min', l));
+      if (b.V_gas !== null) {
+        thermikZeile(kopf, txt(win, 'ko_s_gas', l),
+                     zahlText(b.V_gas, 0) + ' ' + txt(win, 'unit_l', l));
+      }
+      /* KOSTEN DARUNTER — sie tragen einen Preisstand. */
+      thermikZeile(kopf, txt(win, 'ko_summe', l),
+                   zahlText(b.summe, 2) + ' ' + txt(win, 'unit_eur', l), 'th-wert');
+
+      for (i = 0; i < b.schritte.length; i++) {
+        sch = b.schritte[i];
+        var t = neu('div', 'rw-abschnitt', null);
+        setzeText(t, txt(win, sch.code, l));
+        weg.appendChild(t);
+        if (sch.code === 'ko_s_menge') {
+          thermikZeile(weg, 'A', zahlText(sch.A_mit, 1) + ' ' + txt(win, 'unit_mm2', l));
+          thermikZeile(weg, 'V', zahlText(sch.volumen, 0) + ' ' + txt(win, 'unit_mm3', l));
+          thermikZeile(weg, txt(win, 'ko_p_zusatz', l),
+                       zahlText(sch.m_schweissgut, 0) + ' ' + txt(win, 'unit_g', l));
+        } else if (sch.code === 'ko_s_zeit') {
+          thermikZeile(weg, 'Lichtbogen', zahlText(sch.t_lichtbogen, 1) + ' ' + txt(win, 'unit_min', l));
+          thermikZeile(weg, 'gesamt', zahlText(sch.t_gesamt, 1) + ' ' + txt(win, 'unit_min', l));
+        } else if (sch.code === 'ko_s_gas') {
+          thermikZeile(weg, 'Q', zahlText(sch.durchfluss, 1) + ' ' + txt(win, 'unit_l_min', l));
+        } else if (sch.code === 'ko_s_energie') {
+          thermikZeile(weg, 'E', zahlText(sch.E, 3) + ' ' + txt(win, 'unit_kwh', l));
+        } else if (sch.code === 'ko_s_kosten') {
+          for (var j = 0; j < K.POSTEN.length; j++) {
+            (function (pc) {
+              thermikZeile(weg, txt(win, 'ko_p_' + pc, l),
+                           zahlText(sch.einzel[pc] || 0, 2) + ' ' + txt(win, 'unit_eur', l));
+            }(K.POSTEN[j].code));
+          }
+        }
+      }
+
+      /* UND WAS AUF NULL STEHT — sonst saehe die Summe vollstaendig aus. */
+      if (b.leer && b.leer.length) {
+        var lz = neu('div', 'rw-abschnitt', 'koLeer');
+        beschrifte(lz, 'ko_leer_liste');
+        hin.appendChild(lz);
+        var namen = [];
+        for (i = 0; i < b.leer.length; i++) namen.push(txt(win, 'ko_p_' + b.leer[i], l));
+        zeile(hin, 'gap-note', namen.join(' · '));
+      }
+      for (i = 0; i < b.warnungen.length; i++) {
+        zeile(hin, 'pruef-warnung', txt(win, b.warnungen[i].code, l));
+      }
+      for (i = 0; i < b.hinweise.length; i++) {
+        zeile(hin, 'gap-note', '\u00b7 ' + txt(win, b.hinweise[i].code, l));
+      }
+      return b;
+    }
+
     /* ------------------------------------------------------------ Pruefen */
     /* N5b rechnet NICHT. "Berechnen" prueft die Eingaben und sagt ehrlich,
        was fehlt; das Rechnen selbst folgt in Etappe N5c. */
@@ -1685,6 +1847,9 @@
       ergebnisZeigen(erg);
       rechenwegZeigen(erg, ue.eingabe);
       grafikZeigen(ue.eingabe, erg);
+      /* N10b: die Kostenrechnung braucht die GERECHNETE Nahtlaenge und
+         laeuft deshalb NACH dem Nachweis. */
+      S.letzteKosten = kostenZeigen(zustand(), werte(), erg);
       if (erg && erg.ok) gesperrteFuellen(erg);
       meldung(txt(win, (erg && erg.ok) ? 'uiGerechnet' : 'uiRechnenFehler', S.sprache));
       S.letztesErgebnis = erg;
@@ -2059,6 +2224,7 @@
        Feldern, ein Bereich offen, keine Meldung). */
     function leeren() {
       thermikLeeren();
+      kostenLeeren();
       var i, e, typ, n = 0;
       var ein = alle(doc, 'input');
       for (i = 0; i < ein.length; i++) {
@@ -2292,6 +2458,7 @@
       letztesErgebnis: function () { return S.letztesErgebnis || null; },
       /* N9c — das Waermefuehrungsergebnis von aussen, fuer den DOM-Smoke. */
       letzteThermik: function () { return S.letzteThermik || null; },
+      letzteKosten: function () { return S.letzteKosten || null; },
       assistFortschritt: function () {
         var A = assiModul();
         return (A && S.assi) ? A.fortschritt(S.assi) : null;

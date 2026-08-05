@@ -2257,3 +2257,50 @@ Zahl erzeugen.
 
 **Code unverändert, `Codestand` bleibt 2.57.**
 **Nächster Schritt: N10b.**
+
+
+**v2.59 (2026-08-05):** **N10b — ein Feld, das zwei Bereichen gehört.**
+
+**Aus N10b (2026-08-05) — Entscheidungen und Erfahrungen**
+
+Der interessanteste Punkt war klein und strukturell: **Spannung, Strom und
+Geschwindigkeit werden von zwei Zusatzbereichen gebraucht.** Die Wärmeführung
+rechnet daraus das Wärmeeinbringen, die Kostenrechnung Zeit und Energie. Bis
+N10b lagen sie bei der Wärmeführung — wer nur kalkulieren wollte, hätte sie
+mit einschalten müssen.
+
+**Die naheliegende Lösung wäre gewesen, sie zu verdoppeln.** Ein Satz Felder
+für jeden Bereich. Das hätte funktioniert und wäre falsch gewesen: **Zwei
+Felder für dieselbe Zahl sind zwei Gelegenheiten, sie verschieden
+anzugeben** — dieselbe Begründung wie beim gemeinsamen Schreibweg in N8b und
+bei der Nahtlänge, die aus dem gerechneten Nahtbild kommt statt aus einem
+eigenen Feld.
+
+Stattdessen wurde die Bedingungsauswertung erweitert: Ein **Array** von
+Bedingungen wirkt als ODER. Zwei kleine Funktionen in `validate.js` und
+`ui.js`, dieselbe Regel an beiden Stellen — und ein neuer Bereich, der
+erscheint, sobald einer der beiden Zusatzbereiche an ist. Die Erweiterung wird
+bei N13 wieder gebraucht werden.
+
+**Die dritte Sorte Wert hat sich bewährt.** Preisannahmen tragen jetzt ihr Jahr
+sichtbar unter dem Feld. Der Stundensatz stammt aus einer Quelle von 2019 und
+ist heute sicher zu niedrig — genau deshalb steht das Jahr da. Ein Preis, der
+aussieht wie ein Normwert, wäre die gefährlichste stille Behauptung im
+Programm, weil ihn niemand nachprüft.
+
+**Und eine Erkenntnis über Vollständigkeit:** Auch eine *rechenbare* Position
+kann leer bleiben. Ohne Spannung und Strom gibt es keine Energiekosten. Sie
+dann still auf null zu setzen wäre derselbe Fehler wie das Weglassen der
+Prüfkosten — die Summe sähe vollständig aus und wäre es nicht. Die Leerliste
+führt deshalb beides: was das Programm nicht herleiten kann, und was es
+mangels Eingaben nicht konnte.
+
+**Der Stand:** Sieben von zehn Bausteinen bis zum Verkaufsstand sind fertig.
+Offen bleiben N11 (Ausgaben), N12 (Edition) und N13/N14 (Ermüdung). Bei N11
+wartet die Entscheidung über den **Versionsstempel im Dateiformat** — die
+einzige der Festlegungen aus v2.46, die zeitlich drängt, weil gespeicherte
+Rechnungen sich später noch öffnen lassen müssen.
+
+**Basislinie 3015 → 3053 Assertions · Smokes 802/803 → 905/906.**
+**Codestand 2.57 → 2.59.**
+**Nächster Schritt: N10 abnehmen, dann N11.**

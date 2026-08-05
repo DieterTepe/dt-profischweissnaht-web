@@ -12,7 +12,7 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.6.0-N10a';
+  var VERSION = '0.7.0-N10b';
   var SPRACHEN = ['de', 'en', 'pt'];
 
   var D = {
@@ -428,6 +428,37 @@
     sec_thermik:      { de: 'Vorwärmung & t8/5', en: 'Preheating & t8/5', pt: 'Pré-aquecimento e t8/5' },
     sec_thermik_hint: { de: 'Eigene Rechnung nach EN 1011-2, unabhängig vom Festigkeitsnachweis. Nur für ferritische Stähle.', en: 'A separate calculation per EN 1011-2, independent of the strength verification. Ferritic steels only.', pt: 'Cálculo próprio segundo a EN 1011-2, independente da verificação de resistência. Apenas aços ferríticos.' },
     ber_thermik:   { de: 'Vorwärmung & t8/5', en: 'Preheating & t8/5', pt: 'Pré-aquecimento e t8/5' },
+
+    /* Bereiche und Feldbeschriftungen (N10b). */
+    sec_prozess:      { de: 'Schweißparameter', en: 'Welding parameters', pt: 'Parâmetros de soldadura' },
+    sec_prozess_hint: { de: 'Spannung, Strom und Geschwindigkeit — sie werden von der Wärmeführung und von der Kostenrechnung gleichermaßen gebraucht.', en: 'Voltage, current and speed — used by both the thermal control and the costing.', pt: 'Tensão, corrente e velocidade — usados tanto pelo controlo térmico como pelo cálculo de custos.' },
+    sec_kosten:       { de: 'Kosten, Zeit, Drahtbedarf', en: 'Cost, time, wire demand', pt: 'Custo, tempo, consumo de fio' },
+    sec_kosten_hint:  { de: 'Mengen und Zeiten folgen aus der Geometrie und altern nie. Preise altern — sie tragen ihr Jahr und sind zum Ersetzen gedacht.', en: 'Quantities and times follow from the geometry and never age. Prices do age — they carry their year and are meant to be replaced.', pt: 'Quantidades e tempos decorrem da geometria e não envelhecem. Os preços sim — trazem o seu ano e destinam-se a ser substituídos.' },
+    ko_titel:         { de: 'Menge, Zeit und Kosten', en: 'Quantity, time and cost', pt: 'Quantidade, tempo e custo' },
+    ko_summe:         { de: 'Summe', en: 'Total', pt: 'Total' },
+    ko_leer_liste:    { de: 'Auf null stehen', en: 'Standing at zero', pt: 'A zero' },
+    ko_preisstand:    { de: 'Preisstand', en: 'Price basis', pt: 'Base de preços' },
+    fld_drahtdm:      { de: 'Drahtdurchmesser', en: 'Wire diameter', pt: 'Diâmetro do fio' },
+    fld_eta_quelle:   { de: 'Wirkungsgrad der Stromquelle', en: 'Power source efficiency', pt: 'Rendimento da fonte' },
+    fld_A_fuge:       { de: 'Fugenquerschnitt (eigener Wert)', en: 'Groove cross-section (own value)', pt: 'Secção do chanfro (valor próprio)' },
+    fld_ueberhoehung: { de: 'Zuschlag für Nahtüberhöhung', en: 'Weld reinforcement allowance', pt: 'Acréscimo de sobreelevação' },
+    fld_ausbringung:  { de: 'Ausbringungsgrad', en: 'Deposition efficiency', pt: 'Rendimento de deposição' },
+    fld_abschmelz:    { de: 'Abschmelzleistung', en: 'Deposition rate', pt: 'Taxa de deposição' },
+    fld_brennzeit:    { de: 'Lichtbogenbrennzeit', en: 'Arc-on time', pt: 'Tempo de arco' },
+    fld_gasfluss:     { de: 'Gasdurchfluss (eigener Wert)', en: 'Gas flow rate (own value)', pt: 'Caudal de gás (valor próprio)' },
+    fld_preis_lohn:   { de: 'Stundensatz', en: 'Hourly rate', pt: 'Custo horário' },
+    fld_preis_draht:  { de: 'Drahtpreis', en: 'Wire price', pt: 'Preço do fio' },
+    fld_preis_gas:    { de: 'Gaspreis', en: 'Gas price', pt: 'Preço do gás' },
+    fld_preis_energie:{ de: 'Strompreis', en: 'Electricity price', pt: 'Preço da eletricidade' },
+    fld_kosten_maschine:     { de: 'Maschinenkosten', en: 'Machine cost', pt: 'Custo de máquina' },
+    fld_kosten_vorbereitung: { de: 'Nahtvorbereitung', en: 'Joint preparation', pt: 'Preparação da junta' },
+    fld_kosten_vorwaermen:   { de: 'Vorwärmen', en: 'Preheating', pt: 'Pré-aquecimento' },
+    fld_kosten_nacharbeit:   { de: 'Nacharbeit', en: 'Rework', pt: 'Retrabalho' },
+    fld_kosten_pruefung:     { de: 'Prüfung', en: 'Inspection', pt: 'Inspeção' },
+    fld_kosten_gemeinkosten: { de: 'Gemeinkosten', en: 'Overheads', pt: 'Custos gerais' },
+    uiPreisannahme:   { de: 'Preisannahme von {0} — sie altert. Bitte durch Ihren eigenen Wert ersetzen.', en: 'Price assumption from {0} — it ages. Please replace it with your own figure.', pt: 'Pressuposto de preço de {0} — envelhece. Substitua pelo seu próprio valor.' },
+    ber_prozess:      { de: 'Schweißparameter', en: 'Welding parameters', pt: 'Parâmetros de soldadura' },
+    ber_kosten:       { de: 'Kosten und Zeit', en: 'Cost and time', pt: 'Custo e tempo' },
 
     /* Kosten, Zeit und Drahtbedarf (N10a). */
     unit_eur:      { de: '€', en: '€', pt: '€' },

@@ -23,7 +23,7 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.3.1-N9c';
+  var VERSION = '0.4.0-N10b';
 
   var KEHL = ['kehl_einseitig', 'kehl_doppel', 'kehl_flanke', 'kehl_stirn', 'kehl_umlaufend'];
   var STUMPF_VOLL = ['stumpf_i', 'stumpf_v', 'stumpf_dv', 'stumpf_dhv'];
@@ -527,6 +527,7 @@
                  nachweisverfahren: 'vereinfacht', bw_regelsatz: 'na_de',
                  profil: 'winkel', kanten: 'rundum',
                  schweissverfahren: 'mag', thermik_aktiv: true,
+                 kosten_aktiv: true,
                  exc: 'EXC2' },
       felder: { b: 100, h: 100, t1: 12, a: 4, N: 330000, Q: 0,
                 an_C: 0.17, an_Si: 0.35, an_Mn: 1.50, an_Cr: 0.10, an_Mo: 0.05,
@@ -546,6 +547,7 @@
                  lastfall: 'schwellend',
                  profil: 'rohr_rechteck', kanten: 'rundum',
                  schweissverfahren: 'mag', thermik_aktiv: true,
+                 kosten_aktiv: true,
                  exc: 'EXC2' },
       felder: { b: 100, h: 150, t1: 8, r_ecke: 0, a: 5, F: 75000, e: 200, S: 1.5,
                 an_C: 0.16, an_Si: 0.40, an_Mn: 1.60, an_Cr: 0.15, an_Mo: 0.08,

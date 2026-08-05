@@ -215,7 +215,7 @@ ok(codes(rMax.warnungen).indexOf('msg_a_max') >= 0, 'a > 0,7*t_min wird als Warn
    Geprueft wird hier beides: dass das Feld weg ist UND dass die Pruefung
    noch greift. ----------------------------------------------------------- */
 ok(Valid.feld('l') === null, 'Feld l ist aus dem Schema entfernt (Nahtlaenge kommt aus der Geometrie)');
-eq(Valid.SCHEMA.length, 47, 'N9c: das Feldschema hat 47 Felder — 19 kamen mit der Waermefuehrung dazu');
+eq(Valid.SCHEMA.length, 65, 'N10b: das Feldschema hat 65 Felder — Prozess und Kosten kamen dazu');
 
 function laengenFall(b, a) {
   var r = Solver.rechne({
@@ -1763,7 +1763,7 @@ ok(typeof Ui.start === 'function', 'ui.js bietet start(win, doc)');
 eq(Ui.START_THEME, 'dark', 'BINDEND (Plan 3.1): die Oberflaeche startet immer im dunklen Design');
 eq(Ui.START_SPRACHE, 'de', 'Startsprache ist Deutsch');
 eq(Ui.SPRACHEN.length, 3, 'drei Sprachen DE/EN/PT');
-eq(Ui.BEREICHE.length, 9, 'N9b: neun aufklappbare Bereiche im Formulargeruest');
+eq(Ui.BEREICHE.length, 11, 'N10b: elf aufklappbare Bereiche im Formulargeruest');
 ok(Ui.BEREICHE.indexOf(Ui.BEREICH_START_OFFEN) >= 0, 'der beim Start offene Bereich gehoert zur Liste');
 ok(Ui.start(null, null) === null, 'ohne DOM tut ui.js nichts und wirft nicht');
 
@@ -4120,12 +4120,12 @@ function s43Summe(text) {
    ZWEI Etappen gilt die Regel dagegen streng: geaenderter Quelltext ohne
    Kennungswechsel ist rot. */
 var S43_STAND = [
-  { datei: 'i18n_kern.js', version: '0.6.0-N10a', summe: 'fc609b76' },
-  { datei: 'i18n_hilfe.js', version: '0.3.0-N9c', summe: 'e2a7a98f' },
+  { datei: 'i18n_kern.js', version: '0.7.0-N10b', summe: '715ae7e8' },
+  { datei: 'i18n_hilfe.js', version: '0.4.0-N10b', summe: 'f220fb9' },
   { datei: 'i18n_kerbfall.js', version: '0.1.0-N1', summe: '64438e87' },
   { datei: 'daten.js', version: '0.1.0-N1', summe: '4f0ba1bd' },
-  { datei: 'optionen.js', version: '0.3.1-N9c', summe: 'a0e4115d' },
-  { datei: 'validate.js', version: '0.5.0-N9d', summe: 'f17abf94' },
+  { datei: 'optionen.js', version: '0.4.0-N10b', summe: '7a881ae2' },
+  { datei: 'validate.js', version: '0.6.0-N10b', summe: '4532dc9e' },
   { datei: 'naht.js', version: '0.1.0-N2', summe: 'c0284f44' },
   { datei: 'profil.js', version: '0.1.0-N2b', summe: 'e31a9ce3' },
   { datei: 'svglib.js', version: '0.1.0-N2c', summe: 'b50173d8' },
@@ -4133,11 +4133,11 @@ var S43_STAND = [
   { datei: 'solver.js', version: '0.4.0-N9d', summe: '8155d32b' },
   { datei: 'rechenweg.js', version: '0.4.0-N9d', summe: '8fce1705' },
   { datei: 'symbol.js', version: '0.1.0-N6b', summe: '9e1cac0f' },
-  { datei: 'kosten.js', version: '0.1.0-N10a', summe: 'cd71be36' },
+  { datei: 'kosten.js', version: '0.2.0-N10b', summe: 'b6aa78d7' },
   { datei: 'thermik.js', version: '0.3.0-N9c', summe: '1bf966a2' },
   { datei: 'skizze.js', version: '0.3.0-N9c', summe: '447c40cd' },
-  { datei: 'assistent.js', version: '0.4.0-N9c', summe: '1bfc4bb8' },
-  { datei: 'ui.js', version: '0.14.0', summe: '2c283e4a' }
+  { datei: 'assistent.js', version: '0.5.0-N10b', summe: '4c015b50' },
+  { datei: 'ui.js', version: '0.15.0', summe: '7c9f2984' }
 ];
 
 var s43i, s43Fehl = [], s43Src, s43M, s43S;
@@ -4468,7 +4468,19 @@ var s45TF = [];
 for (s45i = 0; s45i < Valid.SCHEMA.length; s45i++) {
   if (Valid.SCHEMA[s45i].bereich === 'thermik') s45TF.push(Valid.SCHEMA[s45i].code);
 }
-eq(s45TF.length, 19, 'S45: neunzehn Felder gehoeren zur Waermefuehrung');
+eq(s45TF.length, 16, 'S45: sechzehn Felder gehoeren zur Waermefuehrung');
+/* Die drei Schweissparameter sind mit N10b in den GETEILTEN Bereich
+   'prozess' gewandert — Waermefuehrung und Kostenrechnung brauchen sie
+   beide, und zweimal dasselbe Feld waeren zwei Gelegenheiten, es
+   verschieden anzugeben. */
+var s45PF = [];
+for (s45i = 0; s45i < Valid.SCHEMA.length; s45i++) {
+  if (Valid.SCHEMA[s45i].bereich === 'prozess') s45PF.push(Valid.SCHEMA[s45i].code);
+}
+ok(s45PF.length >= 3, 'S45: es gibt einen geteilten Prozessbereich (' + s45PF.join(',') + ')');
+ok(Valid.istPflicht(Valid.feld('sp_U'), { thermik_aktiv: true }) &&
+   Valid.istPflicht(Valid.feld('sp_U'), { kosten_aktiv: true }),
+   'S45: die Schweissspannung ist fuer BEIDE Bereiche Pflicht — die ODER-Bedingung wirkt');
 /* Sie sind NUR Pflicht, wenn der Bereich zugeschaltet ist — sonst stuende
    ein Laie vor einer Schmelzenanalyse, die er gar nicht braucht. */
 var s45Pf = [], s45PfAus = [];
@@ -4478,7 +4490,7 @@ for (s45i = 0; s45i < Valid.SCHEMA.length; s45i++) {
   if (Valid.istPflicht(Valid.SCHEMA[s45i], {})) s45PfAus.push(Valid.SCHEMA[s45i].code);
 }
 eq(s45PfAus.length, 0, 'S45: ohne zugeschalteten Bereich ist KEIN Feld Pflicht (' + s45PfAus.join(',') + ')');
-ok(s45Pf.length >= 4, 'S45: mit zugeschaltetem Bereich schon (' + s45Pf.join(',') + ')');
+ok(s45Pf.length >= 1, 'S45: mit zugeschaltetem Bereich schon (' + s45Pf.join(',') + ')');
 /* Der Assistent fragt entsprechend — das ist die Prozessregel aus 3.3. */
 function s45Schritte(aktiv) {
   var st = Assi.starte(aktiv ? { thermik_aktiv: true } : {}, {}), n = 0, hat = false, sch;
@@ -4858,7 +4870,7 @@ sek('S48 · N10a Menge, Zeit und Kosten — und der Anker aus der Recherche');
 var s48i;
 
 eq(Kost.NAME, 'kosten', 'S48: kosten.js nennt sich beim Namen');
-ok(/^0\.\d+\.\d+-N10a$/.test(Kost.VERSION), 'S48: und traegt eine N10a-Kennung (' + Kost.VERSION + ')');
+ok(/^\d+\.\d+\.\d+-N10\w*$/.test(Kost.VERSION), 'S48: und traegt eine N10-Kennung (' + Kost.VERSION + ')');
 var s48Src = fsU.readFileSync(__dirname + '/kosten.js', 'utf8');
 ok(s48Src.indexOf('document') < 0 && s48Src.indexOf('window') < 0,
    'S48: N10a ist DOM-frei — die Oberflaeche kommt mit N10b');

@@ -46,7 +46,7 @@
   'use strict';
 
   var NAME = 'kosten';
-  var VERSION = '0.1.0-N10a';
+  var VERSION = '0.2.0-N10b';
 
   /* --------------------------------------------------------------------- */
   /* Tabellen                                                               */
@@ -357,6 +357,12 @@
       einzel[p.code] = wert;
       if (wert === 0) leer.push(p.code);
     }
+    /* AUCH EINE RECHENBARE POSITION KANN LEER BLEIBEN (N10b): ohne Spannung
+       und Strom laesst sich die Energie nicht bestimmen. Sie dann still auf
+       null zu setzen waere derselbe Fehler wie das Weglassen der
+       Pruefkosten — die Summe saehe vollstaendig aus und waere es nicht. */
+    if (zahl(ein.E) === null) leer.push('energie');
+    if (zahl(ein.V_gas) === null) leer.push('gas');
 
     var summe = 0;
     for (i = 0; i < POSTEN.length; i++) summe += einzel[POSTEN[i].code] || 0;

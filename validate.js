@@ -19,7 +19,7 @@
 }(typeof self !== 'undefined' ? self : this, function (Data, Options) {
   'use strict';
 
-  var VERSION = '0.5.0-N9d';
+  var VERSION = '0.6.0-N10b';
 
   /* --------------------------------------------------------------------- */
   /* Feldschema — eine Quelle fuer Formular, Assistent und Pruefung         */
@@ -159,20 +159,61 @@
        stille Behauptung, die dieses Programm sonst ueberall vermeidet.
        Die Werte entsprechen MAG in mittlerer Lage — dem geläufigsten
        Verfahren (Dieter). Die Bereiche je Verfahren nennt der Laien-ⓘ. */
-    { code: 'sp_U',  bereich: 'thermik', typ: 'zahl', einheit: 'unit_volt', min: 5, max: 60, dez: 1, label: 'fld_sp_U', hilfe: 'fld_sp_U',
+    { code: 'sp_U',  bereich: 'prozess', typ: 'zahl', einheit: 'unit_volt', min: 5, max: 60, dez: 1, label: 'fld_sp_U', hilfe: 'fld_sp_U',
       standard: 28, anhalt: true, ueberschreibbar: true,
-      pflicht_wenn: { thermik_aktiv: [true] } },
-    { code: 'sp_I',  bereich: 'thermik', typ: 'zahl', einheit: 'unit_ampere', min: 20, max: 1200, dez: 0, label: 'fld_sp_I', hilfe: 'fld_sp_I',
+      pflicht_wenn: [{ thermik_aktiv: [true] }, { kosten_aktiv: [true] }] },
+    { code: 'sp_I',  bereich: 'prozess', typ: 'zahl', einheit: 'unit_ampere', min: 20, max: 1200, dez: 0, label: 'fld_sp_I', hilfe: 'fld_sp_I',
       standard: 250, anhalt: true, ueberschreibbar: true,
-      pflicht_wenn: { thermik_aktiv: [true] } },
-    { code: 'sp_v',  bereich: 'thermik', typ: 'zahl', einheit: 'unit_mm_s', min: 0.5, max: 50, dez: 2, label: 'fld_sp_v', hilfe: 'fld_sp_v',
+      pflicht_wenn: [{ thermik_aktiv: [true] }, { kosten_aktiv: [true] }] },
+    { code: 'sp_v',  bereich: 'prozess', typ: 'zahl', einheit: 'unit_mm_s', min: 0.5, max: 50, dez: 2, label: 'fld_sp_v', hilfe: 'fld_sp_v',
       standard: 4, anhalt: true, ueberschreibbar: true,
-      pflicht_wenn: { thermik_aktiv: [true] } },
+      pflicht_wenn: [{ thermik_aktiv: [true] }, { kosten_aktiv: [true] }] },
     { code: 'T0',    bereich: 'thermik', typ: 'zahl', einheit: 'unit_grad', min: -20, max: 400, dez: 0, label: 'fld_T0', hilfe: 'fld_T0', pflicht: false, ueberschreibbar: true },
     { code: 't85_min', bereich: 'thermik', typ: 'zahl', einheit: 'unit_s', min: 1, max: 100, dez: 1, label: 'fld_t85_min', hilfe: 'fld_t85_min', pflicht: false, ueberschreibbar: true },
     { code: 't85_max', bereich: 'thermik', typ: 'zahl', einheit: 'unit_s', min: 1, max: 200, dez: 1, label: 'fld_t85_max', hilfe: 'fld_t85_max', pflicht: false, ueberschreibbar: true },
     { code: 'F2',    bereich: 'thermik', typ: 'zahl', einheit: null, min: 0.3, max: 1.2, dez: 2, label: 'fld_F2', hilfe: 'fld_F2', standard: 1, pflicht: false, ueberschreibbar: true },
-    { code: 'F3',    bereich: 'thermik', typ: 'zahl', einheit: null, min: 0.3, max: 1.2, dez: 2, label: 'fld_F3', hilfe: 'fld_F3', standard: 1, pflicht: false, ueberschreibbar: true }
+    { code: 'F3',    bereich: 'thermik', typ: 'zahl', einheit: null, min: 0.3, max: 1.2, dez: 2, label: 'fld_F3', hilfe: 'fld_F3', standard: 1, pflicht: false, ueberschreibbar: true },
+
+    /* ---- Geteilte Prozessgroessen (N10b) --------------------------------
+       Drahtdurchmesser und Quellenwirkungsgrad braucht die Kostenrechnung,
+       die Schweissparameter brauchen beide Bereiche. */
+    { code: 'drahtdm', bereich: 'prozess', typ: 'zahl', einheit: 'unit_mm', min: 0.6, max: 4, dez: 1, label: 'fld_drahtdm', hilfe: 'fld_drahtdm',
+      standard: 1.2, anhalt: true, ueberschreibbar: true,
+      pflicht_wenn: [{ kosten_aktiv: [true] }] },
+    { code: 'eta_quelle', bereich: 'prozess', typ: 'zahl', einheit: null, min: 0.5, max: 1, dez: 2, label: 'fld_eta_quelle', hilfe: 'fld_eta_quelle',
+      standard: 0.85, anhalt: true, ueberschreibbar: true, pflicht: false },
+
+    /* ---- Kosten, Zeit und Drahtbedarf (N10b) ----------------------------
+       Drei Sorten Wert in einem Bereich: berechnet (nichts davon steht
+       hier), Anhaltswerte aus der Praxis und Preisannahmen mit Jahr. */
+    { code: 'A_fuge',   bereich: 'kosten', typ: 'zahl', einheit: 'unit_mm2', min: 1, max: 5000, dez: 1, label: 'fld_A_fuge', hilfe: 'fld_A_fuge', pflicht: false, ueberschreibbar: true },
+    { code: 'ueberhoehung', bereich: 'kosten', typ: 'zahl', einheit: 'unit_prozent', min: 0, max: 50, dez: 0, label: 'fld_ueberhoehung', hilfe: 'fld_ueberhoehung',
+      standard: 15, anhalt: true, ueberschreibbar: true, pflicht: false },
+    { code: 'ausbringung', bereich: 'kosten', typ: 'zahl', einheit: 'unit_prozent', min: 40, max: 100, dez: 0, label: 'fld_ausbringung', hilfe: 'fld_ausbringung',
+      standard: 95, anhalt: true, ueberschreibbar: true, pflicht: false },
+    { code: 'abschmelz', bereich: 'kosten', typ: 'zahl', einheit: 'unit_kg_h', min: 0.2, max: 30, dez: 1, label: 'fld_abschmelz', hilfe: 'fld_abschmelz',
+      standard: 3, anhalt: true, ueberschreibbar: true,
+      pflicht_wenn: [{ kosten_aktiv: [true] }] },
+    { code: 'brennzeit', bereich: 'kosten', typ: 'zahl', einheit: 'unit_prozent', min: 5, max: 100, dez: 0, label: 'fld_brennzeit', hilfe: 'fld_brennzeit',
+      standard: 40, anhalt: true, ueberschreibbar: true,
+      pflicht_wenn: [{ kosten_aktiv: [true] }] },
+    { code: 'gasfluss', bereich: 'kosten', typ: 'zahl', einheit: 'unit_l_min', min: 0, max: 40, dez: 1, label: 'fld_gasfluss', hilfe: 'fld_gasfluss', pflicht: false, ueberschreibbar: true },
+
+    /* PREISANNAHMEN — sie altern. Jede traegt ihr Jahr im Laien-ⓘ. */
+    { code: 'preis_lohn',    bereich: 'kosten', typ: 'zahl', einheit: 'unit_eur_h',   min: 0, max: 500, dez: 2, label: 'fld_preis_lohn',    hilfe: 'fld_preis_lohn',    standard: 35,   preis: true, jahr: 2019, ueberschreibbar: true, pflicht_wenn: [{ kosten_aktiv: [true] }] },
+    { code: 'preis_draht',   bereich: 'kosten', typ: 'zahl', einheit: 'unit_eur_kg',  min: 0, max: 200, dez: 2, label: 'fld_preis_draht',   hilfe: 'fld_preis_draht',   standard: 2.5,  preis: true, jahr: 2025, ueberschreibbar: true, pflicht_wenn: [{ kosten_aktiv: [true] }] },
+    { code: 'preis_gas',     bereich: 'kosten', typ: 'zahl', einheit: 'unit_eur_l',   min: 0, max: 5,   dez: 3, label: 'fld_preis_gas',     hilfe: 'fld_preis_gas',     standard: 0.01, preis: true, jahr: 2025, ueberschreibbar: true, pflicht_wenn: [{ kosten_aktiv: [true] }] },
+    { code: 'preis_energie', bereich: 'kosten', typ: 'zahl', einheit: 'unit_eur_kwh', min: 0, max: 5,   dez: 3, label: 'fld_preis_energie', hilfe: 'fld_preis_energie', standard: 0.16, preis: true, jahr: 2025, ueberschreibbar: true, pflicht_wenn: [{ kosten_aktiv: [true] }] },
+
+    /* DIE SECHS POSITIONEN, DIE DAS PROGRAMM NICHT HERLEITEN KANN.
+       Sie stehen auf null, bis jemand einen Wert eintraegt — und die Summe
+       sagt, welche leer sind. */
+    { code: 'kosten_maschine',     bereich: 'kosten', typ: 'zahl', einheit: 'unit_eur', min: 0, max: 100000, dez: 2, label: 'fld_kosten_maschine',     hilfe: 'fld_kosten_maschine',     pflicht: false },
+    { code: 'kosten_vorbereitung', bereich: 'kosten', typ: 'zahl', einheit: 'unit_eur', min: 0, max: 100000, dez: 2, label: 'fld_kosten_vorbereitung', hilfe: 'fld_kosten_vorbereitung', pflicht: false },
+    { code: 'kosten_vorwaermen',   bereich: 'kosten', typ: 'zahl', einheit: 'unit_eur', min: 0, max: 100000, dez: 2, label: 'fld_kosten_vorwaermen',   hilfe: 'fld_kosten_vorwaermen',   pflicht: false },
+    { code: 'kosten_nacharbeit',   bereich: 'kosten', typ: 'zahl', einheit: 'unit_eur', min: 0, max: 100000, dez: 2, label: 'fld_kosten_nacharbeit',   hilfe: 'fld_kosten_nacharbeit',   pflicht: false },
+    { code: 'kosten_pruefung',     bereich: 'kosten', typ: 'zahl', einheit: 'unit_eur', min: 0, max: 100000, dez: 2, label: 'fld_kosten_pruefung',     hilfe: 'fld_kosten_pruefung',     pflicht: false },
+    { code: 'kosten_gemeinkosten', bereich: 'kosten', typ: 'zahl', einheit: 'unit_eur', min: 0, max: 100000, dez: 2, label: 'fld_kosten_gemeinkosten', hilfe: 'fld_kosten_gemeinkosten', pflicht: false }
   ];
 
   function feld(code) {
@@ -183,8 +224,22 @@
   function istLeer(v) { return v === undefined || v === null || v === '' ||
                                (typeof v === 'number' && !isFinite(v)); }
 
+  /* Eine Bedingung ist ein Objekt {schluessel: [werte]} und wirkt als UND
+     ueber alle Schluessel. EIN ARRAY VON BEDINGUNGEN WIRKT ALS ODER (N10b):
+     Die Schweissparameter U, I und v werden von der Waermefuehrung UND von
+     der Kostenrechnung gebraucht — ein Anwender, der nur kalkulieren will,
+     soll nicht die Waermefuehrung zuschalten muessen, nur um an sie
+     heranzukommen. Ohne diese Erweiterung haette dasselbe Feld zweimal
+     existieren muessen, und zwei Felder fuer dieselbe Zahl sind zwei
+     Gelegenheiten, sie verschieden anzugeben. */
   function bedingung(bed, zustand) {
     if (!bed) return true;
+    if (Object.prototype.toString.call(bed) === '[object Array]') {
+      for (var oi = 0; oi < bed.length; oi++) {
+        if (bedingung(bed[oi], zustand)) return true;
+      }
+      return false;
+    }
     for (var k in bed) {
       if (!Object.prototype.hasOwnProperty.call(bed, k)) continue;
       var ist = zustand ? zustand[k] : undefined;
