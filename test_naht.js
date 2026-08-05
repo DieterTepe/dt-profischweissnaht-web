@@ -19,6 +19,7 @@ var Solver  = require('./solver.js');
 var Weg     = require('./rechenweg.js');
 var Skizze  = require('./skizze.js');
 var Assi    = require('./assistent.js');
+var Therm   = require('./thermik.js');
 
 var N = 0, FAIL = [], SEKTION = '';
 function sek(s) { SEKTION = s; console.log('\n— ' + s + ' —'); }
@@ -1878,7 +1879,7 @@ eq((uiHtml.match(/<script>/g) || []).length, 1,
 
 var uiSrcRe = /<script src="([^"]+)"><\/script>/g, uiSrcs = [], uiM;
 while ((uiM = uiSrcRe.exec(uiHtml)) !== null) uiSrcs.push(uiM[1]);
-eq(uiSrcs.length, 16, '16 Module in der HTML eingebunden — skizze.js ist mit N8b dazugekommen');
+eq(uiSrcs.length, 17, '17 Module in der HTML eingebunden — thermik.js ist mit N9a dazugekommen');
 eq(uiSrcs[uiSrcs.length - 1], 'ui.js', 'ui.js laedt zuletzt');
 var uiDateiFehlt = [];
 for (uiI = 0; uiI < uiSrcs.length; uiI++) {
@@ -2519,7 +2520,7 @@ for (var s34i = 0; s34i < s34Module.length; s34i++) {
 eq(s34OhneVersion.length, 0,
    'N6b: JEDES der 14 Module traegt eine VERSION — auch das neue' +
    (s34OhneVersion.length ? ' (offen: ' + s34OhneVersion.join(', ') + ')' : ''));
-eq(Kern.VERSION, '0.1.0-N1', 'N5d: i18n_kern.js hat jetzt eine Kennung');
+eq(Kern.VERSION, '0.2.0-N9a', 'N5d: i18n_kern.js traegt seine Kennung — seit N9a mit den Waermefuehrungstexten');
 eq(Hilfe.VERSION, '0.1.0-N1', 'N5d: i18n_hilfe.js hat jetzt eine Kennung');
 eq(Kerb.VERSION, '0.1.0-N1', 'N5d: i18n_kerbfall.js hat jetzt eine Kennung');
 /* --- DER FUND VOM 2026-08-04 -------------------------------------------
@@ -3559,7 +3560,7 @@ var s40i, s40j, s40k;
 /* --- 1) Aufbau und Grenzen des Moduls ---------------------------------- */
 ok(typeof Assi === 'object' && Assi !== null, 'S40: assistent.js laedt');
 eq(Assi.NAME, 'assistent', 'S40: es nennt sich beim Namen');
-ok(/^0\.\d+\.\d+-N8a$/.test(Assi.VERSION), 'S40: und traegt eine N8a-Kennung (' + Assi.VERSION + ')');
+ok(/^0\.\d+\.\d+-N8[ab]$/.test(Assi.VERSION), 'S40: und traegt eine N8-Kennung (' + Assi.VERSION + ')');
 var s40Fn = ['starte', 'schritt', 'schritte', 'anzahl', 'antworte', 'zurueck',
              'springe', 'ueberspringe', 'fertig', 'ergebnis', 'offen', 'fortschritt'];
 for (s40i = 0; s40i < s40Fn.length; s40i++) {
@@ -4054,6 +4055,329 @@ eq(s42Leer.length, 0, 'S42: jedes Profil hat ein Musterbild fuer die Auswahlkach
 ok(s42Src.indexOf('DTNSkizze.muster') > 0, 'S42: ui.js holt die Mustermasse beim Skizzenmodul');
 ok(s42Src.indexOf('muster(') > 0 && s42Src.split('formularSetzen(')[0].indexOf('muster') < 0,
    'S42: und schreibt sie nirgends ins Formular');
+
+sek('S43 · N9a Modulkennungen — die Versionszeile wird zum Beleg');
+
+/* WARUM DIESE SEKTION EXISTIERT (Dieters Entscheidung 2026-08-05):
+   Die Versionszeile im Info-Fenster soll ein altes oder fehlendes Modul
+   erkennbar machen. Bis hierher belegte sie nur, dass sechzehn Module DA
+   sind — nicht, dass sie AKTUELL sind. Viermal ist das aufgefallen:
+   solver.js und rechenweg.js meldeten nach N7 weiterhin ihre N3/N4-Kennung,
+   validate.js nach N8a seine N1-Kennung, assistent.js nach N8b seine
+   N8a-Kennung. Nur ui.js wanderte mit.
+
+   Eine Einzelreparatur haette die Regel nicht erzwungen — deshalb steht hier
+   ein WAECHTER: je Modul die erwartete VERSION und eine Pruefsumme des
+   Quelltextes. Aendert sich der Quelltext, ohne dass die VERSION mitwandert,
+   wird es rot. Der Bauende muss dann BEIDES anfassen, und genau das ist der
+   Zweck.
+
+   WENN DIESE SEKTION ROT MELDET, ist das kein Fehler im Test:
+     1. Ist das Modul absichtlich geaendert? -> VERSION im Modul hochziehen.
+     2. Dann die Pruefsumme unten auf den neuen Wert setzen.
+   Beides zusammen, nie nur eines. Wer nur die Pruefsumme nachtraegt,
+   entwertet den Waechter. */
+
+function s43Summe(text) {
+  var h = 5381, i;
+  for (i = 0; i < text.length; i++) { h = ((h * 33) ^ text.charCodeAt(i)) >>> 0; }
+  return h.toString(16);
+}
+
+/* Stand 2026-08-05, N9a. Vier Kennungen wurden hier zugleich korrigiert:
+   solver und rechenweg auf N7, validate auf N8a, assistent auf N8b; dazu
+   i18n_kern auf N9a wegen der Waermefuehrungstexte.
+   DIE TABELLE BESCHREIBT DEN AUSGELIEFERTEN STAND, nicht jeden
+   Zwischenschritt beim Bauen. Waehrend einer Etappe darf sich ein Modul
+   bewegen, ohne dass seine Kennung mitwandert — sie steht ja schon auf der
+   laufenden Etappe. Erst zur Lieferung wird die Summe gesetzt. Zwischen
+   ZWEI Etappen gilt die Regel dagegen streng: geaenderter Quelltext ohne
+   Kennungswechsel ist rot. */
+var S43_STAND = [
+  { datei: 'i18n_kern.js',     version: '0.2.0-N9a',  summe: 'd99a8439' },
+  { datei: 'i18n_hilfe.js',    version: '0.1.0-N1',   summe: '81c40a74' },
+  { datei: 'i18n_kerbfall.js', version: '0.1.0-N1',   summe: '64438e87' },
+  { datei: 'daten.js',         version: '0.1.0-N1',   summe: '4f0ba1bd' },
+  { datei: 'optionen.js',      version: '0.1.0-N1',   summe: '4f244f48' },
+  { datei: 'validate.js',      version: '0.2.0-N8a',  summe: '63ece918' },
+  { datei: 'naht.js',          version: '0.1.0-N2',   summe: 'c0284f44' },
+  { datei: 'profil.js',        version: '0.1.0-N2b',  summe: 'e31a9ce3' },
+  { datei: 'svglib.js',        version: '0.1.0-N2c',  summe: 'b50173d8' },
+  { datei: 'schaubild.js',     version: '0.1.0-N2c',  summe: 'bfdb51b8' },
+  { datei: 'solver.js',        version: '0.2.0-N7',   summe: 'e8baa119' },
+  { datei: 'rechenweg.js',     version: '0.2.0-N7',   summe: '3ee50905' },
+  { datei: 'symbol.js',        version: '0.1.0-N6b',  summe: '9e1cac0f' },
+  { datei: 'thermik.js',       version: '0.1.0-N9a',  summe: '7b7c1f0d' },
+  { datei: 'skizze.js',        version: '0.1.0-N8b',  summe: '99feb661' },
+  { datei: 'assistent.js',     version: '0.2.0-N8b',  summe: 'c0a7e2bb' },
+  { datei: 'ui.js',            version: '0.10.1',     summe: '1984c404' }
+];
+
+var s43i, s43Fehl = [], s43Src, s43M, s43S;
+for (s43i = 0; s43i < S43_STAND.length; s43i++) {
+  (function (e) {
+    var wo = 'S43 [' + e.datei + ']: ';
+    s43Src = fsU.readFileSync(__dirname + '/' + e.datei, 'utf8');
+    s43M = require('./' + e.datei);
+    s43S = s43Summe(s43Src);
+    eq(s43M.VERSION, e.version, wo + 'die Kennung im Modul stimmt mit dem Stand ueberein');
+    ok(s43S === e.summe,
+       wo + 'Quelltext unveraendert ODER Kennung mitgewachsen' +
+       (s43S === e.summe ? '' :
+        ' — Quelltext geaendert (Summe ' + s43S + ' statt ' + e.summe +
+        '): erst VERSION im Modul hochziehen, DANN die Summe hier setzen'));
+    if (s43S !== e.summe) s43Fehl.push(e.datei);
+  }(S43_STAND[s43i]));
+}
+
+/* Der Waechter muss ALLE Module fuehren — ein Modul, das nicht in der
+   Tabelle steht, waere ungeschuetzt und wuerde nicht auffallen. */
+var s43Datei = [], s43Fehlt = [];
+for (s43i = 0; s43i < S43_STAND.length; s43i++) s43Datei.push(S43_STAND[s43i].datei);
+var s43Html = fsU.readFileSync(__dirname + '/DT-ProfiSchweissnaht.html', 'utf8');
+var s43Treffer = s43Html.match(/<script src="([a-z0-9_]+\.js)"><\/script>/g) || [];
+for (s43i = 0; s43i < s43Treffer.length; s43i++) {
+  (function (t) {
+    var d = t.replace(/.*src="/, '').replace(/".*/, '');
+    if (s43Datei.indexOf(d) < 0) s43Fehlt.push(d);
+  }(s43Treffer[s43i]));
+}
+eq(s43Fehlt.length, 0,
+   'S43: jedes eingebundene Modul steht unter dem Waechter (' + s43Fehlt.join(',') + ')');
+eq(S43_STAND.length, s43Treffer.length,
+   'S43: und der Waechter fuehrt keine Datei zu viel (' + S43_STAND.length + ' / ' + s43Treffer.length + ')');
+
+/* Die Pruefsumme muss sich bei JEDER Aenderung bewegen — sonst waere der
+   Waechter blind. Probe an einem Zeichen. */
+ok(s43Summe('abc') !== s43Summe('abd'), 'S43: die Pruefsumme reagiert auf ein einzelnes Zeichen');
+ok(s43Summe('') === s43Summe(''), 'S43: und ist bestimmt');
+
+/* DIE VIER KORRIGIERTEN KENNUNGEN — festgehalten, damit der Rueckfall
+   auffiele. Sie waren der Anlass fuer diese Sektion. */
+ok(require('./solver.js').VERSION.indexOf('N7') > 0, 'S43: solver.js traegt seine N7-Kennung');
+ok(require('./rechenweg.js').VERSION.indexOf('N7') > 0, 'S43: rechenweg.js ebenso');
+ok(require('./validate.js').VERSION.indexOf('N8a') > 0, 'S43: validate.js traegt seine N8a-Kennung');
+ok(require('./assistent.js').VERSION.indexOf('N8b') > 0, 'S43: assistent.js traegt seine N8b-Kennung');
+
+sek('S44 · N9a Waermefuehrung — Vorwaermung und Abkuehlzeit nach EN 1011-2');
+
+/* DREI PUBLIZIERTE ZAHLENBEISPIELE aus der Recherche R5 sind hier die
+   Anker. Sie pruefen die ganze Kette, nicht nur die Formel — dieselbe Art
+   Probe wie S39 beim statischen Nachweis. */
+
+var s44i;
+
+eq(Therm.NAME, 'thermik', 'S44: thermik.js nennt sich beim Namen');
+ok(/^0\.\d+\.\d+-N9a$/.test(Therm.VERSION), 'S44: und traegt eine N9a-Kennung (' + Therm.VERSION + ')');
+var s44Src = fsU.readFileSync(__dirname + '/thermik.js', 'utf8');
+ok(s44Src.indexOf('document') < 0 && s44Src.indexOf('window') < 0,
+   'S44: N9a ist DOM-frei — die Oberflaeche kommt mit N9b');
+
+/* --- 1) Kohlenstoffaequivalente ---------------------------------------- */
+/* Handprobe an einer einfachen Analyse: C 0,18 · Mn 1,4 · Cr 0,2 · Mo 0,1
+   · Cu 0,3 · Ni 0,4 · Si 0,3 · V 0,02
+   CEV = 0,18 + 1,4/6 + (0,2+0,1+0,02)/5 + (0,3+0,4)/15
+   CET = 0,18 + (1,4+0,1)/10 + (0,2+0,3)/20 + 0,4/40                     */
+var s44A = { C: 0.18, Si: 0.30, Mn: 1.40, Cr: 0.20, Mo: 0.10, V: 0.02, Cu: 0.30, Ni: 0.40 };
+var s44Ae = Therm.aequivalente(s44A);
+var s44CEV = 0.18 + 1.40 / 6 + (0.20 + 0.10 + 0.02) / 5 + (0.30 + 0.40) / 15;
+var s44CET = 0.18 + (1.40 + 0.10) / 10 + (0.20 + 0.30) / 20 + 0.40 / 40;
+var s44Pcm = 0.18 + 0.30 / 30 + (1.40 + 0.30 + 0.20) / 20 + 0.40 / 60 + 0.10 / 15 + 0.02 / 10;
+ok(Math.abs(s44Ae.CEV - s44CEV) < 1e-12, 'S44: CEV(IIW) deckt sich mit der Handrechnung (' + s44Ae.CEV.toFixed(4) + ')');
+ok(Math.abs(s44Ae.CET - s44CET) < 1e-12, 'S44: CET ebenso (' + s44Ae.CET.toFixed(4) + ')');
+ok(Math.abs(s44Ae.Pcm - s44Pcm) < 1e-12, 'S44: Pcm ebenso (' + s44Ae.Pcm.toFixed(4) + ')');
+/* Der bekannte Zusammenhang: CET liegt rund 0,10 bis 0,15 unter CEV. */
+ok(s44Ae.CEV - s44Ae.CET > 0.05 && s44Ae.CEV - s44Ae.CET < 0.25,
+   'S44: CET liegt plausibel unter CEV (' + (s44Ae.CEV - s44Ae.CET).toFixed(3) + ')');
+eq(Therm.empfohlenesAequivalent(0.10), 'Pcm', 'S44: bei C < 0,18 % wird Pcm empfohlen');
+eq(Therm.empfohlenesAequivalent(0.22), 'CEV', 'S44: darueber CEV');
+
+/* --- 2) ANKER: Vorwaermung Methode B ------------------------------------
+   Quelle: R. Smolin (IWeSBO), "Bestimmung der Vorwaermtemperatur gem.
+   EN 1011-2, Methode B", 2023. Eingang CET 0,37 · d 50 · HD 5 · Q 1,5.
+   ⚠ DER PUBLIZIERTE WERT 155 °C IST EINE DIAGRAMMABLESUNG, keine
+   Formelauswertung. Die Quelle selbst rechnet mit der SEW-Fassung zur
+   Kontrolle nach und kommt auf rund 162 °C, was sie als "im Rahmen der
+   ~±10 %-Toleranz uebereinstimmend" bezeichnet.
+   Geprueft wird deshalb gegen die FORMEL — und zusaetzlich, dass der
+   Abstand zur Diagrammablesung im genannten Toleranzband liegt. Das ist
+   dieselbe Sorgfalt wie bei Anker 1 in S39: erst die Quelle verstehen,
+   dann vergleichen. */
+var s44V = Therm.vorwaermung({ CET: 0.37, d: 50, HD: 5, Q: 1.5 });
+ok(s44V.ok === true, 'S44 Anker Vorwaermung: das Beispiel rechnet');
+eq(s44V.methode, 'B', 'S44: nach Methode B');
+eq(s44V.formel, 'EN', 'S44: in der Normfassung (697/-328)');
+ok(Math.abs(s44V.Tp - 162.83) < 0.02,
+   'S44 Anker: Tp = 162,83 °C aus der EN-Formel (ist ' + s44V.Tp.toFixed(2) + ')');
+var s44Vs = Therm.vorwaermung({ CET: 0.37, d: 50, HD: 5, Q: 1.5, formel: 'SEW' });
+ok(Math.abs(s44Vs.Tp - 161.94) < 0.02,
+   'S44 Anker: die SEW-Fassung liefert 161,94 °C — die Kontrollrechnung der Quelle nennt rund 162 (ist ' +
+   s44Vs.Tp.toFixed(2) + ')');
+ok(Math.abs(s44V.Tp - s44Vs.Tp) < 1.5,
+   'S44: beide Fassungen liegen im einstelligen Gradbereich auseinander');
+ok(Math.abs(s44V.Tp - 155) / 155 < 0.10,
+   'S44 Anker: der Abstand zur Diagrammablesung 155 °C liegt im ±10-%-Band (' +
+   (100 * Math.abs(s44V.Tp - 155) / 155).toFixed(1) + ' %)');
+/* Die vier Teilbetraege muessen die Summe ergeben — sonst stimmt der
+   Rechenweg nicht mit dem Ergebnis ueberein. */
+ok(Math.abs((s44V.teile.CET + s44V.teile.d + s44V.teile.HD + s44V.teile.Q +
+             s44V.teile.konstante) - s44V.Tp) < 1e-9,
+   'S44: die vier Teilbetraege ergeben zusammen genau Tp');
+
+/* --- 3) DER GELTUNGSBEREICH WIRD HART GEPRUEFT -------------------------- */
+/* Ausserhalb wird NICHT extrapoliert. Eine Formel jenseits ihres
+   Gueltigkeitsbereichs liefert eine plausible Zahl ohne Deckung — das ist
+   gefaehrlicher als keine Zahl. */
+var s44Aus = [
+  { feld: 'CET', ein: { CET: 0.60, d: 50, HD: 5, Q: 1.5 }, code: 'msg_th_ausserhalb_cet' },
+  { feld: 'CET', ein: { CET: 0.15, d: 50, HD: 5, Q: 1.5 }, code: 'msg_th_ausserhalb_cet' },
+  { feld: 'd',   ein: { CET: 0.37, d: 5,  HD: 5, Q: 1.5 }, code: 'msg_th_ausserhalb_d' },
+  { feld: 'd',   ein: { CET: 0.37, d: 120, HD: 5, Q: 1.5 }, code: 'msg_th_ausserhalb_d' },
+  { feld: 'HD',  ein: { CET: 0.37, d: 50, HD: 0.5, Q: 1.5 }, code: 'msg_th_ausserhalb_hd' },
+  { feld: 'HD',  ein: { CET: 0.37, d: 50, HD: 25, Q: 1.5 }, code: 'msg_th_ausserhalb_hd' },
+  { feld: 'Q',   ein: { CET: 0.37, d: 50, HD: 5, Q: 0.2 }, code: 'msg_th_ausserhalb_q' },
+  { feld: 'Q',   ein: { CET: 0.37, d: 50, HD: 5, Q: 5.0 }, code: 'msg_th_ausserhalb_q' }
+];
+for (s44i = 0; s44i < s44Aus.length; s44i++) {
+  (function (p) {
+    var r = Therm.vorwaermung(p.ein);
+    ok(r.ok === false, 'S44 Geltungsbereich [' + p.feld + ']: ausserhalb wird NICHT gerechnet');
+    var hat = false, j;
+    for (j = 0; j < r.fehler.length; j++) if (r.fehler[j].code === p.code) hat = true;
+    ok(hat === true, 'S44 Geltungsbereich [' + p.feld + ']: und der Grund wird benannt');
+  }(s44Aus[s44i]));
+}
+/* An den Raendern MUSS gerechnet werden — sonst waere der Bereich enger
+   als die Norm ihn zieht. */
+ok(Therm.vorwaermung({ CET: 0.20, d: 10, HD: 1, Q: 0.5 }).ok === true,
+   'S44: an der unteren Bereichsgrenze wird gerechnet');
+ok(Therm.vorwaermung({ CET: 0.50, d: 90, HD: 20, Q: 4.0 }).ok === true,
+   'S44: an der oberen ebenso');
+
+/* --- 4) Kombinierte Dicke: SUMME, nicht Mittelwert ---------------------- */
+/* Gezielt recherchiert (2026-08-05) und zweifach belegt: EN 1011-2
+   Figure C.1 summiert die zusammenlaufenden Blechdicken. Das verbreitete
+   0,5*(t1+t2) fuer Stumpfnaehte stammt aus der australischen AS 3992 und
+   ist hier falsch — es liefert zu niedrige Vorwaermtemperaturen, also auf
+   der unsicheren Seite. */
+eq(Therm.kombinierteDicke('stumpfstoss', [12]).wert, 24, 'S44: Stumpfstoss = zwei Waermepfade');
+eq(Therm.kombinierteDicke('t_stoss', [12]).wert, 36, 'S44: T-Stoss = drei');
+eq(Therm.kombinierteDicke('kreuzstoss', [12]).wert, 48, 'S44: Kreuzstoss = vier');
+ok(Therm.kombinierteDicke('stumpfstoss', [12]).wert !== 12,
+   'S44: und ausdruecklich NICHT der Mittelwert 0,5*(t1+t2) — das waere AS 3992');
+eq(Therm.kombinierteDicke('stumpfstoss', [10, 20]).wert, 30, 'S44: ungleiche Bleche werden summiert');
+ok(Therm.kombinierteDicke('gibtsnicht', [12]) === null, 'S44: eine unbekannte Stossart liefert nichts');
+/* Die Kehlnaht braucht bei gleicher Einzeldicke mehr Vorwaermung als die
+   Stumpfnaht — genau das ist der Sinn der kombinierten Dicke. */
+var s44Tk = Therm.vorwaermung({ CET: 0.37, d: Therm.kombinierteDicke('t_stoss', [12]).wert, HD: 5, Q: 1.5 });
+var s44Ts = Therm.vorwaermung({ CET: 0.37, d: Therm.kombinierteDicke('stumpfstoss', [12]).wert, HD: 5, Q: 1.5 });
+ok(s44Tk.Tp > s44Ts.Tp,
+   'S44: die Kehlnaht verlangt mehr Vorwaermung als die Stumpfnaht (' +
+   s44Tk.Tp.toFixed(0) + ' gegen ' + s44Ts.Tp.toFixed(0) + ' °C)');
+
+/* --- 5) Waermeeinbringen ------------------------------------------------ */
+/* Q = k * U * I / v. MAG 135 mit k = 0,8: 0,8*28*250/(3*1000) = 1,867 */
+var s44Q = Therm.waermeeinbringen({ verfahren: '135', U: 28, I: 250, v: 3 });
+ok(s44Q.ok === true, 'S44: das Waermeeinbringen rechnet');
+eq(s44Q.k, 0.8, 'S44: MAG 135 hat den Wirkungsgrad 0,8');
+ok(Math.abs(s44Q.Q - 0.8 * 28 * 250 / 3000) < 1e-12,
+   'S44: Q = k*U*I/v (' + s44Q.Q.toFixed(4) + ' kJ/mm)');
+eq(Therm.WIRKUNGSGRAD['121'], 1.0, 'S44: Unterpulverschweissen hat 1,0');
+eq(Therm.WIRKUNGSGRAD['141'], 0.6, 'S44: WIG hat 0,6');
+ok(Therm.waermeeinbringen({ U: 28, I: 250, v: 3 }).ok === false,
+   'S44: ohne Verfahren und ohne k wird nicht geraten');
+
+/* --- 6) ANKER: Abkuehlzeit t8/5 ----------------------------------------
+   Quelle: ERL GmbH nach SEW 088 Bbl. 2 (Uwer/Degenkolbe).
+   3D: T0 20 · Q 1,0 · F3 1,0            -> 5,3 s
+   2D: T0 20 · Q 1,0 · d 8 · F2 1,0      -> 17,8 s                        */
+var s44T3 = Therm.abkuehlzeit({ T0: 20, Q: 1.0, d: 100, F3: 1, F2: 1 });
+ok(s44T3.ok === true, 'S44 Anker t8/5: die 3D-Rechnung laeuft');
+ok(Math.abs(s44T3.t85_3d - 5.3) < 0.05,
+   'S44 Anker: t8/5 dreidimensional = 5,3 s wie publiziert (ist ' + s44T3.t85_3d.toFixed(2) + ')');
+var s44T2 = Therm.abkuehlzeit({ T0: 20, Q: 1.0, d: 8, F3: 1, F2: 1 });
+ok(Math.abs(s44T2.t85_2d - 17.8) < 0.1,
+   'S44 Anker: t8/5 zweidimensional = 17,8 s wie publiziert (ist ' + s44T2.t85_2d.toFixed(2) + ')');
+eq(s44T2.waermeableitung, '2D', 'S44: 8 mm liegt unter der Uebergangsdicke');
+eq(s44T3.waermeableitung, '3D', 'S44: 100 mm darueber');
+/* An der Uebergangsdicke muessen beide Formeln dasselbe liefern — das ist
+   ihre Definition und eine scharfe Probe auf beide zugleich. */
+var s44Due = Therm.uebergangsdicke(20, 1.0);
+ok(Math.abs(Therm.t85_2d(20, 1.0, s44Due, 1) - Therm.t85_3d(20, 1.0, 1)) < 1e-9,
+   'S44: an der Uebergangsdicke sind 2D und 3D gleich (' + s44Due.toFixed(2) + ' mm)');
+/* Der groessere Wert ist massgebend. */
+ok(s44T2.t85 === Math.max(s44T2.t85_2d, s44T2.t85_3d), 'S44: massgebend ist der groessere Wert');
+ok(s44T3.t85 === Math.max(s44T3.t85_2d, s44T3.t85_3d), 'S44: auch bei dicken Blechen');
+/* Vorwaermen verlaengert die Abkuehlzeit — bei BEIDEN Ableitungsarten. */
+var s44Warm = Therm.abkuehlzeit({ T0: 150, Q: 1.0, d: 8, F3: 1, F2: 1 });
+ok(s44Warm.t85_2d > s44T2.t85_2d && s44Warm.t85_3d > s44T3.t85_3d,
+   'S44: Vorwaermen verlaengert t8/5 in beiden Ableitungsarten');
+/* Die Toleranz gehoert an jedes Ergebnis. */
+var s44Tol = false;
+for (s44i = 0; s44i < s44T3.hinweise.length; s44i++) {
+  if (s44T3.hinweise[s44i].code === 'msg_th_toleranz_zehn_prozent') s44Tol = true;
+}
+ok(s44Tol === true, 'S44: die ±10-%-Streuung wird bei jedem Ergebnis genannt');
+
+/* --- 7) Die Umkehrung: Auslegung aufs Zielfenster ----------------------- */
+/* Was die Auslegung vorschlaegt, muss vorwaerts wieder das Zielfenster
+   treffen. Das ist die scharfe Probe — sie prueft beide Richtungen gegen
+   einander, nicht die Formel gegen sich selbst. */
+var s44Ziel = { T0: 100, d: 20, t85_min: 8, t85_max: 15, verfahren: '135', U: 28, I: 250 };
+var s44Aus2 = Therm.auslegung(s44Ziel);
+ok(s44Aus2.ok === true, 'S44: die Auslegung rechnet');
+ok(s44Aus2.Q_min < s44Aus2.Q_max, 'S44: und liefert einen Bereich, keinen Punkt');
+var s44R1 = Therm.abkuehlzeit({ T0: 100, Q: s44Aus2.Q_min, d: 20, F2: 1, F3: 1 });
+var s44R2 = Therm.abkuehlzeit({ T0: 100, Q: s44Aus2.Q_max, d: 20, F2: 1, F3: 1 });
+ok(Math.abs(s44R1.t85 - 8) < 0.01,
+   'S44 GEGENPROBE: das kleinste vorgeschlagene Q trifft die untere Fenstergrenze (' +
+   s44R1.t85.toFixed(3) + ' s)');
+ok(Math.abs(s44R2.t85 - 15) < 0.01,
+   'S44 GEGENPROBE: das groesste trifft die obere (' + s44R2.t85.toFixed(3) + ' s)');
+/* Die vorgeschlagene Geschwindigkeit muss dasselbe Q ergeben. */
+var s44Qv = Therm.waermeeinbringen({ verfahren: '135', U: 28, I: 250, v: s44Aus2.v_max });
+ok(Math.abs(s44Qv.Q - s44Aus2.Q_min) < 1e-9,
+   'S44 GEGENPROBE: die schnellste vorgeschlagene Geschwindigkeit ergibt das kleinste Q');
+/* Der Geltungsbereich begrenzt auch den Vorschlag. */
+ok(s44Aus2.Q_min_gueltig >= Therm.BEREICH_B.Q.min && s44Aus2.Q_max_gueltig <= Therm.BEREICH_B.Q.max,
+   'S44: der Vorschlag bleibt im Geltungsbereich der Methode B');
+
+/* --- 8) Ehrlichkeit: was NICHT gerechnet wird --------------------------- */
+/* Methode A gehoert neben JEDES Vorwaermergebnis — sonst haelt ein
+   Anwender das Ergebnis fuer die einzige normgerechte Antwort. */
+var s44MA = false;
+for (s44i = 0; s44i < s44V.hinweise.length; s44i++) {
+  if (s44V.hinweise[s44i].code === 'msg_th_methode_a_fehlt') s44MA = true;
+}
+ok(s44MA === true, 'S44: jedes Vorwaermergebnis benennt, dass Methode A fehlt');
+ok(s44Src.indexOf('Methode A') > 0 && s44Src.indexOf('Nomogramm') > 0,
+   'S44: und der Quelltext sagt, WARUM sie fehlt');
+ok(s44Src.indexOf('Spannungsarmgluehen') > 0 || s44Src.indexOf('SPANNUNGSARMGLUEHEN') > 0,
+   'S44: die Grenze zur Qualitaetssicherung ist im Modul benannt');
+/* Keine Vorwaermung ist ein Ergebnis, keine Panne. */
+var s44Kalt = Therm.vorwaermung({ CET: 0.20, d: 10, HD: 1, Q: 4.0 });
+ok(s44Kalt.ok === true && s44Kalt.erforderlich === false,
+   'S44: "keine Vorwaermung erforderlich" ist ein Ergebnis (Tp = ' + s44Kalt.Tp.toFixed(0) + ' °C)');
+var s44KH = false;
+for (s44i = 0; s44i < s44Kalt.hinweise.length; s44i++) {
+  if (s44Kalt.hinweise[s44i].code === 'msg_th_keine_vorwaermung') s44KH = true;
+}
+ok(s44KH === true, 'S44: und wird ausdruecklich gesagt statt still auf null gesetzt');
+
+/* --- 9) Jeder Meldungscode hat einen dreisprachigen Text ---------------- */
+var s44Ohne = [];
+for (s44i = 0; s44i < Therm.CODES.length; s44i++) {
+  if (!Kern.has(Therm.CODES[s44i])) s44Ohne.push(Therm.CODES[s44i]);
+}
+eq(s44Ohne.length, 0, 'S44: jeder Meldungscode der Waermefuehrung ist belegt (' + s44Ohne.join(',') + ')');
+
+/* --- 10) Bestimmtheit und Nichtmutation --------------------------------- */
+var s44E1 = { CET: 0.37, d: 50, HD: 5, Q: 1.5 };
+var s44Vor = JSON.stringify(s44E1);
+Therm.vorwaermung(s44E1);
+eq(JSON.stringify(s44E1), s44Vor, 'S44: die Eingabe wird nicht veraendert');
+eq(JSON.stringify(Therm.vorwaermung(s44E1)), JSON.stringify(Therm.vorwaermung(s44E1)),
+   'S44: zweimal gerechnet ergibt dasselbe');
 
 /* ========================================================================= */
 console.log('\n════════════════════════════════════════════');

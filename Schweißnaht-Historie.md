@@ -1712,3 +1712,123 @@ oder benannt ohne. Die Assertion aus S41 erzwingt genau diese Entscheidung.
 **Code unverändert, `Codestand` bleibt 2.44.**
 **Basislinie unverändert: 1825 Assertions · Smokes 662 / 663.**
 **Nächster Schritt: Baustein N9 (Vorwärmung & t8/5).**
+
+
+**v2.46 (2026-08-05):** **Vier Entscheidungen vor N9 — die wichtigste betraf den Zuschnitt von Version 1.**
+
+**Aus dem Klärungsgespräch 2026-08-05**
+
+Dieter kam mit einer Produktfrage, nicht mit einer technischen: Der
+Kerbfallkatalog der EN 1993-1-9 umfasst über siebzig Details. Ob man ihn nicht
+für Version 1 stark kürzen sollte, das Projekt schlanker machen — und die
+Vollversion einem späteren Update überlassen, ohne sich den Weg zu verbauen.
+
+**Die Antwort war zweigeteilt, und der zweite Teil war der wichtigere.**
+Ja, kürzen ist richtig; der Plan sah es in N14a/N14b ohnehin so vor. Aber die
+Art des Kürzens entscheidet über Sicherheit und Erweiterbarkeit:
+
+- **Kürzen an der Tiefe, nicht an der Breite.** Ganze Familien weglassen ist
+  ehrlich — der Anwender merkt es sofort. Einzelne Zeilen quer durch alle
+  Tabellen picken ist die schlechteste Variante, weil dort niemand weiß, was
+  fehlt. Die Regel steht jetzt in 9.2.
+- **Die Gefahr eines kleinen Katalogs ist größer als die Lücke selbst.** Wer
+  seinen Kerbfall nicht findet und „den ähnlichsten" nimmt, bekommt eine
+  plausible falsche Zahl. Deshalb: kein passender Kerbfall → keine Rechnung,
+  und niemals ein Vorschlag für etwas Ähnliches.
+- **Was den Weg wirklich verbauen würde**, ist nicht die Zahl der Details,
+  sondern die Struktur: Ein Kerbfall ist ein Entscheidungsbaum, keine Zahl
+  (die Quer-Stumpfnaht allein hat fünf Werte je nach Ausführung), die
+  Schlüssel müssen aus der Norm kommen, und jeder Eintrag trägt seine
+  Anwendungsbedingungen mit. Das nachzurüsten ist teuer, es von Anfang an zu
+  haben kostet nichts.
+- **Eine Entscheidung drängt zeitlich:** der Versionsstempel im Dateiformat.
+  Er gehört in N11 und damit vor die Ermüdung, sonst lassen sich alte
+  Rechnungen später nicht mehr öffnen.
+
+**Auf die Frage nach den Praxis-Kerbfällen — die der Plan seit Monaten für
+diesen Moment vormerkte — antwortete Dieter: „eigentlich schon alle".** Damit
+war die Reduktion kleiner als gedacht, und ein Widerspruch fiel auf: Der
+kuratierte Katalog der Recherche enthält keine **Hohlprofile**, während vier
+der zwölf Beispiele umlaufend geschweißte Hohlprofile sind. Ein Programm, das
+solche Fälle statisch sauber rechnet und beim Ermüdungsnachweis passen muss,
+wirkt widersprüchlich — auch wenn die Meldung ehrlich ist. Tabelle 8.6 kommt
+dazu, mit einer ergänzenden Recherche vor N14.
+
+**Zwei kleinere Punkte wurden gleich miterledigt.** Der **Endkraterabzug**
+bekommt ein Ankreuzfeld — mit der Auflage, dass die konservative Seite die
+Voreinstellung bleibt und der Rechenweg benennt, wie gerechnet wurde; ein
+stiller Schalter wäre schlimmer als gar keiner. Und die **Modulkennungen**
+werden nicht erst mit N11 abgesichert, sondern mit N9: vier Fälle in zwei
+Bausteinen waren genug. Der Harness bekommt eine Tabelle Modul → VERSION plus
+Prüfsumme; ein geänderter Quelltext ohne Kennungswechsel wird rot. Erst damit
+belegt die Versionszeile, dass die Module nicht nur da, sondern auch aktuell
+sind.
+
+**Offen geblieben — bewusst:** die Herkunft der Spannungsschwingbreite. Sie
+hängt am Rechenkern, nicht am Katalog, und bis N13a liegen vier Bausteine.
+
+**Code unverändert, `Codestand` bleibt 2.44.**
+**Basislinie unverändert: 1825 Assertions · Smokes 662 / 663.**
+**Nächster Schritt: Baustein N9 (Vorwärmung & t8/5).**
+
+
+**v2.47 (2026-08-05):** **N9a — der Wächter und der Wärmeführungs-Kern.**
+
+**Aus N9a (2026-08-05) — Entscheidungen und Erfahrungen**
+
+**Die Recherche hat gesagt: nein.** Dieter wollte beide Vorwärmverfahren, auch
+Methode A. Die gezielte Nachrecherche kam mit einer klaren Absage zurück: Die
+13 Nomogramme der Norm wurden nie tabelliert, es gibt keine Näherungsformel,
+und auch die genannte Alternative AWS D1.1 Annex B liefert ihre Zahlen nur
+innerhalb der AWS-Norm. **Das ist der eigentliche Wert dieser Recherche
+gewesen** — sie hat verhindert, dass wir etwas anfangen, das wir nicht ehrlich
+zu Ende bringen können. Eine halbe Stunde Suchen gegen eine Etappe Arbeit an
+erfundenen Kurvenwerten.
+
+**Zwei alte Widersprüche fielen als Beifang.** Der wichtigere: Die kombinierte
+Dicke ist die **Summe** der zusammenlaufenden Blechdicken, nicht ihr
+Mittelwert. Das verbreitete ½·(t1+t2) für Stumpfnähte stammt aus der
+australischen AS 3992. Hätten wir es übernommen — und die frühere
+Recherchedatei legte es nahe —, hätte das Programm **zu niedrige
+Vorwärmtemperaturen** geliefert, also auf der unsicheren Seite. Genau davor
+warnt jetzt ein Absatz im Quelltext, damit es niemand „zurückrepariert".
+
+**Der Wächter kam zuerst, und das war richtig.** Die Absicherung der
+Modulkennungen (S43) wurde vor dem eigentlichen Rechenkern gebaut, damit
+alles Folgende schon darunter entsteht. Er hat sich sofort bewährt: Beim
+Anlegen der Tabelle hatte ich für `assistent.js` eine veraltete Prüfsumme
+eingetragen — rot. Bei der Gegenprobe machte eine einzige zusätzliche
+Kommentarzeile in `naht.js` ihn rot, das Zurücknehmen wieder grün. Und
+während des Bauens meldete er meine eigene Änderung an `thermik.js`.
+**Fünf Kennungen wurden korrigiert**, die stillschweigend alte Stände
+meldeten. Erst damit belegt die Versionszeile, dass die Module nicht nur da,
+sondern aktuell sind.
+
+**Der lehrreichste Anker war der scheinbar falsche.** Die Vorwärmung ergab
+162,83 °C, publiziert waren 155 °C — knapp 5 % Abstand. Der Reflex wäre
+gewesen, die Formel zu suchen. Richtig war, die Quelle zu lesen: Die 155 °C
+sind eine **Diagrammablesung**, und dieselbe Quelle rechnet zur Kontrolle mit
+der SEW-Fassung nach und kommt auf „rund 162 °C". Unsere SEW-Fassung liefert
+161,94. Das ist exakt die Regel aus 9.2, die S39 hervorgebracht hat: *ein
+publiziertes Beispiel ist ein Anker, kein Beweis* — und diesmal war der
+Unterschied nicht ein Fehler der Quelle, sondern ein anderer **Wertetyp**.
+Beide Fassungen sind jetzt wählbar, die Norm als Voreinstellung.
+
+**Die Gegenprobe fand einen echten Denkfehler.** Die Auslegung aufs
+Zielfenster löste zunächst nur **eine** Ableitungsart auf, während die
+Vorwärtsrechnung den **größeren** der beiden Werte nimmt. Der Vorschlag traf
+das Fenster damit nicht — 9,3 s statt der geforderten 8,0. Gefunden hat es
+nicht die Formelprüfung, sondern die Probe, die den Vorschlag **wieder
+vorwärts einsetzt**. Das ist dasselbe Muster wie beim Zwölf-Fälle-Vergleich in
+N8a: Wer zwei Richtungen baut, muss sie gegeneinander prüfen, nicht jede
+gegen sich selbst.
+
+**Zur Teilung:** Der Plan führte N9 als einteilig. Mit Rechenkern, zwei
+Rechenrichtungen, Panel, Assistent und zwei Zusatzpunkten war das zu viel —
+geteilt statt gehetzt, wie 5.2 es vorsieht. Der Schnitt ist derselbe wie bei
+N8: erst die Logik, die man beweisen kann, dann die Oberfläche. Zum dritten
+Mal hat er getragen.
+
+**Basislinie 1825 → 1939 Assertions · Smokes 662/663 → 663/664.**
+**Codestand 2.44 → 2.47 · 17 Module.**
+**Nächster Schritt: N9a abnehmen, dann N9b.**

@@ -209,11 +209,11 @@ function lauf(edition) {
   while ((mm = srcRe.exec(html)) !== null) srcs.push(mm[1]);
   var erwartet = ['i18n_kern.js', 'i18n_hilfe.js', 'i18n_kerbfall.js', 'daten.js', 'optionen.js',
                   'validate.js', 'naht.js', 'profil.js', 'svglib.js', 'schaubild.js',
-                  'solver.js', 'rechenweg.js', 'symbol.js', 'skizze.js',
-                  'assistent.js', 'ui.js'];
+                  'solver.js', 'rechenweg.js', 'symbol.js', 'thermik.js',
+                  'skizze.js', 'assistent.js', 'ui.js'];
   ok(srcs.join(',') === erwartet.join(','), 'Ladereihenfolge stimmt: ' + srcs.join(' → '));
   ok(srcs[srcs.length - 1] === 'ui.js', 'ui.js laedt zuletzt');
-  ok(srcs.length === 16, 'N8b: 16 Module eingebunden (ist ' + srcs.length + ')');
+  ok(srcs.length === 17, 'N9a: 17 Module eingebunden (ist ' + srcs.length + ')');
 
   /* ------------------------------------- 2) ALLE Module gemeinsam laden -- */
   var d = baueDom(html);
@@ -224,8 +224,9 @@ function lauf(edition) {
                 'naht.js': 'DTNNaht', 'profil.js': 'DTNProfil',
                 'svglib.js': 'DTNSvgLib', 'schaubild.js': 'DTNSchaubild',
                 'solver.js': 'DTNSolver', 'rechenweg.js': 'DTNRechenweg',
-                'symbol.js': 'DTNSymbol', 'skizze.js': 'DTNSkizze',
-                'assistent.js': 'DTNAssistent', 'ui.js': 'DTNUi' };
+                'symbol.js': 'DTNSymbol', 'thermik.js': 'DTNThermik',
+                'skizze.js': 'DTNSkizze', 'assistent.js': 'DTNAssistent',
+                'ui.js': 'DTNUi' };
   for (var i = 0; i < srcs.length; i++) {
     var mod = require('./' + srcs[i]);
     win[namen[srcs[i]]] = mod;
@@ -1162,14 +1163,14 @@ function lauf(edition) {
   /* Seit N8a sind es 15 — assistent.js haengt mit am Fenster und traegt
      seine eigene Kennung. Die Zeile sammelt sich selbst ein; hier steht
      nur die erwartete ZAHL, keine zweite Modulliste. */
-  ok(n5dInfo.n === 16,
-     'N8b: die Zeile wird aus allen 16 geladenen Modulen gebaut (ist ' + n5dInfo.n + ')');
+  ok(n5dInfo.n === 17,
+     'N9a: die Zeile wird aus allen 17 geladenen Modulen gebaut (ist ' + n5dInfo.n + ')');
   var n8aDrin = false;
   for (var n8ai = 0; n8ai < n5dInfo.module.length; n8ai++) {
     if (n5dInfo.module[n8ai].name === 'assistent') {
       n8aDrin = true;
-      ok(/^0\.\d+\.\d+-N8a$/.test(n5dInfo.module[n8ai].version),
-         'N8a: und der Assistent nennt seine Kennung (' + n5dInfo.module[n8ai].version + ')');
+      ok(/^0\.\d+\.\d+-N8[ab]$/.test(n5dInfo.module[n8ai].version),
+         'N8b: und der Assistent nennt seine Kennung (' + n5dInfo.module[n8ai].version + ')');
     }
   }
   ok(n8aDrin === true, 'N8a: der Assistent steht in der Versionszeile');
@@ -1188,8 +1189,13 @@ function lauf(edition) {
   ok(n5dAbw.length === 0,
      'N5d: JEDE angezeigte Kennung stimmt mit dem geladenen Modul ueberein (Plan 3.6)' +
      (n5dAbw.length ? ' — Abweichung: ' + n5dAbw.join(', ') : ''));
-  ok(/symbol 0\.1\.0-N6b/.test(n5dMl) && /kern 0\.1\.0/.test(n5dMl) && /hilfe 0\.1\.0/.test(n5dMl),
-     'N5d: auch die drei nachgeruesteten i18n-Module erscheinen mit Kennung');
+  /* NICHT gegen feste Zeichenketten pruefen (Lehre v2.36/N7): die Kennungen
+     wandern jetzt mit, seit N9a auch bei i18n_kern. Geprueft wird gegen die
+     Kennung, die das Modul selbst traegt. */
+  ok(n5dMl.indexOf('symbol ' + win.DTNSymbol.VERSION) >= 0 &&
+     n5dMl.indexOf('kern ' + Kern.VERSION) >= 0 &&
+     n5dMl.indexOf('hilfe ' + win.DTNI18nHilfe.VERSION) >= 0,
+     'N5d: auch die drei nachgeruesteten i18n-Module erscheinen mit ihrer eigenen Kennung');
   ok(n5dMl.indexOf('ui ' + UI.VERSION) >= 0,
      'N7: und die Oberflaeche mit ihrer eigenen Kennung (ui ' + UI.VERSION + ')');
   d.byId.infoClose.click();

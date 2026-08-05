@@ -19,7 +19,7 @@
 }(typeof self !== 'undefined' ? self : this, function (Data, Options) {
   'use strict';
 
-  var VERSION = '0.1.0-N1';
+  var VERSION = '0.2.0-N8a';
 
   /* --------------------------------------------------------------------- */
   /* Feldschema — eine Quelle fuer Formular, Assistent und Pruefung         */

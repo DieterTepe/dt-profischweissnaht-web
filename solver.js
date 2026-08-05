@@ -62,7 +62,7 @@
 }(typeof self !== 'undefined' ? self : this, function (Data, Naht, Profil) {
   'use strict';
 
-  var VERSION = '0.1.0-N3';
+  var VERSION = '0.2.0-N7';
 
   var W2 = Math.sqrt(2);
   var W3 = Math.sqrt(3);

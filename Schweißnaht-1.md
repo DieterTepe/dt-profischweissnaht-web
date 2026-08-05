@@ -8,7 +8,8 @@
 > Abstimmung vom **2026-07-24** (alle offenen Fragen aus Abschnitt 0 geklärt) und nach den
 > abgenommenen Bausteinen **N1, N2, N2b, N2c, N3, N4 und N5 vollständig
 > (N5a, N5b, N5c-1 bis N5c-3 und N5d)**, **N6b**, **N7** und **N8 vollständig
-> (N8a, N8b-1, N8b-2, N8c)** — Stand 2026-08-04.
+> (N8a, N8b-1, N8b-2, N8c)**, dazu **N9a gebaut und geliefert (Abnahme
+> offen)** — Stand 2026-08-05.
 > Sie ist so geschrieben, dass ein **neuer Chat ohne Vorwissen** damit weiterarbeiten kann.
 > **Das WARUM steht in `Schweißnaht-Historie.md`** (Entscheidungslog + Changelog im
 > Volltext) — dort nachschlagen, bevor etwas geändert wird, das falsch aussieht.
@@ -17,8 +18,8 @@
 > in 4.11 und in der Historie. Im Projektordner liegt **keine Vorlaufdatei** mehr.
 
 ```
-Plan-Version : 2.45 · Stand 2026-08-04
-Codestand    : Plan 2.44 · ui 0.10.0 · N8c
+Plan-Version : 2.47 · Stand 2026-08-05
+Codestand    : Plan 2.47 · ui 0.10.1 · N9a
                (Die Planversion, gegen die der CODE gebaut ist. Sie steht auch
                in ui.js als PLAN und wird von einer Assertion damit verglichen.
                Sie wandert nur mit, wenn sich Code ändert — reine Plan- oder
@@ -53,18 +54,21 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                und `ui 0.10.0`; ein Durchlauf des **Auslegungsfalls mit
                Moment** (a gesucht) grün mit erfülltem Nachweis; und der
                **Sprachwechsel bei offenem Dialog** in allen drei Sprachen.
-               → NÄCHSTER SCHRITT: Baustein **N9 (Vorwärmung & t8/5)** —
-                 Einstieg „weiter mit N9", **Umfang vor dem Bau
-                 abstimmen**. Ab jetzt gilt die Prozessregel aus 3.3:
-                 **jeder weitere Baustein liefert seine
-                 Assistenten-Schritte MIT.**
+               **Etappe N9a ist GEBAUT und GELIEFERT** — Abnahme steht
+               aus. Sie enthält die **Absicherung der Modulkennungen**
+               (3.6, damit erledigt) und `thermik.js` als DOM-freien
+               Rechenkern (**17 Module**). Am Handy ist außer der
+               Versionszeile nichts zu sehen.
+               → NÄCHSTER SCHRITT: **N9b** — Panel, Rechenweg,
+                 Assistenten-Schritte und das **Endkrater-Ankreuzfeld**
+                 (2.2b). Einstieg „weiter mit N9b".
                  Schnittstellen: 4.5 (naht.js), 4.6 (profil.js),
                  4.7 (svglib.js + schaubild.js), 4.8 (solver.js),
                  4.9 (rechenweg.js), 4.10 / 4.10b / 4.10c / 4.10d (ui.js),
                  4.11 (symbol.js).
                Große Bausteine (N5, N8, N13, N14) werden in ETAPPEN gebaut — Regel in
                Kickoff-Punkt 5c, Etappen in Abschnitt 5.2.
-Basislinie   : 1825 Assertions · DOM-Smokes 662 (voll) + 663 (test) · i18n-Parität 0 Abweichungen
+Basislinie   : 1939 Assertions · DOM-Smokes 663 (voll) + 664 (test) · i18n-Parität 0 Abweichungen
                (VERBINDLICH. Basislinie darf nur WACHSEN — nie schrumpfen, nie gelockert werden.)
 Dateistand   : siehe Abschnitt 8.1 — dort steht, was fertig ist und was noch fehlt.
 ⚠️ SYNC       : Am 2026-08-03 lag im Projektordner eine **elf Versionen alte**
@@ -122,7 +126,7 @@ welche Dateien zu überschreiben sind** → Dieter bestätigt am Handy → erst 
 Schritt. Danach Plan-Kopf (Version/Status/Basislinie) + Changelog pflegen.
 
 **5b) WIEDEREINSTIEG IN EINEM NEUEN CHAT — genau diese Reihenfolge:**
-Einstiegssatz von Dieter: **„weiter mit N9"**.
+Einstiegssatz von Dieter: **„weiter mit N9b"**.
 1. Diese Datei komplett lesen (`Schweißnaht-1.md`, sie ist die alleinige Grundlage
    für das Bauen).
    **`Schweißnaht-Historie.md` NICHT vorab lesen** — sie enthält Entscheidungslog und
@@ -146,14 +150,14 @@ Einstiegssatz von Dieter: **„weiter mit N9"**.
 9. Abschnitt **5.1** lesen: 5.1-1 ist der **gelieferte** Umfang von N5d (nur noch
    Begründung), 5.1-2 der **nächste** Auftrag **N6b** — **vor dem Bau mit Dieter
    bestätigen**. Abschnitt **5.2**: die Etappen von N5.
-10. **Vollständigkeit des Projektordners prüfen** (Liste in 8.1): 16 Module, `style.css`,
+10. **Vollständigkeit des Projektordners prüfen** (Liste in 8.1): 17 Module, `style.css`,
    beide HTMLs und **alle drei** DEV-ONLY-Dateien, dazu `Schweißnaht-Historie.md`.
    `dom_smoke_test.js` allein läuft nicht, sie ruft `dom_smoke_voll.js` auf — fehlt eine
    davon, zuerst bei Dieter nachfragen. **Das ist keine Formsache:** beim Austausch sind
    schon zweimal Dateien verlorengegangen, beide Male hat diese Prüfung es gefunden.
 11. Arbeitsordner herstellen (Befehl unter Punkt 6 der Kickoff-Liste), dann
    `node test_naht.js`, `node dom_smoke_voll.js`, `node dom_smoke_test.js` laufen lassen
-   und die Basislinie aus dem Plan-Kopf bestätigen (**1825 / 662 / 663 · 0 Fehler**),
+   und die Basislinie aus dem Plan-Kopf bestätigen (**1939 / 663 / 664 · 0 Fehler**),
    **bevor** etwas gebaut wird. Weicht etwas ab, erst das klären.
    ⚠️ **Diese drei Läufe sind zugleich die Probe, ob Plandatei und Code zusammenpassen.**
    Steht im Kopfblock eine andere Basislinie als gemessen, ist eine der beiden Seiten alt —
@@ -336,13 +340,21 @@ auseinanderlaufen. Ändert der Anwender die Kantenauswahl, erscheint bzw. versch
 Naht sofort. **Folge für die Reihenfolge:** `svglib.js` + `schaubild.js` werden von N6 auf
 **N2c vorgezogen**.
 
-> ❓ **OFFENE FRAGE AUS S39 (2026-08-04), für Dieter:** Der Endkraterabzug
-> lässt sich in `profil.js` abschalten (`endkrater: false`), im **Formular
-> aber nicht** — dort ist er immer an. Ein Anwender, der ein Lehrbuchbeispiel
-> nachrechnet, findet rund **15 % Unterschied und keinen Schalter**. Soll das
-> ein Ankreuzfeld im Bereich *Geometrie* werden (mit Laien-ⓘ, der die
-> Auswirkung benennt)? **Noch nicht entschieden — nicht bauen, bevor Dieter
-> es sagt.**
+> ✅ **ENTSCHIEDEN (Dieter, 2026-08-05): Der Endkraterabzug bekommt ein
+> Ankreuzfeld.** Ausgangslage war der Befund aus S39: abschaltbar ist er nur
+> in `profil.js`, im Formular nicht — und er macht rund **15 %** aus. Wer ein
+> Lehrbuchbeispiel nachrechnet, fand den Unterschied ohne Erklärung.
+>
+> **Wie es gebaut wird — mit N9 mitgeliefert:**
+> - Ankreuzfeld im Bereich *Geometrie*, **Voreinstellung bleibt AN**. Die
+>   konservative Seite ist die Voreinstellung; abschalten ist eine bewusste
+>   Handlung, nicht der Normalfall.
+> - **Der Rechenweg sagt, wie gerechnet wurde** — mit oder ohne Abzug. Ein
+>   stiller Schalter wäre schlimmer als gar keiner.
+> - Laien-ⓘ benennt die Auswirkung, nicht nur die Regel.
+> - Nach der Prozessregel aus 3.3 bringt er seinen **Assistenten-Schritt** mit.
+> - Die Assertions aus S39 bleiben: sie messen den Unterschied weiterhin und
+>   halten fest, dass die Anker ohne Abzug gerechnet sind.
 
 **Die errechnete Länge ist ein VORSCHLAG**, mit „eigener Wert"-Haken überschreibbar
 (Regel 3.1). Erklärungen laufen über die vorhandene Laien-ⓘ-Struktur
@@ -599,10 +611,26 @@ aber **nichts davon ist sichtbar** — der Info-ⓘ nennt bisher nur die Edition
 > Modul** (`NAME`) und gehört **in N11 mitgemacht**, nicht als eigener Bau.
 
 > **Zweiter offener Punkt für N11 (aus der Abnahme von N7, 2026-08-04):** Die
+> ✅ **ERLEDIGT MIT N9a (2026-08-05).** Der Wächter steht in Sektion **S43**:
+> je Modul die erwartete `VERSION` und eine Prüfsumme des Quelltextes.
+> Geänderter Quelltext ohne Kennungswechsel wird rot. Gegenprobe bestanden —
+> eine einzige zusätzliche Kommentarzeile in `naht.js` machte ihn rot, das
+> Zurücknehmen wieder grün. **Fünf Kennungen wurden dabei korrigiert:**
+> `solver.js` und `rechenweg.js` auf N7, `validate.js` auf N8a,
+> `assistent.js` auf N8b, `i18n_kern.js` auf N9a. Erst damit belegt die
+> Versionszeile, dass die Module nicht nur DA, sondern auch AKTUELL sind.
+> Der Namensabgleich (Anzeigename gegen Dateiname) bleibt bei N11.
 > Modulkennungen sind **nicht alle mitgewachsen**. N7 hat in `solver.js` und
 > `rechenweg.js` tief eingegriffen, N8a in `validate.js`, N8b in
 > `assistent.js` — alle vier melden aber weiterhin `0.1.0-N3`, `0.1.0-N4`,
-> `0.1.0-N1` bzw. `0.1.0-N8a`. Bei der Abnahme von
+> `0.1.0-N1` bzw. `0.1.0-N8a`.
+>
+> **Wie es abgesichert wird:** Eine Einzelreparatur erzwingt die Regel nicht —
+> deshalb bekommt der Harness eine Tabelle **Modul → VERSION + Prüfsumme des
+> Quelltextes**. Ändert sich der Quelltext, ohne dass die `VERSION` mitwandert,
+> wird es rot. Damit ist die Versionszeile zum ersten Mal ein echter Beleg
+> dafür, dass die Module nicht nur DA, sondern auch AKTUELL sind. Der
+> Namensabgleich (Anzeigename gegen Dateiname) bleibt bei N11. Bei der Abnahme von
 > N8a stand `validate 0.1.0-N1` unverändert in der Zeile, obwohl das Modul
 > gerade die Feld-zu-Bereich-Zuordnung bekommen hatte. **Die Zeile belegt,
 > dass 15 Module DA sind — nicht, dass sie AKTUELL sind.** Nur `ui.js` wandert mit, weil es als einziges eine gepflegte
@@ -1477,7 +1505,7 @@ im Wörterbuch; eine weitere Assertion verbietet einen zweiten Text daneben.
 | **N6b** ✅ | **ISO-2553-Symbolgenerator — ABGENOMMEN 2026-08-04** | `symbol.js`: Pfeil-/Gegenseite, a- bzw. z-Maß, Länge, Rundumnaht, Baustellennaht. Nutzt `svglib.js` aus N2c. Bewusst **vor** dem Launch — Verkaufsargument. |
 | **N7** ✅ | **Beispielkatalog — ABGENOMMEN 2026-08-04** | **Zwölf Beispiele, sechs je Bemessungswelt**, als reine Daten in `optionen.js` auf `profil.js` aufgesetzt, mit Merkmalen für die **kontextbezogene Beispielliste** (3.2). Hat **vier Fehler aus N5c aufgedeckt und behoben** — Ergebnis in 5.1-3. |
 | **N8** ✅ | **Assistent — vollständig ABGENOMMEN 2026-08-04** | `assistent.js` (DOM-freie Dialoglogik) + Overlay-UI, Button-Einstieg, tabellengestützt aus `optionen.js`, mit Erklärungen/Tipps/Skizzen je Dialog, Übernahme vorhandener Eingaben. |
-| **N9** ⬅ | **Vorwärmung & t8/5** *(nächster Bau — Umfang vorher abstimmen)* | `thermik.js` + Panel + Rechenweg + Assistenten-Schritte. |
+| **N9** ⬅ | **Vorwärmung & t8/5** — **N9a gebaut, N9b offen** | `thermik.js` + Panel + Rechenweg + Assistenten-Schritte. Umfang festgelegt 2026-08-05, Ergebnis in 5.1-6. Geteilt in **N9a** (Kennungsabsicherung + Rechenkern, DOM-frei) und **N9b** (Panel, Rechenweg, Assistent, Endkrater-Ankreuzfeld). |
 | **N10** | **Kosten/Zeit/Draht** | `kosten.js` + Panel + Rechenweg + Assistenten-Schritte. |
 | **N11** | **Ausgaben** | `report.js`: `.dts` speichern/öffnen (**erst leeren, dann laden** + Formatversion), Druck/PDF, Word (.rtf), `guard()`-Gating. Aktionsleiste **oben**, Dateiname trägt Bezeichnung + Datum. **Jede Ausgabe trägt die Versionszeile** (3.6) — **dabei die Modulnamen an die Dateinamen angleichen UND die Modulkennungen mitwachsen lassen**, beide Merkposten in 3.6. |
 | **N12** | **Edition/Registrierung/Impressum** | Testbalken, Aktivierungsdialog beim Erststart (Name + Schlüssel, **keine Formatprüfung**), „Vollversion · lizenziert für <Name>", **10-s-Long-Press** = Reset, Info-ⓘ mit Impressum. |
@@ -1994,6 +2022,90 @@ drangebaut".
 
 ---
 
+#### 5.1-6 · N9 — Umfang festgelegt · **N9a GEBAUT UND GELIEFERT 2026-08-05**
+
+**Der abgestimmte Umfang** *(Dieter, 2026-08-05)*:
+
+| | |
+|---|---|
+| Vorwärmung | **nur Methode B** (CET-Formel), Geltungsbereich hart geprüft |
+| CET | **aus der Analyse gerechnet**, direkt überschreibbar; CEV und Pcm zur Einordnung |
+| kombinierte Dicke | **Summe** je Stoßart |
+| t8/5 | 2D **und** 3D, Übergangsdicke, Nahtfaktoren, Wärmeeinbringen |
+| Zielfenster | Ampel **und** Auslegungsrichtung (zulässiges Q, Vorschlag für v) |
+
+**METHODE A LÄSST SICH NICHT EHRLICH BAUEN — gezielt recherchiert.** Sie
+besteht aus **13 Nomogrammen** (Figure C.2 a–m), die nie in Tabellen- oder
+Formelform veröffentlicht wurden; auch keine Regressionsnäherung existiert.
+Mehrere Quellen sagen ausdrücklich, dass EN 1011-2 anders als AWS D1.1 oder
+ASME B31.3 keine Nachschlagetabelle hat. Die Kurven aus der Norm zu
+digitalisieren wäre weder überprüfbar noch urheberrechtlich sauber.
+**AWS D1.1 Annex B** wäre frei tabelliert, die Zahlen stehen aber in der
+AWS-Norm — gleiche Lage. Dieters Entscheidung: **Methode B allein, Methode A
+als benannte Lücke**, die neben jedem Ergebnis genannt wird.
+
+**ZWEI ALTE WIDERSPRÜCHE HAT DIESELBE RECHERCHE AUFGELÖST:**
+1. **Die kombinierte Dicke ist die SUMME**, nicht der Mittelwert — Stumpfnaht
+   t1+t2, Kehlnaht t1+t2+t3, Kreuzstoß vier. Das verbreitete ½·(t1+t2) stammt
+   aus der **australischen AS 3992** und ist für EN 1011-2 falsch. Zweifach
+   belegt. Es liefert zu niedrige Vorwärmtemperaturen, also auf der
+   **unsicheren** Seite — deshalb steht die Warnung im Quelltext.
+2. Die **CEV-Grenzwerte für S420, S460 und S690** liegen jetzt vor, teils nur
+   aus einer Quelle. Verwendet werden nur die doppelt belegten; der Rest
+   bleibt benannte Lücke.
+
+**AUSDRÜCKLICH DRAUSSEN:** Methode A · AWS D1.1 Annex B · **Spannungsarmglühen**
+(Haltezeit und Ofenführung sind Fertigungsanweisung, nicht Bemessung — das ist
+die Grenze zur Qualitätssicherung, die schon bei N5d getragen hat).
+
+---
+
+**N9a — was geliefert wurde:**
+
+**Erstens der Wächter für die Modulkennungen** (3.6, Sektion **S43**). Er kam
+bewusst zuerst, damit alles Folgende schon darunter gebaut wird. **Fünf
+Kennungen wurden korrigiert**, die stillschweigend alte Stände meldeten.
+
+**Zweitens `thermik.js`** — DOM-frei, hängt an nichts. Kohlenstoffäquivalente
+CET, CEV und Pcm · Vorwärmung nach Methode B in **zwei zulässigen Fassungen**
+(Norm 697/−328 als Voreinstellung, SEW 700/−330 wählbar) · kombinierte Dicke ·
+Wärmeeinbringen mit den Wirkungsgraden nach EN 1011-1 · t8/5 zwei- und
+dreidimensional samt Übergangsdicke · die Umkehrung aufs Zielfenster.
+
+**DREI PUBLIZIERTE ANKER, und einer war lehrreich:**
+
+| Anker | publiziert | unser Wert |
+|---|---|---|
+| t8/5 dreidimensional | 5,3 s | **5,29 s** |
+| t8/5 zweidimensional | 17,8 s | **17,76 s** |
+| Vorwärmung Methode B | 155 °C | **162,83 °C** |
+
+Der dritte sieht nach Abweichung aus und ist keine: **die 155 °C sind eine
+Diagrammablesung**, keine Formelauswertung. Die Quelle rechnet selbst mit der
+SEW-Fassung nach und kommt auf „rund 162 °C", was sie als im ±10-%-Band
+übereinstimmend bezeichnet. **Unsere SEW-Fassung liefert 161,94 °C** — die
+Kontrollrechnung der Quelle auf 0,1 °C getroffen. Wieder die Regel aus 9.2:
+erst die Quelle verstehen, dann vergleichen.
+
+**Die Gegenprobe hat einen echten Denkfehler gefunden.** Die Auslegung löste
+zunächst **eine** Ableitungsart auf, während die Vorwärtsrechnung den
+**größeren** der beiden Werte nimmt — der Vorschlag traf das Zielfenster
+damit nicht (9,3 s statt der geforderten 8,0 s). Richtig ist, **beide** Arten
+aufzulösen und das kleinere Q zu nehmen. Die Assertion prüft jetzt beide
+Richtungen gegeneinander, nicht die Formel gegen sich selbst.
+
+**Basislinie 1825 → 1939 Assertions · Smokes 662/663 → 663/664.** Neue
+Sektionen **S43** (Kennungswächter) und **S44** (Wärmeführung). `thermik.js`
+hängt in beiden HTMLs — die Versionszeile zeigt **17 Module**.
+
+**Erwarteter Beleg am Handy:** „Programmstand **N9a** · Plan **2.47** ·
+**17 Module**" mit `thermik 0.1.0-N9a` und `ui 0.10.1`. Und die fünf
+korrigierten Kennungen sind sichtbar: `solver 0.2.0-N7`, `rechenweg 0.2.0-N7`,
+`validate 0.2.0-N8a`, `assistent 0.2.0-N8b`, `kern 0.2.0-N9a`. Sonst ist
+nichts zu sehen — das Panel kommt mit N9b.
+
+---
+
 ### 5.1a Auftrag für N5c-1 — „Es rechnet" *(ERLEDIGT 2026-07-28, hier nur noch als Begründung)*
 
 > **Dieser Auftrag ist entschieden, nicht mehr Vorschlag.** Dieter hat die offenen Fragen
@@ -2213,12 +2325,80 @@ AWS/US-Normen, EN 1993-1-8:2024 (2. Generation, β_w,mod — Werte noch nicht be
 | **N8c** ✅ | **ABGENOMMEN 2026-08-04.** Mündung in die volle Anzeige mit Rechenweg und Liste 2.4; **ab hier gilt die Prozessregel**, dass jeder spätere Baustein seine Assistenten-Schritte mitliefert |
 
 **N13/N14 — Ermüdung und Kerbfallkatalog:**
+
+> ✅ **UMFANG FÜR VERSION 1 FESTGELEGT (Dieter, 2026-08-05).**
+>
+> **Ermüdung ist in Version 1 dabei.** Sie war zur Diskussion gestellt, weil
+> der Kerbfallkatalog der EN 1993-1-9 über 70 Details umfasst und das Projekt
+> schlanker machen würde. Dieters Entscheidung: *„Ermüdung ist schon
+> wichtig"* — für einen Teil der Anwender ist sie der Kaufgrund.
+>
+> **Reduziert wird die TIEFE, nicht die BREITE.** Alle vier Detailfamilien,
+> die dieses Programm überhaupt sehen kann, sind dabei — Dieter zu allen
+> vieren: *„eigentlich schon alle"*:
+>
+> | Familie | Normtabelle |
+> |---|---|
+> | Durchlaufende Längsnähte | 8.2 |
+> | Quer-Stumpfnähte (alle Ausführungen) | 8.3 |
+> | Steifen, Anbauteile, Deckblechenden | 8.4 |
+> | Kreuz-/T-Stöße, Laschen, Halsnaht | 8.5 |
+> | **Hohlprofile** *(Dieter, 2026-08-05: dazu)* | **8.6** |
+>
+> Grundlage sind die **~13 Nahtdetails** aus dem kuratierten Katalog der
+> Recherche R4 (`Ermüdungsnachweis…md`, Abschnitt 2.2) — dort mit Δσ_C,
+> Anwendungsbedingungen, Anrissort und Quellen.
+>
+> **Hohlprofile brauchen eine ergänzende Recherche vor N14.** Tabelle 8.6
+> fehlt im kuratierten Katalog, aber vier der zwölf Beispiele sind
+> Hohlprofile mit umlaufender Naht. Ein Programm, das solche Fälle statisch
+> sauber rechnet und beim Ermüdungsnachweis „kein passender Kerbfall" meldet,
+> wirkt widersprüchlich — auch wenn die Meldung ehrlich ist.
+>
+> **AUSDRÜCKLICH DRAUSSEN (benannte Lücken, keine vergessenen):**
+> - **Keine Nahtdetails:** Schraubenverbindung am Lochrand, Bolzen im
+>   Gewindegrund, Kopfbolzendübel, Grundwerkstoff mit Walzkante,
+>   Brenn-/Scherkante (Tab. 8.1). Ein Schweißnahtprogramm, das plötzlich einen
+>   Lochrand bewertet, verspricht mehr, als es kennt.
+> - **Spezialtabellen:** Fachwerkknoten aus Hohlprofilen (8.7), orthotrope
+>   Platten (8.8/8.9), Kranbahnträger-Gurt-Steg (8.10).
+> - **Aluminium** nach EN 1999-1-3 — bleibt N13b.
+>
+> **VIER FESTLEGUNGEN, DIE VON N14a AN STEHEN MÜSSEN** (später teuer):
+> 1. **Ein Kerbfall ist ein Entscheidungsbaum, keine Zahl.** Die
+>    Quer-Stumpfnaht heißt 112 bündig geschliffen, 90 mit Nahtüberhöhung, 80
+>    im Regelfall, 71 mit Badsicherung, 36 einseitig ohne Nachweis — dahinter
+>    stehen Bedingungen wie An-/Auslaufbleche, NDT, Dickensprung ≤ 1:4.
+>    **Das Programm fragt diese Bedingungen ab, es rät nicht.**
+> 2. **Schlüssel aus der Norm**, also Tabelle plus Detailnummer nach
+>    EN 1993-1-9 — nie eine eigene Nummerierung. Eigene Nummern rächen sich
+>    beim ersten Update und beim Öffnen alter Dateien.
+> 3. **Kein passender Kerbfall → keine Rechnung.** Sichtbar begründet, und
+>    **nie ein Vorschlag für etwas Ähnliches**. Der Anwender, der „den
+>    ähnlichsten" nimmt, bekommt eine plausible falsche Zahl — das wäre
+>    schlimmer als gar keine Ermüdungsrechnung.
+> 4. **Jeder Eintrag trägt seine Anwendungsbedingungen mit**, nicht nur sein
+>    Δσ_C. Sie an hundert Einträgen nachzurüsten ist Arbeit, sie von Anfang an
+>    mitzuführen kostet nichts.
+>
+> **EINE ENTSCHEIDUNG GEHÖRT IN N11, ALSO VOR DIE ERMÜDUNG:** Das
+> Dateiformat braucht einen **Versionsstempel**. Eine gespeicherte Rechnung
+> mit Kerbfallcode muss sich in Version 2 noch öffnen lassen, wenn der Katalog
+> um ein Vielfaches gewachsen ist. Das ist die einzige der hier getroffenen
+> Festlegungen, die zeitlich drängt.
+>
+> **NOCH OFFEN, zu entscheiden vor N13a:** Woher kommt die
+> **Spannungsschwingbreite**? Ermüdung rechnet mit Δσ, nicht mit der
+> statischen Bemessungslast. Möglich sind: Lastschwingbreite eingeben und das
+> Programm rechnet Δσ, zwei Lastzustände (max/min), oder Δσ direkt. Dieter
+> 2026-08-05: *später entscheiden* — es hängt am Rechenkern, nicht am Katalog,
+> und bis N13a liegen N9, N10, N11 und N12.
 | Etappe | Inhalt |
 |---|---|
 | **N13a** | `ermuedung.js` Rechenkern Stahl: Wöhlerlinie m = 3/5, Δσ_C, γ_Mf, Einstufenkollektiv + Hand-Anker |
 | **N13b** | Miner-Schadensakkumulation und Kollektive, Alu-Kern nach EN 1999-1-3 |
 | **N14a** | `kerbfall.js`: **Struktur vollständig** (Codes, Kategorien, Anwendungsbedingungen, Verweis auf Skizze) mit den ersten Details — ab hier ist jede Lücke sichtbar statt still |
-| **N14b…** | Füllung in Etappen von je 8–12 Details, jedes mit eigener SVG-Skizze und **2 Quellen**. Hier wird Dieter nach seinen Praxis-Kerbfällen gefragt (Reihenfolge der Füllung) |
+| **N14b…** | Füllung in Etappen von je 8–12 Details, jedes mit eigener SVG-Skizze und **2 Quellen**. ~~Hier wird Dieter nach seinen Praxis-Kerbfällen gefragt~~ — **erledigt 2026-08-05**, Umfang steht im Kasten oben |
 
 **Alle Etappen von N5 sind gebaut und abgenommen** — N5a, N5b, N5c-1 bis N5c-3 und N5d.
 **Baustein N5 ist abgeschlossen.** Die Etappenteilung hat sich über sechs Lieferungen
@@ -2385,6 +2565,16 @@ Solver.
 
 **Basislinie nach N7: 1553 Assertions · 611 / 612 DOM-Smokes · i18n-Parität 0.**
 
+**Nachtrag N9a (2026-08-05) — 7 Dateien:** **neu `thermik.js`** ·
+`i18n_kern.js` (16 Meldungstexte, Kennung auf N9a) · `ui.js` (nur Kennungen:
+0.10.1 / N9a / 2.47) · **beide HTMLs** (Skript-Zeile) · `test_naht.js`
+(**S43**, **S44**, fünf Kennungskorrekturen) · `dom_smoke_voll.js`.
+**Zusätzlich nur die Kennungszeile geändert:** `solver.js`, `rechenweg.js`,
+`validate.js`, `assistent.js` — je genau ein `VERSION`-String, sonst nichts.
+**Nicht angefasst:** `naht.js`, `profil.js`, `daten.js`, `optionen.js`,
+`svglib.js`, `schaubild.js`, `symbol.js`, `skizze.js`, `i18n_hilfe.js`,
+`i18n_kerbfall.js`, `style.css`, `dom_smoke_test.js`.
+
 **Nachtrag N8b/N8c (2026-08-04) — 9 Dateien:** **neu `skizze.js`** ·
 `assistent.js` (Skizzenzuordnung) · `i18n_kern.js` · `ui.js` (Overlay,
 gemeinsamer Schreibweg, Kennungen 0.10.0 / N8c / 2.44) · `style.css` ·
@@ -2463,7 +2653,7 @@ Modul für Modul) ·
 seit N5c **unverändert**).
 ⚠ **Beide Smoke-Dateien müssen im Projektordner liegen** — `dom_smoke_test.js` allein läuft nicht.
 
-**Noch nicht gebaut:** `thermik.js` (N9) ·
+**Noch nicht gebaut:**
 `kosten.js` (N10) · `report.js` (N11) · `ermuedung.js` (N13) · `kerbfall.js` (N14) ·
 `verzug.js` (N15).
 
@@ -2510,9 +2700,9 @@ Versionen alt). Deshalb ist die Vollständigkeitsprüfung gegen die Tabelle oben
 Formsache, und der Basislinien-Abgleich aus Kickoff-Punkt 11 ebenso wenig.
 
 **Erste Handlung im neuen Chat:** Vollständigkeit gegen die Tabelle oben prüfen
-(**16 Module**, `style.css`, beide HTMLs, **alle drei** DEV-ONLY-Dateien, dazu Plandatei und
+(**17 Module**, `style.css`, beide HTMLs, **alle drei** DEV-ONLY-Dateien, dazu Plandatei und
 `Schweißnaht-Historie.md`), Arbeitsordner herstellen, die drei Testläufe starten.
-Melden müssen sie **1825 / 662 / 663 · 0 Fehler**. Weicht etwas ab, erst das klären —
+Melden müssen sie **1939 / 663 / 664 · 0 Fehler**. Weicht etwas ab, erst das klären —
 nicht bauen.
 
 **Was N6b überschreiben wird** (zur Vorwarnung, nicht als Auftrag): neu `symbol.js`,
@@ -2646,6 +2836,22 @@ will. Also: Vorschriften und Wegweiser bleiben hier, die Erzählung wandert.
 - **Beim Vergleich mit Lehrbüchern gehören drei Schalter genannt** (S39):
   Endkraterabzug, Rechenmodell und die Beiwerte. Ohne sie ist jeder Vergleich
   wertlos — der Endkraterabzug allein macht rund 15 % aus.
+- **Ein Kerbfall ist ein Entscheidungsbaum, keine Zahl** (2026-08-05, 5.2):
+  Die Anwendungsbedingungen werden ABGEFRAGT, nicht geraten. Und findet sich
+  kein passender Kerbfall, gibt es **keine Rechnung und keinen Vorschlag für
+  etwas Ähnliches**. Wer „den ähnlichsten" nimmt, bekommt eine plausible
+  falsche Zahl — schlimmer als gar keine Ermüdungsrechnung.
+- **Schlüssel kommen aus der Norm, nie aus eigener Zählung** (2026-08-05):
+  Tabelle plus Detailnummer nach EN 1993-1-9. Eine eigene Nummerierung bricht
+  beim ersten Update und beim Öffnen alter Dateien.
+- **Was schlanker gemacht wird, wird an der TIEFE reduziert, nicht an der
+  BREITE** (2026-08-05): Ganze Familien weglassen ist ehrlich — der Anwender
+  merkt es sofort. Rosinen aus allen Familien picken ist die schlechteste
+  Variante: dort weiß niemand, was fehlt.
+- **Eine bewusst konservative Voreinstellung bleibt die Voreinstellung**
+  (2026-08-05, Endkraterabzug 2.2b): Sie darf anfassbar werden, aber
+  Abschalten ist eine Handlung, und der **Rechenweg sagt, wie gerechnet
+  wurde**. Ein stiller Schalter wäre schlimmer als gar keiner.
 - **Token-Pause: 4 Stunden.**
 
 ---
@@ -2703,46 +2909,6 @@ Changelog — **die vollständige Fassung ab v1.0 steht in `Schweißnaht-Histori
 Hier stehen nur die letzten drei Einträge. Wer wissen will, wie eine Entscheidung
 zustande kam, findet die Kette dort — lückenlos ab der Erstfassung vom 2026-07-23.
 
-**v2.43 (2026-08-04):** **Etappe N8a von Dieter am Handy geprüft und ABGENOMMEN —
-ohne Nacharbeit.** Die Versionszeile zeigt „Programmstand N8a · Plan 2.42 ·
-15 Module" mit `assistent 0.1.0-N8a` und `ui 0.9.1`; **alle zwölf Beispiele
-laufen grün mit erfülltem Nachweis** — die zusätzliche Skript-Zeile in beiden
-HTMLs hat nichts gestört. Bei der Abnahme hat sich der Merkposten aus 3.6 zum
-dritten Mal gezeigt: **`validate 0.1.0-N1`** stand unverändert in der Zeile,
-obwohl N8a dort die Feld-zu-Bereich-Zuordnung eingebaut hatte. Der Punkt ist
-in 3.6 um dieses Modul erweitert und bleibt für **N11** terminiert.
-**Code unverändert, `Codestand` bleibt 2.42.**
-**Basislinie unverändert: 1748 Assertions · Smokes 614 / 615 · i18n-Parität 0.**
-**Nächster Schritt: N8b und N8c zusammen — Overlay, Button-Einstieg und die
-Mündung in die volle Anzeige. Einstieg: „weiter mit N8b".**
-
-
-
-**v2.44 (2026-08-04):** **Etappen N8b und N8c gebaut und geliefert — Baustein
-N8 ist damit vollständig.** Vorgeschaltet nach Dieters Festlegung („erst alle
-Skizzen bauen") die Etappe **N8b-1** mit dem neuen Modul **`skizze.js`**: zwölf
-schematische Bilder ohne Text im SVG, dazu Mustermaße je Profil, mit denen
-`schaubild.js` schon beim Auswählen zeichnet. Die dreizehn Gruppen ohne Skizze
-stehen als **benannte Lücke** im Modul, abgesichert durch eine Assertion, die
-jede Auswahlgruppe einer der drei Kategorien zuordnen verlangt. Das Overlay
-zeigt je Schritt Fortschritt, Skizze, Laien-Erklärung und Tipp — Erklärung und
-Tipp aus `i18n_hilfe.js`, also **kein doppelt gepflegter Text**. Die Skizze
-sitzt **in der Auswahlkachel**, nicht darüber: beim Auswählen ist noch nichts
-gewählt, ein Bild über der Liste könnte nichts zeigen. **N8c:** der Assistent
-hat keine eigene Ergebnisanzeige — er schreibt über den neuen gemeinsamen
-Schreibweg `formularSetzen()` in dieselben Felder und drückt denselben
-Rechenweg an. Ein vollständiger Durchlauf über die Oberfläche liefert
-**dieselbe Ausnutzung auf zwölf Nachkommastellen** wie die Handeingabe.
-Geändert: neu `skizze.js`, dazu `assistent.js`, `i18n_kern.js`, `ui.js`,
-`style.css`, beide HTMLs, `test_naht.js` (**S41**, **S42**),
-`dom_smoke_voll.js`.
-**Basislinie 1748 → 1825 Assertions · Smokes 614/615 → 662/663 · i18n-Parität 0.**
-**Codestand 2.42 → 2.44** (`ui` 0.9.1 → 0.10.0, Etappe N8a → N8c, **16 Module**).
-**Nächster Schritt: N8 am Handy abnehmen, dann Baustein N9 (Vorwärmung & t8/5).
-Ab jetzt liefert jeder Baustein seine Assistenten-Schritte MIT (3.3).**
-
-
-
 **v2.45 (2026-08-04):** **Baustein N8 vollständig von Dieter am Handy geprüft
 und ABGENOMMEN — ohne Nacharbeit.** Die Versionszeile zeigt „Programmstand
 N8c · Plan 2.44 · 16 Module" mit `skizze 0.1.0-N8b` und `ui 0.10.0`. Geprüft
@@ -2757,6 +2923,61 @@ Termin bleibt **N11**. **Code unverändert, `Codestand` bleibt 2.44.**
 **Basislinie unverändert: 1825 Assertions · Smokes 662 / 663 · i18n-Parität 0.**
 **Nächster Schritt: Baustein N9 (Vorwärmung & t8/5) — Umfang vor dem Bau
 abstimmen, Assistenten-Schritte liefert N9 MIT. Einstieg: „weiter mit N9".**
+
+
+
+**v2.46 (2026-08-05):** **Vier offene Entscheidungen geklärt und festgeschrieben —
+keine Codeänderung.** Anlass war Dieters Überlegung, den umfangreichen
+Kerbfallkatalog zugunsten einer schlankeren Version 1 zu kürzen.
+**(1) Ermüdung bleibt in Version 1** — sie ist für einen Teil der Anwender der
+Kaufgrund. Reduziert wird die **Tiefe, nicht die Breite**: alle vier
+Detailfamilien, die das Programm sehen kann, plus **Hohlprofile (Tab. 8.6)**.
+Ausdrücklich draußen: Nicht-Nahtdetails (Lochrand, Gewindegrund, Dübel,
+Grundwerkstoff) und die Spezialtabellen 8.7–8.10. Dazu vier Festlegungen, die
+von N14a an stehen müssen — Kerbfall als Entscheidungsbaum, Normschlüssel,
+kein Vorschlag für Ähnliches, Anwendungsbedingungen am Eintrag —, ein
+**Versionsstempel im Dateiformat für N11** und eine offene Frage zur Herkunft
+der Schwingbreite (vor N13a).
+**(2) Der Endkraterabzug bekommt ein Ankreuzfeld** (2.2b), Voreinstellung
+bleibt AN, der Rechenweg benennt die gewählte Seite — gebaut mit N9.
+**(3) Die Modulkennungen werden mit N9 abgesichert** statt erst mit N11 (3.6):
+der Harness bekommt eine Tabelle Modul → VERSION + Prüfsumme, ein geänderter
+Quelltext ohne Kennungswechsel wird rot. Vier Fälle in zwei Bausteinen waren
+genug.
+**(4)** Der Namensabgleich Anzeigename/Dateiname bleibt bei N11.
+Neu in 9.2: vier Festlegungen zu Kerbfällen, Normschlüsseln, Reduktion nach
+Tiefe statt Breite und konservativen Voreinstellungen.
+**Code unverändert, `Codestand` bleibt 2.44.**
+**Basislinie unverändert: 1825 Assertions · Smokes 662 / 663 · i18n-Parität 0.**
+**Nächster Schritt: Baustein N9 — Umfang vor dem Bau abstimmen.**
+
+
+
+**v2.47 (2026-08-05):** **Etappe N9a gebaut und geliefert — Kennungswächter und
+Wärmeführungs-Rechenkern.** Umfang von N9 festgelegt (5.1-6): Vorwärmung nur
+nach **Methode B**, CET aus der Analyse, kombinierte Dicke als Summe, t8/5 in
+beiden Ableitungsarten plus Auslegung aufs Zielfenster. **Methode A ist nach
+gezielter Recherche nicht ehrlich baubar** — 13 Nomogramme, nie tabelliert
+oder als Formel veröffentlicht; sie wird als benannte Lücke neben jedem
+Ergebnis genannt. Dieselbe Recherche löste zwei alte Widersprüche: die
+kombinierte Dicke ist die **Summe** (das verbreitete ½·(t1+t2) stammt aus der
+australischen AS 3992 und liegt auf der unsicheren Seite), und die
+CEV-Grenzwerte für S420/S460/S690 liegen nun vor. Geliefert wurde zuerst der
+**Wächter für die Modulkennungen** (S43) — je Modul VERSION plus Prüfsumme,
+Gegenprobe bestanden, **fünf Kennungen korrigiert** —, dann `thermik.js` als
+DOM-freier Rechenkern. **Drei publizierte Anker:** t8/5 3D 5,29 gegen 5,3 s,
+2D 17,76 gegen 17,8 s, Vorwärmung 162,83 °C gegen eine **Diagrammablesung**
+von 155 °C, deren eigene Kontrollrechnung „rund 162" nennt — unsere
+SEW-Fassung trifft sie auf 0,1 °C. Die Gegenprobe der Auslegung fand einen
+echten Denkfehler: sie löste eine Ableitungsart auf, während vorwärts der
+größere Wert gilt. Geändert: neu `thermik.js`, dazu `i18n_kern.js`, `ui.js`,
+beide HTMLs, `test_naht.js` (**S43**, **S44**), `dom_smoke_voll.js`, sowie je
+eine Kennungszeile in `solver.js`, `rechenweg.js`, `validate.js`,
+`assistent.js`.
+**Basislinie 1825 → 1939 Assertions · Smokes 662/663 → 663/664 · i18n-Parität 0.**
+**Codestand 2.44 → 2.47** (`ui` 0.10.0 → 0.10.1, Etappe N8c → N9a, **17 Module**).
+**Nächster Schritt: N9a am Handy abnehmen, dann N9b — Panel, Rechenweg,
+Assistenten-Schritte und das Endkrater-Ankreuzfeld. Einstieg: „weiter mit N9b".**
 
 
 ═══════════════════════════════════════════════════════════════════════════

@@ -39,7 +39,7 @@
   'use strict';
 
   var NAME = 'assistent';
-  var VERSION = '0.1.0-N8a';
+  var VERSION = '0.2.0-N8b';
 
   /* Die Bereiche, in denen Eingabefelder gebuendelt werden. Die Reihenfolge
      ist die Reihenfolge im Dialog. Welches Feld in welchen Bereich gehoert,

@@ -49,7 +49,7 @@
 }(typeof self !== 'undefined' ? self : this, function (Naht, Profil, Solver, Kern) {
   'use strict';
 
-  var VERSION = '0.1.0-N4';
+  var VERSION = '0.2.0-N7';
 
   /* Toleranz der Proben. Grosszuegig genug fuer Gleitkomma-Rundung,
      eng genug, dass eine verfaelschte Zahl auffaellt. */
