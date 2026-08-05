@@ -2183,3 +2183,50 @@ N12 (Edition) und N13/N14 (Ermüdung). Die Basislinie ist an einem Tag von
 
 **Code unverändert, `Codestand` bleibt 2.55.**
 **Nächster Schritt: Baustein N10 (Kosten, Zeit, Drahtbedarf).**
+
+
+**v2.57 (2026-08-05):** **N10a — der Baustein, bei dem die Zahlen altern.**
+
+**Aus N10a (2026-08-05) — Entscheidungen und Erfahrungen**
+
+N10 unterscheidet sich von allen bisherigen Bausteinen: **Preise sind keine
+Normen.** Ein Stundensatz von 35 €/h ist von 2019, ein Gaspreis von 2025 ist
+nächstes Jahr falsch. Alles, was dieses Programm bisher gebaut hat, war
+entweder normativ oder physikalisch — beides altert nicht.
+
+**Die Antwort war, die Rechnung zu teilen.** Mengen und Zeiten folgen aus
+Geometrie und Physik: Schweißgut, Draht, Gasliter, Minuten, Kilowattstunden.
+Die stehen immer da und bleiben richtig. Kosten entstehen erst mit Preisen,
+und **jeder Preis trägt sein Jahr**. So veraltet nie das Ergebnis, sondern
+höchstens eine Annahme, die sichtbar danebensteht. Die Recherche R6 hatte
+genau das gefordert, bevor ich es vorschlug — ein gutes Zeichen für beide.
+
+**Damit gibt es jetzt drei Sorten Wert.** Tabellenwert aus der Norm,
+Anhaltswert aus der Praxis (seit N9d), Preisannahme mit Jahr (neu). Sie gleich
+aussehen zu lassen wäre bequem und falsch: Aus einem Preis von 2019 würde eine
+Vorschrift.
+
+**Der schwierigste Punkt war Dieters Wunsch nach allen zehn
+Kostenpositionen.** Vier davon kann das Programm herleiten — Lohn aus der
+Zeit, Draht aus der Masse, Gas aus dem Durchfluss, Energie aus U·I. Für die
+anderen sechs gibt es **keine** Grundlage: Prüfkosten lassen sich nicht aus
+einer Nahtgeometrie berechnen. Sie einfach wegzulassen hätte die Summe zu
+niedrig gemacht; sie zu schätzen wäre erfunden gewesen. Die Lösung: Sie
+existieren, stehen auf null, **und die Summe sagt, welche leer sind.** Eine
+Gesamtsumme, die stillschweigend etwas weglässt, ist die gefährlichste Zahl
+im ganzen Programm — sie sieht vollständig aus.
+
+**Der Anker sitzt beim ersten Lauf**, und zwar auf allen acht Größen. Das ist
+in diesem Projekt selten genug, um es zu erwähnen — und es liegt daran, dass
+die Recherche ein vollständig durchgerechnetes Beispiel mitbrachte, nicht nur
+Formeln.
+
+**Eine bewusste Abweichung vom Anker:** Beim Gas nennt die Quelle ~110 l
+*einschließlich* eines Anfahrzuschlags, den sie nicht beziffert. Wir geben
+108,3 l — den nackten Verbrauch. **Einen Zuschlag zu raten, den niemand
+angibt, wäre eine erfundene Zahl**, und sie wäre in der Summe nicht mehr von
+einer gerechneten zu unterscheiden.
+
+**Basislinie 2942 → 3015 Assertions · Smokes 801/802 → 802/803.**
+**Codestand 2.55 → 2.57 · 18 Module.**
+**Nächster Schritt: N10a abnehmen, dann N10b.**

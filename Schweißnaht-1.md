@@ -9,7 +9,8 @@
 > abgenommenen Bausteinen **N1, N2, N2b, N2c, N3, N4 und N5 vollständig
 > (N5a, N5b, N5c-1 bis N5c-3 und N5d)**, **N6b**, **N7** und **N8 vollständig
 > (N8a, N8b-1, N8b-2, N8c)**, **N9a** und **N9b**, dazu **N9c gebaut und
-> **N9 vollständig (N9a, N9b, N9c, N9d)** — Stand 2026-08-05.
+> **N9 vollständig (N9a–N9d)**, dazu **N10a gebaut und geliefert (Abnahme
+> offen)** — Stand 2026-08-05.
 > Sie ist so geschrieben, dass ein **neuer Chat ohne Vorwissen** damit weiterarbeiten kann.
 > **Das WARUM steht in `Schweißnaht-Historie.md`** (Entscheidungslog + Changelog im
 > Volltext) — dort nachschlagen, bevor etwas geändert wird, das falsch aussieht.
@@ -18,8 +19,8 @@
 > in 4.11 und in der Historie. Im Projektordner liegt **keine Vorlaufdatei** mehr.
 
 ```
-Plan-Version : 2.56 · Stand 2026-08-05
-Codestand    : Plan 2.55 · ui 0.13.0 · N9d
+Plan-Version : 2.57 · Stand 2026-08-05
+Codestand    : Plan 2.57 · ui 0.14.0 · N10a
                (Die Planversion, gegen die der CODE gebaut ist. Sie steht auch
                in ui.js als PLAN und wird von einer Assertion damit verglichen.
                Sie wandert nur mit, wenn sich Code ändert — reine Plan- oder
@@ -70,18 +71,19 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                **Baustein N9 ist vollständig von Dieter am Handy geprüft
                und ABGENOMMEN (2026-08-05).** Damit sind **sechs von zehn
                Bausteinen bis zum Verkaufsstand** fertig.
-               → NÄCHSTER SCHRITT: Baustein **N10 (Kosten, Zeit, Draht)** —
-                 Einstieg „weiter mit N10", **Umfang vor dem Bau
-                 abstimmen**. Eine Recherchedatei liegt bereit
-                 (`Schweißzeit__Schweißkosten…md`), und N10 bringt seine
-                 Assistenten-Schritte nach 3.3 mit.
+               **Etappe N10a ist GEBAUT und GELIEFERT** — Abnahme steht
+               aus. `kosten.js` als DOM-freier Rechenkern (**18 Module**);
+               am Handy ist außer der Versionszeile nichts zu sehen.
+               → NÄCHSTER SCHRITT: **N10b** — Felder, Panel, Rechenweg,
+                 Assistenten-Schritte und die Beispiele. Einstieg
+                 „weiter mit N10b".
                  Schnittstellen: 4.5 (naht.js), 4.6 (profil.js),
                  4.7 (svglib.js + schaubild.js), 4.8 (solver.js),
                  4.9 (rechenweg.js), 4.10 / 4.10b / 4.10c / 4.10d (ui.js),
                  4.11 (symbol.js).
                Große Bausteine (N5, N8, N13, N14) werden in ETAPPEN gebaut — Regel in
                Kickoff-Punkt 5c, Etappen in Abschnitt 5.2.
-Basislinie   : 2942 Assertions · DOM-Smokes 801 (voll) + 802 (test) · i18n-Parität 0 Abweichungen
+Basislinie   : 3015 Assertions · DOM-Smokes 802 (voll) + 803 (test) · i18n-Parität 0 Abweichungen
                (VERBINDLICH. Basislinie darf nur WACHSEN — nie schrumpfen, nie gelockert werden.)
 Dateistand   : siehe Abschnitt 8.1 — dort steht, was fertig ist und was noch fehlt.
 ⚠️ SYNC       : Am 2026-08-03 lag im Projektordner eine **elf Versionen alte**
@@ -139,7 +141,7 @@ welche Dateien zu überschreiben sind** → Dieter bestätigt am Handy → erst 
 Schritt. Danach Plan-Kopf (Version/Status/Basislinie) + Changelog pflegen.
 
 **5b) WIEDEREINSTIEG IN EINEM NEUEN CHAT — genau diese Reihenfolge:**
-Einstiegssatz von Dieter: **„weiter mit N10"**.
+Einstiegssatz von Dieter: **„weiter mit N10b"**.
 1. Diese Datei komplett lesen (`Schweißnaht-1.md`, sie ist die alleinige Grundlage
    für das Bauen).
    **`Schweißnaht-Historie.md` NICHT vorab lesen** — sie enthält Entscheidungslog und
@@ -163,14 +165,14 @@ Einstiegssatz von Dieter: **„weiter mit N10"**.
 9. Abschnitt **5.1** lesen: 5.1-1 ist der **gelieferte** Umfang von N5d (nur noch
    Begründung), 5.1-2 der **nächste** Auftrag **N6b** — **vor dem Bau mit Dieter
    bestätigen**. Abschnitt **5.2**: die Etappen von N5.
-10. **Vollständigkeit des Projektordners prüfen** (Liste in 8.1): 17 Module, `style.css`,
+10. **Vollständigkeit des Projektordners prüfen** (Liste in 8.1): 18 Module, `style.css`,
    beide HTMLs und **alle drei** DEV-ONLY-Dateien, dazu `Schweißnaht-Historie.md`.
    `dom_smoke_test.js` allein läuft nicht, sie ruft `dom_smoke_voll.js` auf — fehlt eine
    davon, zuerst bei Dieter nachfragen. **Das ist keine Formsache:** beim Austausch sind
    schon zweimal Dateien verlorengegangen, beide Male hat diese Prüfung es gefunden.
 11. Arbeitsordner herstellen (Befehl unter Punkt 6 der Kickoff-Liste), dann
    `node test_naht.js`, `node dom_smoke_voll.js`, `node dom_smoke_test.js` laufen lassen
-   und die Basislinie aus dem Plan-Kopf bestätigen (**2942 / 801 / 802 · 0 Fehler**),
+   und die Basislinie aus dem Plan-Kopf bestätigen (**3015 / 802 / 803 · 0 Fehler**),
    **bevor** etwas gebaut wird. Weicht etwas ab, erst das klären.
    ⚠️ **Diese drei Läufe sind zugleich die Probe, ob Plandatei und Code zusammenpassen.**
    Steht im Kopfblock eine andere Basislinie als gemessen, ist eine der beiden Seiten alt —
@@ -1519,7 +1521,7 @@ im Wörterbuch; eine weitere Assertion verbietet einen zweiten Text daneben.
 | **N7** ✅ | **Beispielkatalog — ABGENOMMEN 2026-08-04** | **Zwölf Beispiele, sechs je Bemessungswelt**, als reine Daten in `optionen.js` auf `profil.js` aufgesetzt, mit Merkmalen für die **kontextbezogene Beispielliste** (3.2). Hat **vier Fehler aus N5c aufgedeckt und behoben** — Ergebnis in 5.1-3. |
 | **N8** ✅ | **Assistent — vollständig ABGENOMMEN 2026-08-04** | `assistent.js` (DOM-freie Dialoglogik) + Overlay-UI, Button-Einstieg, tabellengestützt aus `optionen.js`, mit Erklärungen/Tipps/Skizzen je Dialog, Übernahme vorhandener Eingaben. |
 | **N9** ✅ | **Vorwärmung & t8/5 — vollständig ABGENOMMEN 2026-08-05** | `thermik.js` + Panel + Rechenweg + Assistenten-Schritte. Umfang festgelegt 2026-08-05, Ergebnis in 5.1-6. Geteilt in **N9a** (Kennungsabsicherung + Rechenkern, DOM-frei) und **N9b** (Panel, Rechenweg, Assistent, Endkrater-Ankreuzfeld). |
-| **N10** ⬅ | **Kosten/Zeit/Draht** *(nächster Bau — Umfang vorher abstimmen)* | `kosten.js` + Panel + Rechenweg + Assistenten-Schritte. |
+| **N10** ⬅ | **Kosten/Zeit/Draht** — **N10a gebaut, N10b offen** | `kosten.js` + Panel + Rechenweg + Assistenten-Schritte. |
 | **N11** | **Ausgaben** | `report.js`: `.dts` speichern/öffnen (**erst leeren, dann laden** + Formatversion), Druck/PDF, Word (.rtf), `guard()`-Gating. Aktionsleiste **oben**, Dateiname trägt Bezeichnung + Datum. **Jede Ausgabe trägt die Versionszeile** (3.6) — **dabei die Modulnamen an die Dateinamen angleichen UND die Modulkennungen mitwachsen lassen**, beide Merkposten in 3.6. |
 | **N12** | **Edition/Registrierung/Impressum** | Testbalken, Aktivierungsdialog beim Erststart (Name + Schlüssel, **keine Formatprüfung**), „Vollversion · lizenziert für <Name>", **10-s-Long-Press** = Reset, Info-ⓘ mit Impressum. |
 | **★** | **LAUNCH-CHECKPOINT** | **Ab hier verkaufsfähig.** Dieter entscheidet: weiterbauen oder veröffentlichen. |
@@ -2401,6 +2403,80 @@ kommt fast ganz vom Streifzug.
 
 ---
 
+#### 5.1-7 · N10 — Umfang festgelegt · **N10a GEBAUT UND GELIEFERT 2026-08-05**
+
+**Der abgestimmte Umfang** *(Dieter, 2026-08-05)*: **alle zehn
+Kostenpositionen** und **Beispielpreise mit Jahresangabe**.
+
+**DIE LEITENDE ENTSCHEIDUNG: MENGEN OHNE PREISE.** Das Programm rechnet
+immer aus, wie viel Schweißgut, wie viel Draht, wie viel Gas, wie viele
+Minuten und Kilowattstunden — das folgt aus Geometrie und Physik und altert
+nie. **Kosten** entstehen erst mit Preisen, und die altern schnell. Die
+Recherche R6 verlangt das wörtlich: *Preise als editierbare Eingabefelder mit
+Datumsstempel, keine fest verdrahteten Werte.*
+
+**Drei Sorten Wert — die dritte ist neu:**
+
+| | Beispiel | Verhalten |
+|---|---|---|
+| **Berechnet** | Volumen, Masse, Gasmenge, Zeit | folgt aus Geometrie, altert nie |
+| **Anhaltswert** | Ausbringungsgrad, Abschmelzleistung, Brennzeit | Praxisbereiche, überschreibbar |
+| **Preisannahme** | €/h, €/kg, €/l, €/kWh | **mit Jahr**, ausdrücklich zu ersetzen |
+
+**ZEHN POSITIONEN, ABER NUR VIER RECHENBAR.** Lohn, Zusatzwerkstoff, Gas und
+Energie ergeben sich aus der Rechnung. Maschine, Vorbereitung, Vorwärmen,
+Nacharbeit, Prüfung und Gemeinkosten kann dieses Programm **nicht
+herleiten** — es gibt keine belastbare Grundlage dafür. Sie werden
+entgegengenommen, stehen sonst auf null, **und die Summe benennt sie**. Eine
+Gesamtsumme, die stillschweigend die Prüfkosten weglässt, ist zu niedrig, und
+niemand sieht es.
+
+**DER ANKER — und er sitzt beim ersten Lauf.** Die Recherche enthält ein
+vollständig durchgerechnetes Beispiel: 1 m Doppelkehlnaht a = 5 mm, T-Stoß,
+S355, MAG 135.
+
+| | publiziert | unser Wert |
+|---|---|---|
+| Querschnitt | 25 mm² | **25 mm²** |
+| Schweißgut | ~452 g | **451,4 g** |
+| Draht | ~476 g | **475,1 g** |
+| Lichtbogenzeit | ~9,0 min | **9,03 min** |
+| Gesamtzeit | ~22,6 min | **22,6 min** |
+| Energie | ~1,15 kWh | **1,151 kWh** |
+| Summe | ~15,70 € | **15,62 €** |
+| Lohnanteil | ~84 % | **84 %** |
+
+Beim **Gas** weichen wir bewusst ab: Die Quelle nennt ~110 l *mit*
+Anfahrzuschlag, wir geben **108,3 l** — den nackten Verbrauch aus
+12 l/min × 9,03 min. Einen Zuschlag zu raten, den niemand beziffert, wäre
+eine erfundene Zahl.
+
+**Zwei Wege zur Zeit, beide herausgegeben.** Über die Masse
+(`m / Abschmelzleistung`) und über die Länge (`l / v`). Maßgebend ist der
+Massenweg, weil er die Volumenrechnung fortsetzt — aber beide stehen im
+Rechenweg, denn sie gegeneinander zu halten sagt mehr als jeder einzelne.
+
+**Die Stumpfnaht wird geschätzt und sagt es.** Ihr Fugenquerschnitt hängt an
+Öffnungswinkel, Spalt und Steghöhe — die stehen nicht im statischen Modell.
+Das Programm schätzt aus Anhaltswerten (60°, 2 mm, 2 mm) und benennt das; wer
+den Querschnitt aus Zeichnung oder WPS kennt, trägt ihn ein.
+
+**Benannte Lücken aus der Recherche:** Drahtpreise sind **nicht zweifach
+belegt** (der vorbelegte Wert ist als reine Annahme gekennzeichnet), für
+**Zwangspositionen** gibt es keine belegbaren Faktoren (nur ein Hinweis statt
+einer Zahl), und der Volumenvorteil **X gegen V** wird gerechnet statt aus
+Literaturprozenten genommen. **Teil B der Recherche** — Verzug und Toleranzen
+— gehört zu N15 und bleibt hier draußen.
+
+**Basislinie 2942 → 3015 Assertions · Smokes 801/802 → 802/803.** Neue
+Sektion **S48**.
+
+**Erwarteter Beleg am Handy:** „Programmstand **N10a** · Plan **2.57** ·
+**18 Module**" mit `kosten 0.1.0-N10a` und `ui 0.14.0`. Sonst ist nichts zu
+sehen — Panel und Felder kommen mit N10b.
+
+---
+
 ### 5.1a Auftrag für N5c-1 — „Es rechnet" *(ERLEDIGT 2026-07-28, hier nur noch als Begründung)*
 
 > **Dieser Auftrag ist entschieden, nicht mehr Vorschlag.** Dieter hat die offenen Fragen
@@ -2860,6 +2936,12 @@ Solver.
 
 **Basislinie nach N7: 1553 Assertions · 611 / 612 DOM-Smokes · i18n-Parität 0.**
 
+**Nachtrag N10a (2026-08-05) — 6 Dateien:** **neu `kosten.js`** ·
+`i18n_kern.js` (Einheiten, Schritte, Positionen, Meldungen) · `ui.js` (nur
+Kennungen: 0.14.0 / N10a / 2.57) · **beide HTMLs** (Skript-Zeile) ·
+`test_naht.js` (**S48**) · `dom_smoke_voll.js`.
+**Nicht angefasst:** der gesamte Rechenkern der Statik und der Wärmeführung.
+
 **Nachtrag N9d (2026-08-05) — 10 Dateien:** `solver.js` (letzter Durchgang mit
 dem gewählten a-Maß) · `rechenweg.js` (Skalierungsprobe) · `validate.js`
 (Anhaltswerte) · `i18n_kern.js` · `ui.js` (Quelle unter dem Zielfenster,
@@ -3026,9 +3108,9 @@ Versionen alt). Deshalb ist die Vollständigkeitsprüfung gegen die Tabelle oben
 Formsache, und der Basislinien-Abgleich aus Kickoff-Punkt 11 ebenso wenig.
 
 **Erste Handlung im neuen Chat:** Vollständigkeit gegen die Tabelle oben prüfen
-(**17 Module**, `style.css`, beide HTMLs, **alle drei** DEV-ONLY-Dateien, dazu Plandatei und
+(**18 Module**, `style.css`, beide HTMLs, **alle drei** DEV-ONLY-Dateien, dazu Plandatei und
 `Schweißnaht-Historie.md`), Arbeitsordner herstellen, die drei Testläufe starten.
-Melden müssen sie **2942 / 801 / 802 · 0 Fehler**. Weicht etwas ab, erst das klären —
+Melden müssen sie **3015 / 802 / 803 · 0 Fehler**. Weicht etwas ab, erst das klären —
 nicht bauen.
 
 **Was N6b überschreiben wird** (zur Vorwarnung, nicht als Auftrag): neu `symbol.js`,
@@ -3199,6 +3281,18 @@ will. Also: Vorschriften und Wegweiser bleiben hier, die Erzählung wandert.
   Modul ändert, ändert sich die Wächtertabelle in S43 mit — auch wenn keine
   Assertion angefasst wurde. Einmal vergessen, und der Harness meldet vier rote
   Zeilen für einen Fehler, den es gar nicht gibt.
+- **Mengen ohne Preise** (2026-08-05, N10): Schweißgut, Draht, Gas, Minuten und
+  Kilowattstunden folgen aus Geometrie und Physik — sie altern nie und werden
+  IMMER gezeigt. Kosten entstehen erst mit Preisen, und **jeder Preis trägt
+  ein Jahr**. So veraltet nie das Ergebnis, sondern höchstens eine Annahme,
+  die sichtbar danebensteht.
+- **Eine Summe sagt, was in ihr steckt** (2026-08-05, N10): Von zehn
+  Kostenpositionen kann das Programm vier herleiten. Die sechs übrigen stehen
+  auf null und werden **benannt**. Eine Gesamtsumme, die stillschweigend die
+  Prüfkosten weglässt, ist zu niedrig — und niemand sieht es.
+- **Drei Sorten Wert, sichtbar unterschieden** (2026-08-05): **Tabellenwert**
+  aus der Norm, **Anhaltswert** aus der Praxis, **Preisannahme** mit Jahr. Wer
+  sie gleich aussehen lässt, macht aus einem Preis von 2019 eine Vorschrift.
 - **Token-Pause: 4 Stunden.**
 
 ---
@@ -3256,13 +3350,6 @@ Changelog — **die vollständige Fassung ab v1.0 steht in `Schweißnaht-Histori
 Hier stehen nur die letzten drei Einträge. Wer wissen will, wie eine Entscheidung
 zustande kam, findet die Kette dort — lückenlos ab der Erstfassung vom 2026-07-23.
 
-**v2.54 (2026-08-05):** **Etappe N9c von Dieter am Handy geprüft und
-ABGENOMMEN.** `winkel_v` bringt die Wärmeführung eingeschaltet mit; die
-angezeigten Zahlen decken sich mit den Messungen (CET 0,348 · d 36 mm ·
-Q 2,088 kJ/mm · Tp 120 °C · t8/5 13,3 s im Fenster). Eine Beobachtung blieb:
-Unter „Zielfenster für t8/5" stand eine **Überschrift ohne Inhalt** — behoben
-in N9d. **Code unverändert, `Codestand` bleibt 2.53.**
-
 **v2.55 (2026-08-05):** **Etappe N9d gebaut und geliefert — der Streifzug und
 die Anhaltswerte.** Auf Dieters Anstoß, intern Probefälle durchzuspielen und
 Felder vorzubelegen. Der **Streifzug (S46)** betritt jede Option jeder
@@ -3295,6 +3382,27 @@ sauber, Testläufe direkt aus dem Ordner **2942 / 801 / 802 · 0 Fehler**.
 **Code unverändert, `Codestand` bleibt 2.55.**
 **Nächster Schritt: Baustein N10 (Kosten, Zeit, Drahtbedarf) — Umfang vor dem
 Bau abstimmen, Assistenten-Schritte liefert N10 MIT. Einstieg: „weiter mit N10".**
+
+
+
+**v2.57 (2026-08-05):** **Etappe N10a gebaut und geliefert — Menge, Zeit und
+Kosten.** Umfang festgelegt (5.1-7): alle zehn Kostenpositionen, Beispielpreise
+mit Jahresangabe. Die leitende Entscheidung ist **Mengen ohne Preise**:
+Schweißgut, Draht, Gas, Minuten und Kilowattstunden folgen aus Geometrie und
+Physik und werden immer gezeigt; Kosten entstehen erst mit Preisen, und jeder
+Preis trägt sein Jahr. Damit gibt es jetzt **drei Sorten Wert** — Tabellenwert,
+Anhaltswert und Preisannahme. Von den zehn Positionen kann das Programm nur
+**vier herleiten**; die sechs übrigen werden entgegengenommen, stehen sonst auf
+null, **und die Summe benennt sie**. Der Anker aus der Recherche sitzt beim
+ersten Lauf: 25 mm² · 451,4 g · 475,1 g · 9,03 min · 22,6 min · 1,151 kWh ·
+15,62 € · Lohnanteil 84 %. Beim Gas geben wir bewusst 108,3 l statt der
+~110 l der Quelle — der Anfahrzuschlag ist nicht beziffert und wird nicht
+geraten. Geändert: neu `kosten.js`, dazu `i18n_kern.js`, `ui.js`, beide HTMLs,
+`test_naht.js` (**S48**), `dom_smoke_voll.js`.
+**Basislinie 2942 → 3015 Assertions · Smokes 801/802 → 802/803 · i18n-Parität 0.**
+**Codestand 2.55 → 2.57** (`ui` 0.13.0 → 0.14.0, Etappe N9d → N10a, **18 Module**).
+**Nächster Schritt: N10a am Handy abnehmen, dann N10b — Felder, Panel,
+Rechenweg, Assistenten-Schritte und die Beispiele.**
 
 
 ═══════════════════════════════════════════════════════════════════════════

@@ -12,7 +12,7 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.5.0-N9d';
+  var VERSION = '0.6.0-N10a';
   var SPRACHEN = ['de', 'en', 'pt'];
 
   var D = {
@@ -428,6 +428,49 @@
     sec_thermik:      { de: 'Vorwärmung & t8/5', en: 'Preheating & t8/5', pt: 'Pré-aquecimento e t8/5' },
     sec_thermik_hint: { de: 'Eigene Rechnung nach EN 1011-2, unabhängig vom Festigkeitsnachweis. Nur für ferritische Stähle.', en: 'A separate calculation per EN 1011-2, independent of the strength verification. Ferritic steels only.', pt: 'Cálculo próprio segundo a EN 1011-2, independente da verificação de resistência. Apenas aços ferríticos.' },
     ber_thermik:   { de: 'Vorwärmung & t8/5', en: 'Preheating & t8/5', pt: 'Pré-aquecimento e t8/5' },
+
+    /* Kosten, Zeit und Drahtbedarf (N10a). */
+    unit_eur:      { de: '€', en: '€', pt: '€' },
+    unit_eur_h:    { de: '€/h', en: '€/h', pt: '€/h' },
+    unit_eur_kg:   { de: '€/kg', en: '€/kg', pt: '€/kg' },
+    unit_eur_l:    { de: '€/l', en: '€/l', pt: '€/l' },
+    unit_eur_kwh:  { de: '€/kWh', en: '€/kWh', pt: '€/kWh' },
+    unit_g:        { de: 'g', en: 'g', pt: 'g' },
+    unit_kg:       { de: 'kg', en: 'kg', pt: 'kg' },
+    unit_min:      { de: 'min', en: 'min', pt: 'min' },
+    unit_l:        { de: 'l', en: 'l', pt: 'l' },
+    unit_l_min:    { de: 'l/min', en: 'l/min', pt: 'l/min' },
+    unit_kwh:      { de: 'kWh', en: 'kWh', pt: 'kWh' },
+    unit_kg_h:     { de: 'kg/h', en: 'kg/h', pt: 'kg/h' },
+    unit_mm2:      { de: 'mm²', en: 'mm²', pt: 'mm²' },
+    unit_mm3:      { de: 'mm³', en: 'mm³', pt: 'mm³' },
+    ko_s_menge:    { de: 'Schweißgut und Drahtbedarf', en: 'Weld metal and wire demand', pt: 'Metal depositado e consumo de fio' },
+    ko_s_zeit:     { de: 'Schweißzeit', en: 'Welding time', pt: 'Tempo de soldadura' },
+    ko_s_gas:      { de: 'Schutzgasverbrauch', en: 'Shielding gas consumption', pt: 'Consumo de gás de proteção' },
+    ko_s_energie:  { de: 'Energieverbrauch', en: 'Energy consumption', pt: 'Consumo de energia' },
+    ko_s_kosten:   { de: 'Kosten', en: 'Costs', pt: 'Custos' },
+    ko_p_lohn:         { de: 'Lohn', en: 'Labour', pt: 'Mão de obra' },
+    ko_p_zusatz:       { de: 'Zusatzwerkstoff', en: 'Filler material', pt: 'Material de adição' },
+    ko_p_gas:          { de: 'Schutzgas', en: 'Shielding gas', pt: 'Gás de proteção' },
+    ko_p_energie:      { de: 'Energie', en: 'Energy', pt: 'Energia' },
+    ko_p_maschine:     { de: 'Maschine', en: 'Machine', pt: 'Máquina' },
+    ko_p_vorbereitung: { de: 'Nahtvorbereitung', en: 'Joint preparation', pt: 'Preparação da junta' },
+    ko_p_vorwaermen:   { de: 'Vorwärmen', en: 'Preheating', pt: 'Pré-aquecimento' },
+    ko_p_nacharbeit:   { de: 'Nacharbeit', en: 'Rework', pt: 'Retrabalho' },
+    ko_p_pruefung:     { de: 'Prüfung', en: 'Inspection', pt: 'Inspeção' },
+    ko_p_gemeinkosten: { de: 'Gemeinkosten', en: 'Overheads', pt: 'Custos gerais' },
+    msg_ko_kein_verfahren:{ de: 'Ohne Schweißverfahren lassen sich weder Drahtbedarf noch Zeit bestimmen.', en: 'Without the welding process neither wire demand nor time can be determined.', pt: 'Sem o processo de soldadura não é possível determinar nem o consumo de fio nem o tempo.' },
+    msg_ko_keine_naht:    { de: 'Für die Mengenrechnung fehlen Angaben zur Naht.', en: 'Details of the weld are missing for the quantity calculation.', pt: 'Faltam dados do cordão para o cálculo de quantidades.' },
+    msg_ko_ueberhoehung:  { de: 'Auf den theoretischen Querschnitt wurde ein Zuschlag für die Nahtüberhöhung gerechnet. Bei Zwangslagen und vielen kurzen Nähten ist mehr angebracht.', en: 'An allowance for weld reinforcement was added to the theoretical cross-section. Out-of-position work and many short welds warrant more.', pt: 'Foi somado um acréscimo de sobreelevação à secção teórica. Posições difíceis e muitos cordões curtos exigem mais.' },
+    msg_ko_brennzeit_anhalt:{ de: 'Die Lichtbogenbrennzeit ist ein Anhaltswert aus der Praxis: Industriedurchschnitt rund 20 %, getaktetes Schweißen 40 %, mechanisiert 60–80 %. Sie beeinflusst die Gesamtzeit unmittelbar.', en: 'The arc-on time is a practical guide value: industry average about 20 %, cycled welding 40 %, mechanised 60–80 %. It directly drives the total time.', pt: 'O tempo de arco é um valor indicativo: média industrial cerca de 20 %, soldadura em ciclo 40 %, mecanizada 60–80 %. Determina diretamente o tempo total.' },
+    msg_ko_preise_alt:    { de: 'Die Preise sind Annahmen mit Jahresangabe und altern. Vor jeder Kalkulation durch eigene Werte ersetzen.', en: 'The prices are dated assumptions and they age. Replace them with your own figures before any costing.', pt: 'Os preços são pressupostos datados e envelhecem. Substitua-os pelos seus valores antes de qualquer orçamento.' },
+    msg_ko_preis_ungebelegt:{ de: 'Für den Drahtpreis ließ sich keine zweifach belegte Quelle finden — der vorbelegte Wert ist eine reine Annahme.', en: 'No doubly sourced figure could be found for the wire price — the preset value is a plain assumption.', pt: 'Não foi possível encontrar uma fonte dupla para o preço do fio — o valor predefinido é um mero pressuposto.' },
+    msg_ko_posten_leer:   { de: 'Nicht alle Kostenpositionen sind gefüllt. Die Summe enthält nur, was eingetragen wurde — Maschine, Vorbereitung, Vorwärmen, Nacharbeit, Prüfung und Gemeinkosten kann dieses Programm nicht herleiten.', en: 'Not all cost items are filled in. The total contains only what was entered — machine, preparation, preheating, rework, inspection and overheads cannot be derived by this program.', pt: 'Nem todas as rubricas estão preenchidas. O total contém apenas o que foi introduzido — máquina, preparação, pré-aquecimento, retrabalho, inspeção e custos gerais não podem ser deduzidos por este programa.' },
+    msg_ko_kein_gas:      { de: 'Dieses Verfahren arbeitet ohne Schutzgas.', en: 'This process works without shielding gas.', pt: 'Este processo trabalha sem gás de proteção.' },
+    msg_ko_lohnanteil:    { de: 'Der Lohn macht den größten Teil der Kosten aus. Zeit zu sparen — höhere Lichtbogenbrennzeit, kleineres Nahtvolumen — senkt die Kosten weit stärker als billigeres Material.', en: 'Labour accounts for the largest share. Saving time — higher arc-on time, smaller weld volume — cuts cost far more than cheaper material.', pt: 'A mão de obra representa a maior parcela. Poupar tempo — mais tempo de arco, menor volume de cordão — reduz o custo muito mais do que material mais barato.' },
+    msg_ko_stumpfnaht_geschaetzt:{ de: 'Der Fugenquerschnitt der Stumpfnaht wurde aus Anhaltswerten geschätzt (Öffnungswinkel, Spalt, Steghöhe). Wer ihn aus Zeichnung oder Schweißanweisung kennt, sollte ihn eintragen.', en: 'The groove cross-section of the butt weld was estimated from guide values (included angle, gap, root face). If you know it from the drawing or procedure, enter it.', pt: 'A secção do chanfro foi estimada a partir de valores indicativos (ângulo, folga, nariz). Se a conhece do desenho ou da especificação, introduza-a.' },
+    msg_ko_zeit_zwei_wege:{ de: 'Die Lichtbogenzeit lässt sich über die Schweißgutmasse und über die Nahtlänge rechnen. Beide Wege stehen im Rechenweg; maßgebend ist der Massenweg, weil er die Volumenrechnung fortsetzt.', en: 'The arc time can be derived from the weld metal mass and from the weld length. Both are shown; the mass route governs because it continues the volume calculation.', pt: 'O tempo de arco pode ser obtido pela massa depositada e pelo comprimento do cordão. Ambos são mostrados; rege o da massa, por continuar o cálculo de volume.' },
+    msg_ko_position_zwangslage:{ de: 'Zwangspositionen senken Abschmelzleistung und Schweißgeschwindigkeit. Belastbare Faktoren dafür ließen sich nicht belegen — bitte Abschmelzleistung und Brennzeit selbst anpassen.', en: 'Out-of-position welding lowers deposition rate and travel speed. No reliable factors could be sourced — please adjust deposition rate and arc-on time yourself.', pt: 'Posições difíceis reduzem a taxa de deposição e a velocidade. Não foi possível documentar fatores fiáveis — ajuste você mesmo a taxa e o tempo de arco.' },
 
     /* Wärmeführung — Schritte und Zielfenster (N9b). */
     th_s_aequivalente:  { de: 'Kohlenstoffäquivalente aus der Analyse', en: 'Carbon equivalents from the analysis', pt: 'Carbonos equivalentes da análise' },

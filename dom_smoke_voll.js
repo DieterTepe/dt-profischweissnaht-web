@@ -210,10 +210,10 @@ function lauf(edition) {
   var erwartet = ['i18n_kern.js', 'i18n_hilfe.js', 'i18n_kerbfall.js', 'daten.js', 'optionen.js',
                   'validate.js', 'naht.js', 'profil.js', 'svglib.js', 'schaubild.js',
                   'solver.js', 'rechenweg.js', 'symbol.js', 'thermik.js',
-                  'skizze.js', 'assistent.js', 'ui.js'];
+                  'kosten.js', 'skizze.js', 'assistent.js', 'ui.js'];
   ok(srcs.join(',') === erwartet.join(','), 'Ladereihenfolge stimmt: ' + srcs.join(' → '));
   ok(srcs[srcs.length - 1] === 'ui.js', 'ui.js laedt zuletzt');
-  ok(srcs.length === 17, 'N9a: 17 Module eingebunden (ist ' + srcs.length + ')');
+  ok(srcs.length === 18, 'N10a: 18 Module eingebunden (ist ' + srcs.length + ')');
 
   /* ------------------------------------- 2) ALLE Module gemeinsam laden -- */
   var d = baueDom(html);
@@ -225,8 +225,8 @@ function lauf(edition) {
                 'svglib.js': 'DTNSvgLib', 'schaubild.js': 'DTNSchaubild',
                 'solver.js': 'DTNSolver', 'rechenweg.js': 'DTNRechenweg',
                 'symbol.js': 'DTNSymbol', 'thermik.js': 'DTNThermik',
-                'skizze.js': 'DTNSkizze', 'assistent.js': 'DTNAssistent',
-                'ui.js': 'DTNUi' };
+                'kosten.js': 'DTNKosten', 'skizze.js': 'DTNSkizze',
+                'assistent.js': 'DTNAssistent', 'ui.js': 'DTNUi' };
   for (var i = 0; i < srcs.length; i++) {
     var mod = require('./' + srcs[i]);
     win[namen[srcs[i]]] = mod;
@@ -1317,8 +1317,8 @@ function lauf(edition) {
   /* Seit N8a sind es 15 — assistent.js haengt mit am Fenster und traegt
      seine eigene Kennung. Die Zeile sammelt sich selbst ein; hier steht
      nur die erwartete ZAHL, keine zweite Modulliste. */
-  ok(n5dInfo.n === 17,
-     'N9a: die Zeile wird aus allen 17 geladenen Modulen gebaut (ist ' + n5dInfo.n + ')');
+  ok(n5dInfo.n === 18,
+     'N10a: die Zeile wird aus allen 18 geladenen Modulen gebaut (ist ' + n5dInfo.n + ')');
   var n8aDrin = false;
   for (var n8ai = 0; n8ai < n5dInfo.module.length; n8ai++) {
     if (n5dInfo.module[n8ai].name === 'assistent') {

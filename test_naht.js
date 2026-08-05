@@ -20,6 +20,7 @@ var Weg     = require('./rechenweg.js');
 var Skizze  = require('./skizze.js');
 var Assi    = require('./assistent.js');
 var Therm   = require('./thermik.js');
+var Kost    = require('./kosten.js');
 
 var N = 0, FAIL = [], SEKTION = '';
 function sek(s) { SEKTION = s; console.log('\n— ' + s + ' —'); }
@@ -1881,7 +1882,7 @@ eq((uiHtml.match(/<script>/g) || []).length, 1,
 
 var uiSrcRe = /<script src="([^"]+)"><\/script>/g, uiSrcs = [], uiM;
 while ((uiM = uiSrcRe.exec(uiHtml)) !== null) uiSrcs.push(uiM[1]);
-eq(uiSrcs.length, 17, '17 Module in der HTML eingebunden — thermik.js ist mit N9a dazugekommen');
+eq(uiSrcs.length, 18, '18 Module in der HTML eingebunden — kosten.js ist mit N10a dazugekommen');
 eq(uiSrcs[uiSrcs.length - 1], 'ui.js', 'ui.js laedt zuletzt');
 var uiDateiFehlt = [];
 for (uiI = 0; uiI < uiSrcs.length; uiI++) {
@@ -4119,7 +4120,7 @@ function s43Summe(text) {
    ZWEI Etappen gilt die Regel dagegen streng: geaenderter Quelltext ohne
    Kennungswechsel ist rot. */
 var S43_STAND = [
-  { datei: 'i18n_kern.js', version: '0.5.0-N9d', summe: 'fefe27f2' },
+  { datei: 'i18n_kern.js', version: '0.6.0-N10a', summe: 'fc609b76' },
   { datei: 'i18n_hilfe.js', version: '0.3.0-N9c', summe: 'e2a7a98f' },
   { datei: 'i18n_kerbfall.js', version: '0.1.0-N1', summe: '64438e87' },
   { datei: 'daten.js', version: '0.1.0-N1', summe: '4f0ba1bd' },
@@ -4132,10 +4133,11 @@ var S43_STAND = [
   { datei: 'solver.js', version: '0.4.0-N9d', summe: '8155d32b' },
   { datei: 'rechenweg.js', version: '0.4.0-N9d', summe: '8fce1705' },
   { datei: 'symbol.js', version: '0.1.0-N6b', summe: '9e1cac0f' },
+  { datei: 'kosten.js', version: '0.1.0-N10a', summe: 'cd71be36' },
   { datei: 'thermik.js', version: '0.3.0-N9c', summe: '1bf966a2' },
   { datei: 'skizze.js', version: '0.3.0-N9c', summe: '447c40cd' },
   { datei: 'assistent.js', version: '0.4.0-N9c', summe: '1bfc4bb8' },
-  { datei: 'ui.js', version: '0.13.0', summe: 'c51631d2' }
+  { datei: 'ui.js', version: '0.14.0', summe: '2c283e4a' }
 ];
 
 var s43i, s43Fehl = [], s43Src, s43M, s43S;
@@ -4844,6 +4846,203 @@ ok(s47B.ok === true,
 ok(s47B.Q >= Therm.BEREICH_B.Q.min && s47B.Q <= Therm.BEREICH_B.Q.max,
    'S47: und das vorbelegte Waermeeinbringen liegt im Geltungsbereich (' +
    (s47B.ok ? s47B.Q.toFixed(2) : '-') + ' kJ/mm)');
+
+sek('S48 · N10a Menge, Zeit und Kosten — und der Anker aus der Recherche');
+
+/* DIE LEITENDE ENTSCHEIDUNG: MENGEN OHNE PREISE.
+   Schweissgut, Draht, Gas, Minuten und Kilowattstunden folgen aus Geometrie
+   und Physik — sie altern nie. Preise altern sehr wohl, und zwar schnell.
+   Deshalb traegt jeder Preis ein Jahr, und die Kostenrechnung sagt, aus
+   welchem Stand sie stammt. Die Recherche R6 verlangt das woertlich. */
+
+var s48i;
+
+eq(Kost.NAME, 'kosten', 'S48: kosten.js nennt sich beim Namen');
+ok(/^0\.\d+\.\d+-N10a$/.test(Kost.VERSION), 'S48: und traegt eine N10a-Kennung (' + Kost.VERSION + ')');
+var s48Src = fsU.readFileSync(__dirname + '/kosten.js', 'utf8');
+ok(s48Src.indexOf('document') < 0 && s48Src.indexOf('window') < 0,
+   'S48: N10a ist DOM-frei — die Oberflaeche kommt mit N10b');
+
+/* --- 1) DER ANKER: das durchgerechnete Kostenbeispiel aus R6 A4 ---------
+   1 m Doppelkehlnaht a = 5 mm, T-Stoss, S355, MAG 135, Draht 1,2 mm,
+   Mischgas M21. Publiziert: 25 mm2 Querschnitt · ~452 g Schweissgut ·
+   ~476 g Draht · ~9,0 min Lichtbogen · ~22,6 min gesamt · ~110 l Gas
+   (mit Anfahrzuschlag) · ~1,15 kWh · ~15,7 EUR · Lohnanteil ~84 %.
+   Das prueft die GANZE Kette in einem Zug. */
+var s48A = Kost.bericht({
+  nahttyp: 'kehl', a: 5, l_ges: 2000,            /* zwei Naehte a 1000 mm */
+  werkstoffgruppe: 'stahl', verfahren: 'mag',
+  drahtdurchmesser: 1.2, U: 26, I: 250
+});
+ok(s48A.ok === true, 'S48 Anker: das Kostenbeispiel rechnet durch');
+eq(s48A.schritte.length, 5, 'S48 Anker: in fuenf Schritten');
+ok(Math.abs(s48A.schritte[0].A - 25) < 1e-9,
+   'S48 Anker: Kehlnahtquerschnitt a=5 gibt 25 mm2 (ist ' + s48A.schritte[0].A + ')');
+ok(Math.abs(s48A.m_schweissgut - 452) < 2,
+   'S48 Anker: ~452 g Schweissgut (ist ' + s48A.m_schweissgut.toFixed(1) + ')');
+ok(Math.abs(s48A.m_draht - 476) < 2,
+   'S48 Anker: ~476 g Draht (ist ' + s48A.m_draht.toFixed(1) + ')');
+ok(Math.abs(s48A.t_lichtbogen - 9.0) < 0.1,
+   'S48 Anker: ~9,0 min Lichtbogenzeit (ist ' + s48A.t_lichtbogen.toFixed(2) + ')');
+ok(Math.abs(s48A.t_gesamt - 22.6) < 0.2,
+   'S48 Anker: ~22,6 min Gesamtzeit bei 40 % Brennzeit (ist ' + s48A.t_gesamt.toFixed(1) + ')');
+ok(Math.abs(s48A.E - 1.15) < 0.02,
+   'S48 Anker: ~1,15 kWh (ist ' + s48A.E.toFixed(3) + ')');
+/* Der Gaswert der Quelle enthaelt einen Anfahrzuschlag ("zzgl. Blow-out"),
+   den dieses Programm nicht raet — 12 l/min x 9,0 min = 108 l ist der
+   nackte Verbrauch, und genau den geben wir aus. */
+ok(Math.abs(s48A.V_gas - 108) < 1,
+   'S48 Anker: 108 l Gas ohne Anfahrzuschlag — die Quelle nennt ~110 l MIT (ist ' +
+   s48A.V_gas.toFixed(1) + ')');
+ok(Math.abs(s48A.summe - 15.7) < 0.3,
+   'S48 Anker: ~15,70 EUR Summe (ist ' + s48A.summe.toFixed(2) + ')');
+ok(Math.abs(s48A.lohnanteil - 0.84) < 0.02,
+   'S48 Anker: Lohnanteil ~84 % (ist ' + (100 * s48A.lohnanteil).toFixed(0) + ' %)');
+
+/* --- 2) Die Handrechnung dahinter --------------------------------------- */
+/* Kehlnaht: das einschreibbare Dreieck hat A = a^2. Gegen die Formel der
+   Quelle geprueft: z = a*sqrt(2), A = z^2/2. */
+for (s48i = 3; s48i <= 8; s48i++) {
+  (function (a) {
+    var q = Kost.querschnitt({ nahttyp: 'kehl', a: a });
+    var z = a * Math.SQRT2;
+    ok(Math.abs(q.A - z * z / 2) < 1e-9,
+       'S48: a=' + a + ' gibt A = z²/2 = ' + (z * z / 2).toFixed(1) + ' mm²');
+    ok(Math.abs(q.A - a * a) < 1e-9, 'S48: und das ist genau a²');
+  }(s48i));
+}
+/* Masse = Volumen x Dichte. */
+var s48M = Kost.menge({ nahttyp: 'kehl', a: 5, l_ges: 1000, verfahren: 'mag',
+                        werkstoffgruppe: 'stahl', ueberhoehung: 0 });
+ok(Math.abs(s48M.m_schweissgut - 25 * 1000 * 7.85 / 1000) < 1e-9,
+   'S48: ohne Zuschlag ist die Masse Volumen mal Dichte (' +
+   s48M.m_schweissgut.toFixed(2) + ' g)');
+/* Der Ausbringungsgrad macht den Draht schwerer als das Schweissgut. */
+ok(s48M.m_draht > s48M.m_schweissgut, 'S48: es geht mehr Draht hinein als in der Naht bleibt');
+eq(Kost.AUSBRINGUNG['121'], 0.99, 'S48: Unterpulver verliert fast nichts');
+ok(Kost.AUSBRINGUNG['111'] < 0.7, 'S48: die Stabelektrode verliert am meisten (Stummel)');
+
+/* --- 3) KEIN SCHUTZGAS IST EINE ZAHL, KEINE LUECKE ---------------------- */
+var s48G = Kost.gas({ verfahren: 'ehand', t_lichtbogen: 10 });
+ok(s48G.ok === true && s48G.V_gas === 0,
+   'S48: E-Hand arbeitet ohne Schutzgas — null ist die richtige Zahl');
+var s48Gh = false;
+for (s48i = 0; s48i < s48G.hinweise.length; s48i++) {
+  if (s48G.hinweise[s48i].code === 'msg_ko_kein_gas') s48Gh = true;
+}
+ok(s48Gh === true, 'S48: und es wird gesagt, statt eine Null stehen zu lassen');
+/* Die Faustformel Drahtdurchmesser x 10 fuer MAG Stahl. */
+var s48G2 = Kost.gas({ verfahren: 'mag', drahtdurchmesser: 1.2, t_lichtbogen: 10 });
+ok(Math.abs(s48G2.durchfluss - 12) < 1e-9, 'S48: MAG mit 1,2 mm Draht gibt 12 l/min');
+
+/* --- 4) DIE SUMME SAGT, WAS IN IHR STECKT ------------------------------- */
+/* Sechs der zehn Positionen kann das Programm nicht herleiten. Sie still
+   wegzulassen machte jede Summe zu niedrig — und niemand saehe es. */
+eq(Kost.POSTEN.length, 10, 'S48: es gibt zehn Kostenpositionen');
+var s48R = 0, s48N = 0;
+for (s48i = 0; s48i < Kost.POSTEN.length; s48i++) {
+  if (Kost.POSTEN[s48i].rechenbar) s48R++; else s48N++;
+}
+eq(s48R, 4, 'S48: vier davon kann das Programm rechnen');
+eq(s48N, 6, 'S48: sechs kann es nur entgegennehmen');
+ok(s48A.leer.length === 6,
+   'S48: im Anker stehen genau diese sechs auf null (' + s48A.leer.join(',') + ')');
+var s48Lh = false;
+for (s48i = 0; s48i < s48A.hinweise.length; s48i++) {
+  if (s48A.hinweise[s48i].code === 'msg_ko_posten_leer') s48Lh = true;
+}
+ok(s48Lh === true, 'S48: UND DIE SUMME SAGT ES — sonst waere sie zu niedrig');
+/* Ein eingetragener Wert wandert in die Summe. */
+var s48P = Kost.bericht({ nahttyp: 'kehl', a: 5, l_ges: 2000,
+  werkstoffgruppe: 'stahl', verfahren: 'mag', drahtdurchmesser: 1.2, U: 26, I: 250,
+  kosten_pruefung: 40, kosten_gemeinkosten: 25 });
+ok(Math.abs(s48P.summe - (s48A.summe + 65)) < 0.01,
+   'S48: eingetragene Positionen erhoehen die Summe genau um ihren Betrag');
+eq(s48P.leer.length, 4, 'S48: und stehen nicht mehr unter den leeren');
+
+/* --- 5) PREISE ALTERN — UND SAGEN ES ------------------------------------ */
+var s48Ph = false, s48Uh = false;
+for (s48i = 0; s48i < s48A.hinweise.length; s48i++) {
+  if (s48A.hinweise[s48i].code === 'msg_ko_preise_alt') s48Ph = true;
+  if (s48A.hinweise[s48i].code === 'msg_ko_preis_ungebelegt') s48Uh = true;
+}
+ok(s48Ph === true, 'S48: jede Kostenrechnung sagt, dass die Preise Annahmen mit Jahr sind');
+ok(s48Uh === true, 'S48: und dass der Drahtpreis nicht zweifach belegt ist');
+var s48Kp;
+for (s48Kp in Kost.PREISE) {
+  if (!Object.prototype.hasOwnProperty.call(Kost.PREISE, s48Kp)) continue;
+  (function (p, code) {
+    ok(typeof p.jahr === 'number' && p.jahr > 2000,
+       'S48 [' + code + ']: der Preis traegt ein Jahr (' + p.jahr + ')');
+    ok(typeof p.belegt === 'boolean',
+       'S48 [' + code + ']: und sagt, ob er belegt ist');
+    ok(Kern.has(p.einheit), 'S48 [' + code + ']: mit dreisprachiger Einheit');
+  }(Kost.PREISE[s48Kp], s48Kp));
+}
+/* Eigene Preise ueberschreiben die Annahmen vollstaendig. */
+var s48E = Kost.bericht({ nahttyp: 'kehl', a: 5, l_ges: 2000,
+  werkstoffgruppe: 'stahl', verfahren: 'mag', drahtdurchmesser: 1.2, U: 26, I: 250,
+  preis_lohn: 70 });
+ok(Math.abs(s48E.einzel.lohn - 2 * s48A.einzel.lohn) < 0.01,
+   'S48: der doppelte Stundensatz verdoppelt den Lohnanteil genau');
+
+/* --- 6) ZWEI WEGE ZUR ZEIT, BEIDE HERAUSGEGEBEN ------------------------- */
+var s48Z = Kost.zeit({ verfahren: 'mag', m_schweissgut: 452, l_ges: 2000, v_schweiss: 4 });
+ok(s48Z.t_ueber_masse !== null && s48Z.t_ueber_laenge !== null,
+   'S48: beide Wege zur Lichtbogenzeit werden gerechnet');
+ok(s48Z.t_lichtbogen === s48Z.t_ueber_masse,
+   'S48: massgebend ist der Massenweg — er setzt die Volumenrechnung fort');
+var s48Zh = false;
+for (s48i = 0; s48i < s48Z.hinweise.length; s48i++) {
+  if (s48Z.hinweise[s48i].code === 'msg_ko_zeit_zwei_wege') s48Zh = true;
+}
+ok(s48Zh === true, 'S48: und beide stehen im Rechenweg, nicht nur einer');
+/* Die Brennzeit wirkt unmittelbar auf die Gesamtzeit. */
+var s48Z20 = Kost.zeit({ verfahren: 'mag', m_schweissgut: 452, brennzeit: 0.20 });
+var s48Z40 = Kost.zeit({ verfahren: 'mag', m_schweissgut: 452, brennzeit: 0.40 });
+ok(Math.abs(s48Z20.t_gesamt - 2 * s48Z40.t_gesamt) < 1e-9,
+   'S48: halbe Brennzeit verdoppelt die Gesamtzeit — der groesste Hebel');
+
+/* --- 7) DIE STUMPFNAHT WIRD GESCHAETZT UND SAGT ES ---------------------- */
+var s48S = Kost.menge({ nahttyp: 'stumpf', t: 12, l_ges: 1000, verfahren: 'mag',
+                        werkstoffgruppe: 'stahl' });
+ok(s48S.ok === true && s48S.geschaetzt === true,
+   'S48: der Fugenquerschnitt der Stumpfnaht ist geschaetzt');
+var s48Sh = false;
+for (s48i = 0; s48i < s48S.hinweise.length; s48i++) {
+  if (s48S.hinweise[s48i].code === 'msg_ko_stumpfnaht_geschaetzt') s48Sh = true;
+}
+ok(s48Sh === true, 'S48: und das steht neben dem Ergebnis');
+/* Ein eigener Querschnitt hebt die Schaetzung auf. */
+var s48Sq = Kost.menge({ nahttyp: 'stumpf', t: 12, A_fuge: 90, l_ges: 1000,
+                         verfahren: 'mag', werkstoffgruppe: 'stahl' });
+ok(s48Sq.geschaetzt === false && Math.abs(s48Sq.A_theoretisch - 90) < 1e-9,
+   'S48: wer den Querschnitt kennt, traegt ihn ein — dann wird nicht geschaetzt');
+
+/* --- 8) Jeder Code und jeder Schritt hat einen Text --------------------- */
+var s48Ohne = [];
+for (s48i = 0; s48i < Kost.CODES.length; s48i++) {
+  if (!Kern.has(Kost.CODES[s48i])) s48Ohne.push(Kost.CODES[s48i]);
+}
+eq(s48Ohne.length, 0, 'S48: jeder Meldungscode hat einen Text (' + s48Ohne.join(',') + ')');
+for (s48i = 0; s48i < s48A.schritte.length; s48i++) {
+  ok(Kern.has(s48A.schritte[s48i].code),
+     'S48: der Schritt ' + s48A.schritte[s48i].code + ' hat einen Text');
+}
+var s48Po = [];
+for (s48i = 0; s48i < Kost.POSTEN.length; s48i++) {
+  if (!Kern.has('ko_p_' + Kost.POSTEN[s48i].code)) s48Po.push(Kost.POSTEN[s48i].code);
+}
+eq(s48Po.length, 0, 'S48: und jede Kostenposition ist benannt (' + s48Po.join(',') + ')');
+
+/* --- 9) Bestimmtheit und Nichtmutation ---------------------------------- */
+var s48Ein = { nahttyp: 'kehl', a: 5, l_ges: 2000, werkstoffgruppe: 'stahl',
+               verfahren: 'mag', drahtdurchmesser: 1.2, U: 26, I: 250 };
+var s48Vor = JSON.stringify(s48Ein);
+Kost.bericht(s48Ein);
+eq(JSON.stringify(s48Ein), s48Vor, 'S48: die Eingabe wird nicht veraendert');
+eq(JSON.stringify(Kost.bericht(s48Ein)), JSON.stringify(Kost.bericht(s48Ein)),
+   'S48: zweimal gerechnet ergibt dasselbe');
 
 /* ========================================================================= */
 console.log('\n════════════════════════════════════════════');
