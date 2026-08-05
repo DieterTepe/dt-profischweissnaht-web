@@ -8,8 +8,7 @@
 > Abstimmung vom **2026-07-24** (alle offenen Fragen aus Abschnitt 0 geklärt) und nach den
 > abgenommenen Bausteinen **N1, N2, N2b, N2c, N3, N4 und N5 vollständig
 > (N5a, N5b, N5c-1 bis N5c-3 und N5d)**, **N6b**, **N7** und **N8 vollständig
-> (N8a, N8b-1, N8b-2, N8c)**, dazu **N9a gebaut und geliefert (Abnahme
-> offen)** — Stand 2026-08-05.
+> (N8a, N8b-1, N8b-2, N8c)** und **N9a** — Stand 2026-08-05.
 > Sie ist so geschrieben, dass ein **neuer Chat ohne Vorwissen** damit weiterarbeiten kann.
 > **Das WARUM steht in `Schweißnaht-Historie.md`** (Entscheidungslog + Changelog im
 > Volltext) — dort nachschlagen, bevor etwas geändert wird, das falsch aussieht.
@@ -18,7 +17,7 @@
 > in 4.11 und in der Historie. Im Projektordner liegt **keine Vorlaufdatei** mehr.
 
 ```
-Plan-Version : 2.47 · Stand 2026-08-05
+Plan-Version : 2.49 · Stand 2026-08-05
 Codestand    : Plan 2.47 · ui 0.10.1 · N9a
                (Die Planversion, gegen die der CODE gebaut ist. Sie steht auch
                in ui.js als PLAN und wird von einer Assertion damit verglichen.
@@ -54,14 +53,18 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                und `ui 0.10.0`; ein Durchlauf des **Auslegungsfalls mit
                Moment** (a gesucht) grün mit erfülltem Nachweis; und der
                **Sprachwechsel bei offenem Dialog** in allen drei Sprachen.
-               **Etappe N9a ist GEBAUT und GELIEFERT** — Abnahme steht
-               aus. Sie enthält die **Absicherung der Modulkennungen**
-               (3.6, damit erledigt) und `thermik.js` als DOM-freien
-               Rechenkern (**17 Module**). Am Handy ist außer der
-               Versionszeile nichts zu sehen.
+               **Etappe N9a ist von Dieter am Handy geprüft und
+               ABGENOMMEN (2026-08-05), ohne Nacharbeit.** Belegt: die
+               Versionszeile mit **17 Modulen**, `thermik 0.1.0-N9a`,
+               `ui 0.10.1` und **allen fünf korrigierten Kennungen**;
+               dazu mehrere durchgerechnete Beispiele und ein
+               Assistentenlauf — die vier Module mit der
+               Ein-Zeilen-Änderung haben nichts gestört.
                → NÄCHSTER SCHRITT: **N9b** — Panel, Rechenweg,
                  Assistenten-Schritte und das **Endkrater-Ankreuzfeld**
                  (2.2b). Einstieg „weiter mit N9b".
+                 **Das t8/5-Zielfenster ist entschieden** (5.1-6a) und
+                 muss vor dem Bau nicht mehr besprochen werden.
                  Schnittstellen: 4.5 (naht.js), 4.6 (profil.js),
                  4.7 (svglib.js + schaubild.js), 4.8 (solver.js),
                  4.9 (rechenweg.js), 4.10 / 4.10b / 4.10c / 4.10d (ui.js),
@@ -1505,7 +1508,7 @@ im Wörterbuch; eine weitere Assertion verbietet einen zweiten Text daneben.
 | **N6b** ✅ | **ISO-2553-Symbolgenerator — ABGENOMMEN 2026-08-04** | `symbol.js`: Pfeil-/Gegenseite, a- bzw. z-Maß, Länge, Rundumnaht, Baustellennaht. Nutzt `svglib.js` aus N2c. Bewusst **vor** dem Launch — Verkaufsargument. |
 | **N7** ✅ | **Beispielkatalog — ABGENOMMEN 2026-08-04** | **Zwölf Beispiele, sechs je Bemessungswelt**, als reine Daten in `optionen.js` auf `profil.js` aufgesetzt, mit Merkmalen für die **kontextbezogene Beispielliste** (3.2). Hat **vier Fehler aus N5c aufgedeckt und behoben** — Ergebnis in 5.1-3. |
 | **N8** ✅ | **Assistent — vollständig ABGENOMMEN 2026-08-04** | `assistent.js` (DOM-freie Dialoglogik) + Overlay-UI, Button-Einstieg, tabellengestützt aus `optionen.js`, mit Erklärungen/Tipps/Skizzen je Dialog, Übernahme vorhandener Eingaben. |
-| **N9** ⬅ | **Vorwärmung & t8/5** — **N9a gebaut, N9b offen** | `thermik.js` + Panel + Rechenweg + Assistenten-Schritte. Umfang festgelegt 2026-08-05, Ergebnis in 5.1-6. Geteilt in **N9a** (Kennungsabsicherung + Rechenkern, DOM-frei) und **N9b** (Panel, Rechenweg, Assistent, Endkrater-Ankreuzfeld). |
+| **N9** ⬅ | **Vorwärmung & t8/5** — **N9a ABGENOMMEN, N9b offen** | `thermik.js` + Panel + Rechenweg + Assistenten-Schritte. Umfang festgelegt 2026-08-05, Ergebnis in 5.1-6. Geteilt in **N9a** (Kennungsabsicherung + Rechenkern, DOM-frei) und **N9b** (Panel, Rechenweg, Assistent, Endkrater-Ankreuzfeld). |
 | **N10** | **Kosten/Zeit/Draht** | `kosten.js` + Panel + Rechenweg + Assistenten-Schritte. |
 | **N11** | **Ausgaben** | `report.js`: `.dts` speichern/öffnen (**erst leeren, dann laden** + Formatversion), Druck/PDF, Word (.rtf), `guard()`-Gating. Aktionsleiste **oben**, Dateiname trägt Bezeichnung + Datum. **Jede Ausgabe trägt die Versionszeile** (3.6) — **dabei die Modulnamen an die Dateinamen angleichen UND die Modulkennungen mitwachsen lassen**, beide Merkposten in 3.6. |
 | **N12** | **Edition/Registrierung/Impressum** | Testbalken, Aktivierungsdialog beim Erststart (Name + Schlüssel, **keine Formatprüfung**), „Vollversion · lizenziert für <Name>", **10-s-Long-Press** = Reset, Info-ⓘ mit Impressum. |
@@ -2022,7 +2025,13 @@ drangebaut".
 
 ---
 
-#### 5.1-6 · N9 — Umfang festgelegt · **N9a GEBAUT UND GELIEFERT 2026-08-05**
+#### 5.1-6 · N9 — Umfang festgelegt · **N9a ABGENOMMEN 2026-08-05**
+
+> ✅ **N9a von Dieter am Handy geprüft und ABGENOMMEN — ohne Nacharbeit.**
+> **Zum ersten Mal ist die Versionszeile ein Beleg und nicht nur eine
+> Anzeige:** Die sechs Module, die weiterhin `0.1.0-N1` oder `-N2` melden,
+> sind seit ihrem Baustein nachweislich unverändert — der Wächter aus S43
+> würde jede stille Änderung rot machen.
 
 **Der abgestimmte Umfang** *(Dieter, 2026-08-05)*:
 
@@ -2103,6 +2112,52 @@ hängt in beiden HTMLs — die Versionszeile zeigt **17 Module**.
 korrigierten Kennungen sind sichtbar: `solver 0.2.0-N7`, `rechenweg 0.2.0-N7`,
 `validate 0.2.0-N8a`, `assistent 0.2.0-N8b`, `kern 0.2.0-N9a`. Sonst ist
 nichts zu sehen — das Panel kommt mit N9b.
+
+---
+
+#### 5.1-6a · Das t8/5-Zielfenster — **ENTSCHIEDEN 2026-08-05, zu bauen in N9b**
+
+**Dieters Vorgabe:** Es muss eine **Vorbelegung** geben, damit ein Laie
+weiterkommt — und der Anwender muss sie **per Haken überschreiben** können.
+Also dieselbe Mechanik wie bei γ_M2, β_w und ν: Tabellenwert vorbelegt und
+gesperrt, „eigener Wert" schaltet frei. Die Wahl des Fensters hat Dieter mir
+überlassen.
+
+**Die Datenlage** (Recherche R5, Abschnitt 3.5):
+
+| Fenster | Gilt für | Belege |
+|---|---|---|
+| 5–20 s | Feinkornbaustähle allgemein | TÜV SÜD — **eine** Quelle |
+| 10–25 s | Feinkornbaustähle, N-/QL-Güten | Killing 2022 **und** VdTÜV Wbl. 257 |
+| enger, herstellerspezifisch | vergütete hochfeste (Q/QL, S690) | TÜV SÜD, **ohne Zahlen** |
+
+**ENTSCHIEDEN: Vorbelegung 10–20 s** — der **Überschneidungsbereich** beider
+veröffentlichter Empfehlungen. Das ist keine erfundene Zahl, sondern der
+Bereich, in dem **beide** Fenster zugleich erfüllt sind; er ist an beiden
+Enden die strengere Grenze und warnt damit eher zu früh als zu spät. Der
+Hilfetext nennt **beide Quellfenster**, damit ein Anwender mit abweichender
+Vorgabe versteht, warum sein Wert daneben liegt, und ihn setzen kann.
+
+**ZWEI FÄLLE BEKOMMEN AUSDRÜCKLICH KEINE VORBELEGUNG:**
+
+1. **Unlegierte Baustähle** (S235, S275, S355). Unsere Quellen führen dort
+   kein Zeitfenster — und das ist kein Versehen der Recherche: t8/5 ist bei
+   diesen Stählen praktisch kein Thema, die Aufhärtungsneigung ist gering.
+   Das Programm rechnet und zeigt den Wert, lässt die Ampel aber **grau** und
+   sagt, dass kein belegtes Fenster vorliegt. **Ein erfundenes Fenster wäre
+   bei den häufigsten Stählen die auffälligste Lüge.**
+2. **Vergütete hochfeste Güten** (S690Q und darüber). Die Quellen sagen
+   ausdrücklich „engeres Fenster, konkrete Zahlen herstellerspezifisch".
+   Verwiesen wird auf die Herstellerangabe — genau dafür ist der Haken da.
+
+Die Vorbelegung greift damit dort, wo sie belegt ist: bei den **Feinkorn- und
+höherfesten Güten**, für die das Zeitfenster überhaupt gedacht ist.
+
+**Was daraus für N9b folgt:** ein Feld für die untere und eines für die obere
+Fenstergrenze, beide `ueberschreibbar`, beide nur bei den Stahlgruppen
+vorbelegt, für die es Belege gibt. Die Ampel kennt drei Zustände — innerhalb,
+außerhalb, **kein Fenster belegt**. Der Rechenweg nennt die Quelle des
+verwendeten Fensters.
 
 ---
 
@@ -2852,6 +2907,14 @@ will. Also: Vorschriften und Wegweiser bleiben hier, die Erzählung wandert.
   (2026-08-05, Endkraterabzug 2.2b): Sie darf anfassbar werden, aber
   Abschalten ist eine Handlung, und der **Rechenweg sagt, wie gerechnet
   wurde**. Ein stiller Schalter wäre schlimmer als gar keiner.
+- **Wo kein Beleg ist, gibt es keine Vorbelegung** (2026-08-05, 5.1-6a):
+  Lieber eine graue Ampel und ein ehrlicher Satz als ein erfundenes
+  Zielfenster. Bei den häufigsten Stählen wäre eine erfundene Grenze die
+  auffälligste Lüge — und die, die am längsten unbemerkt bliebe.
+- **Widersprechen sich zwei belegte Empfehlungen, ist die Überschneidung die
+  Vorbelegung** (2026-08-05, t8/5-Fenster): Sie erfüllt beide zugleich, ist an
+  beiden Enden die strengere Grenze und ist keine erfundene Zahl. Beide
+  Quellfenster gehören dann in den Hilfetext.
 - **Token-Pause: 4 Stunden.**
 
 ---
@@ -2909,50 +2972,6 @@ Changelog — **die vollständige Fassung ab v1.0 steht in `Schweißnaht-Histori
 Hier stehen nur die letzten drei Einträge. Wer wissen will, wie eine Entscheidung
 zustande kam, findet die Kette dort — lückenlos ab der Erstfassung vom 2026-07-23.
 
-**v2.45 (2026-08-04):** **Baustein N8 vollständig von Dieter am Handy geprüft
-und ABGENOMMEN — ohne Nacharbeit.** Die Versionszeile zeigt „Programmstand
-N8c · Plan 2.44 · 16 Module" mit `skizze 0.1.0-N8b` und `ui 0.10.0`. Geprüft
-wurden gezielt die drei heiklen Punkte: ein **Auslegungsfall mit Moment** über
-den Assistenten (a gesucht) läuft grün mit erfülltem Nachweis; die
-**Auswahlkacheln** tragen ihre Bilder; und der **Sprachwechsel bei offenem
-Dialog** trägt Überschrift, Fortschritt, Erklärung, Tipp, Kacheltexte und
-Knöpfe in allen drei Sprachen mit. Der Merkposten aus 3.6 hat sich zum vierten
-Mal gemeldet: `assistent 0.1.0-N8a` stand unverändert in der Zeile, obwohl N8b
-dort die Skizzenzuordnung eingebaut hat — 3.6 ist um dieses Modul erweitert,
-Termin bleibt **N11**. **Code unverändert, `Codestand` bleibt 2.44.**
-**Basislinie unverändert: 1825 Assertions · Smokes 662 / 663 · i18n-Parität 0.**
-**Nächster Schritt: Baustein N9 (Vorwärmung & t8/5) — Umfang vor dem Bau
-abstimmen, Assistenten-Schritte liefert N9 MIT. Einstieg: „weiter mit N9".**
-
-
-
-**v2.46 (2026-08-05):** **Vier offene Entscheidungen geklärt und festgeschrieben —
-keine Codeänderung.** Anlass war Dieters Überlegung, den umfangreichen
-Kerbfallkatalog zugunsten einer schlankeren Version 1 zu kürzen.
-**(1) Ermüdung bleibt in Version 1** — sie ist für einen Teil der Anwender der
-Kaufgrund. Reduziert wird die **Tiefe, nicht die Breite**: alle vier
-Detailfamilien, die das Programm sehen kann, plus **Hohlprofile (Tab. 8.6)**.
-Ausdrücklich draußen: Nicht-Nahtdetails (Lochrand, Gewindegrund, Dübel,
-Grundwerkstoff) und die Spezialtabellen 8.7–8.10. Dazu vier Festlegungen, die
-von N14a an stehen müssen — Kerbfall als Entscheidungsbaum, Normschlüssel,
-kein Vorschlag für Ähnliches, Anwendungsbedingungen am Eintrag —, ein
-**Versionsstempel im Dateiformat für N11** und eine offene Frage zur Herkunft
-der Schwingbreite (vor N13a).
-**(2) Der Endkraterabzug bekommt ein Ankreuzfeld** (2.2b), Voreinstellung
-bleibt AN, der Rechenweg benennt die gewählte Seite — gebaut mit N9.
-**(3) Die Modulkennungen werden mit N9 abgesichert** statt erst mit N11 (3.6):
-der Harness bekommt eine Tabelle Modul → VERSION + Prüfsumme, ein geänderter
-Quelltext ohne Kennungswechsel wird rot. Vier Fälle in zwei Bausteinen waren
-genug.
-**(4)** Der Namensabgleich Anzeigename/Dateiname bleibt bei N11.
-Neu in 9.2: vier Festlegungen zu Kerbfällen, Normschlüsseln, Reduktion nach
-Tiefe statt Breite und konservativen Voreinstellungen.
-**Code unverändert, `Codestand` bleibt 2.44.**
-**Basislinie unverändert: 1825 Assertions · Smokes 662 / 663 · i18n-Parität 0.**
-**Nächster Schritt: Baustein N9 — Umfang vor dem Bau abstimmen.**
-
-
-
 **v2.47 (2026-08-05):** **Etappe N9a gebaut und geliefert — Kennungswächter und
 Wärmeführungs-Rechenkern.** Umfang von N9 festgelegt (5.1-6): Vorwärmung nur
 nach **Methode B**, CET aus der Analyse, kombinierte Dicke als Summe, t8/5 in
@@ -2978,6 +2997,41 @@ eine Kennungszeile in `solver.js`, `rechenweg.js`, `validate.js`,
 **Codestand 2.44 → 2.47** (`ui` 0.10.0 → 0.10.1, Etappe N8c → N9a, **17 Module**).
 **Nächster Schritt: N9a am Handy abnehmen, dann N9b — Panel, Rechenweg,
 Assistenten-Schritte und das Endkrater-Ankreuzfeld. Einstieg: „weiter mit N9b".**
+
+
+
+**v2.48 (2026-08-05):** **Etappe N9a von Dieter am Handy geprüft und ABGENOMMEN —
+ohne Nacharbeit.** Die Versionszeile zeigt „Programmstand N9a · Plan 2.47 ·
+17 Module" mit `thermik 0.1.0-N9a` und `ui 0.10.1`; **alle fünf korrigierten
+Kennungen stehen darin** (`solver 0.2.0-N7`, `rechenweg 0.2.0-N7`,
+`validate 0.2.0-N8a`, `assistent 0.2.0-N8b`, `kern 0.2.0-N9a`). Mehrere
+Beispiele durchgerechnet und der Assistent gelaufen — die vier Module mit der
+Ein-Zeilen-Änderung haben nichts gestört. **Damit ist der Merkposten aus 3.6
+geschlossen, der seit N7 viermal aufgefallen war**, und die Versionszeile ist
+zum ersten Mal ein Beleg statt einer Anzeige: Was weiterhin eine alte Kennung
+trägt, ist nachweislich unverändert. **Code unverändert, `Codestand` bleibt
+2.47.** **Basislinie unverändert: 1939 Assertions · Smokes 663 / 664.**
+**Nächster Schritt: N9b — Panel, Rechenweg, Assistenten-Schritte und das
+Endkrater-Ankreuzfeld. Einstieg: „weiter mit N9b".**
+
+
+
+**v2.49 (2026-08-05):** **Das t8/5-Zielfenster ist entschieden — keine
+Codeänderung.** Dieters Vorgabe: eine Vorbelegung muss sein, damit ein Laie
+weiterkommt, und sie muss per Haken überschreibbar sein; die Wahl des Fensters
+hat er mir überlassen. **Entschieden: 10–20 s**, der Überschneidungsbereich der
+beiden veröffentlichten Empfehlungen (5–20 s nach TÜV SÜD, 10–25 s nach VdTÜV
+Wbl. 257) — keine erfundene Zahl, an beiden Enden die strengere Grenze, beide
+Quellfenster im Hilfetext. **Zwei Fälle bekommen ausdrücklich keine
+Vorbelegung:** unlegierte Baustähle, für die unsere Quellen kein Fenster führen
+(dort bleibt die Ampel grau und sagt es), und vergütete hochfeste Güten, für
+die die Quellen ausdrücklich auf den Hersteller verweisen. Festgeschrieben in
+**5.1-6a**; neu in 9.2 zwei Festlegungen — wo kein Beleg ist, gibt es keine
+Vorbelegung, und bei zwei sich widersprechenden Empfehlungen ist die
+Überschneidung die Vorbelegung. **Code unverändert, `Codestand` bleibt 2.47.**
+**Basislinie unverändert: 1939 Assertions · Smokes 663 / 664 · i18n-Parität 0.**
+**Nächster Schritt: N9b — das Zielfenster muss vor dem Bau nicht mehr
+besprochen werden. Einstieg: „weiter mit N9b".**
 
 
 ═══════════════════════════════════════════════════════════════════════════

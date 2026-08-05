@@ -1832,3 +1832,80 @@ Mal hat er getragen.
 **Basislinie 1825 → 1939 Assertions · Smokes 662/663 → 663/664.**
 **Codestand 2.44 → 2.47 · 17 Module.**
 **Nächster Schritt: N9a abnehmen, dann N9b.**
+
+
+**v2.48 (2026-08-05):** **N9a abgenommen — die Versionszeile ist jetzt ein Beleg.**
+
+**Aus der Rückmeldung 2026-08-05 (N9a abgenommen)**
+
+Dieter hat die Versionszeile geprüft, mehrere Beispiele durchgerechnet und den
+Assistenten laufen lassen. Alles grün, keine Nacharbeit. Die vierte Abnahme in
+Folge ohne Beanstandung.
+
+**Der eigentliche Ertrag dieser Abnahme ist nicht, dass etwas funktioniert,
+sondern dass etwas jetzt BEWIESEN ist.** In der Zeile stehen alle fünf
+korrigierten Kennungen. Wichtiger noch sind die sechs Module, die weiterhin
+`0.1.0-N1` oder `-N2` melden: `daten`, `hilfe`, `kerbfall`, `naht`, `options`
+und die übrigen. Bis heute war das eine Behauptung — sie könnten alt gewesen
+sein oder unverändert, die Zeile sagte es nicht. Seit dem Wächter aus S43 ist
+es eine Aussage: **Was eine alte Kennung trägt, ist nachweislich unverändert.**
+
+Der Punkt war seit N7 viermal aufgefallen, jedes Mal beim bloßen Lesen der
+Zeile durch Dieter, nie durch einen Test. Repariert wurde er erst, als das
+Muster eindeutig war — und dann nicht als Einzelfall, sondern als Regel mit
+Prüfung. Das ist derselbe Weg wie bei der festgeschriebenen Assertion aus
+v2.36 und bei der Anker-Frage aus S39: **erst benennen, dann terminieren, dann
+so reparieren, dass der Rückfall auffällt.**
+
+**Eine Beobachtung zur Prüfung selbst.** Ich hatte Dieter gebeten, auch das
+Rechnen und den Assistenten zu prüfen, obwohl an vier Modulen nur je eine
+Kennungszeile geändert wurde. Genau solche Änderungen sind die, bei denen
+niemand nachsieht — und bei denen ein Tippfehler in einer Zeichenkette
+unbemerkt bliebe, weil er syntaktisch gültig ist.
+
+**Code unverändert, `Codestand` bleibt 2.47.**
+**Basislinie unverändert: 1939 Assertions · Smokes 663 / 664.**
+**Nächster Schritt: N9b — Panel, Rechenweg, Assistenten-Schritte, Endkraterabzug.**
+
+
+**v2.49 (2026-08-05):** **Das t8/5-Zielfenster — eine Entscheidung über das Nichtwissen.**
+
+**Aus der Festlegung 2026-08-05 (Zielfenster)**
+
+Dieter gab die Richtung vor — Vorbelegung ja, damit ein Laie weiterkommt, und
+überschreibbar per Haken — und überließ mir die Zahl. Die Recherche führt zwei
+veröffentlichte Fenster, die sich widersprechen: 5–20 s aus einer Quelle,
+10–25 s aus zweien.
+
+**Die Wahl fiel auf die Überschneidung, 10–20 s.** Der Reiz lag darin, dass
+das keine dritte, erfundene Zahl ist: Wer in diesem Bereich liegt, erfüllt
+*beide* Empfehlungen. An beiden Enden ist es die strengere Grenze, das Programm
+warnt also eher zu früh. Beide Quellfenster stehen im Hilfetext — wer eine
+abweichende Vorgabe hat, sieht sofort, woher der Unterschied kommt.
+
+**Die schwierigere Hälfte der Entscheidung war, wo es KEINE Vorbelegung gibt.**
+Für unlegierte Baustähle — S235, S275, S355, also die häufigsten überhaupt —
+führen die Quellen kein Zeitfenster. Die bequeme Lösung wäre gewesen, das
+Feinkornfenster einfach mitzuverwenden; es hätte plausibel ausgesehen und
+niemandem wäre etwas aufgefallen. Genau deshalb nicht: **Bei den häufigsten
+Stählen wäre eine erfundene Grenze die auffälligste Lüge — und die, die am
+längsten unbemerkt bliebe.** Dort bleibt die Ampel grau und sagt, dass kein
+belegtes Fenster vorliegt; gerechnet und angezeigt wird der Wert trotzdem.
+
+Dass t8/5 bei diesen Stählen praktisch kein Thema ist, macht die graue Ampel
+außerdem sachlich richtig statt nur ehrlich. Sie ist keine Lücke, sondern eine
+zutreffende Auskunft: Die Frage stellt sich dort kaum.
+
+Dasselbe gilt am anderen Ende: Für vergütete hochfeste Güten sagen die Quellen
+ausdrücklich „engeres Fenster, konkrete Zahlen herstellerspezifisch". Auch dort
+keine Zahl, sondern der Verweis auf den Hersteller — und der Haken, mit dem der
+Anwender die Angabe aus seinem Datenblatt einträgt.
+
+**Zwei Regeln sind daraus in 9.2 gewandert:** Wo kein Beleg ist, gibt es keine
+Vorbelegung. Und widersprechen sich zwei belegte Empfehlungen, ist die
+Überschneidung die Vorbelegung — sie erfüllt beide und ist keine erfundene Zahl.
+
+**Code unverändert, `Codestand` bleibt 2.47.**
+**Basislinie unverändert: 1939 Assertions · Smokes 663 / 664.**
+**Nächster Schritt: N9b — das Zielfenster ist entschieden und muss vor dem Bau
+nicht mehr besprochen werden.**
