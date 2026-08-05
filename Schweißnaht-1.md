@@ -9,7 +9,7 @@
 > abgenommenen Bausteinen **N1, N2, N2b, N2c, N3, N4 und N5 vollständig
 > (N5a, N5b, N5c-1 bis N5c-3 und N5d)**, **N6b**, **N7** und **N8 vollständig
 > (N8a, N8b-1, N8b-2, N8c)**, **N9a** und **N9b**, dazu **N9c gebaut und
-> **N9c**, dazu **N9d gebaut und geliefert (Abnahme offen)** — Stand 2026-08-05.
+> **N9 vollständig (N9a, N9b, N9c, N9d)** — Stand 2026-08-05.
 > Sie ist so geschrieben, dass ein **neuer Chat ohne Vorwissen** damit weiterarbeiten kann.
 > **Das WARUM steht in `Schweißnaht-Historie.md`** (Entscheidungslog + Changelog im
 > Volltext) — dort nachschlagen, bevor etwas geändert wird, das falsch aussieht.
@@ -18,7 +18,7 @@
 > in 4.11 und in der Historie. Im Projektordner liegt **keine Vorlaufdatei** mehr.
 
 ```
-Plan-Version : 2.55 · Stand 2026-08-05
+Plan-Version : 2.56 · Stand 2026-08-05
 Codestand    : Plan 2.55 · ui 0.13.0 · N9d
                (Die Planversion, gegen die der CODE gebaut ist. Sie steht auch
                in ui.js als PLAN und wird von einer Assertion damit verglichen.
@@ -67,15 +67,14 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                Beispielkatalog von zwölf auf **vierzehn**, gibt allen
                Beispielen Wärmeführungsdaten und repariert dabei die
                **geometrische Lasteingabe**, die seit N3 tot war.
-               **Etappe N9c ist von Dieter am Handy geprüft und
-               ABGENOMMEN (2026-08-05).** **Etappe N9d ist GEBAUT und
-               GELIEFERT** — Abnahme steht aus. Sie bringt den
-               **Streifzug** (S46), der jede Option jeder Gruppe einmal
-               betritt, die **Anhaltswerte** für die Schweißparameter und
-               die Quelle unter dem Zielfenster.
-               → NÄCHSTER SCHRITT: **N9d am Handy abnehmen.** Danach
-                 Baustein **N10 (Kosten, Zeit, Draht)** — Einstieg
-                 „weiter mit N10", **Umfang vor dem Bau abstimmen**.
+               **Baustein N9 ist vollständig von Dieter am Handy geprüft
+               und ABGENOMMEN (2026-08-05).** Damit sind **sechs von zehn
+               Bausteinen bis zum Verkaufsstand** fertig.
+               → NÄCHSTER SCHRITT: Baustein **N10 (Kosten, Zeit, Draht)** —
+                 Einstieg „weiter mit N10", **Umfang vor dem Bau
+                 abstimmen**. Eine Recherchedatei liegt bereit
+                 (`Schweißzeit__Schweißkosten…md`), und N10 bringt seine
+                 Assistenten-Schritte nach 3.3 mit.
                  Schnittstellen: 4.5 (naht.js), 4.6 (profil.js),
                  4.7 (svglib.js + schaubild.js), 4.8 (solver.js),
                  4.9 (rechenweg.js), 4.10 / 4.10b / 4.10c / 4.10d (ui.js),
@@ -1519,7 +1518,7 @@ im Wörterbuch; eine weitere Assertion verbietet einen zweiten Text daneben.
 | **N6b** ✅ | **ISO-2553-Symbolgenerator — ABGENOMMEN 2026-08-04** | `symbol.js`: Pfeil-/Gegenseite, a- bzw. z-Maß, Länge, Rundumnaht, Baustellennaht. Nutzt `svglib.js` aus N2c. Bewusst **vor** dem Launch — Verkaufsargument. |
 | **N7** ✅ | **Beispielkatalog — ABGENOMMEN 2026-08-04** | **Zwölf Beispiele, sechs je Bemessungswelt**, als reine Daten in `optionen.js` auf `profil.js` aufgesetzt, mit Merkmalen für die **kontextbezogene Beispielliste** (3.2). Hat **vier Fehler aus N5c aufgedeckt und behoben** — Ergebnis in 5.1-3. |
 | **N8** ✅ | **Assistent — vollständig ABGENOMMEN 2026-08-04** | `assistent.js` (DOM-freie Dialoglogik) + Overlay-UI, Button-Einstieg, tabellengestützt aus `optionen.js`, mit Erklärungen/Tipps/Skizzen je Dialog, Übernahme vorhandener Eingaben. |
-| **N9** ✅ | **Vorwärmung & t8/5 — vollständig gebaut 2026-08-05, Abnahme offen** | `thermik.js` + Panel + Rechenweg + Assistenten-Schritte. Umfang festgelegt 2026-08-05, Ergebnis in 5.1-6. Geteilt in **N9a** (Kennungsabsicherung + Rechenkern, DOM-frei) und **N9b** (Panel, Rechenweg, Assistent, Endkrater-Ankreuzfeld). |
+| **N9** ✅ | **Vorwärmung & t8/5 — vollständig ABGENOMMEN 2026-08-05** | `thermik.js` + Panel + Rechenweg + Assistenten-Schritte. Umfang festgelegt 2026-08-05, Ergebnis in 5.1-6. Geteilt in **N9a** (Kennungsabsicherung + Rechenkern, DOM-frei) und **N9b** (Panel, Rechenweg, Assistent, Endkrater-Ankreuzfeld). |
 | **N10** ⬅ | **Kosten/Zeit/Draht** *(nächster Bau — Umfang vorher abstimmen)* | `kosten.js` + Panel + Rechenweg + Assistenten-Schritte. |
 | **N11** | **Ausgaben** | `report.js`: `.dts` speichern/öffnen (**erst leeren, dann laden** + Formatversion), Druck/PDF, Word (.rtf), `guard()`-Gating. Aktionsleiste **oben**, Dateiname trägt Bezeichnung + Datum. **Jede Ausgabe trägt die Versionszeile** (3.6) — **dabei die Modulnamen an die Dateinamen angleichen UND die Modulkennungen mitwachsen lassen**, beide Merkposten in 3.6. |
 | **N12** | **Edition/Registrierung/Impressum** | Testbalken, Aktivierungsdialog beim Erststart (Name + Schlüssel, **keine Formatprüfung**), „Vollversion · lizenziert für <Name>", **10-s-Long-Press** = Reset, Info-ⓘ mit Impressum. |
@@ -2322,7 +2321,11 @@ Schnittgrößen.
 
 ---
 
-#### 5.1-6d · N9d — **GEBAUT UND GELIEFERT 2026-08-05, Abnahme offen**
+#### 5.1-6d · N9d — **ABGENOMMEN 2026-08-05**
+
+> ✅ **Von Dieter am Handy geprüft und ABGENOMMEN — ohne Nacharbeit.** Er hat
+> die Fälle im Programm durchgespielt, wie zuvor besprochen. Damit ist
+> **Baustein N9 vollständig.**
 
 **Dieters Anstoß:** intern Probefälle durchspielen, um Fehler aufzudecken —
 und Eingabefelder vorbelegen, damit ein unerfahrener Anwender nicht
@@ -3253,25 +3256,6 @@ Changelog — **die vollständige Fassung ab v1.0 steht in `Schweißnaht-Histori
 Hier stehen nur die letzten drei Einträge. Wer wissen will, wie eine Entscheidung
 zustande kam, findet die Kette dort — lückenlos ab der Erstfassung vom 2026-07-23.
 
-**v2.53 (2026-08-05):** **Drei Nachträge zu N9c aus Dieters erstem Test.** Er lud
-`winkel_v`, und der Wärmeführungsbereich blieb leer — sein Bildschirmfoto zeigte
-die Freischalt-Haken alle offen und den Bereich trotzdem sichtbar. Drei Fehler
-steckten dahinter: **(1)** Die Freischalt-Haken sind keine Auswahlgruppen und
-wurden von `formularSetzen()` übergangen, `thermik_aktiv` im Beispiel hatte also
-keine Wirkung; sie werden jetzt **vor** den Gruppen gesetzt, weil davon abhängt,
-welche Felder Pflicht sind. **(2)** Ein Bereich ohne einen einzigen sichtbaren
-Inhalt blieb sichtbar — er sah aus wie leer statt wie nicht gewählt; jetzt wird
-er ausgeblendet. **(3)** Den zwölf alten Beispielen fehlte das
-**Schweißverfahren**; ohne Wirkungsgrad gibt es kein Wärmeeinbringen. Alle
-vierzehn führen jetzt MAG. Der DOM-Smoke prüft alle drei Punkte namentlich.
-Geändert: `optionen.js` (0.3.1-N9c), `ui.js` (0.12.1), `dom_smoke_voll.js`.
-**Basislinie 2107 Assertions unverändert · Smokes 762/763 → 784/785.**
-**Codestand 2.52 → 2.53.**
-**Nächster Schritt: N9c erneut am Handy prüfen — diesmal muss `winkel_v` die
-Wärmeführung eingeschaltet mitbringen.**
-
-
-
 **v2.54 (2026-08-05):** **Etappe N9c von Dieter am Handy geprüft und
 ABGENOMMEN.** `winkel_v` bringt die Wärmeführung eingeschaltet mit; die
 angezeigten Zahlen decken sich mit den Messungen (CET 0,348 · d 36 mm ·
@@ -3296,6 +3280,21 @@ vorbelegt, tragen aber einen sichtbaren Hinweis, dass keine Norm dahintersteht
 **Basislinie 2107 → 2942 Assertions · Smokes 784/785 → 801/802 · i18n-Parität 0.**
 **Codestand 2.53 → 2.55** (`ui` 0.12.1 → 0.13.0, Etappe N9c → N9d).
 **Nächster Schritt: N9d am Handy abnehmen, dann Baustein N10.**
+
+
+
+**v2.56 (2026-08-05):** **Baustein N9 vollständig von Dieter am Handy geprüft
+und ABGENOMMEN.** Die Versionszeile zeigt „N9d · Plan 2.55 · 17 Module" mit
+`solver 0.4.0-N9d`, `rechenweg 0.4.0-N9d`, `validate 0.5.0-N9d`,
+`kern 0.5.0-N9d` und `ui 0.13.0`. Dieter hat die Fälle im Programm
+durchgespielt, wie zuvor besprochen — ohne Beanstandung. Projektordner
+gegengeprüft: alle Dateien byteweise identisch, `node --check` über 20 JS
+sauber, Testläufe direkt aus dem Ordner **2942 / 801 / 802 · 0 Fehler**.
+**Damit sind sechs von zehn Bausteinen bis zum Verkaufsstand fertig**
+(N1–N5, N6b, N7, N8, N9); offen bleiben N10, N11, N12 und N13/N14.
+**Code unverändert, `Codestand` bleibt 2.55.**
+**Nächster Schritt: Baustein N10 (Kosten, Zeit, Drahtbedarf) — Umfang vor dem
+Bau abstimmen, Assistenten-Schritte liefert N10 MIT. Einstieg: „weiter mit N10".**
 
 
 ═══════════════════════════════════════════════════════════════════════════

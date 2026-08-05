@@ -2141,3 +2141,45 @@ in 9.2.
 **Basislinie 2107 → 2942 Assertions · Smokes 784/785 → 801/802.**
 **Codestand 2.53 → 2.55.**
 **Nächster Schritt: N9d abnehmen, dann N10 (Kosten, Zeit, Draht).**
+
+
+**v2.56 (2026-08-05):** **Baustein N9 vollständig abgenommen.**
+
+**Aus der Rückmeldung 2026-08-05 (N9 abgenommen)**
+
+Dieter hat die Fälle im Programm durchgespielt und nichts beanstandet. Damit
+ist die Wärmeführung fertig: Vorwärmung nach Methode B, Abkühlzeit in beiden
+Ableitungsarten, Auslegung aufs Zielfenster, eigene Ergebniskarte, Assistenten-
+Schritt — und zwei Beispiele, die es vorführen.
+
+**Was dieser Baustein über das Arbeiten gezeigt hat**, war wertvoller als sein
+Inhalt:
+
+**Eine Recherche darf mit Nein antworten.** Methode A ließ sich nicht ehrlich
+bauen — 13 Nomogramme, nie tabelliert. Die halbe Stunde Suchen hat eine ganze
+Etappe an erfundenen Kurvenwerten verhindert. Und sie hat als Beifang zwei alte
+Widersprüche gelöst, darunter die kombinierte Dicke, wo die verbreitete
+Halbierung auf der **unsicheren** Seite gelegen hätte.
+
+**Ein Werkzeug kann eine Prüfung aushöhlen.** Das Hilfsskript für die
+Wächtertabelle las die Kennung aus dem Modul und schleppte damit eine
+vergessene Kennung mit, statt sie aufzudecken. Die Prüfsumme darf automatisch
+erneuert werden, die Kennung nie.
+
+**Ein Bildschirmfoto enthält mehr als seine Beschreibung.** Dieter schrieb
+„nichts ist eingehakt"; das Bild zeigte zusätzlich einen Bereich, der sichtbar
+war, obwohl er nicht gewählt war. Der zweite Fehler war der wichtigere, und er
+wäre in Worten nie erwähnt worden.
+
+**Und der Streifzug hat bewiesen, was er wert ist.** Dieters Vorschlag, intern
+Probefälle durchzuspielen, hat beim ersten Lauf einen Widerspruch gefunden, den
+kein Beispiel je berührt hätte — und er hat gezeigt, dass eine Reparatur eine
+neue Unstimmigkeit erzeugen kann, wenn sie nur die halbe Kette nachzieht.
+
+**Der Stand:** N1 bis N5, N6b, N7, N8 und N9 abgenommen — sechs von zehn
+Bausteinen bis zum Verkaufsstand. Offen: N10 (Kosten), N11 (Ausgaben),
+N12 (Edition) und N13/N14 (Ermüdung). Die Basislinie ist an einem Tag von
+1138 auf 2942 Assertions gewachsen.
+
+**Code unverändert, `Codestand` bleibt 2.55.**
+**Nächster Schritt: Baustein N10 (Kosten, Zeit, Drahtbedarf).**
