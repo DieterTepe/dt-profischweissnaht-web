@@ -62,7 +62,7 @@
 }(typeof self !== 'undefined' ? self : this, function (Data, Naht, Profil) {
   'use strict';
 
-  var VERSION = '0.2.0-N7';
+  var VERSION = '0.3.0-N9c';
 
   var W2 = Math.sqrt(2);
   var W3 = Math.sqrt(3);
@@ -121,7 +121,8 @@
       'msg_sv_beta_lw_angewendet', 'msg_sv_beta_lw_nicht_angewendet',
       'msg_sv_umlaufend_aus_profil', 'msg_sv_sigma_senk_zusatz', 'msg_sv_schiefe_biegung',
       'msg_sv_l_eff_je_zug', 'msg_sv_a_grenzen_stumpf_voll',
-      'msg_sv_a_bezug_auslegung', 'msg_sv_auslegung_geometrie'
+      'msg_sv_a_bezug_auslegung', 'msg_sv_auslegung_geometrie',
+      'msg_sv_lasten_aus_geometrie'
     ]
   };
 
@@ -783,6 +784,30 @@
     L.My = nimm('My', 'M', 1000);        /* Nm -> Nmm */
     L.Mz = nimm('Mz', null, 1000);
     L.T = nimm('T', null, 1000);
+
+    /* GEOMETRISCHE LASTEINGABE — verdrahtet mit N9c (2026-08-05).
+       Die Umrechnung schnittgroessen() stand seit N3 hier und wurde NIE
+       aufgerufen: wer im Formular "Kraft und Hebelarm" waehlte, bekam
+       'msg_sv_keine_last'. Eine ganze Eingabeart war damit tot — genau wie
+       die Auslegung vor N7, und gefunden auf demselben Weg: beim Versuch,
+       ein Beispiel dafuer zu bauen.
+       Die Kraftrichtung entscheidet, WELCHE Schnittgroessen entstehen; sie
+       wird ausdruecklich gewaehlt und nicht geraten. */
+    if (ein.lasteingabe === 'geometrisch') {
+      var gF = zahl(ein.F), gE = zahl(ein.e);
+      if (gF === null) { schiebe(fehler, 'msg_sv_keine_last', 'F'); }
+      else {
+        var gS = schnittgroessen(gF, gE === null ? 0 : gE, ein.kraftrichtung);
+        L.N  = gS.N || 0;
+        L.Qz = gS.Qz || 0;
+        L.My = (gS.My || 0) * 1000;      /* Nm -> Nmm, wie bei der direkten Eingabe */
+        L.T  = (gS.T || 0) * 1000;
+        L.Qy = 0; L.Mz = 0;
+        schiebe(hinweise, 'msg_sv_lasten_aus_geometrie',
+                { richtung: ein.kraftrichtung || 'laengs' });
+      }
+    }
+
     if (fehler.length) return abbruch(fehler, warnungen, hinweise);
     if (!L.N && !L.Qy && !L.Qz && !L.My && !L.Mz && !L.T) {
       schiebe(fehler, 'msg_sv_keine_last', 'N');

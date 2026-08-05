@@ -23,7 +23,7 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.2.0-N9b';
+  var VERSION = '0.3.0-N9c';
 
   var KEHL = ['kehl_einseitig', 'kehl_doppel', 'kehl_flanke', 'kehl_stirn', 'kehl_umlaufend'];
   var STUMPF_VOLL = ['stumpf_i', 'stumpf_v', 'stumpf_dv', 'stumpf_dhv'];
@@ -225,6 +225,20 @@
     /* Nur bei der Auslegung sichtbar — beim Nachweis gibt der Anwender das
        a-Mass selbst vor, da ist nichts zu runden. Immer AUFgerundet, nie ab.
        verzweigt:false, damit die Wegeaufzaehlung nicht verdoppelt wird. */
+    /* KRAFTRICHTUNG (N9c). Nur bei der geometrischen Lasteingabe. Sie
+       entscheidet, welche Schnittgroessen aus Kraft und Hebelarm entstehen
+       — laengs gibt Normalkraft und Biegung, quer gibt Querkraft und
+       Biegung, Torsion gibt ein Torsionsmoment. BEWUSST OHNE
+       VOREINSTELLUNG: die Richtung aendert das Ergebnis grundlegend, und
+       eine geratene Richtung waere schlimmer als eine Rueckfrage. */
+    { code: 'kraftrichtung', rechenwirksam: true,
+      gilt_wenn: { lasteingabe: ['geometrisch'] },
+      optionen: [
+        { code: 'laengs' },
+        { code: 'quer' },
+        { code: 'torsion' }
+      ] },
+
     /* ENDKRATERABZUG (N9b, Dieters Entscheidung 2026-08-05).
        Bisher war der Abzug fest an. Er macht rund 15 % aus (in S39
        gemessen), und wer ein Lehrbuchbeispiel nachrechnet, fand den
@@ -318,7 +332,10 @@
                  nachweisverfahren: 'richtungsbezogen',
                  profil: 'rohr_rechteck', kanten: 'rundum',
                  exc: 'EXC2' },
-      felder: { b: 120, h: 80, t1: 6, r_ecke: 9, a: 4, N: 120000, Q: 0 } },
+      felder: { b: 120, h: 80, t1: 6, r_ecke: 9, a: 4, N: 120000, Q: 0,
+                an_C: 0.17, an_Si: 0.20, an_Mn: 0.90, an_Cr: 0.05, an_Mo: 0.02,
+                an_V: 0.01, an_Cu: 0.15, an_Ni: 0.10,
+                HD: 5, sp_U: 28, sp_I: 250, sp_v: 4 } },
 
     { code: 'traeger', name: 'bsp_traeger',
       auswahl: { welt: 'A', rechenrichtung: 'nachweis', lasteingabe: 'direkt',
@@ -327,7 +344,10 @@
                  nachweisverfahren: 'richtungsbezogen',
                  profil: 'i_profil', kanten: 'steg',
                  exc: 'EXC2' },
-      felder: { b: 200, h: 200, tw: 9, tf: 15, a: 4, N: 250000, Q: 0 } },
+      felder: { b: 200, h: 200, tw: 9, tf: 15, a: 4, N: 250000, Q: 0,
+                an_C: 0.17, an_Si: 0.20, an_Mn: 0.90, an_Cr: 0.05, an_Mo: 0.02,
+                an_V: 0.01, an_Cu: 0.15, an_Ni: 0.10,
+                HD: 5, sp_U: 28, sp_I: 250, sp_v: 4 } },
 
     { code: 'blech', name: 'bsp_blech',
       auswahl: { welt: 'A', rechenrichtung: 'nachweis', lasteingabe: 'direkt',
@@ -336,7 +356,10 @@
                  nachweisverfahren: 'richtungsbezogen',
                  profil: 'blech', kanten: 'flanken',
                  exc: 'EXC2' },
-      felder: { b: 80, t1: 10, a: 5, N: 150000, Q: 0 } },
+      felder: { b: 80, t1: 10, a: 5, N: 150000, Q: 0,
+                an_C: 0.17, an_Si: 0.20, an_Mn: 0.90, an_Cr: 0.05, an_Mo: 0.02,
+                an_V: 0.01, an_Cu: 0.15, an_Ni: 0.10,
+                HD: 5, sp_U: 28, sp_I: 250, sp_v: 4 } },
 
     { code: 'konsole', name: 'bsp_konsole',
       merkmale: { belastung: 'kombiniert' },
@@ -346,7 +369,10 @@
                  nachweisverfahren: 'richtungsbezogen', a_rundung: 'ganze_mm',
                  profil: 'i_profil', kanten: 'flansche_steg',
                  exc: 'EXC2' },
-      felder: { b: 100, h: 200, tw: 8, tf: 12, N: 0, Q: 40000, M: 35000 } },
+      felder: { b: 100, h: 200, tw: 8, tf: 12, N: 0, Q: 40000, M: 35000,
+                an_C: 0.17, an_Si: 0.20, an_Mn: 0.90, an_Cr: 0.05, an_Mo: 0.02,
+                an_V: 0.01, an_Cu: 0.15, an_Ni: 0.10,
+                HD: 5, sp_U: 28, sp_I: 250, sp_v: 4 } },
 
     { code: 'rohr', name: 'bsp_rohr',
       merkmale: { belastung: 'torsion' },
@@ -356,7 +382,10 @@
                  nachweisverfahren: 'richtungsbezogen',
                  profil: 'rohr_rund', kanten: 'rundum',
                  exc: 'EXC2' },
-      felder: { d: 114.3, t1: 6, a: 4, N: 0, Q: 0, T: 9000 } },
+      felder: { d: 114.3, t1: 6, a: 4, N: 0, Q: 0, T: 9000,
+                an_C: 0.17, an_Si: 0.20, an_Mn: 0.90, an_Cr: 0.05, an_Mo: 0.02,
+                an_V: 0.01, an_Cu: 0.15, an_Ni: 0.10,
+                HD: 5, sp_U: 28, sp_I: 250, sp_v: 4 } },
 
     { code: 'stoss', name: 'bsp_stoss',
       merkmale: { belastung: 'zug' },
@@ -366,7 +395,10 @@
                  nachweisverfahren: 'richtungsbezogen',
                  profil: 'blech', kanten: 'eine_flanke',
                  exc: 'EXC2' },
-      felder: { b: 150, t1: 12, a: 12, N: 280000, Q: 0 } },
+      felder: { b: 150, t1: 12, a: 12, N: 280000, Q: 0,
+                an_C: 0.17, an_Si: 0.20, an_Mn: 0.90, an_Cr: 0.05, an_Mo: 0.02,
+                an_V: 0.01, an_Cu: 0.15, an_Ni: 0.10,
+                HD: 5, sp_U: 28, sp_I: 250, sp_v: 4 } },
 
     { code: 'lasche_b', name: 'bsp_lasche_b',
       merkmale: { belastung: 'zug' },
@@ -377,7 +409,10 @@
                  lastfall: 'ruhend',
                  profil: 'blech', kanten: 'flanken',
                  exc: 'EXC2' },
-      felder: { b: 80, t1: 10, a: 5, N: 45000, Q: 0, S: 1.5 } },
+      felder: { b: 80, t1: 10, a: 5, N: 45000, Q: 0, S: 1.5,
+                an_C: 0.17, an_Si: 0.20, an_Mn: 0.90, an_Cr: 0.05, an_Mo: 0.02,
+                an_V: 0.01, an_Cu: 0.15, an_Ni: 0.10,
+                HD: 5, sp_U: 28, sp_I: 250, sp_v: 4 } },
 
     { code: 'konsole_b', name: 'bsp_konsole_b',
       merkmale: { belastung: 'kombiniert' },
@@ -394,7 +429,10 @@
                  profil: 'u_profil', kanten: 'flansche_steg',
                  exc: 'EXC2' },
       felder: { b: 80, h: 160, tw: 7, tf: 12, a: 4, a_steg: 4, a_flansch: 4,
-                N: 0, Q: 20000, M: 5000, S: 1.5 } },
+                N: 0, Q: 20000, M: 5000, S: 1.5,
+                an_C: 0.17, an_Si: 0.20, an_Mn: 0.90, an_Cr: 0.05, an_Mo: 0.02,
+                an_V: 0.01, an_Cu: 0.15, an_Ni: 0.10,
+                HD: 5, sp_U: 28, sp_I: 250, sp_v: 4 } },
 
     { code: 'rhs_b', name: 'bsp_rhs_b',
       merkmale: { belastung: 'zug' },
@@ -406,7 +444,10 @@
                  lastfall: 'wechselnd',
                  profil: 'rohr_rechteck', kanten: 'rundum',
                  exc: 'EXC2' },
-      felder: { b: 120, h: 80, t1: 6, r_ecke: 9, a: 4, N: 45000, Q: 0, S: 1.5 } },
+      felder: { b: 120, h: 80, t1: 6, r_ecke: 9, a: 4, N: 45000, Q: 0, S: 1.5,
+                an_C: 0.17, an_Si: 0.20, an_Mn: 0.90, an_Cr: 0.05, an_Mo: 0.02,
+                an_V: 0.01, an_Cu: 0.15, an_Ni: 0.10,
+                HD: 5, sp_U: 28, sp_I: 250, sp_v: 4 } },
 
     { code: 'rohr_b', name: 'bsp_rohr_b',
       merkmale: { belastung: 'torsion' },
@@ -418,7 +459,10 @@
                  lastfall: 'ruhend',
                  profil: 'rohr_rund', kanten: 'rundum',
                  exc: 'EXC2' },
-      felder: { d: 114.3, t1: 6, a: 4, N: 0, Q: 0, T: 6000, S: 1.5 } },
+      felder: { d: 114.3, t1: 6, a: 4, N: 0, Q: 0, T: 6000, S: 1.5,
+                an_C: 0.17, an_Si: 0.20, an_Mn: 0.90, an_Cr: 0.05, an_Mo: 0.02,
+                an_V: 0.01, an_Cu: 0.15, an_Ni: 0.10,
+                HD: 5, sp_U: 28, sp_I: 250, sp_v: 4 } },
 
     { code: 'bolzen_b', name: 'bsp_bolzen_b',
       merkmale: { belastung: 'kombiniert' },
@@ -430,7 +474,14 @@
                  lastfall: 'ruhend', a_rundung: 'ganze_mm',
                  profil: 'vollrund', kanten: 'rundum',
                  exc: 'EXC2' },
-      felder: { d: 60, N: 0, Q: 8000, M: 1600, T: 1200, S: 1.5 } },
+      /* Der Bolzen hat im statischen Modell keine Blechdicke — die
+         Grundplatte kommt dort nicht vor. Fuer die Waermefuehrung wird die
+         kombinierte Dicke deshalb direkt vorgegeben: Bolzen 60 mm auf einer
+         Grundplatte 20 mm ergibt 80 mm. */
+      felder: { d: 60, N: 0, Q: 8000, M: 1600, T: 1200, S: 1.5, d_komb: 80,
+                an_C: 0.17, an_Si: 0.20, an_Mn: 0.90, an_Cr: 0.05, an_Mo: 0.02,
+                an_V: 0.01, an_Cu: 0.15, an_Ni: 0.10,
+                HD: 5, sp_U: 28, sp_I: 250, sp_v: 4 } },
 
     { code: 'stoss_b', name: 'bsp_stoss_b',
       merkmale: { belastung: 'zug' },
@@ -442,7 +493,52 @@
                  lastfall: 'ruhend',
                  profil: 'blech', kanten: 'eine_flanke',
                  exc: 'EXC2' },
-      felder: { b: 150, t1: 12, a: 12, N: 170000, Q: 0, S: 1.5 } }
+      felder: { b: 150, t1: 12, a: 12, N: 170000, Q: 0, S: 1.5,
+                an_C: 0.17, an_Si: 0.20, an_Mn: 0.90, an_Cr: 0.05, an_Mo: 0.02,
+                an_V: 0.01, an_Cu: 0.15, an_Ni: 0.10,
+                HD: 5, sp_U: 28, sp_I: 250, sp_v: 4 } }
+,
+
+    /* ---- N9c · zwei neue Faelle -------------------------------------
+       Sie schliessen drei Rechenpfade, die kein Beispiel je beruehrt hat:
+       das VEREINFACHTE VERFAHREN, die GEOMETRISCHE LASTEINGABE und das
+       WINKELPROFIL. Und sie sind die einzigen beiden mit FEINKORNSTAHL —
+       nur dort ist das t8/5-Zielfenster belegt und die Ampel gruen. Bei
+       den zwoelf uebrigen bleibt sie grau, und das ist richtig so: bei
+       unlegierten Baustaehlen ist t8/5 praktisch kein Thema. */
+
+    { code: 'winkel_v', name: 'bsp_winkel_v',
+      merkmale: { belastung: 'zug' },
+      auswahl: { welt: 'A', rechenrichtung: 'nachweis', lasteingabe: 'direkt',
+                 werkstoffgruppe: 'stahl', werkstoff: 'S420',
+                 stossart: 't_stoss', nahtart: 'kehl_umlaufend',
+                 nachweisverfahren: 'vereinfacht', bw_regelsatz: 'na_de',
+                 profil: 'winkel', kanten: 'rundum',
+                 schweissverfahren: 'mag', thermik_aktiv: true,
+                 exc: 'EXC2' },
+      felder: { b: 100, h: 100, t1: 12, a: 4, N: 330000, Q: 0,
+                an_C: 0.17, an_Si: 0.35, an_Mn: 1.50, an_Cr: 0.10, an_Mo: 0.05,
+                an_V: 0.10, an_Cu: 0.20, an_Ni: 0.30,
+                HD: 5, sp_U: 29, sp_I: 270, sp_v: 3, F2: 0.67, F3: 0.9 } },
+
+    { code: 'kragarm_b', name: 'bsp_kragarm_b',
+      merkmale: { belastung: 'kombiniert' },
+      auswahl: { welt: 'B', rechenrichtung: 'nachweis',
+                 lasteingabe: 'geometrisch', kraftrichtung: 'quer',
+                 werkstoffgruppe: 'stahl', werkstoff: 'S460',
+                 stossart: 't_stoss', nahtart: 'kehl_umlaufend',
+                 /* Die Welt-B-Nahtgruppe fuehrt Tabellenwerte nur fuer
+                    S235 und S355 — bei S460 gibt es sie nicht, also steht
+                    sie hier auch nicht. */
+                 nahtguete: 'kehlnaht_allgemein',
+                 lastfall: 'schwellend',
+                 profil: 'rohr_rechteck', kanten: 'rundum',
+                 schweissverfahren: 'mag', thermik_aktiv: true,
+                 exc: 'EXC2' },
+      felder: { b: 100, h: 150, t1: 8, r_ecke: 0, a: 5, F: 75000, e: 200, S: 1.5,
+                an_C: 0.16, an_Si: 0.40, an_Mn: 1.60, an_Cr: 0.15, an_Mo: 0.08,
+                an_V: 0.12, an_Cu: 0.25, an_Ni: 0.50,
+                HD: 4, sp_U: 30, sp_I: 280, sp_v: 3, F2: 0.67, F3: 0.9 } }
   ];
 
   /* KONTEXTBEZOGENE BEISPIELLISTE (Plan 3.2, gebaut in N7).

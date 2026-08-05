@@ -47,7 +47,7 @@
   'use strict';
 
   var NAME = 'thermik';
-  var VERSION = '0.2.0-N9b';
+  var VERSION = '0.3.0-N9c';
 
   /* --------------------------------------------------------------------- */
   /* Tabellen                                                               */
@@ -124,7 +124,8 @@
     'msg_th_cev_ueber_norm', 'msg_th_kombinierte_dicke_summe',
     'msg_th_zielfenster_unerreichbar', 'msg_th_toleranz_zehn_prozent',
     'msg_th_ausserhalb_zielfenster', 'msg_th_kein_fenster_unlegiert',
-    'msg_th_kein_fenster_werkstoff', 'msg_th_nur_ferritisch'
+    'msg_th_kein_fenster_werkstoff', 'msg_th_nur_ferritisch',
+    'msg_th_analyse_unvollstaendig'
   ];
 
   /* --------------------------------------------------------------------- */
@@ -568,6 +569,18 @@
     var cetEigen = zahl(ein.CET);
     var CET = (cetEigen !== null) ? cetEigen : (ae.C > 0 ? ae.CET : null);
     if (CET === null) { schiebe(fehler, 'msg_th_kein_cet'); return raus; }
+
+    /* EINE UNVOLLSTAENDIGE ANALYSE BESCHULDIGT SONST DEN STAHL (N9c).
+       Wer nur den Kohlenstoff eintraegt, bekommt ein zu niedriges CET und
+       damit die Meldung "ausserhalb des Geltungsbereichs" — das klingt, als
+       sei der Werkstoff ungewoehnlich, obwohl bloss das Mangan fehlt, der
+       groesste Beitrag nach dem Kohlenstoff. Die Meldung muss die Eingabe
+       benennen, nicht den Stahl. Aufgefallen bei Dieters erster Benutzung
+       ohne Beispiel, 2026-08-05. */
+    if (cetEigen === null && ae.C > 0 && oder(ein.analyse && ein.analyse.Mn, 0) <= 0) {
+      schiebe(fehler, 'msg_th_analyse_unvollstaendig');
+      return raus;
+    }
     schritte.push({ code: 'th_s_aequivalente', CET: CET, CEV: ae.CEV, Pcm: ae.Pcm,
                     eigen: cetEigen !== null,
                     empfohlen: empfohlenesAequivalent(ae.C) });

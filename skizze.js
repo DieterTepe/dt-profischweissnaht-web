@@ -40,12 +40,13 @@
   'use strict';
 
   var NAME = 'skizze';
-  var VERSION = '0.2.0-N9b';
+  var VERSION = '0.3.0-N9c';
 
   /* Welche Gruppen dieses Modul bedient. Andere Quellen (schaubild.js fuer
      Profil und Kanten, symbol.js fuer Nahtart und Symbol) stehen hier
      bewusst NICHT — dieses Modul kennt sie nicht und haengt nicht an ihnen. */
-  var GRUPPEN = ['stossart', 'lastfall', 'rechenrichtung', 'lasteingabe', 'endkrater'];
+  var GRUPPEN = ['stossart', 'lastfall', 'rechenrichtung', 'lasteingabe',
+                 'endkrater', 'kraftrichtung'];
 
   /* Die Gruppen ohne Skizze — als Liste gefuehrt, damit die Luecke benannt
      ist und nicht bloss vorhanden. Eine Assertion prueft, dass jede
@@ -57,7 +58,8 @@
 
   var LEGENDE_CODES = ['skz_bauteil', 'skz_naht', 'skz_kraft', 'skz_zeit',
                        'skz_gesucht', 'skz_hebelarm', 'skz_nulllinie',
-                       'skz_nicht_masstab', 'skz_wirksam', 'skz_abzug'];
+                       'skz_nicht_masstab', 'skz_wirksam', 'skz_abzug',
+                       'skz_kraftrichtung'];
 
   function leer(code) {
     return { ok: false, svg: '', legende: [], fehler: [{ code: code }] };
@@ -241,6 +243,40 @@
   }
 
   /* --------------------------------------------------------------------- */
+  /* kraftrichtung — wohin die Kraft zeigt                                  */
+  /* --------------------------------------------------------------------- */
+
+  /* Derselbe Kragarm dreimal, nur der Pfeil dreht sich. Genau das ist die
+     Frage: die Geometrie bleibt, die Richtung entscheidet ueber die
+     Schnittgroessen. */
+  function kraftrichtung(Svg, v, code) {
+    var t = [], leg = ['skz_bauteil', 'skz_kraftrichtung'], d = 16;
+
+    t.push(teil(Svg, v, -85, 0, d, 110));            /* die Fuegeebene */
+    t.push(teil(Svg, v, 0, 0, 150, d));              /* der Kragarm */
+    t.push(kehle(Svg, v, -77, d / 2, 12, -90));
+    t.push(kehle(Svg, v, -77, -d / 2, 12, 0));
+    t.push(Svg.masslinie(v, -77, 45, 62, 45, { farbe: Svg.PALETTE.neutral }));
+    leg.push('skz_hebelarm');
+
+    if (code === 'laengs') {
+      /* Kraft in Richtung des Kragarms: Zug und Biegung. */
+      t.push(Svg.kraftpfeil(v, 20, -14, 70, -14, { farbe: Svg.PALETTE.rot }));
+    } else if (code === 'quer') {
+      /* Kraft quer dazu: Querkraft und Biegung — der uebliche Kragarm. */
+      t.push(Svg.kraftpfeil(v, 62, -62, 62, -14, { farbe: Svg.PALETTE.rot }));
+    } else if (code === 'torsion') {
+      /* Kraft um die Nahtachse: Torsion. Zwei gegenlaeufige Pfeile. */
+      t.push(Svg.kraftpfeil(v, 62, -58, 62, -14, { farbe: Svg.PALETTE.rot }));
+      t.push(Svg.kraftpfeil(v, 62, 58, 62, 14, { farbe: Svg.PALETTE.rot }));
+    } else {
+      return null;
+    }
+    leg.push('skz_nicht_masstab');
+    return { t: t, leg: leg };
+  }
+
+  /* --------------------------------------------------------------------- */
   /* Einstieg                                                               */
   /* --------------------------------------------------------------------- */
 
@@ -298,6 +334,7 @@
     else if (gruppe === 'rechenrichtung') r = rechenrichtung(Svg, v, option);
     else if (gruppe === 'lasteingabe') r = lasteingabe(Svg, v, option);
     else if (gruppe === 'endkrater') r = endkrater(Svg, v, option);
+    else if (gruppe === 'kraftrichtung') r = kraftrichtung(Svg, v, option);
     if (!r) return leer('msg_skizze_keine_zu_option');
 
     return {

@@ -35,12 +35,12 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.11.0';
-  var ETAPPE = 'N9b';
+  var VERSION = '0.12.0';
+  var ETAPPE = 'N9c';
   /* Plan-Version, die zu diesem Stand gehoert. Sie ist die EINZIGE von Hand
      gepflegte Zahl der Versionszeile — alles andere kommt aus den geladenen
      Modulen selbst (Plan 3.6). */
-  var PLAN = '2.50';
+  var PLAN = '2.52';
   var SPRACHEN = ['de', 'en', 'pt'];
 
   /* Plan 3.1 (bindend): die Oberflaeche startet IMMER im dunklen Design —
@@ -87,7 +87,7 @@
       felder: ['b', 'h', 'd', 'tw', 'tf', 'r_ecke', 't1', 't2'] },
 
     { code: 'lasten', leit: 'lasteingabe',
-      gruppen: [],
+      gruppen: ['kraftrichtung'],
       felder: ['N', 'Q', 'M', 'T', 'Qy', 'Qz', 'My', 'Mz', 'F', 'e'],
       optional_wenn: { lasteingabe: ['direkt'] } },
 
@@ -103,7 +103,7 @@
     { code: 'thermik', leit: null, optional_wenn: { thermik_aktiv: [true] },
       gruppen: [],
       felder: ['an_C', 'an_Si', 'an_Mn', 'an_Cr', 'an_Mo', 'an_V', 'an_Cu', 'an_Ni',
-               'CET', 'HD', 'sp_U', 'sp_I', 'sp_v', 'T0',
+               'CET', 'HD', 'd_komb', 'sp_U', 'sp_I', 'sp_v', 'T0',
                't85_min', 't85_max', 'F2', 'F3'] },
 
     /* N5d: der Block "Ausfuehrung und Dokumentation" (Plan 2.7 / 5.1-1).
@@ -1269,7 +1269,7 @@
         analyse: { C: nz('an_C'), Si: nz('an_Si'), Mn: nz('an_Mn'),
                    Cr: nz('an_Cr'), Mo: nz('an_Mo'), V: nz('an_V'),
                    Cu: nz('an_Cu'), Ni: nz('an_Ni') },
-        CET: nz('CET'), HD: nz('HD'),
+        CET: nz('CET'), HD: nz('HD'), d_kombiniert: nz('d_komb'),
         U: nz('sp_U'), I: nz('sp_I'), v: nz('sp_v'), T0: nz('T0'),
         t85_min: nz('t85_min'), t85_max: nz('t85_max'),
         F2: nz('F2'), F3: nz('F3'),

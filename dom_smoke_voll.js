@@ -393,7 +393,7 @@ function lauf(edition) {
       gebauteGruppen++;
     }
   }
-  ok(gebauteGruppen === 26, 'N6b: alle 26 Gruppen gebaut, auch die fuenf fuer das Symbol (ist ' +
+  ok(gebauteGruppen === 27, 'N9c: alle 27 Gruppen gebaut, auch die fuenf fuer das Symbol (ist ' +
      gebauteGruppen + ')');
   ok(!!d.byId['sel_iso5817'] && !!d.byId['sel_exc'],
      'N5d: der Block Ausfuehrung steht jetzt wirklich auf der Seite');
@@ -646,10 +646,10 @@ function lauf(edition) {
   /* Seit N7 sind es zwoelf, und die Liste ist KONTEXTBEZOGEN (Plan 3.2):
      im leeren Startzustand steht alles da, sobald links etwas gewaehlt ist,
      schrumpft sie. */
-  ok(d.byId.presetSel.children.length === 13,
-     'N7: die Beispielliste hat einen Platzhalter und zwoelf Beispiele (ist ' +
+  ok(d.byId.presetSel.children.length === 15,
+     'N9c: die Beispielliste hat einen Platzhalter und vierzehn Beispiele (ist ' +
      d.byId.presetSel.children.length + ')');
-  ok(s.beispiele().length === 12, 'N7: und die Sitzung kennt genau diese zwoelf');
+  ok(s.beispiele().length === 14, 'N9c: und die Sitzung kennt genau diese vierzehn');
 
   d.byId.dtLabel.value = 'Rest aus einer alten Rechnung';
   s.beispielLaden('rhs');
@@ -673,7 +673,7 @@ function lauf(edition) {
      Datensatz stimmt, sondern auch durch das Formular passt. */
   var bspAlle = [], bspI;
   for (bspI = 0; bspI < Opt.BEISPIELE.length; bspI++) bspAlle.push(Opt.BEISPIELE[bspI].code);
-  ok(bspAlle.length === 12, 'N7: zwoelf Beispiele werden durchgeklickt');
+  ok(bspAlle.length === 14, 'N9c: vierzehn Beispiele werden durchgeklickt');
   for (i = 0; i < bspAlle.length; i++) {
     s.beispielLaden(bspAlle[i]);
     var bpAll = s.pruefen();
@@ -850,18 +850,18 @@ function lauf(edition) {
      stehen wieder alle da — eine leere Liste waere eine Sackgasse (3.4). */
   d.byId.sel_welt.value = 'A';
   s.aktualisiere();
-  ok(s.beispiele().length === 6, 'N7: Welt A laesst sechs Beispiele stehen (ist ' + s.beispiele().length + ')');
-  ok(d.byId.presetSel.children.length === 7, 'N7: und der Kasten zeigt genau die');
+  ok(s.beispiele().length === 7, 'N9c: Welt A laesst sieben Beispiele stehen (ist ' + s.beispiele().length + ')');
+  ok(d.byId.presetSel.children.length === 8, 'N9c: und der Kasten zeigt genau die');
   d.byId.sel_welt.value = 'B';
   s.aktualisiere();
-  ok(s.beispiele().length === 6, 'N7: Welt B ebenso');
+  ok(s.beispiele().length === 7, 'N9c: Welt B ebenso');
   d.byId.sel_welt.value = 'A';
   d.byId.sel_werkstoffgruppe.value = 'alu';
   s.aktualisiere();
-  ok(s.beispiele().length === 12,
-     'N7: passt nichts, stehen wieder alle zwoelf da statt einer leeren Liste');
+  ok(s.beispiele().length === 14,
+     'N9c: passt nichts, stehen wieder alle zwoelf da statt einer leeren Liste');
   s.leeren();
-  ok(s.beispiele().length === 12, 'N7: nach dem Leeren stehen wieder alle da');
+  ok(s.beispiele().length === 14, 'N9c: nach dem Leeren stehen wieder alle da');
 
   /* Das geladene Beispiel bleibt in der Liste, auch wenn die Auswahl
      inzwischen weggedreht wurde — sonst stuende der Kasten auf "waehlen",

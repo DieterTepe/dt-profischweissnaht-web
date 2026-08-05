@@ -1969,3 +1969,80 @@ und wandert nicht in den Projektordner.
 **Basislinie 1939 → 2005 Assertions · Smokes 663/664 → 748/749.**
 **Codestand 2.47 → 2.50 · acht Module mit neuer Kennung.**
 **Nächster Schritt: N9 abnehmen, dann N10 (Kosten, Zeit, Draht).**
+
+
+**v2.51 (2026-08-05):** **N9b abgenommen — und die rote Meldung, die kein Bedienfehler war.**
+
+Dieter hat N9b geprüft: Endkraterabzug und Wärmeführung waren bedienbar, es kam
+ein Ergebnis. Aber er erwähnte beiläufig, dass „noch was rot" gewesen sei, und
+vermutete einen eigenen falschen Wert.
+
+**Das nicht als Bedienfehler durchgehen zu lassen, war die richtige
+Entscheidung.** Nachgestellt ergaben sich vier mögliche Ursachen — und die
+wahrscheinlichste war ein Mangel des Programms: Wer nur den Kohlenstoff
+einträgt, bekommt ein CET von 0,18 und die Meldung „außerhalb des
+Geltungsbereichs". Das klingt, als sei der Stahl ungewöhnlich. In Wahrheit
+fehlte nur das Mangan — nach dem Kohlenstoff der größte Beitrag.
+
+**Die Meldung beschuldigte den Werkstoff statt die Eingabe.** Das ist eine
+eigene Fehlerklasse: eine Meldung, die technisch stimmt und trotzdem in die
+falsche Richtung weist. Sie kostet den Anwender genau die Zeit, die eine gute
+Meldung ihm spart. Behoben in N9c.
+
+**Und eine Beobachtung zur Prüfkultur:** Dieter war der erste Anwender ohne
+Beispiel — und genau dort hat es geklemmt. Das ist zugleich die Begründung für
+N9c: Beispiele sind nicht Bequemlichkeit, sondern der Weg, auf dem ein
+Anwender überhaupt erfährt, wie eine sinnvolle Eingabe aussieht.
+
+
+**v2.52 (2026-08-05):** **N9c — vierzehn Beispiele, und die dritte tote Eingabeart.**
+
+**Aus N9c (2026-08-05) — Entscheidungen und Erfahrungen**
+
+Der Auftrag war klein: Die Beispiele sollen die Wärmeführung mitbringen.
+Herausgekommen ist wieder eine Reparatur — die dritte, die durch denselben
+Handgriff gefunden wurde.
+
+**Die geometrische Lasteingabe war seit N3 tot.** Die Umrechnung
+`schnittgroessen(F, e, richtung)` stand in `solver.js`, war sogar exportiert,
+und wurde **nirgends aufgerufen**. Wer im Formular „Kraft und Hebelarm" wählte,
+bekam „keine Last". Über zwei Monate hinweg hat das niemand bemerkt, weil kein
+Beispiel diesen Weg ging.
+
+**Das Muster ist jetzt dreifach belegt:** Auslegung und Stumpfnaht in N7, die
+geometrische Lasteingabe in N9c. Jedes Mal gefunden beim Versuch, ein Beispiel
+für einen Pfad zu bauen, den kein Beispiel berührte. **Ein Beispielkatalog ist
+kein Komfort, sondern der einzige Test, der eine ganze Eingabeart als tot
+entlarvt.** Ein Bauteiltest kann das nicht: Die Funktion war korrekt, sie wurde
+nur nie gerufen.
+
+**Repariert wurde mehr als der Aufruf.** Die Funktion kennt drei
+Kraftrichtungen, aber es gab keine Auswahlgruppe dafür — der Anwender hätte gar
+nicht sagen können, wohin seine Kraft zeigt. Die neue Gruppe `kraftrichtung`
+steht **bewusst ohne Voreinstellung** da: Die Richtung entscheidet, ob Zug,
+Querkraft oder Torsion entsteht, und eine geratene Richtung wäre schlimmer als
+eine Rückfrage. Das ist dieselbe Haltung wie beim Zielfenster: **wo eine
+Vorgabe das Ergebnis grundlegend ändert, wird gefragt statt geraten.**
+
+**Ein Folgefund im Rechenweg.** Seine Probe verglich die Schnittgrößen gegen
+die eingegebenen Felder — bei geometrischer Eingabe sind die leer, also schlug
+sie fehl. Die Lösung war dieselbe wie beim Nahtbild in N7: **geprüft wird gegen
+das, womit gerechnet wurde.** Dass dasselbe Prinzip zum zweiten Mal die Lösung
+war, spricht dafür, es beim nächsten Zweifel zuerst zu probieren.
+
+**Zwei Beispiele, drei Pfade, und ein ehrliches Grau.** Die neuen Fälle bringen
+das vereinfachte Verfahren, die geometrische Lasteingabe und das Winkelprofil
+— und sind die einzigen mit Feinkornstahl. Nur dort kann die t8/5-Ampel grün
+werden; bei den zwölf übrigen bleibt sie grau. Der Versuchung, ihnen der Optik
+wegen ein Zielfenster zu geben, wurde nicht nachgegeben. **Zwölf graue Ampeln
+und zwei grüne sagen mehr als vierzehn grüne.**
+
+**Was beim Bauen zweimal daneben lag und korrigiert wurde:** Der Kreuzstoß mit
+Hebelarm war statisch unsinnig — die Nähte liegen nur eine Blechdicke
+auseinander, das Widerstandsmoment ist winzig. Und beim Winkel war die Naht
+dicker als ein Drittel des kürzesten Abschnitts, was zu Recht eine
+Dünnwand-Warnung auslöste. Beides hat die Messung gefunden, nicht das Auge.
+
+**Basislinie 2005 → 2107 Assertions · Smokes 748/749 → 762/763.**
+**Codestand 2.50 → 2.52.**
+**Nächster Schritt: N9c abnehmen, dann N10 (Kosten, Zeit, Draht).**

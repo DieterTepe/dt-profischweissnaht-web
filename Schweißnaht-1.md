@@ -8,8 +8,8 @@
 > Abstimmung vom **2026-07-24** (alle offenen Fragen aus Abschnitt 0 geklärt) und nach den
 > abgenommenen Bausteinen **N1, N2, N2b, N2c, N3, N4 und N5 vollständig
 > (N5a, N5b, N5c-1 bis N5c-3 und N5d)**, **N6b**, **N7** und **N8 vollständig
-> (N8a, N8b-1, N8b-2, N8c)** und **N9a**, dazu **N9b gebaut und geliefert
-> (Abnahme offen)** — Stand 2026-08-05.
+> (N8a, N8b-1, N8b-2, N8c)**, **N9a** und **N9b**, dazu **N9c gebaut und
+> geliefert (Abnahme offen)** — Stand 2026-08-05.
 > Sie ist so geschrieben, dass ein **neuer Chat ohne Vorwissen** damit weiterarbeiten kann.
 > **Das WARUM steht in `Schweißnaht-Historie.md`** (Entscheidungslog + Changelog im
 > Volltext) — dort nachschlagen, bevor etwas geändert wird, das falsch aussieht.
@@ -18,8 +18,8 @@
 > in 4.11 und in der Historie. Im Projektordner liegt **keine Vorlaufdatei** mehr.
 
 ```
-Plan-Version : 2.50 · Stand 2026-08-05
-Codestand    : Plan 2.50 · ui 0.11.0 · N9b
+Plan-Version : 2.52 · Stand 2026-08-05
+Codestand    : Plan 2.52 · ui 0.12.0 · N9c
                (Die Planversion, gegen die der CODE gebaut ist. Sie steht auch
                in ui.js als PLAN und wird von einer Assertion damit verglichen.
                Sie wandert nur mit, wenn sich Code ändert — reine Plan- oder
@@ -61,12 +61,13 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                dazu mehrere durchgerechnete Beispiele und ein
                Assistentenlauf — die vier Module mit der
                Ein-Zeilen-Änderung haben nichts gestört.
-               **Etappe N9b ist GEBAUT und GELIEFERT** — Abnahme steht
-               aus. Damit ist **Baustein N9 vollständig**: Panel,
-               Rechenweg, Assistenten-Schritt und das
-               Endkrater-Ankreuzfeld. Die Versionszeile zeigt weiterhin
-               **17 Module**, aber acht davon mit neuer Kennung.
-               → NÄCHSTER SCHRITT: **N9 am Handy abnehmen.** Danach
+               **Etappe N9b ist von Dieter am Handy geprüft und
+               ABGENOMMEN (2026-08-05).** **Etappe N9c ist GEBAUT und
+               GELIEFERT** — Abnahme steht aus. Sie bringt den
+               Beispielkatalog von zwölf auf **vierzehn**, gibt allen
+               Beispielen Wärmeführungsdaten und repariert dabei die
+               **geometrische Lasteingabe**, die seit N3 tot war.
+               → NÄCHSTER SCHRITT: **N9c am Handy abnehmen.** Danach
                  Baustein **N10 (Kosten, Zeit, Draht)** — Einstieg
                  „weiter mit N10", **Umfang vor dem Bau abstimmen**.
                  Schnittstellen: 4.5 (naht.js), 4.6 (profil.js),
@@ -75,7 +76,7 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                  4.11 (symbol.js).
                Große Bausteine (N5, N8, N13, N14) werden in ETAPPEN gebaut — Regel in
                Kickoff-Punkt 5c, Etappen in Abschnitt 5.2.
-Basislinie   : 2005 Assertions · DOM-Smokes 748 (voll) + 749 (test) · i18n-Parität 0 Abweichungen
+Basislinie   : 2107 Assertions · DOM-Smokes 762 (voll) + 763 (test) · i18n-Parität 0 Abweichungen
                (VERBINDLICH. Basislinie darf nur WACHSEN — nie schrumpfen, nie gelockert werden.)
 Dateistand   : siehe Abschnitt 8.1 — dort steht, was fertig ist und was noch fehlt.
 ⚠️ SYNC       : Am 2026-08-03 lag im Projektordner eine **elf Versionen alte**
@@ -164,7 +165,7 @@ Einstiegssatz von Dieter: **„weiter mit N10"**.
    schon zweimal Dateien verlorengegangen, beide Male hat diese Prüfung es gefunden.
 11. Arbeitsordner herstellen (Befehl unter Punkt 6 der Kickoff-Liste), dann
    `node test_naht.js`, `node dom_smoke_voll.js`, `node dom_smoke_test.js` laufen lassen
-   und die Basislinie aus dem Plan-Kopf bestätigen (**2005 / 748 / 749 · 0 Fehler**),
+   und die Basislinie aus dem Plan-Kopf bestätigen (**2107 / 762 / 763 · 0 Fehler**),
    **bevor** etwas gebaut wird. Weicht etwas ab, erst das klären.
    ⚠️ **Diese drei Läufe sind zugleich die Probe, ob Plandatei und Code zusammenpassen.**
    Steht im Kopfblock eine andere Basislinie als gemessen, ist eine der beiden Seiten alt —
@@ -2227,6 +2228,78 @@ Ergebniskarte** da.
 
 ---
 
+#### 5.1-6c · N9c — **GEBAUT UND GELIEFERT 2026-08-05, Abnahme offen**
+
+**Dieters Anstoß:** Die Beispiele sollten die Wärmeführung mitbringen, damit
+ein Anwender sie nicht aus dem Nichts befüllen muss. Der Anlass war seine
+eigene Erfahrung — er hatte den Bereich ohne Beispiel ausprobiert und eine
+rote Meldung bekommen.
+
+**Diese Meldung war schlecht gemacht und ist repariert.** Wer nur den
+Kohlenstoff einträgt, bekam ein CET von 0,18 und die Auskunft „außerhalb des
+Geltungsbereichs". Das beschuldigt den Stahl, obwohl nur das **Mangan**
+fehlte — nach dem Kohlenstoff der größte Beitrag. Jetzt sagt das Programm,
+dass die Analyse unvollständig ist.
+
+**Der Katalog wächst von zwölf auf vierzehn**, sieben je Welt. Alle vierzehn
+tragen jetzt Analyse, Wasserstoffgehalt und Schweißparameter — bei den
+zwölf alten **ohne** den Bereich einzuschalten, damit sich am
+Festigkeitsnachweis nichts ändert. Die gemessenen Ausnutzungen aus N7 sind
+unverändert geblieben; das ist der Beleg, dass die Wärmeführung nichts
+zurückspeist.
+
+**Die zwei neuen schließen drei Rechenpfade**, die kein Beispiel je berührt
+hatte:
+
+| | `winkel_v` (Welt A) | `kragarm_b` (Welt B) |
+|---|---|---|
+| neu | **vereinfachtes Verfahren**, **Winkelprofil** | **geometrische Lasteingabe** |
+| Werkstoff | S420 | S460 |
+| Ausnutzung | 0,756 grün | 0,707 grün |
+| t8/5 | 13,3 s **grün** | 13,2 s **grün** |
+
+**Sie sind die einzigen mit Feinkornstahl** — und damit die einzigen, bei
+denen die Wärmeführungs-Ampel überhaupt grün werden kann. Bei den zwölf
+übrigen bleibt sie **grau**, weil unsere Quellen für unlegierte Baustähle
+kein Zeitfenster führen. Das ist keine Schwäche des Katalogs, sondern die
+zutreffende Auskunft.
+
+**DIE GEOMETRISCHE LASTEINGABE WAR TOT — seit N3.** Die Umrechnung
+`schnittgroessen(F, e, richtung)` stand in `solver.js`, war exportiert und
+wurde **nirgends aufgerufen**. Wer im Formular „Kraft und Hebelarm" wählte,
+bekam `msg_sv_keine_last`. Gefunden auf demselben Weg wie die Auslegung und
+die Stumpfnaht in N7: **beim Versuch, ein Beispiel für einen Pfad zu bauen,
+den kein Beispiel berührt.** Das dritte Mal, dass dieses Muster etwas findet.
+
+Repariert wurde mehr als der Aufruf: Die Funktion kennt drei Kraftrichtungen,
+aber es gab **keine Auswahlgruppe** dafür — der Anwender konnte gar nicht
+sagen, wohin seine Kraft zeigt. Neu ist deshalb die Gruppe
+**`kraftrichtung`** (längs, quer, Torsion), **bewusst ohne Voreinstellung**:
+Die Richtung ändert das Ergebnis grundlegend, und eine geratene Richtung wäre
+schlimmer als eine Rückfrage. Sie hat eine eigene Skizze — derselbe Kragarm
+dreimal, nur der Pfeil dreht sich.
+
+**Ein Folgefund im Rechenweg:** Seine Probe verglich die Schnittgrößen gegen
+die **eingegebenen** Felder — bei geometrischer Eingabe sind die leer, also
+schlug sie fehl. Jetzt prüft sie gegen das, **womit gerechnet wurde**;
+dasselbe Prinzip wie beim Nahtbild in N7.
+
+**Neu: das Feld `d_komb`.** Der Bolzen hat im statischen Modell keine
+Blechdicke — die Grundplatte kommt dort nicht vor. Für die Wärmeführung lässt
+sich die kombinierte Dicke deshalb direkt vorgeben. Das ist kein Sonderfall:
+Auch beim T-Stoß auf ein dickes Fundament steht das Gegenstück nicht im
+Modell.
+
+**Basislinie 2005 → 2107 Assertions · Smokes 748/749 → 762/763.**
+
+**Erwarteter Beleg am Handy:** **Vierzehn Beispiele** in der Liste. `winkel_v`
+und `kragarm_b` bringen die Wärmeführung **eingeschaltet** mit und zeigen eine
+grüne t8/5-Ampel. Bei `kragarm_b` steht im Bereich *Lasten* die neue Auswahl
+**Richtung der Kraft**, und eingegeben werden **Kraft und Hebelarm** statt
+Schnittgrößen.
+
+---
+
 ### 5.1a Auftrag für N5c-1 — „Es rechnet" *(ERLEDIGT 2026-07-28, hier nur noch als Begründung)*
 
 > **Dieser Auftrag ist entschieden, nicht mehr Vorschlag.** Dieter hat die offenen Fragen
@@ -2686,6 +2759,16 @@ Solver.
 
 **Basislinie nach N7: 1553 Assertions · 611 / 612 DOM-Smokes · i18n-Parität 0.**
 
+**Nachtrag N9c (2026-08-05) — 12 Dateien:** `solver.js` (geometrische
+Lasteingabe verdrahtet) · `rechenweg.js` (Lastprobe) · `optionen.js`
+(Gruppe `kraftrichtung`, 14 Beispiele) · `validate.js` (Feld `d_komb`) ·
+`i18n_kern.js` · `i18n_hilfe.js` · `skizze.js` (Skizze Kraftrichtung) ·
+`assistent.js` · `ui.js` (Kennungen 0.12.0 / N9c / 2.52) · `test_naht.js` ·
+`dom_smoke_voll.js`. **Nicht angefasst:** `thermik.js` blieb bis auf die
+Meldung unverändert, dazu `naht.js`, `profil.js`, `daten.js`, `svglib.js`,
+`schaubild.js`, `symbol.js`, `i18n_kerbfall.js`, `style.css`, beide HTMLs,
+`dom_smoke_test.js`.
+
 **Nachtrag N9b (2026-08-05) — 13 Dateien:** `thermik.js` (Zielfenster,
 Bericht) · `optionen.js` (Gruppe `endkrater`) · `validate.js` (18 Felder,
 Endkrater durchgereicht) · `i18n_kern.js` · `i18n_hilfe.js` (18 Laienhilfen) ·
@@ -2834,7 +2917,7 @@ Formsache, und der Basislinien-Abgleich aus Kickoff-Punkt 11 ebenso wenig.
 **Erste Handlung im neuen Chat:** Vollständigkeit gegen die Tabelle oben prüfen
 (**17 Module**, `style.css`, beide HTMLs, **alle drei** DEV-ONLY-Dateien, dazu Plandatei und
 `Schweißnaht-Historie.md`), Arbeitsordner herstellen, die drei Testläufe starten.
-Melden müssen sie **2005 / 748 / 749 · 0 Fehler**. Weicht etwas ab, erst das klären —
+Melden müssen sie **2107 / 762 / 763 · 0 Fehler**. Weicht etwas ab, erst das klären —
 nicht bauen.
 
 **Was N6b überschreiben wird** (zur Vorwarnung, nicht als Auftrag): neu `symbol.js`,
@@ -3049,41 +3132,6 @@ Changelog — **die vollständige Fassung ab v1.0 steht in `Schweißnaht-Histori
 Hier stehen nur die letzten drei Einträge. Wer wissen will, wie eine Entscheidung
 zustande kam, findet die Kette dort — lückenlos ab der Erstfassung vom 2026-07-23.
 
-**v2.48 (2026-08-05):** **Etappe N9a von Dieter am Handy geprüft und ABGENOMMEN —
-ohne Nacharbeit.** Die Versionszeile zeigt „Programmstand N9a · Plan 2.47 ·
-17 Module" mit `thermik 0.1.0-N9a` und `ui 0.10.1`; **alle fünf korrigierten
-Kennungen stehen darin** (`solver 0.2.0-N7`, `rechenweg 0.2.0-N7`,
-`validate 0.2.0-N8a`, `assistent 0.2.0-N8b`, `kern 0.2.0-N9a`). Mehrere
-Beispiele durchgerechnet und der Assistent gelaufen — die vier Module mit der
-Ein-Zeilen-Änderung haben nichts gestört. **Damit ist der Merkposten aus 3.6
-geschlossen, der seit N7 viermal aufgefallen war**, und die Versionszeile ist
-zum ersten Mal ein Beleg statt einer Anzeige: Was weiterhin eine alte Kennung
-trägt, ist nachweislich unverändert. **Code unverändert, `Codestand` bleibt
-2.47.** **Basislinie unverändert: 1939 Assertions · Smokes 663 / 664.**
-**Nächster Schritt: N9b — Panel, Rechenweg, Assistenten-Schritte und das
-Endkrater-Ankreuzfeld. Einstieg: „weiter mit N9b".**
-
-
-
-**v2.49 (2026-08-05):** **Das t8/5-Zielfenster ist entschieden — keine
-Codeänderung.** Dieters Vorgabe: eine Vorbelegung muss sein, damit ein Laie
-weiterkommt, und sie muss per Haken überschreibbar sein; die Wahl des Fensters
-hat er mir überlassen. **Entschieden: 10–20 s**, der Überschneidungsbereich der
-beiden veröffentlichten Empfehlungen (5–20 s nach TÜV SÜD, 10–25 s nach VdTÜV
-Wbl. 257) — keine erfundene Zahl, an beiden Enden die strengere Grenze, beide
-Quellfenster im Hilfetext. **Zwei Fälle bekommen ausdrücklich keine
-Vorbelegung:** unlegierte Baustähle, für die unsere Quellen kein Fenster führen
-(dort bleibt die Ampel grau und sagt es), und vergütete hochfeste Güten, für
-die die Quellen ausdrücklich auf den Hersteller verweisen. Festgeschrieben in
-**5.1-6a**; neu in 9.2 zwei Festlegungen — wo kein Beleg ist, gibt es keine
-Vorbelegung, und bei zwei sich widersprechenden Empfehlungen ist die
-Überschneidung die Vorbelegung. **Code unverändert, `Codestand` bleibt 2.47.**
-**Basislinie unverändert: 1939 Assertions · Smokes 663 / 664 · i18n-Parität 0.**
-**Nächster Schritt: N9b — das Zielfenster muss vor dem Bau nicht mehr
-besprochen werden. Einstieg: „weiter mit N9b".**
-
-
-
 **v2.50 (2026-08-05):** **Etappe N9b gebaut und geliefert — Baustein N9 ist
 vollständig.** Drei Dinge: das **Endkrater-Ankreuzfeld** als Auswahlgruppe
 (Voreinstellung bleibt der Abzug, gemessene Wirkung 8 % bei Zug und über 12 %
@@ -3107,6 +3155,40 @@ der **Zusatzschritt steht jetzt vor den Feldern**. Geändert: `thermik.js`,
 Module mit neuer Kennung**, jede vom Wächter eingefordert).
 **Nächster Schritt: N9 am Handy abnehmen, dann Baustein N10 (Kosten, Zeit,
 Draht). Einstieg: „weiter mit N10".**
+
+
+
+**v2.51 (2026-08-05):** **Etappe N9b von Dieter am Handy geprüft und
+ABGENOMMEN.** Die Versionszeile zeigt „N9b · Plan 2.50 · 17 Module" mit allen
+acht neuen Kennungen; Endkraterabzug und Wärmeführung waren bedienbar und
+lieferten Ergebnisse. **Ein Punkt blieb offen und wurde zum Anlass für N9c:**
+Beim ersten Ausprobieren der Wärmeführung ohne Beispiel erschien eine rote
+Meldung. Nachgestellt ergab sich, dass die häufigste Ursache eine
+**unvollständige Analyse** ist — und dass die Meldung dann den Stahl
+beschuldigte („CET außerhalb des Geltungsbereichs"), statt die fehlende
+Eingabe zu benennen. **Code unverändert, `Codestand` bleibt 2.50.**
+
+**v2.52 (2026-08-05):** **Etappe N9c gebaut und geliefert — vierzehn Beispiele,
+und die geometrische Lasteingabe repariert.** Alle Beispiele tragen jetzt
+Wärmeführungsdaten; bei den zwölf alten ohne zugeschalteten Bereich, damit die
+in N7 gemessenen Ausnutzungen unverändert bleiben. **Zwei neue Beispiele mit
+Feinkornstahl** (S420 und S460) schließen drei nie berührte Rechenpfade — das
+**vereinfachte Verfahren**, die **geometrische Lasteingabe** und das
+**Winkelprofil** — und sind die einzigen, bei denen die t8/5-Ampel grün werden
+kann. **Der Hauptfund:** Die geometrische Lasteingabe war **seit N3 tot** — die
+Umrechnung stand im Solver, wurde aber nie aufgerufen; wer „Kraft und Hebelarm"
+wählte, bekam „keine Last". Gefunden beim Versuch, ein Beispiel dafür zu bauen,
+also zum dritten Mal nach demselben Muster. Repariert samt neuer Auswahlgruppe
+**`kraftrichtung`** (ohne Voreinstellung, mit eigener Skizze), und die
+Rechenweg-Probe prüft jetzt gegen das, womit gerechnet wurde, statt gegen leere
+Eingabefelder. Dazu die irreführende Meldung bei unvollständiger Analyse und
+das neue Feld `d_komb` für Fälle, in denen das Gegenstück nicht im statischen
+Modell steht. Geändert: `solver.js`, `rechenweg.js`, `optionen.js`,
+`validate.js`, `i18n_kern.js`, `i18n_hilfe.js`, `skizze.js`, `assistent.js`,
+`thermik.js`, `ui.js`, `test_naht.js`, `dom_smoke_voll.js`.
+**Basislinie 2005 → 2107 Assertions · Smokes 748/749 → 762/763 · i18n-Parität 0.**
+**Codestand 2.50 → 2.52** (`ui` 0.11.0 → 0.12.0, Etappe N9b → N9c).
+**Nächster Schritt: N9c am Handy abnehmen, dann Baustein N10.**
 
 
 ═══════════════════════════════════════════════════════════════════════════

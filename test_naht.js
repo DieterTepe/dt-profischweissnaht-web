@@ -214,7 +214,7 @@ ok(codes(rMax.warnungen).indexOf('msg_a_max') >= 0, 'a > 0,7*t_min wird als Warn
    Geprueft wird hier beides: dass das Feld weg ist UND dass die Pruefung
    noch greift. ----------------------------------------------------------- */
 ok(Valid.feld('l') === null, 'Feld l ist aus dem Schema entfernt (Nahtlaenge kommt aus der Geometrie)');
-eq(Valid.SCHEMA.length, 46, 'N9b: das Feldschema hat 46 Felder — 18 kamen mit der Waermefuehrung dazu');
+eq(Valid.SCHEMA.length, 47, 'N9c: das Feldschema hat 47 Felder — 19 kamen mit der Waermefuehrung dazu');
 
 function laengenFall(b, a) {
   var r = Solver.rechne({
@@ -1997,7 +1997,7 @@ var s30Gebaut = 0;
 for (s30i = 0; s30i < Ui2.ZUORDNUNG.length; s30i++) {
   if (!Ui2.ZUORDNUNG[s30i].etappe) s30Gebaut += Ui2.ZUORDNUNG[s30i].gruppen.length;
 }
-eq(s30Gebaut, 26, 'N6b: alle 26 Gruppen werden gebaut — keine ist datiert (ist ' + s30Gebaut + ')');
+eq(s30Gebaut, 27, 'N6b: alle 27 Gruppen werden gebaut — keine ist datiert (ist ' + s30Gebaut + ')');
 
 /* --- Zusatzbereiche stimmen mit optionen.js ueberein -------------------- */
 var s30Zus = [], s30ZusOpt = [];
@@ -2180,14 +2180,17 @@ var S31_SOLL = {
   rhs_b:     { n_seg: 4,  l: 328,   eta: 0.686 },
   rohr_b:    { n_seg: 1,  l: 359.1, eta: 0.540 },
   bolzen_b:  { n_seg: 1,  l: 188.5, eta: 0.846, a_erf: 3.356, a_gewaehlt: 4 },
-  stoss_b:   { n_seg: 1,  l: 126,   eta: 0.703 }
+  stoss_b:   { n_seg: 1,  l: 126,   eta: 0.703 },
+  /* N9c — die beiden mit Feinkornstahl und zugeschalteter Waermefuehrung. */
+  winkel_v:  { n_seg: 6,  l: 400,   eta: 0.756 },
+  kragarm_b: { n_seg: 4,  l: 500,   eta: 0.707 }
 };
 
 /* Aus drei sind mit N7 zwoelf geworden — sechs je Bemessungswelt. Die Zahl
    steht hier NICHT mehr fest verdrahtet, sondern wird gegen die Aufteilung
    geprueft: eine festgeschriebene Zahl war schon einmal der Grund, warum
    eine Assertion gruen meldete und trotzdem nichts pruefte (Plan 3.6, v2.36). */
-eq(Options.BEISPIELE.length, 12, 'N7: es gibt zwoelf Beispiele');
+eq(Options.BEISPIELE.length, 14, 'N9c: es gibt vierzehn Beispiele — zwei kamen mit der Waermefuehrung dazu');
 ok(typeof Options.beispiel === 'function', 'N5c-1: und einen benannten Zugriff darauf');
 ok(Options.beispiel('gibtesnicht') === null,
    'N5c-1: ein unbekanntes Beispiel liefert null, keinen Notbehelf');
@@ -2202,6 +2205,9 @@ for (s31i = 0; s31i < Options.BEISPIELE.length; s31i++) {
     var unbekannt = [];
     for (var g in bsp.auswahl) {
       if (!Object.prototype.hasOwnProperty.call(bsp.auswahl, g)) continue;
+      /* Die Freischalt-Haken der Zusatzbereiche sind keine Auswahlgruppen
+         (N9c). Sie stehen im Zustand, weil ui.js sie dort fuehrt. */
+      if (/_aktiv$/.test(g)) continue;
       var gr = Options.gruppe(g);
       if (!gr) { unbekannt.push(g); continue; }
       var da = false;
@@ -3033,7 +3039,7 @@ eq(s37Doppelt.length, 0,
    'N6b: und KEINE hat zusaetzlich einen eigenen Text — sonst stuenden die Namen zweimal da');
 eq(Options.gruppe('sym_grund').optionen.length, 23, 'N6b: 23 Symbole zur Wahl');
 eq(Options.gruppe('sym_gegen').optionen.length, 23, 'N6b: die Gegenseite bietet dieselben an');
-eq(Options.GRUPPEN.length, 26, 'N9b: 26 Auswahlgruppen insgesamt');
+eq(Options.GRUPPEN.length, 27, 'N9c: 27 Auswahlgruppen insgesamt');
 var s37Rechen = [];
 for (s37i = 0; s37i < Options.GRUPPEN.length; s37i++) {
   if (Options.GRUPPEN[s37i].code.indexOf('sym_') === 0 && Options.GRUPPEN[s37i].rechenwirksam !== false) {
@@ -3104,8 +3110,8 @@ for (s38i = 0; s38i < s38O.BEISPIELE.length; s38i++) {
   if (s38O.BEISPIELE[s38i].auswahl.welt === 'A') s38A++;
   if (s38O.BEISPIELE[s38i].auswahl.welt === 'B') s38Bz++;
 }
-eq(s38A, 6, 'N7: sechs Beispiele in Welt A');
-eq(s38Bz, 6, 'N7: sechs Beispiele in Welt B');
+eq(s38A, 7, 'N9c: sieben Beispiele in Welt A');
+eq(s38Bz, 7, 'N9c: sieben Beispiele in Welt B');
 eq(s38A + s38Bz, s38O.BEISPIELE.length, 'N7: und keins ohne Welt');
 
 /* Kein Merkmal darf doppeln, was ohnehin in der Auswahl steht — sonst gaebe
@@ -3249,16 +3255,16 @@ ok(s38Kehl.grenzen.a_grenzen_gelten === true, 'N7 Befund 2: bei der Kehlnaht ebe
 
 /* --- 7) Die kontextbezogene Beispielliste (Plan 3.2) -------------------- */
 ok(typeof s38O.beispieleFuer === 'function', 'N7: es gibt eine kontextbezogene Beispielliste');
-eq(s38O.beispieleFuer({}).length, 12, 'N7: ohne Auswahl stehen alle zwoelf da');
-eq(s38O.beispieleFuer({ welt: 'A' }).length, 6, 'N7: Welt A filtert auf sechs');
-eq(s38O.beispieleFuer({ welt: 'B' }).length, 6, 'N7: Welt B ebenso');
+eq(s38O.beispieleFuer({}).length, 14, 'N9c: ohne Auswahl stehen alle vierzehn da');
+eq(s38O.beispieleFuer({ welt: 'A' }).length, 7, 'N9c: Welt A filtert auf sieben');
+eq(s38O.beispieleFuer({ welt: 'B' }).length, 7, 'N9c: Welt B ebenso');
 var s38F = s38O.beispieleFuer({ welt: 'A', nahtart: 'stumpf_v' });
 eq(s38F.length, 1, 'N7: Welt A mit Stumpfnaht laesst genau eines uebrig');
 eq(s38F[0].code, 'stoss', 'N7: und zwar den Blechstoss');
 /* KEINE SACKGASSE (Plan 3.2 und 3.4): passt nichts, werden alle gezeigt. */
-eq(s38O.beispieleFuer({ werkstoffgruppe: 'alu' }).length, 12,
+eq(s38O.beispieleFuer({ werkstoffgruppe: 'alu' }).length, 14,
    'N7: passt nichts, stehen wieder alle da — eine leere Liste waere eine Sackgasse');
-eq(s38O.beispieleFuer({ welt: 'A', werkstoffgruppe: 'alu' }).length, 12,
+eq(s38O.beispieleFuer({ welt: 'A', werkstoffgruppe: 'alu' }).length, 14,
    'N7: auch bei einer Kombination, die es nicht gibt');
 /* Jeder Filterschluessel ist wirklich eine Auswahlgruppe. */
 var s38FK = [];
@@ -3564,7 +3570,7 @@ var s40i, s40j, s40k;
 /* --- 1) Aufbau und Grenzen des Moduls ---------------------------------- */
 ok(typeof Assi === 'object' && Assi !== null, 'S40: assistent.js laedt');
 eq(Assi.NAME, 'assistent', 'S40: es nennt sich beim Namen');
-ok(/^0\.\d+\.\d+-N[89][ab]?$/.test(Assi.VERSION), 'S40: und traegt eine Kennung (' + Assi.VERSION + ')');
+ok(/^\d+\.\d+\.\d+-N\w+$/.test(Assi.VERSION), 'S40: und traegt eine Kennung (' + Assi.VERSION + ')');
 var s40Fn = ['starte', 'schritt', 'schritte', 'anzahl', 'antworte', 'zurueck',
              'springe', 'ueberspringe', 'fertig', 'ergebnis', 'offen', 'fortschritt'];
 for (s40i = 0; s40i < s40Fn.length; s40i++) {
@@ -3685,7 +3691,14 @@ function s40Durchlauf(bsp) {
       }
       s = Assi.antworte(s, wert);
     } else if (sch.art === 'zusatz') {
-      s = Assi.antworte(s, {});
+      /* Die Freischalt-Haken kommen aus dem Beispiel — seit N9c bringen
+         zwei Beispiele die Waermefuehrung mit. */
+      wert = {};
+      for (i = 0; i < sch.bereiche.length; i++) {
+        wert[sch.bereiche[i].code] =
+          bsp.auswahl[sch.bereiche[i].code + '_aktiv'] === true;
+      }
+      s = Assi.antworte(s, wert);
     } else {
       s = Assi.ueberspringe(s);
     }
@@ -3822,7 +3835,7 @@ sek('S41 · N8b-1 Dialogskizzen — zeichnen, was erklaert');
 var s41i, s41j;
 
 eq(Skizze.NAME, 'skizze', 'S41: skizze.js nennt sich beim Namen');
-ok(/^0\.\d+\.\d+-N[89]b$/.test(Skizze.VERSION), 'S41: und traegt eine Kennung (' + Skizze.VERSION + ')');
+ok(/^\d+\.\d+\.\d+-N\w+$/.test(Skizze.VERSION), 'S41: und traegt eine Kennung (' + Skizze.VERSION + ')');
 
 /* --- 1) Jede Option jeder bedienten Gruppe wird gezeichnet -------------- */
 var s41Fehl = [], s41N = 0;
@@ -4103,23 +4116,23 @@ function s43Summe(text) {
    ZWEI Etappen gilt die Regel dagegen streng: geaenderter Quelltext ohne
    Kennungswechsel ist rot. */
 var S43_STAND = [
-  { datei: 'i18n_kern.js', version: '0.3.0-N9b', summe: '2f7809be' },
-  { datei: 'i18n_hilfe.js', version: '0.2.0-N9b', summe: '1a4ad1af' },
+  { datei: 'i18n_kern.js', version: '0.4.0-N9c', summe: '83632b2d' },
+  { datei: 'i18n_hilfe.js', version: '0.3.0-N9c', summe: 'e2a7a98f' },
   { datei: 'i18n_kerbfall.js', version: '0.1.0-N1', summe: '64438e87' },
   { datei: 'daten.js', version: '0.1.0-N1', summe: '4f0ba1bd' },
-  { datei: 'optionen.js', version: '0.2.0-N9b', summe: '19b719b1' },
-  { datei: 'validate.js', version: '0.3.0-N9b', summe: 'f3c402cd' },
+  { datei: 'optionen.js', version: '0.3.0-N9c', summe: 'de6d065c' },
+  { datei: 'validate.js', version: '0.4.0-N9c', summe: '6a775ade' },
   { datei: 'naht.js', version: '0.1.0-N2', summe: 'c0284f44' },
   { datei: 'profil.js', version: '0.1.0-N2b', summe: 'e31a9ce3' },
   { datei: 'svglib.js', version: '0.1.0-N2c', summe: 'b50173d8' },
   { datei: 'schaubild.js', version: '0.1.0-N2c', summe: 'bfdb51b8' },
-  { datei: 'solver.js', version: '0.2.0-N7', summe: 'e8baa119' },
-  { datei: 'rechenweg.js', version: '0.2.0-N7', summe: '3ee50905' },
+  { datei: 'solver.js', version: '0.3.0-N9c', summe: 'fb165a88' },
+  { datei: 'rechenweg.js', version: '0.3.0-N9c', summe: '3ce822c5' },
   { datei: 'symbol.js', version: '0.1.0-N6b', summe: '9e1cac0f' },
-  { datei: 'thermik.js', version: '0.2.0-N9b', summe: '93598ef5' },
-  { datei: 'skizze.js', version: '0.2.0-N9b', summe: 'f015fa89' },
-  { datei: 'assistent.js', version: '0.3.0-N9b', summe: '634a0304' },
-  { datei: 'ui.js', version: '0.11.0', summe: '29a758bc' }
+  { datei: 'thermik.js', version: '0.3.0-N9c', summe: '1bf966a2' },
+  { datei: 'skizze.js', version: '0.3.0-N9c', summe: '447c40cd' },
+  { datei: 'assistent.js', version: '0.4.0-N9c', summe: '1bfc4bb8' },
+  { datei: 'ui.js', version: '0.12.0', summe: 'c0d8515c' }
 ];
 
 var s43i, s43Fehl = [], s43Src, s43M, s43S;
@@ -4163,10 +4176,10 @@ ok(s43Summe('') === s43Summe(''), 'S43: und ist bestimmt');
 
 /* DIE VIER KORRIGIERTEN KENNUNGEN — festgehalten, damit der Rueckfall
    auffiele. Sie waren der Anlass fuer diese Sektion. */
-ok(require('./solver.js').VERSION.indexOf('N7') > 0, 'S43: solver.js traegt seine N7-Kennung');
-ok(require('./rechenweg.js').VERSION.indexOf('N7') > 0, 'S43: rechenweg.js ebenso');
-ok(require('./validate.js').VERSION.indexOf('N9b') > 0, 'S43: validate.js traegt seine N9b-Kennung');
-ok(require('./assistent.js').VERSION.indexOf('N9b') > 0, 'S43: assistent.js traegt seine N9b-Kennung');
+ok(/-N\w+$/.test(require('./solver.js').VERSION), 'S43: solver.js traegt eine Etappenkennung');
+ok(/-N\w+$/.test(require('./rechenweg.js').VERSION), 'S43: rechenweg.js ebenso');
+ok(/-N\w+$/.test(require('./validate.js').VERSION), 'S43: validate.js ebenso');
+ok(/-N\w+$/.test(require('./assistent.js').VERSION), 'S43: assistent.js ebenso');
 
 sek('S44 · N9a Waermefuehrung — Vorwaermung und Abkuehlzeit nach EN 1011-2');
 
@@ -4177,7 +4190,7 @@ sek('S44 · N9a Waermefuehrung — Vorwaermung und Abkuehlzeit nach EN 1011-2');
 var s44i;
 
 eq(Therm.NAME, 'thermik', 'S44: thermik.js nennt sich beim Namen');
-ok(/^0\.\d+\.\d+-N9[ab]$/.test(Therm.VERSION), 'S44: und traegt eine N9-Kennung (' + Therm.VERSION + ')');
+ok(/^\d+\.\d+\.\d+-N9\w*$/.test(Therm.VERSION), 'S44: und traegt eine N9-Kennung (' + Therm.VERSION + ')');
 var s44Src = fsU.readFileSync(__dirname + '/thermik.js', 'utf8');
 ok(s44Src.indexOf('document') < 0 && s44Src.indexOf('window') < 0,
    'S44: N9a ist DOM-frei — die Oberflaeche kommt mit N9b');
@@ -4450,7 +4463,7 @@ var s45TF = [];
 for (s45i = 0; s45i < Valid.SCHEMA.length; s45i++) {
   if (Valid.SCHEMA[s45i].bereich === 'thermik') s45TF.push(Valid.SCHEMA[s45i].code);
 }
-eq(s45TF.length, 18, 'S45: achtzehn Felder gehoeren zur Waermefuehrung');
+eq(s45TF.length, 19, 'S45: neunzehn Felder gehoeren zur Waermefuehrung');
 /* Sie sind NUR Pflicht, wenn der Bereich zugeschaltet ist — sonst stuende
    ein Laie vor einer Schmelzenanalyse, die er gar nicht braucht. */
 var s45Pf = [], s45PfAus = [];

@@ -12,7 +12,7 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.3.0-N9b';
+  var VERSION = '0.4.0-N9c';
   var SPRACHEN = ['de', 'en', 'pt'];
 
   var D = {
@@ -126,6 +126,12 @@
     bsp_stoss_b:  { de: 'Klassisch: Blechstoß 150×12, durchgeschweißt und geprüft, ruhend, Zug 170 kN',
                     en: 'Classic: plate butt joint 150×12, full penetration and inspected, static, tension 170 kN',
                     pt: 'Clássico: junta de topo 150×12, penetração total e inspecionada, estático, tração 170 kN' },
+    bsp_winkel_v: { de: 'Winkel 100×100×12 auf Platte, umlaufend, Zug 330 kN — vereinfachtes Verfahren, S420 mit Wärmeführung',
+                    en: 'Angle 100×100×12 on plate, all round, tension 330 kN — simplified method, S420 with thermal control',
+                    pt: 'Cantoneira 100×100×12 sobre chapa, contínuo, tração 330 kN — método simplificado, S420 com controlo térmico' },
+    bsp_kragarm_b:{ de: 'Klassisch: Kragarm RHS 100×150×8, Kraft 75 kN am Hebelarm 200 mm, schwellend, S460 mit Wärmeführung',
+                    en: 'Classic: cantilever RHS 100×150×8, force 75 kN at 200 mm lever, pulsating, S460 with thermal control',
+                    pt: 'Clássico: consola RHS 100×150×8, força 75 kN a 200 mm de braço, pulsante, S460 com controlo térmico' },
     uiBeispiel:   { de: 'Beispiel geladen. Vorher wurde alles geleert – es bleibt nichts aus einer früheren Rechnung stehen.',
                     en: 'Example loaded. Everything was cleared first – nothing remains from an earlier calculation.',
                     pt: 'Exemplo carregado. Tudo foi limpo antes – nada permanece de um cálculo anterior.' },
@@ -399,6 +405,7 @@
     fld_an_V:      { de: 'Vanadium V', en: 'Vanadium V', pt: 'Vanádio V' },
     fld_an_Cu:     { de: 'Kupfer Cu', en: 'Copper Cu', pt: 'Cobre Cu' },
     fld_an_Ni:     { de: 'Nickel Ni', en: 'Nickel Ni', pt: 'Níquel Ni' },
+    fld_d_komb:    { de: 'Kombinierte Dicke (eigener Wert)', en: 'Combined thickness (own value)', pt: 'Espessura combinada (valor próprio)' },
     fld_CET:       { de: 'CET (eigener Wert)', en: 'CET (own value)', pt: 'CET (valor próprio)' },
     fld_HD:        { de: 'Wasserstoffgehalt HD', en: 'Hydrogen content HD', pt: 'Teor de hidrogénio HD' },
     fld_sp_U:      { de: 'Schweißspannung U', en: 'Welding voltage U', pt: 'Tensão de soldadura U' },
@@ -430,6 +437,7 @@
     msg_th_ausserhalb_zielfenster:{ de: 'Die Abkühlzeit liegt außerhalb des Zielfensters. Zu kurz bedeutet Aufhärtung und Kaltrissgefahr, zu lang Verlust an Zähigkeit und Festigkeit.', en: 'The cooling time is outside the target window. Too short means hardening and cold-crack risk, too long means loss of toughness and strength.', pt: 'O tempo de arrefecimento está fora da janela alvo. Curto demais significa endurecimento e risco de fissuração a frio; longo demais, perda de tenacidade e resistência.' },
     msg_th_kein_fenster_unlegiert:{ de: 'Für unlegierte Baustähle führen die herangezogenen Quellen kein Zeitfenster — t8/5 ist dort in der Regel kein Thema. Der Wert wird gerechnet und gezeigt, aber nicht bewertet. Eine eigene Vorgabe können Sie eintragen.', en: 'For non-alloy structural steels the sources used give no time window — t8/5 is usually not an issue there. The value is calculated and shown but not judged. You may enter your own limits.', pt: 'Para aços de construção não ligados as fontes usadas não indicam janela de tempo — aí o t8/5 geralmente não é questão. O valor é calculado e mostrado, mas não avaliado. Pode indicar os seus próprios limites.' },
     msg_th_kein_fenster_werkstoff:{ de: 'Für diesen Werkstoff liegt kein belegtes Zeitfenster vor. Bei vergüteten hochfesten Güten verweisen die Quellen ausdrücklich auf die Herstellerangabe.', en: 'No documented time window is available for this material. For quenched high-strength grades the sources explicitly refer to the maker\u2019s specification.', pt: 'Não há janela de tempo documentada para este material. Para aços temperados de alta resistência as fontes remetem expressamente para a indicação do fabricante.' },
+    msg_th_analyse_unvollstaendig:{ de: 'Die Schmelzenanalyse ist unvollständig: ohne Mangan wird das CET zu niedrig und liegt scheinbar außerhalb des Geltungsbereichs. Mangan ist nach dem Kohlenstoff der größte Beitrag — tragen Sie es aus dem Abnahmezeugnis nach, oder setzen Sie das CET direkt.', en: 'The ladle analysis is incomplete: without manganese the CET comes out too low and appears to fall outside the validity range. After carbon, manganese is the largest contributor — add it from the inspection certificate, or set the CET directly.', pt: 'A análise está incompleta: sem manganês o CET fica baixo demais e parece cair fora do domínio de validade. Depois do carbono, o manganês é a maior contribuição — acrescente-o a partir do certificado ou indique o CET diretamente.' },
     msg_th_nur_ferritisch:{ de: 'EN 1011-2 gilt für ferritische Stähle. Für nichtrostende Stähle und Aluminium gelten EN 1011-3 und EN 1011-4 mit anderen Regeln — dort ist Vorwärmung meist unerwünscht und t8/5 keine sinnvolle Größe. Es wird deshalb nicht gerechnet.', en: 'EN 1011-2 applies to ferritic steels. Stainless steels and aluminium follow EN 1011-3 and EN 1011-4 with different rules — there preheating is usually undesirable and t8/5 is not a meaningful quantity. No calculation is performed.', pt: 'A EN 1011-2 aplica-se a aços ferríticos. Aços inoxidáveis e alumínio seguem a EN 1011-3 e a EN 1011-4 com outras regras — aí o pré-aquecimento é geralmente indesejável e o t8/5 não é uma grandeza útil. Não se calcula.' },
 
     /* Wärmeführung nach EN 1011-2 (N9a). */
@@ -903,6 +911,14 @@
     sv_anker_weltb:      { de: 'Welt B, S235: σ_zul = 0,95 · 240/1,1 = 207 N/mm²', en: 'World B, S235: σ_perm = 0.95 · 240/1.1 = 207 N/mm²', pt: 'Método B, S235: σ_adm = 0,95 · 240/1,1 = 207 N/mm²' },
 
     /* --- Auswahlgruppe: Aufrundung des a-Maßes (2.3, bindend) ------------ */
+    /* --- Auswahlgruppe: Kraftrichtung (N9c) ------------------------------ */
+    grp_kraftrichtung:            { de: 'Richtung der Kraft', en: 'Direction of the force', pt: 'Direção da força' },
+    opt_kraftrichtung_laengs:     { de: 'Längs zur Naht (Zug/Druck + Biegung)', en: 'Along the weld (tension/compression + bending)', pt: 'Ao longo do cordão (tração/compressão + flexão)' },
+    opt_kraftrichtung_quer:       { de: 'Quer zur Naht (Querkraft + Biegung)', en: 'Across the weld (shear + bending)', pt: 'Transversal ao cordão (esforço transverso + flexão)' },
+    opt_kraftrichtung_torsion:    { de: 'Um die Naht herum (Torsion)', en: 'Around the weld (torsion)', pt: 'Em torno do cordão (torção)' },
+    msg_sv_lasten_aus_geometrie:  { de: 'Die Schnittgrößen wurden aus Kraft und Hebelarm gerechnet, nicht eingegeben.', en: 'The section forces were calculated from force and lever arm, not entered.', pt: 'Os esforços foram calculados a partir da força e do braço, não introduzidos.' },
+    skz_kraftrichtung:            { de: 'Angriffsrichtung der Kraft', en: 'Direction of the applied force', pt: 'Direção de aplicação da força' },
+
     /* --- Auswahlgruppe: Endkraterabzug (N9b) ----------------------------- */
     grp_endkrater:                { de: 'Endkraterabzug', en: 'End crater deduction', pt: 'Dedução de cratera final' },
     opt_endkrater_abzug:          { de: 'Abziehen (2·a je offenem Nahtzug)', en: 'Deduct (2·a per open weld run)', pt: 'Deduzir (2·a por cordão aberto)' },

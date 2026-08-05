@@ -49,7 +49,7 @@
 }(typeof self !== 'undefined' ? self : this, function (Naht, Profil, Solver, Kern) {
   'use strict';
 
-  var VERSION = '0.2.0-N7';
+  var VERSION = '0.3.0-N9c';
 
   /* Toleranz der Proben. Grosszuegig genug fuer Gleitkomma-Rundung,
      eng genug, dass eine verfaelschte Zahl auffaellt. */
@@ -413,11 +413,22 @@
     S.ab('rw_ab_schnittgroessen');
 
     /* Probe: die Schnittgroessen im Ergebnis muessen genau das sein, was
-       eingegeben wurde — Kraefte unveraendert, Momente mit 1000. */
+       eingegeben wurde — Kraefte unveraendert, Momente mit 1000.
+       BEI DER GEOMETRISCHEN LASTEINGABE wurden sie aber gar nicht
+       eingegeben, sondern aus Kraft und Hebelarm GERECHNET (N9c). Die
+       Probe darf dann nicht gegen leere Felder pruefen — sie prueft gegen
+       die Umrechnung selbst, also gegen dieselbe Quelle, aus der auch die
+       Anzeige kommt. Dasselbe Prinzip wie beim Nahtbild in N7: geprueft
+       wird gegen das, WOMIT gerechnet wurde. */
+    var geoLast = (ein.lasteingabe === 'geometrisch');
     function ausEingabe(lang, kurz) {
+      if (geoLast) return null;             /* kein Vergleich gegen leere Felder */
       var a = istZahl(ein[lang]) ? ein[lang] : null;
       var b = (kurz && istZahl(ein[kurz])) ? ein[kurz] : null;
       return (a !== null) ? a : (b !== null ? b : 0);
+    }
+    function lastProbe(ist, soll, tol) {
+      return (soll === null) ? null : nahe(ist, soll, tol);
     }
     S.add({ code: 'rw_s_lasten',
             formel: 'N ; Q_y ; Q_z',
@@ -425,9 +436,11 @@
             werte: [{ v: L.N, nk: 0 }, { v: L.Qy, nk: 0 }, { v: L.Qz, nk: 0 }],
             quelle: 'qu_eingabe',
             probe: 'rw_p_grenze',
-            haken: nahe(L.N, ausEingabe('N', null), 1e-12) &&
-                   nahe(L.Qy, ausEingabe('Qy', null), 1e-12) &&
-                   nahe(L.Qz, ausEingabe('Qz', 'Q'), 1e-12),
+            haken: geoLast ? null
+                 : (nahe(L.N, ausEingabe('N', null), 1e-12) &&
+                    nahe(L.Qy, ausEingabe('Qy', null), 1e-12) &&
+                    nahe(L.Qz, ausEingabe('Qz', 'Q'), 1e-12)),
+            hinweis2: geoLast ? 'msg_sv_lasten_aus_geometrie' : null,
             hinweis: (L.Qy || L.Qz) ? 'msg_sv_querkraft_mittelwert' : null });
 
     S.add({ code: 'rw_s_lasten_umrechnung',
@@ -436,9 +449,10 @@
             werte: [{ v: L.My, nk: 0 }, { v: L.Mz, nk: 0 }, { v: L.T, nk: 0 }],
             quelle: 'qu_eingabe',
             probe: 'rw_p_grenze',
-            haken: nahe(L.My, 1000 * ausEingabe('My', 'M'), 1e-9) &&
-                   nahe(L.Mz, 1000 * ausEingabe('Mz', null), 1e-9) &&
-                   nahe(L.T, 1000 * ausEingabe('T', null), 1e-9) });
+            haken: geoLast ? null
+                 : (nahe(L.My, 1000 * ausEingabe('My', 'M'), 1e-9) &&
+                    nahe(L.Mz, 1000 * ausEingabe('Mz', null), 1e-9) &&
+                    nahe(L.T, 1000 * ausEingabe('T', null), 1e-9)) });
 
     /* ================= D · Spannungen ================================== */
     S.ab('rw_ab_spannungen');

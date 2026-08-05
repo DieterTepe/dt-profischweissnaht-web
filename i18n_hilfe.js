@@ -14,7 +14,7 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.2.0-N9b';
+  var VERSION = '0.3.0-N9c';
   var SPRACHEN = ['de', 'en', 'pt'];
   var FELDER = ['was', 'bereich', 'tipp'];
 
@@ -736,6 +736,18 @@
             bereich: 'Aços não ligados abaixo de 0,3 %, aços de grão fino mais.',
             tipp: 'Em S460N o níquel pode contribuir sensivelmente para o CET.' }
     },
+    fld_d_komb: {
+      de: { was: 'Die Summe der Blechdicken, die im Nahtbereich zusammenlaufen. Normalerweise rechnet das Programm sie aus Stoßart und Blechdicken.',
+            bereich: 'Methode B gilt von 10 bis 90 mm. Stumpfstoß zählt zwei Wege, T-Stoß drei, Kreuzstoß vier.',
+            tipp: 'Nur eintragen, wenn das Gegenstück nicht im Modell steht – etwa ein Bolzen auf einer Grundplatte oder ein T-Stoß auf einem viel dickeren Fundament.' },
+      en: { was: 'The sum of the plate thicknesses meeting at the weld. Normally the program computes it from the joint type and the plate thicknesses.',
+            bereich: 'Method B is valid from 10 to 90 mm. A butt joint counts two paths, a T-joint three, a cruciform four.',
+            tipp: 'Enter it only when the counterpart is not in the model – e.g. a pin on a base plate, or a T-joint on a much thicker foundation.' },
+      pt: { was: 'A soma das espessuras que convergem no cordão. Normalmente o programa calcula-a a partir do tipo de junta e das espessuras.',
+            bereich: 'O Método B é válido de 10 a 90 mm. Junta de topo conta dois caminhos, junta em T três, cruciforme quatro.',
+            tipp: 'Indique-o só quando a contraparte não está no modelo – p. ex. uma cavilha sobre uma chapa base, ou uma junta em T sobre uma fundação bem mais espessa.' }
+    },
+
     fld_CET: {
       de: { was: 'Das Kohlenstoffäquivalent, mit dem die Vorwärmung gerechnet wird. Normalerweise rechnet das Programm es aus der Analyse.',
             bereich: 'Methode B gilt von 0,20 bis 0,50 %.',
@@ -846,6 +858,18 @@
             bereich: 'Cordão sobre chapa 1,0 · topo 0,9 · filete em canto 0,67 · filete em T 0,67 a 0,9.',
             tipp: 'Predefinição 1,0. Como o F₂, use valor menor em filetes.' }
     },
+    grp_kraftrichtung: {
+      de: { was: 'Wohin die Kraft zeigt, die Sie eingegeben haben. Daraus rechnet das Programm die Schnittgrößen an der Naht — die Richtung entscheidet, ob Zug, Querkraft oder Torsion entsteht.',
+            bereich: 'Längs gibt Normalkraft und Biegung, quer gibt Querkraft und Biegung, Torsion gibt ein Torsionsmoment. Der Hebelarm wirkt in allen drei Fällen.',
+            tipp: 'Bei einer Konsole oder einem Kragarm ist es fast immer quer: die Last hängt nach unten, die Naht steht senkrecht dazu.' },
+      en: { was: 'Where the force you entered points. From this the program computes the section forces at the weld — the direction decides whether tension, shear or torsion arises.',
+            bereich: 'Along gives axial force and bending, across gives shear and bending, torsion gives a torsional moment. The lever arm acts in all three cases.',
+            tipp: 'For a bracket or cantilever it is almost always across: the load hangs downwards, the weld stands perpendicular to it.' },
+      pt: { was: 'Para onde aponta a força que introduziu. A partir daí o programa calcula os esforços no cordão — a direção decide se surge tração, esforço transverso ou torção.',
+            bereich: 'Longitudinal dá força axial e flexão, transversal dá esforço transverso e flexão, torção dá um momento torsor. O braço atua nos três casos.',
+            tipp: 'Numa consola ou viga em balanço é quase sempre transversal: a carga desce e o cordão fica perpendicular.' }
+    },
+
     grp_endkrater: {
       de: { was: 'Am Anfang und Ende einer offenen Naht ist die Schweißqualität schlechter – der Lichtbogen wird gezündet und wieder abgesetzt. Deshalb wird an jedem freien Ende die Länge a abgezogen, zusammen 2·a je Nahtzug.',
             bereich: 'Voreinstellung ist der Abzug. Bei umlaufenden Nähten gibt es keine freien Enden, dort ändert die Einstellung nichts.',

@@ -39,7 +39,7 @@
   'use strict';
 
   var NAME = 'assistent';
-  var VERSION = '0.3.0-N9b';
+  var VERSION = '0.4.0-N9c';
 
   /* Die Bereiche, in denen Eingabefelder gebuendelt werden. Die Reihenfolge
      ist die Reihenfolge im Dialog. Welches Feld in welchen Bereich gehoert,
@@ -76,6 +76,7 @@
     rechenrichtung: 'skizze',
     lasteingabe:    'skizze',
     endkrater:      'skizze',
+    kraftrichtung:  'skizze',
     nahtart:        'symbol',
     profil:         'schaubild',
     kanten:         'schaubild',

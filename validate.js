@@ -19,7 +19,7 @@
 }(typeof self !== 'undefined' ? self : this, function (Data, Options) {
   'use strict';
 
-  var VERSION = '0.3.0-N9b';
+  var VERSION = '0.4.0-N9c';
 
   /* --------------------------------------------------------------------- */
   /* Feldschema — eine Quelle fuer Formular, Assistent und Pruefung         */
@@ -146,6 +146,7 @@
     { code: 'an_V',  bereich: 'thermik', typ: 'zahl', einheit: 'unit_prozent', min: 0, max: 1, dez: 3, label: 'fld_an_V',  hilfe: 'fld_an_V',  pflicht: false },
     { code: 'an_Cu', bereich: 'thermik', typ: 'zahl', einheit: 'unit_prozent', min: 0, max: 2, dez: 3, label: 'fld_an_Cu', hilfe: 'fld_an_Cu', pflicht: false },
     { code: 'an_Ni', bereich: 'thermik', typ: 'zahl', einheit: 'unit_prozent', min: 0, max: 5, dez: 3, label: 'fld_an_Ni', hilfe: 'fld_an_Ni', pflicht: false },
+    { code: 'd_komb', bereich: 'thermik', typ: 'zahl', einheit: 'unit_mm', min: 5, max: 200, dez: 0, label: 'fld_d_komb', hilfe: 'fld_d_komb', pflicht: false, ueberschreibbar: true },
     { code: 'CET',   bereich: 'thermik', typ: 'zahl', einheit: 'unit_prozent', min: 0.10, max: 0.80, dez: 3, label: 'fld_CET', hilfe: 'fld_CET', pflicht: false, ueberschreibbar: true },
     { code: 'HD',    bereich: 'thermik', typ: 'zahl', einheit: 'unit_ml100g', min: 0.5, max: 30, dez: 1, label: 'fld_HD', hilfe: 'fld_HD', standard: 5, ueberschreibbar: true,
       pflicht_wenn: { thermik_aktiv: [true] } },
