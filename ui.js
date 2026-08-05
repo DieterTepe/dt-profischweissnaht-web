@@ -35,12 +35,12 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.12.0';
+  var VERSION = '0.12.1';
   var ETAPPE = 'N9c';
   /* Plan-Version, die zu diesem Stand gehoert. Sie ist die EINZIGE von Hand
      gepflegte Zahl der Versionszeile — alles andere kommt aus den geladenen
      Modulen selbst (Plan 3.6). */
-  var PLAN = '2.52';
+  var PLAN = '2.53';
   var SPRACHEN = ['de', 'en', 'pt'];
 
   /* Plan 3.1 (bindend): die Oberflaeche startet IMMER im dunklen Design —
@@ -448,12 +448,20 @@
     }
 
     /* ------------------------------------------------------ Zusatzbereiche */
-    function baueZusatz(host) {
+    /* DIE HAKEN UEBERLEBEN DAS AUFFRISCHEN (N9c).
+       Vorher baute diese Funktion die Kaestchen bei JEDEM aktualisiere()
+       neu — und immer leer. Wer die Waermefuehrung anhakte und danach
+       irgendeine Auswahl aenderte, verlor den Haken wieder, ohne dass es
+       jemand sagte. Der Stand wird deshalb aus dem Zustand uebernommen,
+       der VOR dem Neubau gelesen wurde. */
+    function baueZusatz(host, stand) {
+      stand = stand || {};
       for (var i = 0; i < ZUSATZ.length; i++) {
         (function (z) {
           var lab = neu('label', 'zusatz-haken', 'zusl_' + z.code);
           var box = neu('input', null, 'zus_' + z.code);
           box.setAttribute('type', 'checkbox');
+          box.checked = (stand[z.code + '_aktiv'] === true);
           lab.appendChild(box);
           var t = neu('span', null, null);
           beschrifte(t, z.label);
@@ -462,7 +470,7 @@
 
           var note = neu('div', 'zusatz-note', 'zusn_' + z.code);
           beschrifte(note, z.folgt);
-          note.hidden = true;
+          note.hidden = !box.checked;
           host.appendChild(note);
 
           box.addEventListener('change', function () {
@@ -658,6 +666,29 @@
       }
       vorschlaegeAnwenden(z);
       symbolZeigen(z);
+
+      /* EIN BEREICH OHNE EINEN EINZIGEN SICHTBAREN INHALT WIRD AUSGEBLENDET
+         (N9c). Vorher stand die Waermefuehrung als offener Kasten mit
+         Erklaerung, aber ohne ein Feld da — auch wenn sie gar nicht
+         zugeschaltet war. Das sah aus wie ein leerer Bereich statt wie ein
+         nicht gewaehlter. Aufgefallen an Dieters Bildschirmfoto. */
+      for (i = 0; i < ZUORDNUNG.length; i++) {
+        b = ZUORDNUNG[i];
+        if (b.zusatz) continue;                 /* traegt die Haken selbst */
+        var kasten = el(doc, 'acc_' + b.code);
+        if (!kasten) continue;
+        var inhalt = 0;
+        for (j = 0; j < b.gruppen.length; j++) {
+          if (Options.gruppeAktiv(b.gruppen[j], z)) inhalt++;
+        }
+        for (j = 0; j < b.felder.length; j++) {
+          f = Valid.feld(b.felder[j]);
+          if (f && feldSichtbar(f, b, z)) inhalt++;
+        }
+        if (b.symbol || b.anforderung) inhalt++;  /* diese tragen eigenen Inhalt */
+        zeige(kasten, inhalt > 0);
+      }
+
       beispieleFuellen();   /* Plan 3.2: die Liste folgt der Auswahl */
       return z;
     }
@@ -864,6 +895,19 @@
     function formularSetzen(auswahl, werte) {
       if (!Options || !Valid) return false;
       var i, g, sel, k, f, ev, inp;
+
+      /* DIE FREISCHALT-HAKEN ZUERST (N9c). Sie stehen im Zustand, sind aber
+         KEINE Auswahlgruppen — die Schleife unten wuerde sie schlicht
+         uebergehen. Genau das ist passiert: das Beispiel winkel_v brachte
+         `thermik_aktiv: true` mit, der Haken blieb leer und der Bereich
+         blieb ohne Felder. Und sie muessen VOR den Gruppen gesetzt werden,
+         weil davon abhaengt, welche Felder ueberhaupt Pflicht sind. */
+      for (i = 0; i < (Options.ZUSATZBEREICHE || []).length; i++) {
+        var zc = Options.ZUSATZBEREICHE[i].code;
+        if (!auswahl || !Object.prototype.hasOwnProperty.call(auswahl, zc + '_aktiv')) continue;
+        var zb = el(doc, 'zus_' + zc);
+        if (zb) zb.checked = (auswahl[zc + '_aktiv'] === true);
+      }
 
       /* Die Gruppen in ihrer eigenen Reihenfolge setzen: sie ist zugleich die
          Abhaengigkeitsreihenfolge (erst stossart, dann nahtart …). Nach jeder
@@ -2220,6 +2264,8 @@
       assistAbbrechen: assistAbbrechen,
       assistOffen: assistOffen,
       letztesErgebnis: function () { return S.letztesErgebnis || null; },
+      /* N9c — das Waermefuehrungsergebnis von aussen, fuer den DOM-Smoke. */
+      letzteThermik: function () { return S.letzteThermik || null; },
       assistFortschritt: function () {
         var A = assiModul();
         return (A && S.assi) ? A.fortschritt(S.assi) : null;

@@ -2046,3 +2046,37 @@ Dünnwand-Warnung auslöste. Beides hat die Messung gefunden, nicht das Auge.
 **Basislinie 2005 → 2107 Assertions · Smokes 748/749 → 762/763.**
 **Codestand 2.50 → 2.52.**
 **Nächster Schritt: N9c abnehmen, dann N10 (Kosten, Zeit, Draht).**
+
+
+**v2.53 (2026-08-05):** **Drei Fehler aus einem einzigen Bildschirmfoto.**
+
+Dieter lud `winkel_v` und schrieb: „nichts ist eingehakt und ausgerechnet". Dazu
+ein Foto. Es zeigte mehr als die Beschreibung: die Freischalt-Haken alle offen —
+**und den Bereich Vorwärmung & t8/5 trotzdem als offenen Kasten**.
+
+**Das zweite war der wertvollere Hinweis**, weil Dieter es gar nicht erwähnt
+hatte. Ein Bereich, der ohne einen einzigen sichtbaren Inhalt dasteht, sieht aus
+wie ein leerer Bereich statt wie ein nicht gewählter. Der Unterschied ist für
+den Anwender alles: Im ersten Fall sucht er den Fehler bei sich, im zweiten
+weiß er, dass er etwas anhaken muss.
+
+**Die eigentliche Ursache war eine Lücke im gemeinsamen Schreibweg.**
+`formularSetzen()` läuft über die Auswahlgruppen — und die Freischalt-Haken
+sind keine. Sie standen im Zustand, wurden aber von keiner der beiden
+Schleifen erfasst. Ausgerechnet die Funktion, die in N8b als *ein* Schreibweg
+für Beispiele und Assistent eingeführt wurde, hatte einen blinden Fleck.
+**Ein gemeinsamer Weg ist nur so gut wie sein vollständigster Fall.**
+
+**Der dritte Fehler kam beim Nachstellen ans Licht:** Den zwölf alten
+Beispielen fehlte das Schweißverfahren. Ohne das gibt es keinen Wirkungsgrad
+und damit kein Wärmeeinbringen — die Wärmeführung hätte auch bei gesetztem
+Haken nicht gerechnet. Gefunden nicht am Bildschirm, sondern beim
+Durchrechnen im Kleinen, nachdem der erste Fehler behoben war.
+
+**Zur Prüfkultur:** Der DOM-Smoke lief vorher grün, weil er die Haken selbst
+gesetzt hatte, statt ein Beispiel sie setzen zu lassen. Er prüfte damit den
+Weg, den ein Anwender nie geht. Jetzt lädt er `winkel_v` und prüft, was danach
+im Formular steht — die drei Punkte stehen namentlich drin.
+
+**Basislinie 2107 Assertions unverändert · Smokes 762/763 → 784/785.**
+**Codestand 2.52 → 2.53.**

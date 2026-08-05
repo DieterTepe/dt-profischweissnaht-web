@@ -742,6 +742,64 @@ function lauf(edition) {
   s.leeren();
   ok(d.byId.cardThermik.hidden === true, 'N9b: Leeren raeumt auch die Waermefuehrung weg');
 
+  /* ---- N9c · EIN BEISPIEL BRINGT DIE WAERMEFUEHRUNG MIT ----------------
+     Gefunden an Dieters Bildschirmfoto (2026-08-05): winkel_v trug
+     thermik_aktiv, der Haken blieb aber leer — die Freischalt-Haken sind
+     keine Auswahlgruppen und wurden von formularSetzen uebergangen. Und
+     der Bereich stand trotzdem offen da, ohne ein einziges Feld.        */
+  s.leeren();
+  ok(d.byId.acc_thermik.hidden === true,
+     'N9c: ohne zugeschaltete Waermefuehrung ist der ganze Bereich weg — nicht nur seine Felder');
+  s.beispielLaden('winkel_v');
+  ok(d.byId.zus_thermik.checked === true,
+     'N9c: das Beispiel setzt den Freischalt-Haken wirklich');
+  ok(d.byId.acc_thermik.hidden === false, 'N9c: und der Bereich erscheint');
+  ok(!istLeerW(d.byId.fld_an_Mn.value), 'N9c: die Analysefelder sind gefuellt');
+  ok(!istLeerW(d.byId.fld_sp_v.value), 'N9c: die Schweissparameter ebenso');
+  var wvErg = s.rechnen();
+  ok(wvErg && wvErg.ok === true, 'N9c: winkel_v rechnet — vereinfachtes Verfahren, Winkelprofil');
+  ok(d.byId.cardThermik.hidden === false, 'N9c: die Waermefuehrungskarte steht da');
+  ok(d.byId.thermikWeg.children.length > 5, 'N9c: mit vollstaendigem Rechenweg');
+  var wvTh = s.letzteThermik ? s.letzteThermik() : null;
+  ok(wvTh && wvTh.ok === true, 'N9c: und die Waermefuehrung rechnet durch');
+  ok(wvTh && wvTh.ampel === 'gruen',
+     'N9c: bei Feinkornstahl ist die t8/5-Ampel GRUEN (ist ' + (wvTh ? wvTh.ampel : '-') + ')');
+
+  /* Ein altes Beispiel bringt die Daten mit, aber ausgeschaltet. */
+  s.leeren();
+  s.beispielLaden('blech');
+  ok(d.byId.zus_thermik.checked === false, 'N9c: die alten Beispiele schalten die Waermefuehrung NICHT ein');
+  var blErg = s.rechnen();
+  ok(blErg && Math.abs(blErg.eta - 0.842) < 0.0005,
+     'N9c: und ihre Ausnutzung ist unveraendert 0,842 — die Waermefuehrung speist nichts zurueck');
+  d.byId.zus_thermik.checked = true;
+  s.aktualisiere();
+  ok(!istLeerW(d.byId.fld_an_Mn.value), 'N9c: die Daten waren trotzdem schon da');
+  s.rechnen();
+  var blTh = s.letzteThermik ? s.letzteThermik() : null;
+  ok(blTh && blTh.ok === true, 'N9c: und die Waermefuehrung rechnet sofort');
+  ok(blTh && blTh.ampel === 'grau',
+     'N9c: bei unlegiertem Baustahl bleibt die Ampel GRAU (ist ' + (blTh ? blTh.ampel : '-') + ')');
+
+  /* ---- N9c · GEOMETRISCHE LASTEINGABE ---------------------------------- */
+  s.leeren();
+  s.beispielLaden('kragarm_b');
+  ok(!!d.byId.sel_kraftrichtung, 'N9c: die Auswahl "Richtung der Kraft" steht im Formular');
+  ok(d.byId.sel_kraftrichtung.value === 'quer', 'N9c: und das Beispiel setzt sie');
+  ok(!istLeerW(d.byId.fld_F.value) && !istLeerW(d.byId.fld_e.value),
+     'N9c: eingegeben werden Kraft und Hebelarm');
+  var kbErg = s.rechnen();
+  ok(kbErg && kbErg.ok === true,
+     'N9c: und es RECHNET — die geometrische Lasteingabe war seit N3 tot');
+  ok(kbErg && kbErg.schnittgroessen.Qz === 75000,
+     'N9c: die Querkraft kommt aus der Kraft (ist ' + (kbErg ? kbErg.schnittgroessen.Qz : '-') + ' N)');
+  ok(kbErg && Math.abs(kbErg.schnittgroessen.My - 15000000) < 1,
+     'N9c: und das Moment aus Kraft mal Hebelarm (ist ' +
+     (kbErg ? kbErg.schnittgroessen.My / 1000 : '-') + ' Nm)');
+  ok(s.rechenweg() && s.rechenweg().selbstpruefung_ok === true,
+     'N9c: die Rechenproben gehen auf — sie pruefen gegen das, WOMIT gerechnet wurde');
+  s.leeren();
+
   /* ---- N9b · DER ENDKRATERABZUG AM BILDSCHIRM -------------------------- */
   s.beispielLaden('blech');
   var ekMit = s.rechnen();

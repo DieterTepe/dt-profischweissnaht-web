@@ -18,8 +18,8 @@
 > in 4.11 und in der Historie. Im Projektordner liegt **keine Vorlaufdatei** mehr.
 
 ```
-Plan-Version : 2.52 · Stand 2026-08-05
-Codestand    : Plan 2.52 · ui 0.12.0 · N9c
+Plan-Version : 2.53 · Stand 2026-08-05
+Codestand    : Plan 2.53 · ui 0.12.1 · N9c
                (Die Planversion, gegen die der CODE gebaut ist. Sie steht auch
                in ui.js als PLAN und wird von einer Assertion damit verglichen.
                Sie wandert nur mit, wenn sich Code ändert — reine Plan- oder
@@ -76,7 +76,7 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                  4.11 (symbol.js).
                Große Bausteine (N5, N8, N13, N14) werden in ETAPPEN gebaut — Regel in
                Kickoff-Punkt 5c, Etappen in Abschnitt 5.2.
-Basislinie   : 2107 Assertions · DOM-Smokes 762 (voll) + 763 (test) · i18n-Parität 0 Abweichungen
+Basislinie   : 2107 Assertions · DOM-Smokes 784 (voll) + 785 (test) · i18n-Parität 0 Abweichungen
                (VERBINDLICH. Basislinie darf nur WACHSEN — nie schrumpfen, nie gelockert werden.)
 Dateistand   : siehe Abschnitt 8.1 — dort steht, was fertig ist und was noch fehlt.
 ⚠️ SYNC       : Am 2026-08-03 lag im Projektordner eine **elf Versionen alte**
@@ -165,7 +165,7 @@ Einstiegssatz von Dieter: **„weiter mit N10"**.
    schon zweimal Dateien verlorengegangen, beide Male hat diese Prüfung es gefunden.
 11. Arbeitsordner herstellen (Befehl unter Punkt 6 der Kickoff-Liste), dann
    `node test_naht.js`, `node dom_smoke_voll.js`, `node dom_smoke_test.js` laufen lassen
-   und die Basislinie aus dem Plan-Kopf bestätigen (**2107 / 762 / 763 · 0 Fehler**),
+   und die Basislinie aus dem Plan-Kopf bestätigen (**2107 / 784 / 785 · 0 Fehler**),
    **bevor** etwas gebaut wird. Weicht etwas ab, erst das klären.
    ⚠️ **Diese drei Läufe sind zugleich die Probe, ob Plandatei und Code zusammenpassen.**
    Steht im Kopfblock eine andere Basislinie als gemessen, ist eine der beiden Seiten alt —
@@ -2292,6 +2292,22 @@ Modell.
 
 **Basislinie 2005 → 2107 Assertions · Smokes 748/749 → 762/763.**
 
+**DREI NACHTRÄGE AUS DEM ERSTEN TEST (2026-08-05, Dieters Bildschirmfoto).**
+Er lud `winkel_v` — und der Bereich blieb leer. Das Foto zeigte zweierlei:
+die Freischalt-Haken alle offen, der Bereich *Vorwärmung & t8/5* aber
+trotzdem als offener Kasten sichtbar.
+1. **Die Freischalt-Haken sind keine Auswahlgruppen** und wurden von
+   `formularSetzen()` schlicht übergangen. `thermik_aktiv: true` im Beispiel
+   hatte deshalb keine Wirkung. Sie werden jetzt **vor** den Gruppen gesetzt,
+   weil davon abhängt, welche Felder überhaupt Pflicht sind.
+2. **Ein Bereich ohne einen einzigen sichtbaren Inhalt wird ausgeblendet.**
+   Vorher stand die Wärmeführung als leerer Kasten mit Erklärung da, auch
+   wenn sie gar nicht zugeschaltet war — das sah aus wie ein leerer Bereich
+   statt wie ein nicht gewählter.
+3. **Den zwölf alten Beispielen fehlte das Schweißverfahren.** Ohne das gibt
+   es keinen Wirkungsgrad und damit kein Wärmeeinbringen. Alle vierzehn
+   führen jetzt MAG — das geläufigste Verfahren (Dieter, 2026-08-05).
+
 **Erwarteter Beleg am Handy:** **Vierzehn Beispiele** in der Liste. `winkel_v`
 und `kragarm_b` bringen die Wärmeführung **eingeschaltet** mit und zeigen eine
 grüne t8/5-Ampel. Bei `kragarm_b` steht im Bereich *Lasten* die neue Auswahl
@@ -2917,7 +2933,7 @@ Formsache, und der Basislinien-Abgleich aus Kickoff-Punkt 11 ebenso wenig.
 **Erste Handlung im neuen Chat:** Vollständigkeit gegen die Tabelle oben prüfen
 (**17 Module**, `style.css`, beide HTMLs, **alle drei** DEV-ONLY-Dateien, dazu Plandatei und
 `Schweißnaht-Historie.md`), Arbeitsordner herstellen, die drei Testläufe starten.
-Melden müssen sie **2107 / 762 / 763 · 0 Fehler**. Weicht etwas ab, erst das klären —
+Melden müssen sie **2107 / 784 / 785 · 0 Fehler**. Weicht etwas ab, erst das klären —
 nicht bauen.
 
 **Was N6b überschreiben wird** (zur Vorwarnung, nicht als Auftrag): neu `symbol.js`,
@@ -3132,32 +3148,6 @@ Changelog — **die vollständige Fassung ab v1.0 steht in `Schweißnaht-Histori
 Hier stehen nur die letzten drei Einträge. Wer wissen will, wie eine Entscheidung
 zustande kam, findet die Kette dort — lückenlos ab der Erstfassung vom 2026-07-23.
 
-**v2.50 (2026-08-05):** **Etappe N9b gebaut und geliefert — Baustein N9 ist
-vollständig.** Drei Dinge: das **Endkrater-Ankreuzfeld** als Auswahlgruppe
-(Voreinstellung bleibt der Abzug, gemessene Wirkung 8 % bei Zug und über 12 %
-mit Biegung, mit eigener Skizze), das **Wärmeführungs-Panel** mit 18 Feldern in
-einem eigenen zuschaltbaren Bereich, und eine **eigene Ergebniskarte** mit
-eigener Ampel und einem Rechenweg in sechs Schritten. Drei Entscheidungen
-fielen beim Bauen: gerechnet wird mit der **tatsächlichen Arbeitstemperatur**
-(ohne Angabe die erforderliche Vorwärmtemperatur, nicht 20 °C — sonst käme eine
-zu kurze Abkühlzeit heraus); die Wärmeführung läuft **unabhängig vom
-Festigkeitsnachweis und vor ihm**, weil sonst bei unvollständigem Formular ihr
-voriges Ergebnis stehen blieb (vom DOM-Smoke gefunden); und für nichtrostende
-Stähle und Aluminium wird **nicht gerechnet**, weil dort EN 1011-3 und -4
-gelten. Das Zielfenster ist wie in 5.1-6a entschieden umgesetzt, samt grauer
-Ampel für unlegierte Baustähle. Der Assistent bringt seinen Schritt mit, und
-der **Zusatzschritt steht jetzt vor den Feldern**. Geändert: `thermik.js`,
-`optionen.js`, `validate.js`, `i18n_kern.js`, `i18n_hilfe.js`, `skizze.js`,
-`assistent.js`, `ui.js`, `style.css`, beide HTMLs, `test_naht.js` (**S45**),
-`dom_smoke_voll.js`.
-**Basislinie 1939 → 2005 Assertions · Smokes 663/664 → 748/749 · i18n-Parität 0.**
-**Codestand 2.47 → 2.50** (`ui` 0.10.1 → 0.11.0, Etappe N9a → N9b; **acht
-Module mit neuer Kennung**, jede vom Wächter eingefordert).
-**Nächster Schritt: N9 am Handy abnehmen, dann Baustein N10 (Kosten, Zeit,
-Draht). Einstieg: „weiter mit N10".**
-
-
-
 **v2.51 (2026-08-05):** **Etappe N9b von Dieter am Handy geprüft und
 ABGENOMMEN.** Die Versionszeile zeigt „N9b · Plan 2.50 · 17 Module" mit allen
 acht neuen Kennungen; Endkraterabzug und Wärmeführung waren bedienbar und
@@ -3189,6 +3179,25 @@ Modell steht. Geändert: `solver.js`, `rechenweg.js`, `optionen.js`,
 **Basislinie 2005 → 2107 Assertions · Smokes 748/749 → 762/763 · i18n-Parität 0.**
 **Codestand 2.50 → 2.52** (`ui` 0.11.0 → 0.12.0, Etappe N9b → N9c).
 **Nächster Schritt: N9c am Handy abnehmen, dann Baustein N10.**
+
+
+
+**v2.53 (2026-08-05):** **Drei Nachträge zu N9c aus Dieters erstem Test.** Er lud
+`winkel_v`, und der Wärmeführungsbereich blieb leer — sein Bildschirmfoto zeigte
+die Freischalt-Haken alle offen und den Bereich trotzdem sichtbar. Drei Fehler
+steckten dahinter: **(1)** Die Freischalt-Haken sind keine Auswahlgruppen und
+wurden von `formularSetzen()` übergangen, `thermik_aktiv` im Beispiel hatte also
+keine Wirkung; sie werden jetzt **vor** den Gruppen gesetzt, weil davon abhängt,
+welche Felder Pflicht sind. **(2)** Ein Bereich ohne einen einzigen sichtbaren
+Inhalt blieb sichtbar — er sah aus wie leer statt wie nicht gewählt; jetzt wird
+er ausgeblendet. **(3)** Den zwölf alten Beispielen fehlte das
+**Schweißverfahren**; ohne Wirkungsgrad gibt es kein Wärmeeinbringen. Alle
+vierzehn führen jetzt MAG. Der DOM-Smoke prüft alle drei Punkte namentlich.
+Geändert: `optionen.js` (0.3.1-N9c), `ui.js` (0.12.1), `dom_smoke_voll.js`.
+**Basislinie 2107 Assertions unverändert · Smokes 762/763 → 784/785.**
+**Codestand 2.52 → 2.53.**
+**Nächster Schritt: N9c erneut am Handy prüfen — diesmal muss `winkel_v` die
+Wärmeführung eingeschaltet mitbringen.**
 
 
 ═══════════════════════════════════════════════════════════════════════════
