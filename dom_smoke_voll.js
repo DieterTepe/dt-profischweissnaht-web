@@ -612,11 +612,12 @@ function lauf(edition) {
   ok(sichtbarkeitsBild() === startBild,
      'Leeren: die Oberflaeche steht wieder GENAU wie beim Oeffnen der Seite');
   ok(Object.keys(s.zustand()).length === 0, 'Leeren: der Zustand ist wirklich leer');
-  /* Seit N9b sind es sieben: gamma_M2, gamma_Mw, S und der Eckradius wie
-     bisher, dazu HD, F2 und F3 aus der Waermefuehrung. Alle drei tragen
-     einen belegten Tabellenwert und sind ueberschreibbar. */
-  ok(Object.keys(s.werte()).length === 7,
-     'N9b: nur die sieben vorbelegten Tabellenwerte stehen im Formular (ist ' +
+  /* Seit N9d sind es zehn: gamma_M2, gamma_Mw, S und der Eckradius als
+     TABELLENWERTE, dazu HD, F2 und F3 aus der Waermefuehrung — und die drei
+     ANHALTSWERTE fuer Spannung, Strom und Geschwindigkeit. Die letzten drei
+     stehen in keiner Norm und sind deshalb sichtbar anders gekennzeichnet. */
+  ok(Object.keys(s.werte()).length === 10,
+     'N9d: nur die zehn vorbelegten Werte stehen im Formular (ist ' +
      Object.keys(s.werte()).length + ')');
 
   /* ------------------------------- 8) Knoepfe, die noch nicht rechnen ---- */
@@ -741,6 +742,27 @@ function lauf(edition) {
   ok(d.byId.thermikHinweise.children.length > 0, 'N9b: und der Grund steht da');
   s.leeren();
   ok(d.byId.cardThermik.hidden === true, 'N9b: Leeren raeumt auch die Waermefuehrung weg');
+
+  /* ---- N9d · ANHALTSWERTE SIND SICHTBAR ANDERS -------------------------
+     Ein Erfahrungswert, der aussieht wie ein Normwert, waere eine stille
+     Behauptung. Deshalb traegt jedes Anhaltsfeld seinen eigenen Hinweis.  */
+  s.leeren();
+  d.byId.zus_thermik.checked = true;
+  s.aktualisiere();
+  var ahFelder = ['sp_U', 'sp_I', 'sp_v'];
+  for (i = 0; i < ahFelder.length; i++) {
+    ok(!istLeerW(d.byId['fld_' + ahFelder[i]].value),
+       'N9d: ' + ahFelder[i] + ' ist vorbelegt — ein Laie kommt weiter');
+    ok(!!d.byId['anh_' + ahFelder[i]],
+       'N9d: und traegt den Hinweis, dass es ein Anhaltswert ist');
+    ok(!!d.byId['ev_' + ahFelder[i]],
+       'N9d: und laesst sich per Haken ueberschreiben');
+  }
+  /* Ein Tabellenwert traegt diesen Hinweis NICHT — sonst waere die
+     Unterscheidung wertlos. */
+  ok(!d.byId.anh_gammaM2, 'N9d: ein Normwert traegt den Anhalts-Hinweis nicht');
+  ok(!d.byId.anh_HD, 'N9d: und der Wasserstoffgehalt ebenso wenig — er kommt aus dem Datenblatt');
+  s.leeren();
 
   /* ---- N9c · EIN BEISPIEL BRINGT DIE WAERMEFUEHRUNG MIT ----------------
      Gefunden an Dieters Bildschirmfoto (2026-08-05): winkel_v trug

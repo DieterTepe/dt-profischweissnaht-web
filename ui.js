@@ -35,12 +35,12 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.12.1';
-  var ETAPPE = 'N9c';
+  var VERSION = '0.13.0';
+  var ETAPPE = 'N9d';
   /* Plan-Version, die zu diesem Stand gehoert. Sie ist die EINZIGE von Hand
      gepflegte Zahl der Versionszeile — alles andere kommt aus den geladenen
      Modulen selbst (Plan 3.6). */
-  var PLAN = '2.53';
+  var PLAN = '2.55';
   var SPRACHEN = ['de', 'en', 'pt'];
 
   /* Plan 3.1 (bindend): die Oberflaeche startet IMMER im dunklen Design —
@@ -187,7 +187,7 @@
     'assist-wahl-bild',
     /* N9b */
     'th-kopf', 'th-weg', 'th-hinweise', 'th-wert', 'th-zeile', 'th-ampel',
-    'th-gruen', 'th-rot', 'th-grau'
+    'th-gruen', 'th-rot', 'th-grau', 'anhalt-note'
   ];
 
   /* Buttons, die bewusst noch nicht verdrahtet sind: Id -> ehrliche Meldung.
@@ -406,6 +406,15 @@
         box.appendChild(ein);
       }
       zeile.appendChild(box);
+
+      /* ANHALTSWERT STATT TABELLENWERT (N9d): Er sieht sichtbar anders aus,
+         weil er es ist — Erfahrung statt Norm. Ein Erfahrungswert, der wie
+         eine Vorschrift aussieht, waere eine stille Behauptung. */
+      if (f.anhalt) {
+        var ah = neu('div', 'gap-note anhalt-note', 'anh_' + f.code);
+        beschrifte(ah, 'uiAnhaltswert');
+        zeile.appendChild(ah);
+      }
 
       /* "eigener Wert"-Haken (Plan 3.1): Tabellenwert vorbelegen und sperren,
          per Haken frei ueberschreibbar. */
@@ -1406,6 +1415,23 @@
           thermikZeile(weg, 'HD', zahlText(sch.teile.HD, 1));
           thermikZeile(weg, 'Q', zahlText(sch.teile.Q, 1));
           thermikZeile(weg, 'Tp', zahlText(sch.Tp, 1) + ' ' + txt(win, 'unit_gradC', l));
+        } else if (sch.code === 'th_s_fenster') {
+          /* DIE QUELLE DES FENSTERS GEHOERT DARUNTER (N9d). Vorher
+             stand hier eine Ueberschrift ohne Inhalt — das sieht aus wie ein
+             abgeschnittener Gedanke. Und der Anwender soll einschaetzen
+             koennen, ob die Grenzen zu seiner Vorgabe passen. */
+          if (sch.min !== null) {
+            thermikZeile(weg, txt(win, 'th_fenster_kurz', l),
+                         zahlText(sch.min, 0) + '–' + zahlText(sch.max, 0) + ' ' +
+                         txt(win, 'unit_s', l));
+          }
+          if (sch.eigen) {
+            zeile(weg, 'gap-note', txt(win, 'th_fenster_eigen', l));
+          } else if (sch.quelle) {
+            zeile(weg, 'gap-note', txt(win, sch.quelle, l));
+          } else {
+            zeile(weg, 'gap-note', txt(win, 'th_fenster_offen', l));
+          }
         } else if (sch.code === 'th_s_abkuehlzeit') {
           thermikZeile(weg, 'T0', zahlText(sch.T0, 0) + ' ' + txt(win, 'unit_gradC', l));
           thermikZeile(weg, '2D', zahlText(sch.t85_2d, 1) + ' ' + txt(win, 'unit_s', l));

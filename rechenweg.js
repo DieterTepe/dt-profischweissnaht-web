@@ -49,7 +49,7 @@
 }(typeof self !== 'undefined' ? self : this, function (Naht, Profil, Solver, Kern) {
   'use strict';
 
-  var VERSION = '0.3.0-N9c';
+  var VERSION = '0.4.0-N9d';
 
   /* Toleranz der Proben. Grosszuegig genug fuer Gleitkomma-Rundung,
      eng genug, dass eine verfaelschte Zahl auffaellt. */
@@ -667,7 +667,18 @@
               ergebnis: A.a_erf, einheit: 'unit_mm', nk: 3,
               quelle: 'qu_mechanik',
               probe: 'rw_p_a_erf',
-              haken: nahe(A.a_erf, A.a_bezug * A.faktor, 1e-9) });
+              /* DIE SKALIERUNG GILT NUR, SOLANGE DIE GEOMETRIE NICHT SELBST
+                 AM a-MASS HAENGT (N9d). Mit Endkraterabzug tut sie das:
+                 dort wurde a_erf durch WIEDERHOLTES Durchrechnen gefunden,
+                 nicht durch Multiplikation — und dann muss die Probe
+                 schweigen statt eine Beziehung zu behaupten, die nicht mehr
+                 besteht. Dass a_erf trotzdem stimmt, belegt die Assertion
+                 in S38: fuenf verschiedene Bezugsmasse liefern dasselbe
+                 Ergebnis. Gefunden vom Streifzug aus S46. */
+              haken: (A.geometrie_runden > 0)
+                   ? null
+                   : nahe(A.a_erf, A.a_bezug * A.faktor, 1e-9),
+              hinweis: (A.geometrie_runden > 0) ? 'msg_sv_auslegung_geometrie' : null });
 
       S.add({ code: 'rw_s_a_gewaehlt',
               formel: 'a_gew = \u2308a_erf / \u0394a\u2309 \u00b7 \u0394a',

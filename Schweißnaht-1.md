@@ -9,7 +9,7 @@
 > abgenommenen Bausteinen **N1, N2, N2b, N2c, N3, N4 und N5 vollständig
 > (N5a, N5b, N5c-1 bis N5c-3 und N5d)**, **N6b**, **N7** und **N8 vollständig
 > (N8a, N8b-1, N8b-2, N8c)**, **N9a** und **N9b**, dazu **N9c gebaut und
-> geliefert (Abnahme offen)** — Stand 2026-08-05.
+> **N9c**, dazu **N9d gebaut und geliefert (Abnahme offen)** — Stand 2026-08-05.
 > Sie ist so geschrieben, dass ein **neuer Chat ohne Vorwissen** damit weiterarbeiten kann.
 > **Das WARUM steht in `Schweißnaht-Historie.md`** (Entscheidungslog + Changelog im
 > Volltext) — dort nachschlagen, bevor etwas geändert wird, das falsch aussieht.
@@ -18,8 +18,8 @@
 > in 4.11 und in der Historie. Im Projektordner liegt **keine Vorlaufdatei** mehr.
 
 ```
-Plan-Version : 2.53 · Stand 2026-08-05
-Codestand    : Plan 2.53 · ui 0.12.1 · N9c
+Plan-Version : 2.55 · Stand 2026-08-05
+Codestand    : Plan 2.55 · ui 0.13.0 · N9d
                (Die Planversion, gegen die der CODE gebaut ist. Sie steht auch
                in ui.js als PLAN und wird von einer Assertion damit verglichen.
                Sie wandert nur mit, wenn sich Code ändert — reine Plan- oder
@@ -67,7 +67,13 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                Beispielkatalog von zwölf auf **vierzehn**, gibt allen
                Beispielen Wärmeführungsdaten und repariert dabei die
                **geometrische Lasteingabe**, die seit N3 tot war.
-               → NÄCHSTER SCHRITT: **N9c am Handy abnehmen.** Danach
+               **Etappe N9c ist von Dieter am Handy geprüft und
+               ABGENOMMEN (2026-08-05).** **Etappe N9d ist GEBAUT und
+               GELIEFERT** — Abnahme steht aus. Sie bringt den
+               **Streifzug** (S46), der jede Option jeder Gruppe einmal
+               betritt, die **Anhaltswerte** für die Schweißparameter und
+               die Quelle unter dem Zielfenster.
+               → NÄCHSTER SCHRITT: **N9d am Handy abnehmen.** Danach
                  Baustein **N10 (Kosten, Zeit, Draht)** — Einstieg
                  „weiter mit N10", **Umfang vor dem Bau abstimmen**.
                  Schnittstellen: 4.5 (naht.js), 4.6 (profil.js),
@@ -76,7 +82,7 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                  4.11 (symbol.js).
                Große Bausteine (N5, N8, N13, N14) werden in ETAPPEN gebaut — Regel in
                Kickoff-Punkt 5c, Etappen in Abschnitt 5.2.
-Basislinie   : 2107 Assertions · DOM-Smokes 784 (voll) + 785 (test) · i18n-Parität 0 Abweichungen
+Basislinie   : 2942 Assertions · DOM-Smokes 801 (voll) + 802 (test) · i18n-Parität 0 Abweichungen
                (VERBINDLICH. Basislinie darf nur WACHSEN — nie schrumpfen, nie gelockert werden.)
 Dateistand   : siehe Abschnitt 8.1 — dort steht, was fertig ist und was noch fehlt.
 ⚠️ SYNC       : Am 2026-08-03 lag im Projektordner eine **elf Versionen alte**
@@ -165,7 +171,7 @@ Einstiegssatz von Dieter: **„weiter mit N10"**.
    schon zweimal Dateien verlorengegangen, beide Male hat diese Prüfung es gefunden.
 11. Arbeitsordner herstellen (Befehl unter Punkt 6 der Kickoff-Liste), dann
    `node test_naht.js`, `node dom_smoke_voll.js`, `node dom_smoke_test.js` laufen lassen
-   und die Basislinie aus dem Plan-Kopf bestätigen (**2107 / 784 / 785 · 0 Fehler**),
+   und die Basislinie aus dem Plan-Kopf bestätigen (**2942 / 801 / 802 · 0 Fehler**),
    **bevor** etwas gebaut wird. Weicht etwas ab, erst das klären.
    ⚠️ **Diese drei Läufe sind zugleich die Probe, ob Plandatei und Code zusammenpassen.**
    Steht im Kopfblock eine andere Basislinie als gemessen, ist eine der beiden Seiten alt —
@@ -2316,6 +2322,82 @@ Schnittgrößen.
 
 ---
 
+#### 5.1-6d · N9d — **GEBAUT UND GELIEFERT 2026-08-05, Abnahme offen**
+
+**Dieters Anstoß:** intern Probefälle durchspielen, um Fehler aufzudecken —
+und Eingabefelder vorbelegen, damit ein unerfahrener Anwender nicht
+überfordert ist.
+
+**Beides umgesetzt, eines davon geschärft.** Ein Probefall, den man einmal
+durchspielt und wegwirft, findet den Fehler *einmal*; derselbe Fall als
+Assertion findet ihn *für immer*. Verworfen wird deshalb höchstens der
+Katalog-Eintrag, nie die Prüfung.
+
+**DER STREIFZUG (S46).** Er betritt **jede Option jeder rechenwirksamen
+Gruppe** mindestens einmal — 87 Fälle — und verlangt genau eine von zwei
+Antworten: es rechnet, oder es scheitert mit einem **benannten** Grund. Was
+er nicht duldet, ist das Dritte: eine Ausnahme, ein leeres Ergebnis, ein
+Fehlercode ohne Text. Genau dort saßen alle bisherigen Funde.
+
+| | |
+|---|---|
+| gerechnet | 64 |
+| benannt abgelehnt | 4 |
+| unvollständige Auswahl (benannt) | 19 |
+
+Er füllt fehlende Auswahlen selbst mit der ersten zulässigen Option auf —
+sonst bliebe er an Unvollständigkeit hängen und käme nie bis zur Rechnung.
+
+**UND ER HAT BEIM ERSTEN LAUF ETWAS GEFUNDEN.** Bei
+`rechenrichtung = auslegung` gingen die Rechenproben nicht auf: Das Nahtbild
+wurde mit dem **erforderlichen** a-Maß gebaut, Fläche und Ausnutzung aber mit
+dem **gewählten**. Die Probe „Fläche = Summe a·l" musste scheitern.
+
+Ursache war die Außeniteration aus N7 — sie konvergiert auf `a_erf`, aber
+gebaut wird `a_gewaehlt`, und dessen Naht ist wegen des Endkraterabzugs ein
+Stück kürzer. **Jetzt läuft ein letzter Durchgang mit dem gewählten a-Maß**,
+damit Nahtbild, Fläche und Ausnutzung dieselbe Naht beschreiben — die, die
+entsteht. Das erforderliche a bleibt der konvergierte Wert; es ist die
+Anforderung, nicht die Ausführung.
+
+**Eine gemessene Zahl hat sich dadurch geändert:** `konsole` liefert jetzt
+760 mm und η 0,842 statt 764 mm und 0,837. Das ist die **Korrektur**, nicht
+die Regression — 764 mm beschrieb eine Naht mit a = 2,504 mm, die niemand
+baut.
+
+**Ein Folgefund:** Die Rechenprobe `a_erf = a_bezug · η` gilt nur, solange die
+Geometrie **nicht selbst** am a-Maß hängt. Mit Endkraterabzug wurde a_erf
+durch wiederholtes Durchrechnen gefunden, nicht durch Multiplikation — dort
+schweigt die Probe jetzt und sagt, warum, statt eine Beziehung zu behaupten,
+die nicht mehr besteht.
+
+**DIE ANHALTSWERTE (S47).** Neu ist eine Unterscheidung, die es vorher nicht
+gab:
+
+| | Herkunft | Kennzeichnung |
+|---|---|---|
+| **Tabellenwert** | Norm (γ_M2, β_w, ν, S) | gesperrt, „eigener Wert"-Haken |
+| **Anhaltswert** | Praxis (U, I, v) | dasselbe **plus sichtbarer Hinweis** |
+
+Schweißspannung, Strom und Geschwindigkeit stehen in keiner Norm — die Praxis
+kennt nur Bereiche. Sie werden trotzdem vorbelegt (MAG in mittlerer Lage),
+tragen aber `anhalt: true` und einen eigenen Hinweis: *Anhaltswert aus der
+Praxis — keine Norm.* **Ein Erfahrungswert, der aussieht wie eine Vorschrift,
+wäre eine stille Behauptung, und die fällt niemandem auf.**
+
+**Die Probe dazu:** Mit den Vorbelegungen allein rechnet die Wärmeführung
+durch — ein Anwender muss nur noch die Analyse eintragen, und das vorbelegte
+Wärmeeinbringen liegt im Geltungsbereich der Methode B.
+
+**Dazu die Quelle unter dem Zielfenster.** Vorher stand dort eine Überschrift
+ohne Inhalt (Dieters Beobachtung). Jetzt steht darunter, woher die Grenzen
+kommen — oder dass es eine eigene Vorgabe ist.
+
+**Basislinie 2107 → 2942 Assertions · Smokes 784/785 → 801/802.** Der Sprung
+kommt fast ganz vom Streifzug.
+
+---
+
 ### 5.1a Auftrag für N5c-1 — „Es rechnet" *(ERLEDIGT 2026-07-28, hier nur noch als Begründung)*
 
 > **Dieser Auftrag ist entschieden, nicht mehr Vorschlag.** Dieter hat die offenen Fragen
@@ -2775,6 +2857,16 @@ Solver.
 
 **Basislinie nach N7: 1553 Assertions · 611 / 612 DOM-Smokes · i18n-Parität 0.**
 
+**Nachtrag N9d (2026-08-05) — 10 Dateien:** `solver.js` (letzter Durchgang mit
+dem gewählten a-Maß) · `rechenweg.js` (Skalierungsprobe) · `validate.js`
+(Anhaltswerte) · `i18n_kern.js` · `ui.js` (Quelle unter dem Zielfenster,
+Anhalts-Hinweis, Kennungen 0.13.0 / N9d / 2.55) · `style.css` ·
+`test_naht.js` (**S46**, **S47**) · `dom_smoke_voll.js`.
+**Nicht angefasst:** `optionen.js`, `thermik.js`, `naht.js`, `profil.js`,
+`daten.js`, `svglib.js`, `schaubild.js`, `symbol.js`, `skizze.js`,
+`assistent.js`, `i18n_hilfe.js`, `i18n_kerbfall.js`, beide HTMLs,
+`dom_smoke_test.js`.
+
 **Nachtrag N9c (2026-08-05) — 12 Dateien:** `solver.js` (geometrische
 Lasteingabe verdrahtet) · `rechenweg.js` (Lastprobe) · `optionen.js`
 (Gruppe `kraftrichtung`, 14 Beispiele) · `validate.js` (Feld `d_komb`) ·
@@ -2933,7 +3025,7 @@ Formsache, und der Basislinien-Abgleich aus Kickoff-Punkt 11 ebenso wenig.
 **Erste Handlung im neuen Chat:** Vollständigkeit gegen die Tabelle oben prüfen
 (**17 Module**, `style.css`, beide HTMLs, **alle drei** DEV-ONLY-Dateien, dazu Plandatei und
 `Schweißnaht-Historie.md`), Arbeitsordner herstellen, die drei Testläufe starten.
-Melden müssen sie **2107 / 784 / 785 · 0 Fehler**. Weicht etwas ab, erst das klären —
+Melden müssen sie **2942 / 801 / 802 · 0 Fehler**. Weicht etwas ab, erst das klären —
 nicht bauen.
 
 **Was N6b überschreiben wird** (zur Vorwarnung, nicht als Auftrag): neu `symbol.js`,
@@ -3091,6 +3183,19 @@ will. Also: Vorschriften und Wegweiser bleiben hier, die Erzählung wandert.
   Vorbelegung** (2026-08-05, t8/5-Fenster): Sie erfüllt beide zugleich, ist an
   beiden Enden die strengere Grenze und ist keine erfundene Zahl. Beide
   Quellfenster gehören dann in den Hilfetext.
+- **Ein Probefall, der etwas findet, wird eine Assertion — nicht weggeworfen**
+  (2026-08-05, S46): Ein einmal durchgespielter Fall findet den Fehler einmal,
+  derselbe Fall als Prüfung findet ihn für immer. Verworfen wird höchstens der
+  KATALOG-Eintrag, nie die Prüfung.
+- **Zwei Sorten Vorbelegung, sichtbar unterschieden** (2026-08-05, S47):
+  **Tabellenwert** aus einer Norm und **Anhaltswert** aus der Praxis. Beide
+  gesperrt vorbelegt und per Haken überschreibbar — aber der Anhaltswert sagt
+  von sich, dass keine Norm dahintersteht. Ein Erfahrungswert, der aussieht wie
+  eine Vorschrift, ist eine stille Behauptung, und die fällt niemandem auf.
+- **`test_naht.js` gehört in JEDE Lieferung** (2026-08-05): Sobald sich ein
+  Modul ändert, ändert sich die Wächtertabelle in S43 mit — auch wenn keine
+  Assertion angefasst wurde. Einmal vergessen, und der Harness meldet vier rote
+  Zeilen für einen Fehler, den es gar nicht gibt.
 - **Token-Pause: 4 Stunden.**
 
 ---
@@ -3148,40 +3253,6 @@ Changelog — **die vollständige Fassung ab v1.0 steht in `Schweißnaht-Histori
 Hier stehen nur die letzten drei Einträge. Wer wissen will, wie eine Entscheidung
 zustande kam, findet die Kette dort — lückenlos ab der Erstfassung vom 2026-07-23.
 
-**v2.51 (2026-08-05):** **Etappe N9b von Dieter am Handy geprüft und
-ABGENOMMEN.** Die Versionszeile zeigt „N9b · Plan 2.50 · 17 Module" mit allen
-acht neuen Kennungen; Endkraterabzug und Wärmeführung waren bedienbar und
-lieferten Ergebnisse. **Ein Punkt blieb offen und wurde zum Anlass für N9c:**
-Beim ersten Ausprobieren der Wärmeführung ohne Beispiel erschien eine rote
-Meldung. Nachgestellt ergab sich, dass die häufigste Ursache eine
-**unvollständige Analyse** ist — und dass die Meldung dann den Stahl
-beschuldigte („CET außerhalb des Geltungsbereichs"), statt die fehlende
-Eingabe zu benennen. **Code unverändert, `Codestand` bleibt 2.50.**
-
-**v2.52 (2026-08-05):** **Etappe N9c gebaut und geliefert — vierzehn Beispiele,
-und die geometrische Lasteingabe repariert.** Alle Beispiele tragen jetzt
-Wärmeführungsdaten; bei den zwölf alten ohne zugeschalteten Bereich, damit die
-in N7 gemessenen Ausnutzungen unverändert bleiben. **Zwei neue Beispiele mit
-Feinkornstahl** (S420 und S460) schließen drei nie berührte Rechenpfade — das
-**vereinfachte Verfahren**, die **geometrische Lasteingabe** und das
-**Winkelprofil** — und sind die einzigen, bei denen die t8/5-Ampel grün werden
-kann. **Der Hauptfund:** Die geometrische Lasteingabe war **seit N3 tot** — die
-Umrechnung stand im Solver, wurde aber nie aufgerufen; wer „Kraft und Hebelarm"
-wählte, bekam „keine Last". Gefunden beim Versuch, ein Beispiel dafür zu bauen,
-also zum dritten Mal nach demselben Muster. Repariert samt neuer Auswahlgruppe
-**`kraftrichtung`** (ohne Voreinstellung, mit eigener Skizze), und die
-Rechenweg-Probe prüft jetzt gegen das, womit gerechnet wurde, statt gegen leere
-Eingabefelder. Dazu die irreführende Meldung bei unvollständiger Analyse und
-das neue Feld `d_komb` für Fälle, in denen das Gegenstück nicht im statischen
-Modell steht. Geändert: `solver.js`, `rechenweg.js`, `optionen.js`,
-`validate.js`, `i18n_kern.js`, `i18n_hilfe.js`, `skizze.js`, `assistent.js`,
-`thermik.js`, `ui.js`, `test_naht.js`, `dom_smoke_voll.js`.
-**Basislinie 2005 → 2107 Assertions · Smokes 748/749 → 762/763 · i18n-Parität 0.**
-**Codestand 2.50 → 2.52** (`ui` 0.11.0 → 0.12.0, Etappe N9b → N9c).
-**Nächster Schritt: N9c am Handy abnehmen, dann Baustein N10.**
-
-
-
 **v2.53 (2026-08-05):** **Drei Nachträge zu N9c aus Dieters erstem Test.** Er lud
 `winkel_v`, und der Wärmeführungsbereich blieb leer — sein Bildschirmfoto zeigte
 die Freischalt-Haken alle offen und den Bereich trotzdem sichtbar. Drei Fehler
@@ -3198,6 +3269,33 @@ Geändert: `optionen.js` (0.3.1-N9c), `ui.js` (0.12.1), `dom_smoke_voll.js`.
 **Codestand 2.52 → 2.53.**
 **Nächster Schritt: N9c erneut am Handy prüfen — diesmal muss `winkel_v` die
 Wärmeführung eingeschaltet mitbringen.**
+
+
+
+**v2.54 (2026-08-05):** **Etappe N9c von Dieter am Handy geprüft und
+ABGENOMMEN.** `winkel_v` bringt die Wärmeführung eingeschaltet mit; die
+angezeigten Zahlen decken sich mit den Messungen (CET 0,348 · d 36 mm ·
+Q 2,088 kJ/mm · Tp 120 °C · t8/5 13,3 s im Fenster). Eine Beobachtung blieb:
+Unter „Zielfenster für t8/5" stand eine **Überschrift ohne Inhalt** — behoben
+in N9d. **Code unverändert, `Codestand` bleibt 2.53.**
+
+**v2.55 (2026-08-05):** **Etappe N9d gebaut und geliefert — der Streifzug und
+die Anhaltswerte.** Auf Dieters Anstoß, intern Probefälle durchzuspielen und
+Felder vorzubelegen. Der **Streifzug (S46)** betritt jede Option jeder
+rechenwirksamen Gruppe einmal (87 Fälle) und verlangt entweder eine Rechnung
+oder einen **benannten** Grund — und hat beim ersten Lauf einen echten
+Widerspruch gefunden: Bei der Auslegung beschrieb das Nahtbild die Naht mit dem
+**erforderlichen**, Fläche und Ausnutzung aber die mit dem **gewählten** a-Maß.
+Jetzt läuft ein letzter Durchgang mit dem gewählten Maß; dadurch ändert sich
+eine gemessene Zahl (`konsole` 760 mm / 0,842 statt 764 / 0,837) — die
+Korrektur, nicht die Regression. Als Folgefund schweigt die Rechenprobe
+`a_erf = a_bezug · η` dort, wo die Geometrie selbst am a-Maß hängt. Neu sind
+außerdem die **Anhaltswerte (S47)**: Spannung, Strom und Geschwindigkeit werden
+vorbelegt, tragen aber einen sichtbaren Hinweis, dass keine Norm dahintersteht
+— unterschieden von den Tabellenwerten. Dazu die Quelle unter dem Zielfenster.
+**Basislinie 2107 → 2942 Assertions · Smokes 784/785 → 801/802 · i18n-Parität 0.**
+**Codestand 2.53 → 2.55** (`ui` 0.12.1 → 0.13.0, Etappe N9c → N9d).
+**Nächster Schritt: N9d am Handy abnehmen, dann Baustein N10.**
 
 
 ═══════════════════════════════════════════════════════════════════════════

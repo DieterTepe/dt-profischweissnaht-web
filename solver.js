@@ -62,7 +62,7 @@
 }(typeof self !== 'undefined' ? self : this, function (Data, Naht, Profil) {
   'use strict';
 
-  var VERSION = '0.3.0-N9c';
+  var VERSION = '0.4.0-N9d';
 
   var W2 = Math.sqrt(2);
   var W3 = Math.sqrt(3);
@@ -661,6 +661,40 @@
       aNeu = erg2.auslegung.a_erf;
       runden++;
     }
+    /* EIN LETZTER DURCHLAUF MIT DEM GEWAEHLTEN a-MASS (N9d).
+       Die Schleife oben konvergiert auf das ERFORDERLICHE a. Gebaut wird
+       aber das GEWAEHLTE (aufgerundete) — und dessen Naht ist wegen des
+       Endkraterabzugs ein Stueck kuerzer. Ohne diesen Schritt beschreibt
+       das Nahtbild eine Naht mit a_erf, waehrend Flaeche und Ausnutzung
+       mit a_gewaehlt gerechnet sind: die Rechenprobe "Flaeche = Summe a*l"
+       ging dann nicht auf.
+       Gefunden vom Streifzug aus S46 (Dieters Idee, 2026-08-05) — kein
+       Beispiel hatte je Auslegung UND Endkraterabzug zugleich.
+       Das ERFORDERLICHE a bleibt der konvergierte Wert: es ist die
+       Anforderung. Alles Uebrige beschreibt die Naht, die entsteht. */
+    var aErfKonv = erg.auslegung.a_erf;
+    var aGew = erg.auslegung.a_gewaehlt;
+    if (aGew !== null && aGew !== undefined && Math.abs(aGew - aNeu) > AUS_ITER_TOL) {
+      kopie = {};
+      for (pk in ein.profil_eingabe) {
+        if (Object.prototype.hasOwnProperty.call(ein.profil_eingabe, pk)) {
+          kopie[pk] = ein.profil_eingabe[pk];
+        }
+      }
+      kopie.a = aGew;
+      ein2 = {};
+      for (pk in ein) if (Object.prototype.hasOwnProperty.call(ein, pk)) ein2[pk] = ein[pk];
+      ein2.profil_eingabe = kopie;
+      ein2.a = undefined;
+      var ergG = rechneEinmal(ein2);
+      if (ergG.ok && ergG.auslegung) {
+        ergG.auslegung.a_erf = aErfKonv;          /* die Anforderung bleibt */
+        ergG.auslegung.a_gewaehlt = aGew;
+        ergG.auslegung.a_geometrie = aGew;
+        erg = ergG;
+      }
+    }
+
     erg.auslegung.geometrie_runden = runden;
     if (runden > 0) schiebe(erg.hinweise, 'msg_sv_auslegung_geometrie');
     return erg;

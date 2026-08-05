@@ -19,7 +19,7 @@
 }(typeof self !== 'undefined' ? self : this, function (Data, Options) {
   'use strict';
 
-  var VERSION = '0.4.0-N9c';
+  var VERSION = '0.5.0-N9d';
 
   /* --------------------------------------------------------------------- */
   /* Feldschema — eine Quelle fuer Formular, Assistent und Pruefung         */
@@ -150,11 +150,23 @@
     { code: 'CET',   bereich: 'thermik', typ: 'zahl', einheit: 'unit_prozent', min: 0.10, max: 0.80, dez: 3, label: 'fld_CET', hilfe: 'fld_CET', pflicht: false, ueberschreibbar: true },
     { code: 'HD',    bereich: 'thermik', typ: 'zahl', einheit: 'unit_ml100g', min: 0.5, max: 30, dez: 1, label: 'fld_HD', hilfe: 'fld_HD', standard: 5, ueberschreibbar: true,
       pflicht_wenn: { thermik_aktiv: [true] } },
+    /* ANHALTSWERTE, KEINE TABELLENWERTE (N9d, Dieters Wunsch 2026-08-05).
+       Schweissspannung, Strom und Geschwindigkeit stehen in keiner Norm —
+       die Praxis kennt nur Bereiche. Sie werden trotzdem vorbelegt, damit
+       ein Laie ueberhaupt weiterkommt, aber sie tragen `anhalt: true` und
+       werden dadurch SICHTBAR ANDERS gekennzeichnet als ein Normwert.
+       Ein Erfahrungswert, der aussieht wie eine Vorschrift, waere genau die
+       stille Behauptung, die dieses Programm sonst ueberall vermeidet.
+       Die Werte entsprechen MAG in mittlerer Lage — dem geläufigsten
+       Verfahren (Dieter). Die Bereiche je Verfahren nennt der Laien-ⓘ. */
     { code: 'sp_U',  bereich: 'thermik', typ: 'zahl', einheit: 'unit_volt', min: 5, max: 60, dez: 1, label: 'fld_sp_U', hilfe: 'fld_sp_U',
+      standard: 28, anhalt: true, ueberschreibbar: true,
       pflicht_wenn: { thermik_aktiv: [true] } },
     { code: 'sp_I',  bereich: 'thermik', typ: 'zahl', einheit: 'unit_ampere', min: 20, max: 1200, dez: 0, label: 'fld_sp_I', hilfe: 'fld_sp_I',
+      standard: 250, anhalt: true, ueberschreibbar: true,
       pflicht_wenn: { thermik_aktiv: [true] } },
     { code: 'sp_v',  bereich: 'thermik', typ: 'zahl', einheit: 'unit_mm_s', min: 0.5, max: 50, dez: 2, label: 'fld_sp_v', hilfe: 'fld_sp_v',
+      standard: 4, anhalt: true, ueberschreibbar: true,
       pflicht_wenn: { thermik_aktiv: [true] } },
     { code: 'T0',    bereich: 'thermik', typ: 'zahl', einheit: 'unit_grad', min: -20, max: 400, dez: 0, label: 'fld_T0', hilfe: 'fld_T0', pflicht: false, ueberschreibbar: true },
     { code: 't85_min', bereich: 'thermik', typ: 'zahl', einheit: 'unit_s', min: 1, max: 100, dez: 1, label: 'fld_t85_min', hilfe: 'fld_t85_min', pflicht: false, ueberschreibbar: true },

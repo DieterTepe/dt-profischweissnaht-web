@@ -2080,3 +2080,64 @@ im Formular steht — die drei Punkte stehen namentlich drin.
 
 **Basislinie 2107 Assertions unverändert · Smokes 762/763 → 784/785.**
 **Codestand 2.52 → 2.53.**
+
+
+**v2.54 (2026-08-05):** **N9c abgenommen.** `winkel_v` bringt die Wärmeführung
+eingeschaltet mit, und die angezeigten Zahlen decken sich mit den Messungen.
+Besonders wertvoll war Dieters Beobachtung nebenbei: Unter „Zielfenster für
+t8/5" stand eine **Überschrift ohne Inhalt**. In einem Programm, das sonst
+überall sagt, was es tut, wirkt so etwas wie ein abgeschnittener Gedanke — und
+es war der Anlass, dort die Quelle des Fensters zu zeigen.
+
+
+**v2.55 (2026-08-05):** **N9d — der Streifzug findet beim ersten Lauf etwas.**
+
+**Aus N9d (2026-08-05) — Entscheidungen und Erfahrungen**
+
+Dieter schlug vor, intern Probefälle durchzuspielen, um Fehler aufzudecken, und
+sie danach gegebenenfalls wieder zu verwerfen. Die Idee war richtig, aber sie
+ließ sich schärfen: **Ein Probefall, den man einmal durchspielt und wegwirft,
+findet den Fehler einmal — derselbe Fall als Assertion findet ihn für immer.**
+Verworfen wird deshalb höchstens der Katalog-Eintrag, nie die Prüfung.
+
+Und statt zu stochern wurde systematisiert: Der Streifzug betritt **jede Option
+jeder rechenwirksamen Gruppe** einmal und verlangt entweder eine Rechnung oder
+einen benannten Grund. 87 Fälle, +813 Assertions.
+
+**Er hat beim ersten richtigen Lauf einen echten Widerspruch gefunden** — genau
+das, was Dieter sich davon erhofft hatte. Bei der Auslegung beschrieb das
+Nahtbild die Naht mit dem *erforderlichen* a-Maß, Fläche und Ausnutzung aber
+die mit dem *gewählten*. Die Rechenprobe „Fläche = Summe a·l" musste scheitern.
+Ursache war ausgerechnet die Reparatur aus N7: Die Außeniteration konvergiert
+auf a_erf, gebaut wird aber a_gewaehlt — und dessen Naht ist wegen des
+Endkraterabzugs kürzer. **Eine Reparatur kann eine neue Unstimmigkeit
+erzeugen, wenn sie nur die halbe Kette nachzieht.**
+
+Kein Beispiel hatte je Auslegung *und* Endkraterabzug zugleich. Wieder derselbe
+blinde Fleck — und diesmal hat ihn nicht ein Beispiel gefunden, sondern das
+Werkzeug, das Beispiele überflüssig macht, wo es nur ums Betreten geht.
+
+**Eine gemessene Zahl hat sich geändert**, und das war der unangenehme Teil:
+`konsole` liefert jetzt 760 mm statt 764. Die Versuchung, den alten Wert zu
+behalten, weil er ja „abgenommen" war, ist real. Aber 764 mm beschrieb eine
+Naht mit a = 2,504 mm, die niemand baut. **Eine abgenommene Zahl ist nicht
+dadurch richtig, dass sie abgenommen wurde.**
+
+**Bei den Vorbelegungen wurde eine Unterscheidung nötig.** Dieter wollte
+möglichst viele Felder vorbelegt haben, damit ein Laie weiterkommt — richtig.
+Aber Schweißspannung, Strom und Geschwindigkeit stehen in keiner Norm. Sie
+genauso auszuzeichnen wie γ_M2 hätte einen Erfahrungswert zur Vorschrift
+gemacht. Deshalb jetzt zwei Sorten: **Tabellenwert** und **Anhaltswert**, beide
+gesperrt und überschreibbar, aber der zweite sagt von sich, dass keine Norm
+dahintersteht. **Das ist der Unterschied zwischen Hilfe und Behauptung.**
+
+**Und eine Lehre über Werkzeuge**, die zur Lehre aus v2.50 passt: Beim Prüfen
+des Projektordners fehlte `test_naht.js` in einer Lieferung — der Wächter
+meldete vier rote Zeilen für Module, die völlig in Ordnung waren. Sobald sich
+ein Modul ändert, ändert sich die Wächtertabelle mit. Die Datei gehört deshalb
+in **jede** Lieferung, auch wenn keine Assertion angefasst wurde. Steht jetzt
+in 9.2.
+
+**Basislinie 2107 → 2942 Assertions · Smokes 784/785 → 801/802.**
+**Codestand 2.53 → 2.55.**
+**Nächster Schritt: N9d abnehmen, dann N10 (Kosten, Zeit, Draht).**

@@ -12,7 +12,7 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.4.0-N9c';
+  var VERSION = '0.5.0-N9d';
   var SPRACHEN = ['de', 'en', 'pt'];
 
   var D = {
@@ -376,6 +376,7 @@
 
     /* ---------- Zusatzbereiche ---------- */
     /* Bedienung des Assistenten (N8b). */
+    uiAnhaltswert:  { de: 'Anhaltswert aus der Praxis — keine Norm. Bitte an Ihr Verfahren und Ihre Schweißanweisung anpassen.', en: 'Practical guide value — not from a standard. Please adjust to your process and welding procedure.', pt: 'Valor indicativo da prática — não normativo. Ajuste ao seu processo e especificação.' },
     uiAssAbbruch:   { de: 'Abbrechen', en: 'Cancel', pt: 'Cancelar' },
     uiAssZurueck:   { de: 'Zurück', en: 'Back', pt: 'Voltar' },
     uiAssUeber:     { de: 'Überspringen', en: 'Skip', pt: 'Ignorar' },
@@ -421,6 +422,8 @@
     th_t85:           { de: 'Abkühlzeit t8/5', en: 'Cooling time t8/5', pt: 'Tempo de arrefecimento t8/5' },
     th_keine_vorw:    { de: 'keine Vorwärmung erforderlich', en: 'no preheating required', pt: 'sem pré-aquecimento necessário' },
     th_fenster_von_bis:{ de: 'Zielfenster {0} bis {1} s', en: 'Target window {0} to {1} s', pt: 'Janela alvo {0} a {1} s' },
+    th_fenster_kurz:  { de: 'Fenster', en: 'Window', pt: 'Janela' },
+    th_fenster_eigen: { de: 'Eigene Vorgabe — nicht die Vorbelegung des Programms.', en: 'Your own limits — not the program default.', pt: 'Limites próprios — não a predefinição do programa.' },
     th_fenster_offen: { de: 'kein belegtes Zielfenster', en: 'no documented target window', pt: 'sem janela alvo documentada' },
     sec_thermik:      { de: 'Vorwärmung & t8/5', en: 'Preheating & t8/5', pt: 'Pré-aquecimento e t8/5' },
     sec_thermik_hint: { de: 'Eigene Rechnung nach EN 1011-2, unabhängig vom Festigkeitsnachweis. Nur für ferritische Stähle.', en: 'A separate calculation per EN 1011-2, independent of the strength verification. Ferritic steels only.', pt: 'Cálculo próprio segundo a EN 1011-2, independente da verificação de resistência. Apenas aços ferríticos.' },

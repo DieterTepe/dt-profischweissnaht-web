@@ -2172,7 +2172,10 @@ var S31_SOLL = {
   rhs:       { n_seg: 4,  l: 328,   eta: 0.359 },
   traeger:   { n_seg: 2,  l: 324,   eta: 0.626 },
   blech:     { n_seg: 2,  l: 140,   eta: 0.842 },
-  konsole:   { n_seg: 12, l: 764,   eta: 0.837, a_erf: 2.504, a_gewaehlt: 3 },
+  /* N9d: l und eta beschreiben jetzt die Naht mit dem GEWAEHLTEN a-Mass
+     (3 mm), nicht mehr die mit dem erforderlichen (2,504 mm). Vorher
+     764 mm / 0,837 — das war die Naht, die niemand baut. */
+  konsole:   { n_seg: 12, l: 760,   eta: 0.842, a_erf: 2.504, a_gewaehlt: 3 },
   rohr:      { n_seg: 1,  l: 359.1, eta: 0.545 },
   stoss:     { n_seg: 1,  l: 126,   eta: 0.714 },
   lasche_b:  { n_seg: 2,  l: 140,   eta: 0.714 },
@@ -4116,23 +4119,23 @@ function s43Summe(text) {
    ZWEI Etappen gilt die Regel dagegen streng: geaenderter Quelltext ohne
    Kennungswechsel ist rot. */
 var S43_STAND = [
-  { datei: 'i18n_kern.js', version: '0.4.0-N9c', summe: '83632b2d' },
+  { datei: 'i18n_kern.js', version: '0.5.0-N9d', summe: 'fefe27f2' },
   { datei: 'i18n_hilfe.js', version: '0.3.0-N9c', summe: 'e2a7a98f' },
   { datei: 'i18n_kerbfall.js', version: '0.1.0-N1', summe: '64438e87' },
   { datei: 'daten.js', version: '0.1.0-N1', summe: '4f0ba1bd' },
   { datei: 'optionen.js', version: '0.3.1-N9c', summe: 'a0e4115d' },
-  { datei: 'validate.js', version: '0.4.0-N9c', summe: '6a775ade' },
+  { datei: 'validate.js', version: '0.5.0-N9d', summe: 'f17abf94' },
   { datei: 'naht.js', version: '0.1.0-N2', summe: 'c0284f44' },
   { datei: 'profil.js', version: '0.1.0-N2b', summe: 'e31a9ce3' },
   { datei: 'svglib.js', version: '0.1.0-N2c', summe: 'b50173d8' },
   { datei: 'schaubild.js', version: '0.1.0-N2c', summe: 'bfdb51b8' },
-  { datei: 'solver.js', version: '0.3.0-N9c', summe: 'fb165a88' },
-  { datei: 'rechenweg.js', version: '0.3.0-N9c', summe: '3ce822c5' },
+  { datei: 'solver.js', version: '0.4.0-N9d', summe: '8155d32b' },
+  { datei: 'rechenweg.js', version: '0.4.0-N9d', summe: '8fce1705' },
   { datei: 'symbol.js', version: '0.1.0-N6b', summe: '9e1cac0f' },
   { datei: 'thermik.js', version: '0.3.0-N9c', summe: '1bf966a2' },
   { datei: 'skizze.js', version: '0.3.0-N9c', summe: '447c40cd' },
   { datei: 'assistent.js', version: '0.4.0-N9c', summe: '1bfc4bb8' },
-  { datei: 'ui.js', version: '0.12.1', summe: '2bfad2cd' }
+  { datei: 'ui.js', version: '0.13.0', summe: 'c51631d2' }
 ];
 
 var s43i, s43Fehl = [], s43Src, s43M, s43S;
@@ -4596,6 +4599,251 @@ for (s45i = 0; s45i < s45B.schritte.length; s45i++) {
   ok(Kern.has(s45B.schritte[s45i].code),
      'S45: der Schritt ' + s45B.schritte[s45i].code + ' hat einen Text');
 }
+
+sek('S46 · N9d STREIFZUG — jede Option mindestens einmal betreten');
+
+/* DIETERS IDEE, SYSTEMATISIERT (2026-08-05).
+   Der Beispielkatalog hat dreimal etwas gefunden, das nie ein Bauteiltest
+   gefunden haette: die Auslegung und die Stumpfnaht in N7, die geometrische
+   Lasteingabe in N9c. Jedes Mal war die Ursache dieselbe — ein Pfad, den
+   kein Beispiel je betrat.
+
+   Der Katalog kann diese Aufgabe aber nicht allein tragen: Er soll dem
+   Anwender GUTE Faelle zeigen, nicht alle moeglichen. Vierzehn Beispiele
+   gegen 55.104 gueltige Auswahlwege.
+
+   DESHALB DIESER STREIFZUG. Er baut fuer JEDE Option JEDER Gruppe einen
+   Fall und verlangt eine von genau zwei Antworten:
+     - es rechnet, oder
+     - es scheitert mit einem BENANNTEN Grund.
+   Was er nicht duldet, ist das Dritte: eine Ausnahme, ein leeres Ergebnis,
+   ein Fehlercode ohne Text. Genau dort sassen alle drei bisherigen Funde.
+
+   Was hier NICHT geprueft wird, ist die Richtigkeit der Zahlen — dafuer
+   sind die Hand-Anker und die publizierten Beispiele da. Der Streifzug
+   prueft, dass ueberhaupt eine ehrliche Antwort kommt. */
+
+var s46i, s46j;
+
+/* Eine tragfaehige Grundlage, auf der einzelne Optionen variiert werden.
+   Sie stammt aus einem abgenommenen Beispiel — nicht erfunden. */
+var S46_BASIS = Options.beispiel('blech');
+
+function s46Fall(gruppe, option) {
+  var au = {}, k;
+  for (k in S46_BASIS.auswahl) {
+    if (Object.prototype.hasOwnProperty.call(S46_BASIS.auswahl, k)) au[k] = S46_BASIS.auswahl[k];
+  }
+  au[gruppe] = option;
+  /* Was zur neuen Auswahl nicht mehr passt, faellt weg — sonst pruefte der
+     Streifzug Widersprueche, die das Formular gar nicht zulaesst. */
+  au = Options.bereinige(au);
+  au[gruppe] = option;
+
+  /* WAS JETZT FEHLT, WIRD MIT DER ERSTEN ZULAESSIGEN OPTION GEFUELLT.
+     Ohne das blieben die meisten Faelle an einer unvollstaendigen Auswahl
+     haengen — der Streifzug pruefte dann nur, dass die Luecke benannt
+     wird, und kaeme nie bis zur Rechnung. Gefuellt wird in der Reihenfolge
+     der Gruppen, weil das zugleich die Abhaengigkeitsreihenfolge ist. */
+  var runde, gg, moeglich;
+  for (runde = 0; runde < 3; runde++) {
+    for (var gi = 0; gi < Options.GRUPPEN.length; gi++) {
+      gg = Options.GRUPPEN[gi];
+      if (gg.code === gruppe) continue;
+      if (au[gg.code] !== undefined && au[gg.code] !== '') continue;
+      if (!Options.gruppeAktiv(gg.code, au)) continue;
+      moeglich = Options.filter(gg.code, au);
+      if (moeglich.length) au[gg.code] = moeglich[0].code;
+    }
+  }
+  au = Options.bereinige(au);
+  au[gruppe] = option;
+
+  var w = Valid.standardwerte(au), f;
+  for (k in S46_BASIS.felder) {
+    if (!Object.prototype.hasOwnProperty.call(S46_BASIS.felder, k)) continue;
+    w[k] = S46_BASIS.felder[k];
+  }
+  /* Pflichtfelder, die die Grundlage nicht kennt, mit etwas Tragfaehigem
+     fuellen — sonst scheitert der Fall an der Eingabe statt an der Sache. */
+  for (s46j = 0; s46j < Valid.SCHEMA.length; s46j++) {
+    f = Valid.SCHEMA[s46j];
+    if (!Valid.istPflicht(f, au)) continue;
+    if (w[f.code] !== undefined && w[f.code] !== '') continue;
+    if (f.standard !== undefined) { w[f.code] = f.standard; continue; }
+    w[f.code] = (f.min !== undefined && f.min > 0) ? Math.max(f.min, 10) : 10;
+  }
+  return { auswahl: au, werte: w };
+}
+
+/* Antwortet das Programm ehrlich? Genau zwei Antworten sind zulaessig. */
+function s46Pruefe(gruppe, option, wo) {
+  var fall = s46Fall(gruppe, option), re, erg, rw, i, c;
+
+  /* 1 · Die Auswahl selbst muss vollstaendig oder ehrlich unvollstaendig sein. */
+  var po = Options.pruefe(fall.auswahl);
+  if (!po.ok) {
+    /* Fehlende Auswahl ist in Ordnung — sie muss aber BENANNT sein. */
+    ok((po.fehlend || []).length + (po.ungueltig || []).length > 0,
+       wo + 'eine unvollstaendige Auswahl wird benannt');
+    return 'auswahl';
+  }
+
+  /* 2 · Die Uebersetzung ins Rechenformat. */
+  re = Valid.rechenEingabe(fall.werte, fall.auswahl);
+  if (!re.ok) {
+    ok((re.fehler || []).length > 0, wo + 'ein Eingabefehler wird benannt');
+    for (i = 0; i < re.fehler.length; i++) {
+      c = re.fehler[i].code;
+      ok(!!c && Kern.has(c), wo + 'und hat einen Text: ' + c);
+    }
+    return 'eingabe';
+  }
+
+  /* 3 · Die Rechnung. */
+  erg = Solver.rechne(re.eingabe);
+  if (!erg.ok) {
+    ok((erg.fehler || []).length > 0, wo + 'ein Rechenfehler wird benannt');
+    for (i = 0; i < erg.fehler.length; i++) {
+      c = erg.fehler[i].code;
+      ok(!!c && Kern.has(c), wo + 'und hat einen Text: ' + c);
+    }
+    return 'rechnen';
+  }
+
+  /* 4 · Ein Ergebnis muss vollstaendig sein — kein halbes. */
+  ok(typeof erg.eta === 'number' && isFinite(erg.eta), wo + 'die Ausnutzung ist eine Zahl');
+  ok(!!erg.ampel, wo + 'und es gibt eine Ampel');
+  ok(!!erg.nahtbild && erg.nahtbild.n_seg > 0, wo + 'und ein Nahtbild');
+
+  /* 5 · Der Rechenweg muss dasselbe sagen wie die Ampel (Plan 9.2). */
+  rw = Weg.ausErgebnis(erg, re.eingabe);
+  ok(rw.ok === true, wo + 'der Rechenweg entsteht');
+  ok(rw.selbstpruefung_ok === true, wo + 'alle Rechenproben gehen auf');
+  eq(erg.erfuellt, rw.nachweis_ok, wo + 'Ampel und Rechenweg stimmen ueberein');
+
+  /* 6 · Jede Meldung hat einen Text — in ALLEN drei Sprachen. */
+  var alle = (erg.warnungen || []).concat(erg.hinweise || []);
+  for (i = 0; i < alle.length; i++) {
+    c = alle[i].code || alle[i];
+    ok(!!c && Kern.has(c), wo + 'die Meldung ' + c + ' hat einen Text');
+  }
+  return 'gerechnet';
+}
+
+/* --- DER STREIFZUG ------------------------------------------------------ */
+var s46Zahl = { auswahl: 0, eingabe: 0, rechnen: 0, gerechnet: 0 };
+var s46Betreten = 0, s46Gruppen = 0;
+for (s46i = 0; s46i < Options.GRUPPEN.length; s46i++) {
+  (function (g) {
+    if (g.rechenwirksam === false) return;      /* Symbol und Dokumentation */
+    s46Gruppen++;
+    for (var j = 0; j < g.optionen.length; j++) {
+      var art = s46Pruefe(g.code, g.optionen[j].code,
+                          'S46 [' + g.code + '=' + g.optionen[j].code + ']: ');
+      s46Zahl[art]++;
+      s46Betreten++;
+    }
+  }(Options.GRUPPEN[s46i]));
+}
+ok(s46Gruppen >= 18, 'S46: der Streifzug geht durch alle rechenwirksamen Gruppen (' + s46Gruppen + ')');
+ok(s46Betreten >= 60, 'S46: und betritt jede ihrer Optionen (' + s46Betreten + ' Faelle)');
+ok(s46Zahl.gerechnet > s46Betreten / 3,
+   'S46: ein guter Teil rechnet wirklich durch (' + s46Zahl.gerechnet + ' von ' + s46Betreten + ')');
+console.log('    Streifzug: ' + s46Zahl.gerechnet + ' gerechnet · ' +
+            s46Zahl.rechnen + ' benannt abgelehnt (Rechnung) · ' +
+            s46Zahl.eingabe + ' benannt abgelehnt (Eingabe) · ' +
+            s46Zahl.auswahl + ' unvollstaendige Auswahl');
+
+/* --- KEIN MELDUNGSCODE OHNE TEXT, NIRGENDS ------------------------------ */
+/* Der Streifzug kann nicht jeden Code ausloesen. Deshalb zusaetzlich die
+   Gegenrichtung: jeder Code, den ein Modul FUEHRT, muss einen Text haben —
+   auch der, den man nur selten sieht. */
+var s46Module = [['solver', Solver], ['naht', Naht], ['profil', Profil],
+                 ['schaubild', Bild], ['symbol', require('./symbol.js')],
+                 ['thermik', Therm], ['skizze', Skizze]];
+var s46Ohne = [];
+for (s46i = 0; s46i < s46Module.length; s46i++) {
+  (function (m) {
+    var liste = m[1].CODES || m[1].MELDUNGEN || null;
+    if (!liste) return;
+    for (var j = 0; j < liste.length; j++) {
+      if (!Kern.has(liste[j])) s46Ohne.push(m[0] + '/' + liste[j]);
+    }
+  }(s46Module[s46i]));
+}
+eq(s46Ohne.length, 0, 'S46: jeder gefuehrte Meldungscode hat einen Text (' + s46Ohne.join(',') + ')');
+
+sek('S47 · N9d Anhaltswerte — Erfahrung sieht anders aus als Norm');
+
+/* Dieters Wunsch (2026-08-05): moeglichst viele Felder vorbelegen, damit ein
+   unerfahrener Anwender nicht vor leeren Kaesten steht. Richtig — aber ein
+   vorbelegter Wert, der still in die Rechnung geht, ist genau das, was
+   dieses Programm sonst ueberall vermeidet.
+   DESHALB ZWEI SORTEN VORBELEGUNG:
+     TABELLENWERT  aus einer Norm (gamma_M2, beta_w, nu, HD aus dem
+                   Datenblatt) — gesperrt, mit "eigener Wert"-Haken.
+     ANHALTSWERT   aus der Praxis (Spannung, Strom, Geschwindigkeit) —
+                   ebenso, ABER mit sichtbarem Hinweis, dass keine Norm
+                   dahintersteht.
+   Ein Erfahrungswert, der aussieht wie eine Vorschrift, waere eine stille
+   Behauptung — und die faellt niemandem auf. */
+
+var s47i, s47Anhalt = [], s47Tabelle = [];
+for (s47i = 0; s47i < Valid.SCHEMA.length; s47i++) {
+  if (Valid.SCHEMA[s47i].anhalt === true) s47Anhalt.push(Valid.SCHEMA[s47i]);
+  else if (Valid.SCHEMA[s47i].ueberschreibbar === true) s47Tabelle.push(Valid.SCHEMA[s47i]);
+}
+ok(s47Anhalt.length >= 3, 'S47: es gibt Anhaltswerte (' + s47Anhalt.length + ')');
+ok(s47Tabelle.length >= 5, 'S47: und Tabellenwerte (' + s47Tabelle.length + ')');
+
+/* Jeder Anhaltswert muss dreierlei sein: vorbelegt, ueberschreibbar und
+   erklaert. Fehlt eines davon, ist er entweder nutzlos oder unehrlich. */
+for (s47i = 0; s47i < s47Anhalt.length; s47i++) {
+  (function (f) {
+    var wo = 'S47 [' + f.code + ']: ';
+    ok(f.standard !== undefined, wo + 'ein Anhaltswert IST vorbelegt — sonst hilft er niemandem');
+    ok(f.ueberschreibbar === true, wo + 'und ueberschreibbar — sonst waere er eine Vorschrift');
+    ok(Hilfe.has(f.hilfe), wo + 'und der Laien-ⓘ nennt die Bereiche je Verfahren');
+    /* Der vorbelegte Wert muss im eigenen Gueltigkeitsbereich liegen —
+       sonst schlaegt das Programm etwas vor, das es selbst ablehnt. */
+    if (f.min !== undefined) ok(f.standard >= f.min, wo + 'und liegt nicht unter dem Mindestwert');
+    if (f.max !== undefined) ok(f.standard <= f.max, wo + 'und nicht ueber dem Hoechstwert');
+  }(s47Anhalt[s47i]));
+}
+ok(Kern.has('uiAnhaltswert'), 'S47: der Hinweis auf den Anhaltswert ist dreisprachig belegt');
+
+/* KEIN TABELLENWERT DARF SICH ALS ANHALTSWERT AUSGEBEN — und umgekehrt.
+   Die Unterscheidung ist nur so viel wert wie ihre Trennschaerfe. */
+var s47Falsch = [];
+for (s47i = 0; s47i < s47Tabelle.length; s47i++) {
+  if (s47Tabelle[s47i].anhalt === true) s47Falsch.push(s47Tabelle[s47i].code);
+}
+eq(s47Falsch.length, 0, 'S47: kein Feld ist beides zugleich (' + s47Falsch.join(',') + ')');
+/* Die klassischen Normwerte muessen Tabellenwerte bleiben. */
+var s47Norm = ['gammaM2', 'gammaMw', 'betaW', 'nu', 'Re', 'S'];
+var s47Verrutscht = [];
+for (s47i = 0; s47i < s47Norm.length; s47i++) {
+  var s47F = Valid.feld(s47Norm[s47i]);
+  if (s47F && s47F.anhalt === true) s47Verrutscht.push(s47Norm[s47i]);
+}
+eq(s47Verrutscht.length, 0,
+   'S47: die Beiwerte aus den Normen sind KEINE Anhaltswerte (' + s47Verrutscht.join(',') + ')');
+
+/* Die Vorbelegung muss die Waermefuehrung wirklich rechenbar machen —
+   sonst ist sie Zierrat. Probe: nur Analyse eingeben, sonst nichts. */
+var s47W = Valid.standardwerte({ thermik_aktiv: true });
+var s47B = Therm.bericht({
+  werkstoffgruppe: 'stahl', werkstoff: 'S460', stossart: 't_stoss', dicken: [15],
+  analyse: { C: 0.17, Mn: 1.50, Cr: 0.10, Mo: 0.05, Cu: 0.20, Ni: 0.30 },
+  HD: s47W.HD, verfahren: 'mag', U: s47W.sp_U, I: s47W.sp_I, v: s47W.sp_v
+});
+ok(s47B.ok === true,
+   'S47 DIE PROBE: mit den Vorbelegungen allein rechnet die Waermefuehrung durch — ' +
+   'ein Anwender muss nur noch die Analyse eintragen');
+ok(s47B.Q >= Therm.BEREICH_B.Q.min && s47B.Q <= Therm.BEREICH_B.Q.max,
+   'S47: und das vorbelegte Waermeeinbringen liegt im Geltungsbereich (' +
+   (s47B.ok ? s47B.Q.toFixed(2) : '-') + ' kJ/mm)');
 
 /* ========================================================================= */
 console.log('\n════════════════════════════════════════════');
