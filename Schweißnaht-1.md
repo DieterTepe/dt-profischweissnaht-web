@@ -9,8 +9,8 @@
 > abgenommenen Bausteinen **N1, N2, N2b, N2c, N3, N4 und N5 vollständig
 > (N5a, N5b, N5c-1 bis N5c-3 und N5d)**, **N6b**, **N7** und **N8 vollständig
 > (N8a, N8b-1, N8b-2, N8c)**, **N9a** und **N9b**, dazu **N9c gebaut und
-> **N9 vollständig (N9a–N9d)** und **N10a**, dazu **N10b gebaut und
-> geliefert (Abnahme offen)** — Stand 2026-08-05.
+> **N9 vollständig (N9a–N9d)** und **N10 vollständig (N10a, N10b)** —
+> Stand 2026-08-05.
 > Sie ist so geschrieben, dass ein **neuer Chat ohne Vorwissen** damit weiterarbeiten kann.
 > **Das WARUM steht in `Schweißnaht-Historie.md`** (Entscheidungslog + Changelog im
 > Volltext) — dort nachschlagen, bevor etwas geändert wird, das falsch aussieht.
@@ -19,7 +19,7 @@
 > in 4.11 und in der Historie. Im Projektordner liegt **keine Vorlaufdatei** mehr.
 
 ```
-Plan-Version : 2.59 · Stand 2026-08-05
+Plan-Version : 2.60 · Stand 2026-08-05
 Codestand    : Plan 2.59 · ui 0.15.0 · N10b
                (Die Planversion, gegen die der CODE gebaut ist. Sie steht auch
                in ui.js als PLAN und wird von einer Assertion damit verglichen.
@@ -76,12 +76,11 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                mit **18 Modulen** und ein gerechnetes Beispiel mit
                vollständiger Wärmeführungsanzeige — `i18n_kern.js` und
                beide HTMLs waren angefasst worden.
-               **Etappe N10b ist GEBAUT und GELIEFERT** — Abnahme steht
-               aus. Damit ist **Baustein N10 vollständig**. Neu ist der
-               geteilte Bereich *Schweißparameter*, den Wärmeführung und
-               Kostenrechnung gemeinsam nutzen.
-               → NÄCHSTER SCHRITT: **N10 am Handy abnehmen.** Danach
-                 Baustein **N11 (Ausgaben)** — Einstieg „weiter mit N11",
+               **Baustein N10 ist vollständig von Dieter am Handy geprüft
+               und ABGENOMMEN (2026-08-05)** — einschließlich der Probe,
+               dass ein größeres a-Maß den Drahtbedarf mitzieht. Damit sind
+               **sieben von zehn Bausteinen bis zum Verkaufsstand** fertig.
+               → NÄCHSTER SCHRITT: Baustein **N11 (Ausgaben)** — Einstieg „weiter mit N11",
                  **Umfang vor dem Bau abstimmen**. Dort ist der
                  **Versionsstempel im Dateiformat** zu entscheiden (5.2,
                  drängt vor der Ermüdung) und der Namensabgleich aus 3.6
@@ -1530,7 +1529,7 @@ im Wörterbuch; eine weitere Assertion verbietet einen zweiten Text daneben.
 | **N7** ✅ | **Beispielkatalog — ABGENOMMEN 2026-08-04** | **Zwölf Beispiele, sechs je Bemessungswelt**, als reine Daten in `optionen.js` auf `profil.js` aufgesetzt, mit Merkmalen für die **kontextbezogene Beispielliste** (3.2). Hat **vier Fehler aus N5c aufgedeckt und behoben** — Ergebnis in 5.1-3. |
 | **N8** ✅ | **Assistent — vollständig ABGENOMMEN 2026-08-04** | `assistent.js` (DOM-freie Dialoglogik) + Overlay-UI, Button-Einstieg, tabellengestützt aus `optionen.js`, mit Erklärungen/Tipps/Skizzen je Dialog, Übernahme vorhandener Eingaben. |
 | **N9** ✅ | **Vorwärmung & t8/5 — vollständig ABGENOMMEN 2026-08-05** | `thermik.js` + Panel + Rechenweg + Assistenten-Schritte. Umfang festgelegt 2026-08-05, Ergebnis in 5.1-6. Geteilt in **N9a** (Kennungsabsicherung + Rechenkern, DOM-frei) und **N9b** (Panel, Rechenweg, Assistent, Endkrater-Ankreuzfeld). |
-| **N10** ✅ | **Kosten/Zeit/Draht — vollständig gebaut 2026-08-05, Abnahme offen** | `kosten.js` + Panel + Rechenweg + Assistenten-Schritte. |
+| **N10** ✅ | **Kosten/Zeit/Draht — vollständig ABGENOMMEN 2026-08-05** | `kosten.js` + Panel + Rechenweg + Assistenten-Schritte. |
 | **N11** ⬅ | **Ausgaben** *(nächster Bau — Umfang vorher abstimmen)* | `report.js`: `.dts` speichern/öffnen (**erst leeren, dann laden** + Formatversion), Druck/PDF, Word (.rtf), `guard()`-Gating. Aktionsleiste **oben**, Dateiname trägt Bezeichnung + Datum. **Jede Ausgabe trägt die Versionszeile** (3.6) — **dabei die Modulnamen an die Dateinamen angleichen UND die Modulkennungen mitwachsen lassen**, beide Merkposten in 3.6. |
 | **N12** | **Edition/Registrierung/Impressum** | Testbalken, Aktivierungsdialog beim Erststart (Name + Schlüssel, **keine Formatprüfung**), „Vollversion · lizenziert für <Name>", **10-s-Long-Press** = Reset, Info-ⓘ mit Impressum. |
 | **★** | **LAUNCH-CHECKPOINT** | **Ab hier verkaufsfähig.** Dieter entscheidet: weiterbauen oder veröffentlichen. |
@@ -2493,7 +2492,11 @@ sehen — Panel und Felder kommen mit N10b.
 
 ---
 
-#### 5.1-7b · N10b — **GEBAUT UND GELIEFERT 2026-08-05, Abnahme offen**
+#### 5.1-7b · N10b — **ABGENOMMEN 2026-08-05**
+
+> ✅ **Von Dieter am Handy geprüft und ABGENOMMEN — ohne Nacharbeit.** Alle
+> Bereiche liefen, und die Probe auf die Kopplung ging auf: ein größeres
+> a-Maß zieht den Drahtbedarf mit. **Damit ist Baustein N10 vollständig.**
 
 **Damit ist Baustein N10 vollständig.** Geliefert wurden vier Dinge:
 
@@ -3431,27 +3434,6 @@ Changelog — **die vollständige Fassung ab v1.0 steht in `Schweißnaht-Histori
 Hier stehen nur die letzten drei Einträge. Wer wissen will, wie eine Entscheidung
 zustande kam, findet die Kette dort — lückenlos ab der Erstfassung vom 2026-07-23.
 
-**v2.57 (2026-08-05):** **Etappe N10a gebaut und geliefert — Menge, Zeit und
-Kosten.** Umfang festgelegt (5.1-7): alle zehn Kostenpositionen, Beispielpreise
-mit Jahresangabe. Die leitende Entscheidung ist **Mengen ohne Preise**:
-Schweißgut, Draht, Gas, Minuten und Kilowattstunden folgen aus Geometrie und
-Physik und werden immer gezeigt; Kosten entstehen erst mit Preisen, und jeder
-Preis trägt sein Jahr. Damit gibt es jetzt **drei Sorten Wert** — Tabellenwert,
-Anhaltswert und Preisannahme. Von den zehn Positionen kann das Programm nur
-**vier herleiten**; die sechs übrigen werden entgegengenommen, stehen sonst auf
-null, **und die Summe benennt sie**. Der Anker aus der Recherche sitzt beim
-ersten Lauf: 25 mm² · 451,4 g · 475,1 g · 9,03 min · 22,6 min · 1,151 kWh ·
-15,62 € · Lohnanteil 84 %. Beim Gas geben wir bewusst 108,3 l statt der
-~110 l der Quelle — der Anfahrzuschlag ist nicht beziffert und wird nicht
-geraten. Geändert: neu `kosten.js`, dazu `i18n_kern.js`, `ui.js`, beide HTMLs,
-`test_naht.js` (**S48**), `dom_smoke_voll.js`.
-**Basislinie 2942 → 3015 Assertions · Smokes 801/802 → 802/803 · i18n-Parität 0.**
-**Codestand 2.55 → 2.57** (`ui` 0.13.0 → 0.14.0, Etappe N9d → N10a, **18 Module**).
-**Nächster Schritt: N10a am Handy abnehmen, dann N10b — Felder, Panel,
-Rechenweg, Assistenten-Schritte und die Beispiele.**
-
-
-
 **v2.58 (2026-08-05):** **Etappe N10a von Dieter am Handy geprüft und
 ABGENOMMEN.** Die Versionszeile zeigt „N10a · Plan 2.57 · 18 Module" mit
 `kosten 0.1.0-N10a`, `kern 0.6.0-N10a` und `ui 0.14.0`; ein Bildschirmfoto
@@ -3487,6 +3469,23 @@ Kostenrechnung eingeschaltet mit.
 **Codestand 2.57 → 2.59** (`ui` 0.14.0 → 0.15.0, Etappe N10a → N10b).
 **Nächster Schritt: N10 am Handy abnehmen, dann Baustein N11 (Ausgaben) — dort
 ist der Versionsstempel im Dateiformat zu entscheiden.**
+
+
+
+**v2.60 (2026-08-05):** **Baustein N10 vollständig von Dieter am Handy geprüft
+und ABGENOMMEN.** Die Versionszeile zeigt „N10b · Plan 2.59 · 18 Module" mit
+`ui 0.15.0`, `validate 0.6.0-N10b` und `kosten 0.2.0-N10b`. Alle Bereiche
+liefen, und die Probe auf die Kopplung ging auf: **ein größeres a-Maß zieht den
+Drahtbedarf mit**, weil die Nahtlänge aus dem gerechneten Nahtbild kommt und
+nicht aus einem zweiten Feld. Projektordner gegengeprüft: 36 Dateien byteweise
+identisch, `node --check` über 21 JS sauber, Läufe aus dem Ordner
+**3053 / 905 / 906 · 0 Fehler**. **Damit sind sieben von zehn Bausteinen bis
+zum Verkaufsstand fertig** (N1–N5, N6b, N7, N8, N9, N10); offen bleiben N11,
+N12 und N13/N14. **Code unverändert, `Codestand` bleibt 2.59.**
+**Nächster Schritt: Baustein N11 (Ausgaben) — Umfang vor dem Bau abstimmen.
+Dort ist der Versionsstempel im Dateiformat zu entscheiden (drängt vor der
+Ermüdung) und der Namensabgleich aus 3.6 zu erledigen. Einstieg:
+„weiter mit N11".**
 
 
 ═══════════════════════════════════════════════════════════════════════════

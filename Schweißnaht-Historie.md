@@ -2304,3 +2304,37 @@ Rechnungen sich später noch öffnen lassen müssen.
 **Basislinie 3015 → 3053 Assertions · Smokes 802/803 → 905/906.**
 **Codestand 2.57 → 2.59.**
 **Nächster Schritt: N10 abnehmen, dann N11.**
+
+
+**v2.60 (2026-08-05):** **Baustein N10 abgenommen — sieben von zehn.**
+
+Dieter hat alle Bereiche durchgespielt und ausdrücklich auch die Kopplung
+geprüft: Ein größeres a-Maß zieht den Drahtbedarf mit. Das war die eigentliche
+Probe — sie belegt, dass die Kostenrechnung ihre Nahtlänge aus dem
+**gerechneten** Nahtbild nimmt und nicht aus einem zweiten Feld.
+
+**Damit ist der Tag abgeschlossen, an dem vier Bausteine dazukamen** — N7 und
+N8 abgenommen, N9 und N10 gebaut und abgenommen. Die Basislinie wuchs von 1138
+auf 3053 Assertions, die DOM-Smokes von 537 auf 905.
+
+**Was in diesen vier Bausteinen über das Arbeiten gelernt wurde**, ist in 9.2
+gewandert und gilt weiter:
+
+- Eine Recherche darf **Nein** sagen — und erspart damit eine ganze Etappe.
+- Ein Werkzeug, das eine Prüfung bequemer macht, kann sie **aushöhlen**.
+- Ein Bildschirmfoto enthält **mehr als seine Beschreibung**.
+- Ein Probefall, der etwas findet, wird eine **Assertion** — nicht weggeworfen.
+- Wo **kein Beleg** ist, gibt es **keine Vorbelegung**.
+- **Zwei Felder für dieselbe Zahl** sind zwei Gelegenheiten, sie verschieden
+  anzugeben.
+- Eine **Summe sagt, was in ihr steckt** — sonst sieht sie vollständig aus.
+
+**Vor N11 steht eine Entscheidung, die seit v2.46 wartet:** der
+**Versionsstempel im Dateiformat**. Sie drängt, weil eine gespeicherte Rechnung
+mit Kerbfallcode sich später noch öffnen lassen muss, wenn der Katalog
+gewachsen ist. N11 ist außerdem der erste Baustein, bei dem das Programm etwas
+**aus der Hand gibt** — eine Datei, einen Ausdruck, ein RTF. Was darin steht,
+ist danach nicht mehr korrigierbar.
+
+**Code unverändert, `Codestand` bleibt 2.59.**
+**Nächster Schritt: N11 (Ausgaben).**
