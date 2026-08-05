@@ -23,7 +23,7 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.1.0-N1';
+  var VERSION = '0.2.0-N9b';
 
   var KEHL = ['kehl_einseitig', 'kehl_doppel', 'kehl_flanke', 'kehl_stirn', 'kehl_umlaufend'];
   var STUMPF_VOLL = ['stumpf_i', 'stumpf_v', 'stumpf_dv', 'stumpf_dhv'];
@@ -225,6 +225,19 @@
     /* Nur bei der Auslegung sichtbar — beim Nachweis gibt der Anwender das
        a-Mass selbst vor, da ist nichts zu runden. Immer AUFgerundet, nie ab.
        verzweigt:false, damit die Wegeaufzaehlung nicht verdoppelt wird. */
+    /* ENDKRATERABZUG (N9b, Dieters Entscheidung 2026-08-05).
+       Bisher war der Abzug fest an. Er macht rund 15 % aus (in S39
+       gemessen), und wer ein Lehrbuchbeispiel nachrechnet, fand den
+       Unterschied ohne Erklaerung. Jetzt ist er waehlbar — aber die
+       konservative Seite bleibt die VOREINSTELLUNG: Abschalten ist eine
+       bewusste Handlung, nicht der Normalfall. Der Rechenweg nennt die
+       gewaehlte Seite (Plan 2.2b, 9.2). */
+    { code: 'endkrater', rechenwirksam: true, standard: 'abzug',
+      optionen: [
+        { code: 'abzug' },
+        { code: 'ohne' }
+      ] },
+
     { code: 'a_rundung', pflicht: true, verzweigt: false,
       gilt_wenn: { rechenrichtung: ['auslegung'] }, optionen: [
       { code: 'ganze_mm' },

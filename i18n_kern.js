@@ -12,7 +12,7 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.2.0-N9a';
+  var VERSION = '0.3.0-N9b';
   var SPRACHEN = ['de', 'en', 'pt'];
 
   var D = {
@@ -382,6 +382,56 @@
     uiAssFertigMsg: { de: 'Der Assistent hat die Eingaben übernommen und gerechnet. Prüfe den Rechenweg und die Liste der nicht geprüften Punkte.', en: 'The assistant has transferred your input and calculated. Please check the calculation path and the list of unchecked points.', pt: 'O assistente transferiu os dados e calculou. Verifique o percurso de cálculo e a lista de pontos não verificados.' },
     uiAssAbgebrochen:{ de: 'Assistent abgebrochen — im Formular hat sich nichts geändert.', en: 'Assistant cancelled — nothing changed in the form.', pt: 'Assistente cancelado — nada mudou no formulário.' },
 
+    /* Einheiten und Feldbeschriftungen der Wärmeführung (N9b). */
+    unit_prozent:  { de: '%', en: '%', pt: '%' },
+    unit_ml100g:   { de: 'ml/100 g', en: 'ml/100 g', pt: 'ml/100 g' },
+    unit_volt:     { de: 'V', en: 'V', pt: 'V' },
+    unit_ampere:   { de: 'A', en: 'A', pt: 'A' },
+    unit_mm_s:     { de: 'mm/s', en: 'mm/s', pt: 'mm/s' },
+    unit_s:        { de: 's', en: 's', pt: 's' },
+    unit_kj_mm:    { de: 'kJ/mm', en: 'kJ/mm', pt: 'kJ/mm' },
+    unit_gradC:    { de: '°C', en: '°C', pt: '°C' },
+    fld_an_C:      { de: 'Kohlenstoff C', en: 'Carbon C', pt: 'Carbono C' },
+    fld_an_Si:     { de: 'Silizium Si', en: 'Silicon Si', pt: 'Silício Si' },
+    fld_an_Mn:     { de: 'Mangan Mn', en: 'Manganese Mn', pt: 'Manganês Mn' },
+    fld_an_Cr:     { de: 'Chrom Cr', en: 'Chromium Cr', pt: 'Crómio Cr' },
+    fld_an_Mo:     { de: 'Molybdän Mo', en: 'Molybdenum Mo', pt: 'Molibdénio Mo' },
+    fld_an_V:      { de: 'Vanadium V', en: 'Vanadium V', pt: 'Vanádio V' },
+    fld_an_Cu:     { de: 'Kupfer Cu', en: 'Copper Cu', pt: 'Cobre Cu' },
+    fld_an_Ni:     { de: 'Nickel Ni', en: 'Nickel Ni', pt: 'Níquel Ni' },
+    fld_CET:       { de: 'CET (eigener Wert)', en: 'CET (own value)', pt: 'CET (valor próprio)' },
+    fld_HD:        { de: 'Wasserstoffgehalt HD', en: 'Hydrogen content HD', pt: 'Teor de hidrogénio HD' },
+    fld_sp_U:      { de: 'Schweißspannung U', en: 'Welding voltage U', pt: 'Tensão de soldadura U' },
+    fld_sp_I:      { de: 'Schweißstrom I', en: 'Welding current I', pt: 'Corrente de soldadura I' },
+    fld_sp_v:      { de: 'Schweißgeschwindigkeit v', en: 'Travel speed v', pt: 'Velocidade de soldadura v' },
+    fld_T0:        { de: 'Arbeitstemperatur T₀', en: 'Working temperature T₀', pt: 'Temperatura de trabalho T₀' },
+    fld_t85_min:   { de: 'Zielfenster von', en: 'Target window from', pt: 'Janela alvo de' },
+    fld_t85_max:   { de: 'Zielfenster bis', en: 'Target window to', pt: 'Janela alvo até' },
+    fld_F2:        { de: 'Nahtfaktor F₂ (zweidimensional)', en: 'Joint factor F₂ (two-dimensional)', pt: 'Fator de junta F₂ (bidimensional)' },
+    fld_F3:        { de: 'Nahtfaktor F₃ (dreidimensional)', en: 'Joint factor F₃ (three-dimensional)', pt: 'Fator de junta F₃ (tridimensional)' },
+    th_titel:         { de: 'Wärmeführung nach EN 1011-2', en: 'Thermal control per EN 1011-2', pt: 'Controlo térmico segundo a EN 1011-2' },
+    th_tp:            { de: 'Mindest-Vorwärmtemperatur', en: 'Minimum preheat temperature', pt: 'Temperatura mínima de pré-aquecimento' },
+    th_t85:           { de: 'Abkühlzeit t8/5', en: 'Cooling time t8/5', pt: 'Tempo de arrefecimento t8/5' },
+    th_keine_vorw:    { de: 'keine Vorwärmung erforderlich', en: 'no preheating required', pt: 'sem pré-aquecimento necessário' },
+    th_fenster_von_bis:{ de: 'Zielfenster {0} bis {1} s', en: 'Target window {0} to {1} s', pt: 'Janela alvo {0} a {1} s' },
+    th_fenster_offen: { de: 'kein belegtes Zielfenster', en: 'no documented target window', pt: 'sem janela alvo documentada' },
+    sec_thermik:      { de: 'Vorwärmung & t8/5', en: 'Preheating & t8/5', pt: 'Pré-aquecimento e t8/5' },
+    sec_thermik_hint: { de: 'Eigene Rechnung nach EN 1011-2, unabhängig vom Festigkeitsnachweis. Nur für ferritische Stähle.', en: 'A separate calculation per EN 1011-2, independent of the strength verification. Ferritic steels only.', pt: 'Cálculo próprio segundo a EN 1011-2, independente da verificação de resistência. Apenas aços ferríticos.' },
+    ber_thermik:   { de: 'Vorwärmung & t8/5', en: 'Preheating & t8/5', pt: 'Pré-aquecimento e t8/5' },
+
+    /* Wärmeführung — Schritte und Zielfenster (N9b). */
+    th_s_aequivalente:  { de: 'Kohlenstoffäquivalente aus der Analyse', en: 'Carbon equivalents from the analysis', pt: 'Carbonos equivalentes da análise' },
+    th_s_dicke:         { de: 'Kombinierte Dicke', en: 'Combined thickness', pt: 'Espessura combinada' },
+    th_s_waerme:        { de: 'Wärmeeinbringen', en: 'Heat input', pt: 'Aporte térmico' },
+    th_s_vorwaermung:   { de: 'Vorwärmtemperatur nach Methode B', en: 'Preheat temperature per Method B', pt: 'Temperatura de pré-aquecimento pelo Método B' },
+    th_s_abkuehlzeit:   { de: 'Abkühlzeit t8/5', en: 'Cooling time t8/5', pt: 'Tempo de arrefecimento t8/5' },
+    th_s_fenster:       { de: 'Zielfenster für t8/5', en: 'Target window for t8/5', pt: 'Janela alvo para t8/5' },
+    qu_t85_fenster:     { de: 'Überschneidung von TÜV SÜD (5–20 s) und VdTÜV Wbl. 257 (10–25 s)', en: 'Overlap of TÜV SÜD (5–20 s) and VdTÜV Wbl. 257 (10–25 s)', pt: 'Sobreposição de TÜV SÜD (5–20 s) e VdTÜV Wbl. 257 (10–25 s)' },
+    msg_th_ausserhalb_zielfenster:{ de: 'Die Abkühlzeit liegt außerhalb des Zielfensters. Zu kurz bedeutet Aufhärtung und Kaltrissgefahr, zu lang Verlust an Zähigkeit und Festigkeit.', en: 'The cooling time is outside the target window. Too short means hardening and cold-crack risk, too long means loss of toughness and strength.', pt: 'O tempo de arrefecimento está fora da janela alvo. Curto demais significa endurecimento e risco de fissuração a frio; longo demais, perda de tenacidade e resistência.' },
+    msg_th_kein_fenster_unlegiert:{ de: 'Für unlegierte Baustähle führen die herangezogenen Quellen kein Zeitfenster — t8/5 ist dort in der Regel kein Thema. Der Wert wird gerechnet und gezeigt, aber nicht bewertet. Eine eigene Vorgabe können Sie eintragen.', en: 'For non-alloy structural steels the sources used give no time window — t8/5 is usually not an issue there. The value is calculated and shown but not judged. You may enter your own limits.', pt: 'Para aços de construção não ligados as fontes usadas não indicam janela de tempo — aí o t8/5 geralmente não é questão. O valor é calculado e mostrado, mas não avaliado. Pode indicar os seus próprios limites.' },
+    msg_th_kein_fenster_werkstoff:{ de: 'Für diesen Werkstoff liegt kein belegtes Zeitfenster vor. Bei vergüteten hochfesten Güten verweisen die Quellen ausdrücklich auf die Herstellerangabe.', en: 'No documented time window is available for this material. For quenched high-strength grades the sources explicitly refer to the maker\u2019s specification.', pt: 'Não há janela de tempo documentada para este material. Para aços temperados de alta resistência as fontes remetem expressamente para a indicação do fabricante.' },
+    msg_th_nur_ferritisch:{ de: 'EN 1011-2 gilt für ferritische Stähle. Für nichtrostende Stähle und Aluminium gelten EN 1011-3 und EN 1011-4 mit anderen Regeln — dort ist Vorwärmung meist unerwünscht und t8/5 keine sinnvolle Größe. Es wird deshalb nicht gerechnet.', en: 'EN 1011-2 applies to ferritic steels. Stainless steels and aluminium follow EN 1011-3 and EN 1011-4 with different rules — there preheating is usually undesirable and t8/5 is not a meaningful quantity. No calculation is performed.', pt: 'A EN 1011-2 aplica-se a aços ferríticos. Aços inoxidáveis e alumínio seguem a EN 1011-3 e a EN 1011-4 com outras regras — aí o pré-aquecimento é geralmente indesejável e o t8/5 não é uma grandeza útil. Não se calcula.' },
+
     /* Wärmeführung nach EN 1011-2 (N9a). */
     msg_th_ausserhalb_cet:   { de: 'Das Kohlenstoffäquivalent CET liegt außerhalb des Geltungsbereichs von Methode B (0,20 bis 0,50 %). Es wird nicht gerechnet — eine Formel außerhalb ihres Gültigkeitsbereichs liefert eine Zahl ohne Deckung.', en: 'The carbon equivalent CET is outside the validity range of Method B (0.20 to 0.50 %). No calculation is performed — a formula used outside its range gives a number without backing.', pt: 'O carbono equivalente CET está fora do domínio de validade do Método B (0,20 a 0,50 %). Não se calcula — uma fórmula fora do seu domínio dá um número sem fundamento.' },
     msg_th_ausserhalb_d:     { de: 'Die kombinierte Dicke liegt außerhalb des Geltungsbereichs von Methode B (10 bis 90 mm).', en: 'The combined thickness is outside the validity range of Method B (10 to 90 mm).', pt: 'A espessura combinada está fora do domínio de validade do Método B (10 a 90 mm).' },
@@ -409,6 +459,8 @@
     skz_nulllinie:    { de: 'Nulllinie', en: 'Zero line', pt: 'Linha zero' },
     skz_gesucht:      { de: 'gesucht: das a-Maß', en: 'sought: the throat thickness', pt: 'procurado: a garganta' },
     skz_hebelarm:     { de: 'Hebelarm', en: 'Lever arm', pt: 'Braço de alavanca' },
+    skz_wirksam:      { de: 'rechnerisch wirksame Länge', en: 'effective length', pt: 'comprimento efetivo' },
+    skz_abzug:        { de: 'abgezogen: je a am freien Ende', en: 'deducted: a at each free end', pt: 'deduzido: a em cada extremidade livre' },
     skz_nicht_masstab:{ de: 'Schema, nicht maßstäblich', en: 'Schematic, not to scale', pt: 'Esquema, sem escala' },
 
     /* Beschriftungen des Assistenten (N8a). Er selbst fuehrt nur
@@ -851,6 +903,13 @@
     sv_anker_weltb:      { de: 'Welt B, S235: σ_zul = 0,95 · 240/1,1 = 207 N/mm²', en: 'World B, S235: σ_perm = 0.95 · 240/1.1 = 207 N/mm²', pt: 'Método B, S235: σ_adm = 0,95 · 240/1,1 = 207 N/mm²' },
 
     /* --- Auswahlgruppe: Aufrundung des a-Maßes (2.3, bindend) ------------ */
+    /* --- Auswahlgruppe: Endkraterabzug (N9b) ----------------------------- */
+    grp_endkrater:                { de: 'Endkraterabzug', en: 'End crater deduction', pt: 'Dedução de cratera final' },
+    opt_endkrater_abzug:          { de: 'Abziehen (2·a je offenem Nahtzug)', en: 'Deduct (2·a per open weld run)', pt: 'Deduzir (2·a por cordão aberto)' },
+    opt_endkrater_ohne:           { de: 'Volle Länge ansetzen', en: 'Use full length', pt: 'Usar o comprimento total' },
+    rw_endkrater_abzug:           { de: 'Endkrater abgezogen (2·a je offenem Nahtzug)', en: 'End craters deducted (2·a per open weld run)', pt: 'Crateras deduzidas (2·a por cordão aberto)' },
+    rw_endkrater_ohne:            { de: 'Ohne Endkraterabzug gerechnet — die volle Nahtlänge wurde angesetzt', en: 'Calculated without end crater deduction — the full weld length was used', pt: 'Calculado sem dedução de cratera — foi usado o comprimento total' },
+
     grp_a_rundung:                { de: 'Aufrundung des a-Maßes', en: 'Rounding of the throat size', pt: 'Arredondamento da garganta' },
     opt_a_rundung_ganze_mm:       { de: 'Ganze Millimeter (a4, a5, a6 …)', en: 'Whole millimetres (a4, a5, a6 …)', pt: 'Milímetros inteiros (a4, a5, a6 …)' },
     opt_a_rundung_halbe_mm:       { de: 'Halbe Millimeter (a3; a3,5; a4 …)', en: 'Half millimetres (a3; a3.5; a4 …)', pt: 'Meios milímetros (a3; a3,5; a4 …)' },

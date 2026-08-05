@@ -1909,3 +1909,63 @@ Vorbelegung. Und widersprechen sich zwei belegte Empfehlungen, ist die
 **Basislinie unverändert: 1939 Assertions · Smokes 663 / 664.**
 **Nächster Schritt: N9b — das Zielfenster ist entschieden und muss vor dem Bau
 nicht mehr besprochen werden.**
+
+
+**v2.50 (2026-08-05):** **N9b — die Wärmeführung wird sichtbar, und ein Werkzeug entlarvt sich selbst.**
+
+**Aus N9b (2026-08-05) — Entscheidungen und Erfahrungen**
+
+**Der Endkraterabzug wurde eine Auswahlgruppe statt eines Hakens.** Das war
+die beste kleine Entscheidung des Tages: Damit greift die gesamte vorhandene
+Mechanik von selbst — Filterung, Bereinigung, dreisprachige Beschriftung,
+Laien-ⓘ, Skizze und der Assistenten-Schritt. Ein Ankreuzfeld hätte für jedes
+davon eine Sonderbehandlung gebraucht. **Wo eine Entscheidung wie eine Auswahl
+aussieht, sollte sie auch eine sein.**
+
+Die Voreinstellung bleibt der Abzug, und im Code steht bewusst
+`z.endkrater !== 'ohne'` statt `=== 'abzug'`: **die unsichere Seite darf nie
+durch Weglassen entstehen.** Ein unbekannter oder fehlender Wert lässt den
+Abzug an. Gemessen wurde die Wirkung in beiden Lastfällen — 8 % bei reinem
+Zug, über 12 % mit Biegung, weil das Widerstandsmoment mit dem Quadrat der
+Länge geht. Die 15 % aus S39 waren also der Biegefall; gut, dass beide jetzt
+als Assertion stehen.
+
+**Drei Entscheidungen fielen beim Bauen der Wärmeführung:**
+
+*Gerechnet wird mit der tatsächlichen Arbeitstemperatur.* Ohne eigene Angabe
+ist das die erforderliche Vorwärmtemperatur, nicht 20 °C. Der bequeme
+Standardwert wäre hier gefährlich gewesen: Er hätte eine zu kurze Abkühlzeit
+geliefert und damit auf der unsicheren Seite gelegen.
+
+*Die Wärmeführung läuft unabhängig vom Festigkeitsnachweis — und vor ihm.*
+Das hat der DOM-Smoke gefunden, nicht ich. Stand sie hinter dem Abbruch, blieb
+bei einem unvollständigen Formular ihr **voriges** Ergebnis stehen. Eine alte
+Zahl, die aussieht wie eine neue, ist die schlimmste Sorte Fehler: Sie sieht
+richtig aus, ist plausibel, und niemand prüft sie nach. Entsprechend räumt
+`leeren()` die Karte weg, das Abräumen des Nachweises aber ausdrücklich nicht.
+
+*EN 1011-2 gilt für ferritische Stähle.* Für nichtrostende Stähle und
+Aluminium wird nicht gerechnet, sondern gesagt, dass andere Normen gelten.
+Dieselbe Haltung wie beim Geltungsbereich der Methode B — und dieselbe
+Begründung: eine Formel außerhalb ihres Anwendungsbereichs liefert eine
+plausible Zahl ohne Deckung.
+
+**Und ein Fund, der über diesen Baustein hinausgeht.** Zum Erneuern der
+Wächtertabelle aus N9a hatte ich mir ein kleines Hilfsskript geschrieben: Es
+liest je Modul die `VERSION` und die Prüfsumme und trägt beides ein. Das
+spart Handarbeit — und **höhlt genau die Prüfung aus, für die der Wächter
+gebaut wurde.** Denn es nimmt die Kennung, die im Modul *steht*, nicht die,
+die dort *stehen sollte*. Aufgefallen ist es beim Abschluss: `thermik.js`
+trug noch die N9a-Kennung, obwohl N9b es deutlich erweitert hatte, und der
+Wächter meldete nichts, weil das Skript die alte Kennung mitgeschleppt hatte.
+
+**Die Lehre gehört festgehalten: Ein Werkzeug, das eine Prüfung bequemer
+macht, kann sie auch aushöhlen.** Die Prüfsumme darf automatisch erneuert
+werden, die Kennung nie — sie ist die Aussage des Bauenden darüber, dass er
+etwas geändert hat. Wer beides automatisiert, hat den Wächter zu einem
+Protokollanten degradiert. Das Skript bleibt ein reiner Entwicklungshelfer
+und wandert nicht in den Projektordner.
+
+**Basislinie 1939 → 2005 Assertions · Smokes 663/664 → 748/749.**
+**Codestand 2.47 → 2.50 · acht Module mit neuer Kennung.**
+**Nächster Schritt: N9 abnehmen, dann N10 (Kosten, Zeit, Draht).**

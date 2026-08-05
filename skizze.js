@@ -40,12 +40,12 @@
   'use strict';
 
   var NAME = 'skizze';
-  var VERSION = '0.1.0-N8b';
+  var VERSION = '0.2.0-N9b';
 
   /* Welche Gruppen dieses Modul bedient. Andere Quellen (schaubild.js fuer
      Profil und Kanten, symbol.js fuer Nahtart und Symbol) stehen hier
      bewusst NICHT — dieses Modul kennt sie nicht und haengt nicht an ihnen. */
-  var GRUPPEN = ['stossart', 'lastfall', 'rechenrichtung', 'lasteingabe'];
+  var GRUPPEN = ['stossart', 'lastfall', 'rechenrichtung', 'lasteingabe', 'endkrater'];
 
   /* Die Gruppen ohne Skizze — als Liste gefuehrt, damit die Luecke benannt
      ist und nicht bloss vorhanden. Eine Assertion prueft, dass jede
@@ -57,7 +57,7 @@
 
   var LEGENDE_CODES = ['skz_bauteil', 'skz_naht', 'skz_kraft', 'skz_zeit',
                        'skz_gesucht', 'skz_hebelarm', 'skz_nulllinie',
-                       'skz_nicht_masstab'];
+                       'skz_nicht_masstab', 'skz_wirksam', 'skz_abzug'];
 
   function leer(code) {
     return { ok: false, svg: '', legende: [], fehler: [{ code: code }] };
@@ -207,6 +207,40 @@
   }
 
   /* --------------------------------------------------------------------- */
+  /* endkrater — was von der Naht rechnerisch uebrig bleibt                 */
+  /* --------------------------------------------------------------------- */
+
+  /* Eine offene Naht in der Draufsicht. Mit Abzug sind die beiden Enden
+     abgesetzt und der wirksame Teil ist kuerzer — genau das ist der
+     Unterschied, den 15 Prozent ausmacht. */
+  function endkrater(Svg, v, code) {
+    var t = [], leg = ['skz_naht'], y0 = -90, y1 = 90, z = 0, ab = 22;
+
+    if (code === 'abzug') {
+      /* die beiden Endstuecke: gestrichelt, also nicht mitgerechnet */
+      t.push(Svg.linie(v, y0, z, y0 + ab, z,
+        { farbe: Svg.PALETTE.neutral, strich: '5 4', breite: 5 }));
+      t.push(Svg.linie(v, y1 - ab, z, y1, z,
+        { farbe: Svg.PALETTE.neutral, strich: '5 4', breite: 5 }));
+      /* der wirksame Teil */
+      t.push(Svg.linie(v, y0 + ab, z, y1 - ab, z,
+        { farbe: Svg.PALETTE.bernstein, breite: 7 }));
+      t.push(Svg.masslinie(v, y0 + ab, 34, y1 - ab, 34, { farbe: Svg.PALETTE.bernstein }));
+      t.push(Svg.masslinie(v, y0, -34, y0 + ab, -34, { farbe: Svg.PALETTE.neutral }));
+      t.push(Svg.masslinie(v, y1 - ab, -34, y1, -34, { farbe: Svg.PALETTE.neutral }));
+      leg.push('skz_wirksam'); leg.push('skz_abzug');
+    } else if (code === 'ohne') {
+      t.push(Svg.linie(v, y0, z, y1, z, { farbe: Svg.PALETTE.bernstein, breite: 7 }));
+      t.push(Svg.masslinie(v, y0, 34, y1, 34, { farbe: Svg.PALETTE.bernstein }));
+      leg.push('skz_wirksam');
+    } else {
+      return null;
+    }
+    leg.push('skz_nicht_masstab');
+    return { t: t, leg: leg };
+  }
+
+  /* --------------------------------------------------------------------- */
   /* Einstieg                                                               */
   /* --------------------------------------------------------------------- */
 
@@ -263,6 +297,7 @@
     else if (gruppe === 'lastfall') r = lastfall(Svg, v, option);
     else if (gruppe === 'rechenrichtung') r = rechenrichtung(Svg, v, option);
     else if (gruppe === 'lasteingabe') r = lasteingabe(Svg, v, option);
+    else if (gruppe === 'endkrater') r = endkrater(Svg, v, option);
     if (!r) return leer('msg_skizze_keine_zu_option');
 
     return {

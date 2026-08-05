@@ -237,7 +237,7 @@ function lauf(edition) {
 
   var UI = win.DTNUi, Kern = win.DTNI18nKern;
   ok(UI.START_THEME === 'dark', 'ui.js traegt die bindende Vorgabe START_THEME = dark (Plan 3.1)');
-  ok(UI.BEREICHE.length === 8, 'acht aufklappbare Bereiche vorgesehen (ist ' + UI.BEREICHE.length + ')');
+  ok(UI.BEREICHE.length === 9, 'N9b: neun aufklappbare Bereiche vorgesehen (ist ' + UI.BEREICHE.length + ')');
 
   /* Pflicht-Elemente: jede Id aus ui.js muss in der HTML wirklich stehen. */
   for (i = 0; i < UI.IDS.length; i++) {
@@ -326,7 +326,7 @@ function lauf(edition) {
     ok(hint.replace(/\s/g, '').length > 30, 'DE: Bereich ' + cc + ' hat eine Laien-Erklaerung');
   }
   ok(/Grundeinstellung/.test(bereichTexteDe[0]), 'DE: der erste Bereich heisst "Grundeinstellung"');
-  ok(/Ausf/.test(bereichTexteDe[7]), 'DE: der letzte Bereich ist "Ausfuehrung und Dokumentation"');
+  ok(/Ausf/.test(bereichTexteDe[bereichTexteDe.length - 1]), 'DE: der letzte Bereich ist "Ausfuehrung und Dokumentation"');
   ok(!/\[[a-zA-Z0-9_]+\]/.test(d.alleTexte()), 'DE: kein unuebersetzter Platzhalter auf der ganzen Seite');
 
   /* ------------------------------------------- 6) Aufklappen durchklicken */
@@ -334,7 +334,7 @@ function lauf(edition) {
   ok(d.byId.accBody_grund.hidden === false, 'Startzustand: sein Inhalt ist sichtbar');
   var zu = 0;
   for (i = 1; i < UI.BEREICHE.length; i++) if (!s.istOffen(UI.BEREICHE[i])) zu++;
-  ok(zu === 7, 'Startzustand: die uebrigen sieben Bereiche sind zu (ist ' + zu + ')');
+  ok(zu === 8, 'N9b: Startzustand — die uebrigen acht Bereiche sind zu (ist ' + zu + ')');
 
   for (i = 0; i < UI.BEREICHE.length; i++) {
     var code = UI.BEREICHE[i];
@@ -393,7 +393,7 @@ function lauf(edition) {
       gebauteGruppen++;
     }
   }
-  ok(gebauteGruppen === 25, 'N6b: alle 25 Gruppen gebaut, auch die fuenf fuer das Symbol (ist ' +
+  ok(gebauteGruppen === 26, 'N6b: alle 26 Gruppen gebaut, auch die fuenf fuer das Symbol (ist ' +
      gebauteGruppen + ')');
   ok(!!d.byId['sel_iso5817'] && !!d.byId['sel_exc'],
      'N5d: der Block Ausfuehrung steht jetzt wirklich auf der Seite');
@@ -612,8 +612,11 @@ function lauf(edition) {
   ok(sichtbarkeitsBild() === startBild,
      'Leeren: die Oberflaeche steht wieder GENAU wie beim Oeffnen der Seite');
   ok(Object.keys(s.zustand()).length === 0, 'Leeren: der Zustand ist wirklich leer');
-  ok(Object.keys(s.werte()).length === 4,
-     'Leeren: nur die vier vorbelegten Tabellenwerte stehen im Formular (ist ' +
+  /* Seit N9b sind es sieben: gamma_M2, gamma_Mw, S und der Eckradius wie
+     bisher, dazu HD, F2 und F3 aus der Waermefuehrung. Alle drei tragen
+     einen belegten Tabellenwert und sind ueberschreibbar. */
+  ok(Object.keys(s.werte()).length === 7,
+     'N9b: nur die sieben vorbelegten Tabellenwerte stehen im Formular (ist ' +
      Object.keys(s.werte()).length + ')');
 
   /* ------------------------------- 8) Knoepfe, die noch nicht rechnen ---- */
@@ -687,11 +690,82 @@ function lauf(edition) {
   }
   s.leeren();
 
+  /* ---- N9b · WAERMEFUEHRUNG AM BILDSCHIRM ------------------------------
+     Bereich zuschalten, Felder fuellen, rechnen — und die eigene Karte
+     muss mit eigener Ampel dastehen.                                     */
+  s.leeren();
+  ok(d.byId.cardThermik.hidden === true, 'N9b: ohne zugeschalteten Bereich ist die Karte weg');
+  s.beispielLaden('traeger');
+  var thErg1 = s.rechnen();
+  ok(thErg1 && thErg1.ok === true, 'N9b: der Festigkeitsnachweis rechnet wie bisher');
+  ok(d.byId.cardThermik.hidden === true, 'N9b: und die Waermefuehrung bleibt aus');
+
+  /* Zuschalten */
+  d.byId.zus_thermik.checked = true;
+  s.aktualisiere();
+  ok(d.byId.acc_thermik && d.byId.host_thermik, 'N9b: der Bereich ist im Formular angelegt');
+  var thFelder = { an_C: '0.18', an_Mn: '1.40', an_Cr: '0.20', an_Mo: '0.10',
+                   an_Cu: '0.30', an_Ni: '0.40', HD: '5',
+                   sp_U: '28', sp_I: '250', sp_v: '4' };
+  for (var thK in thFelder) {
+    if (!Object.prototype.hasOwnProperty.call(thFelder, thK)) continue;
+    ok(!!d.byId['fld_' + thK], 'N9b: das Feld ' + thK + ' steht im Formular');
+    if (d.byId['fld_' + thK]) d.byId['fld_' + thK].value = thFelder[thK];
+  }
+  d.byId.sel_schweissverfahren.value = 'mag';
+  s.aktualisiere();
+  var thErg2 = s.rechnen();
+  ok(thErg2 && thErg2.ok === true, 'N9b: der Festigkeitsnachweis rechnet weiterhin');
+  ok(d.byId.cardThermik.hidden === false, 'N9b: jetzt steht die Waermefuehrungskarte da');
+  ok(d.byId.thermikKopf.children.length >= 3, 'N9b: mit Vorwaermtemperatur, t8/5 und Zielfenster');
+  ok(d.byId.thermikWeg.children.length > 5, 'N9b: und einem Rechenweg in Schritten');
+  ok(d.byId.thermikHinweise.children.length > 0,
+     'N9b: und den Hinweisen — darunter, dass Methode A fehlt');
+
+  /* Der Werkstoff entscheidet ueber die Ampel: S355 ist unlegiert, dort
+     fuehren die Quellen kein Zielfenster. */
+  d.byId.sel_werkstoff.value = 'S355';
+  s.aktualisiere();
+  s.rechnen();
+  var thTxt355 = d.byId.thermikHinweise.inhalt() + d.byId.thermikKopf.inhalt();
+  ok(thTxt355.length > 0, 'N9b: auch bei unlegiertem Stahl wird gerechnet und gezeigt');
+
+  /* Nichtrostender Stahl: EN 1011-2 gilt dort nicht — es wird NICHT
+     gerechnet, und der Grund steht da. */
+  d.byId.sel_werkstoffgruppe.value = 'edelstahl';
+  s.aktualisiere();
+  s.rechnen();
+  ok(d.byId.cardThermik.hidden === false, 'N9b: die Karte bleibt sichtbar');
+  ok(d.byId.thermikWeg.children.length === 0,
+     'N9b: aber bei nichtrostendem Stahl wird NICHT gerechnet');
+  ok(d.byId.thermikHinweise.children.length > 0, 'N9b: und der Grund steht da');
+  s.leeren();
+  ok(d.byId.cardThermik.hidden === true, 'N9b: Leeren raeumt auch die Waermefuehrung weg');
+
+  /* ---- N9b · DER ENDKRATERABZUG AM BILDSCHIRM -------------------------- */
+  s.beispielLaden('blech');
+  var ekMit = s.rechnen();
+  ok(!!d.byId.sel_endkrater, 'N9b: die Auswahl fuer den Endkraterabzug steht im Formular');
+  ok(d.byId.sel_endkrater.value === 'abzug' || istLeerW(d.byId.sel_endkrater.value),
+     'N9b: und steht auf Abzug oder leer — nie auf "ohne"');
+  d.byId.sel_endkrater.value = 'ohne';
+  s.aktualisiere();
+  var ekOhne = s.rechnen();
+  ok(ekMit && ekOhne && ekMit.ok && ekOhne.ok, 'N9b: beide Seiten rechnen');
+  ok(ekOhne.eta < ekMit.eta,
+     'N9b: ohne Abzug faellt die Ausnutzung (' + ekMit.eta.toFixed(3) + ' auf ' +
+     ekOhne.eta.toFixed(3) + ')');
+  ok(ekOhne.nahtbild.l_ges > ekMit.nahtbild.l_ges,
+     'N9b: weil die Naht rechnerisch laenger wird (' + ekMit.nahtbild.l_ges +
+     ' auf ' + ekOhne.nahtbild.l_ges + ' mm)');
+  s.leeren();
+
   /* ---- N8b/N8c · DER ASSISTENT AM BILDSCHIRM ---------------------------
      Ein vollstaendiger Durchlauf ueber die echte Oberflaeche: antippen,
      eintragen, weiter. Am Ende muss dasselbe herauskommen wie bei der
      Handeingabe — und die volle Anzeige mit Rechenweg muss stehen.        */
   s.leeren();
+  function istLeerW(v) { return v === undefined || v === null || v === ''; }
   var bspA = Opt.beispiel("blech");
   ok(s.assistStart() === true, 'N8b: der Assistent startet');
   ok(d.byId.assistTitel.inhalt().length > 0, 'N8b: das erste Fenster hat eine Ueberschrift');
@@ -1169,8 +1243,8 @@ function lauf(edition) {
   for (var n8ai = 0; n8ai < n5dInfo.module.length; n8ai++) {
     if (n5dInfo.module[n8ai].name === 'assistent') {
       n8aDrin = true;
-      ok(/^0\.\d+\.\d+-N8[ab]$/.test(n5dInfo.module[n8ai].version),
-         'N8b: und der Assistent nennt seine Kennung (' + n5dInfo.module[n8ai].version + ')');
+      ok(/^\d+\.\d+\.\d+-N\w+$/.test(n5dInfo.module[n8ai].version),
+         'N9b: und der Assistent nennt eine Kennung (' + n5dInfo.module[n8ai].version + ')');
     }
   }
   ok(n8aDrin === true, 'N8a: der Assistent steht in der Versionszeile');

@@ -14,7 +14,7 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.1.0-N1';
+  var VERSION = '0.2.0-N9b';
   var SPRACHEN = ['de', 'en', 'pt'];
   var FELDER = ['was', 'bereich', 'tipp'];
 
@@ -647,6 +647,216 @@
     },
 
     /* =============== N3 · solver.js =============== */
+
+    fld_an_C: {
+      de: { was: 'Kohlenstoffgehalt aus dem Abnahmezeugnis (Schmelzenanalyse).',
+            bereich: 'Baustähle 0,10 bis 0,22 %. Unter 0,18 % ist Pcm aussagekräftiger als CEV.',
+            tipp: 'Steht im Werkszeugnis 3.1. Ohne Analyse tragen Sie unten das CET direkt ein.' },
+      en: { was: 'Carbon content from the inspection certificate (ladle analysis).',
+            bereich: 'Structural steels 0.10 to 0.22 %. Below 0.18 % Pcm is more meaningful than CEV.',
+            tipp: 'It is stated in the 3.1 certificate. Without an analysis enter the CET directly below.' },
+      pt: { was: 'Teor de carbono do certificado (análise de panela).',
+            bereich: 'Aços de construção 0,10 a 0,22 %. Abaixo de 0,18 % o Pcm é mais significativo que o CEV.',
+            tipp: 'Consta do certificado 3.1. Sem análise, indique o CET diretamente abaixo.' }
+    },
+    fld_an_Si: {
+      de: { was: 'Siliziumgehalt. Geht nur in das Pcm ein, nicht in CET oder CEV.',
+            bereich: 'Baustähle bis etwa 0,6 %.',
+            tipp: 'Kann leer bleiben, wenn Sie nur mit CET rechnen.' },
+      en: { was: 'Silicon content. Enters Pcm only, not CET or CEV.',
+            bereich: 'Structural steels up to about 0.6 %.',
+            tipp: 'May be left empty if you only work with CET.' },
+      pt: { was: 'Teor de silício. Entra apenas no Pcm, não no CET nem no CEV.',
+            bereich: 'Aços de construção até cerca de 0,6 %.',
+            tipp: 'Pode ficar vazio se só usar o CET.' }
+    },
+    fld_an_Mn: {
+      de: { was: 'Mangangehalt. Der stärkste Einzeleinfluss nach dem Kohlenstoff.',
+            bereich: 'Baustähle 0,4 bis 1,7 %.',
+            tipp: 'Steht im Werkszeugnis. Fehlt er, wird das CET zu niedrig.' },
+      en: { was: 'Manganese content. The strongest single influence after carbon.',
+            bereich: 'Structural steels 0.4 to 1.7 %.',
+            tipp: 'Stated in the certificate. If missing, the CET comes out too low.' },
+      pt: { was: 'Teor de manganês. A maior influência individual depois do carbono.',
+            bereich: 'Aços de construção 0,4 a 1,7 %.',
+            tipp: 'Consta do certificado. Se faltar, o CET fica baixo demais.' }
+    },
+    fld_an_Cr: {
+      de: { was: 'Chromgehalt.',
+            bereich: 'Unlegierte Baustähle unter 0,3 %.',
+            tipp: 'Bei S235 bis S355 meist eine Spur; dann 0 eintragen oder leer lassen.' },
+      en: { was: 'Chromium content.',
+            bereich: 'Non-alloy structural steels below 0.3 %.',
+            tipp: 'In S235 to S355 usually a trace; enter 0 or leave empty.' },
+      pt: { was: 'Teor de crómio.',
+            bereich: 'Aços não ligados abaixo de 0,3 %.',
+            tipp: 'Em S235 a S355 normalmente vestigial; indique 0 ou deixe vazio.' }
+    },
+    fld_an_Mo: {
+      de: { was: 'Molybdängehalt.',
+            bereich: 'Unlegierte Baustähle unter 0,1 %.',
+            tipp: 'Wie Chrom: bei einfachen Baustählen meist vernachlässigbar.' },
+      en: { was: 'Molybdenum content.',
+            bereich: 'Non-alloy structural steels below 0.1 %.',
+            tipp: 'Like chromium: usually negligible in plain structural steels.' },
+      pt: { was: 'Teor de molibdénio.',
+            bereich: 'Aços não ligados abaixo de 0,1 %.',
+            tipp: 'Como o crómio: normalmente desprezável em aços simples.' }
+    },
+    fld_an_V: {
+      de: { was: 'Vanadiumgehalt. Geht in CEV und Pcm ein, nicht in CET.',
+            bereich: 'Feinkornstähle bis etwa 0,2 %.',
+            tipp: 'Nur bei Feinkornstählen von Bedeutung.' },
+      en: { was: 'Vanadium content. Enters CEV and Pcm, not CET.',
+            bereich: 'Fine-grain steels up to about 0.2 %.',
+            tipp: 'Only relevant for fine-grain steels.' },
+      pt: { was: 'Teor de vanádio. Entra no CEV e no Pcm, não no CET.',
+            bereich: 'Aços de grão fino até cerca de 0,2 %.',
+            tipp: 'Só relevante em aços de grão fino.' }
+    },
+    fld_an_Cu: {
+      de: { was: 'Kupfergehalt.',
+            bereich: 'Baustähle unter 0,55 %.',
+            tipp: 'Meist eine Begleitspur aus dem Schrott.' },
+      en: { was: 'Copper content.',
+            bereich: 'Structural steels below 0.55 %.',
+            tipp: 'Usually a trace carried over from scrap.' },
+      pt: { was: 'Teor de cobre.',
+            bereich: 'Aços de construção abaixo de 0,55 %.',
+            tipp: 'Normalmente um vestígio proveniente da sucata.' }
+    },
+    fld_an_Ni: {
+      de: { was: 'Nickelgehalt.',
+            bereich: 'Unlegierte Baustähle unter 0,3 %, Feinkornstähle mehr.',
+            tipp: 'Bei S460N kann Nickel spürbar zum CET beitragen.' },
+      en: { was: 'Nickel content.',
+            bereich: 'Non-alloy structural steels below 0.3 %, fine-grain steels more.',
+            tipp: 'In S460N nickel can contribute noticeably to the CET.' },
+      pt: { was: 'Teor de níquel.',
+            bereich: 'Aços não ligados abaixo de 0,3 %, aços de grão fino mais.',
+            tipp: 'Em S460N o níquel pode contribuir sensivelmente para o CET.' }
+    },
+    fld_CET: {
+      de: { was: 'Das Kohlenstoffäquivalent, mit dem die Vorwärmung gerechnet wird. Normalerweise rechnet das Programm es aus der Analyse.',
+            bereich: 'Methode B gilt von 0,20 bis 0,50 %.',
+            tipp: 'Nur setzen, wenn das CET im Zeugnis steht oder Sie es aus anderer Quelle kennen. Sonst die Analyse oben ausfüllen.' },
+      en: { was: 'The carbon equivalent used for the preheat calculation. Normally the program computes it from the analysis.',
+            bereich: 'Method B is valid from 0.20 to 0.50 %.',
+            tipp: 'Set it only if the CET is stated in the certificate or known from elsewhere. Otherwise fill in the analysis above.' },
+      pt: { was: 'O carbono equivalente usado no cálculo do pré-aquecimento. Normalmente o programa calcula-o a partir da análise.',
+            bereich: 'O Método B é válido de 0,20 a 0,50 %.',
+            tipp: 'Indique-o só se constar do certificado ou for conhecido de outra fonte. Caso contrário preencha a análise acima.' }
+    },
+    fld_HD: {
+      de: { was: 'Wasserstoffgehalt des Schweißguts. Wasserstoff ist die eigentliche Ursache der Kaltrisse.',
+            bereich: 'Methode B gilt von 1 bis 20 ml/100 g. Basisch umhüllt und trocken: 3 bis 5. Rutil oder feucht: 10 bis 15.',
+            tipp: 'Der Wert steht im Datenblatt des Zusatzwerkstoffs. 5 ml/100 g ist ein vernünftiger Ausgangspunkt für trockene basische Elektroden.' },
+      en: { was: 'Hydrogen content of the weld metal. Hydrogen is the actual cause of cold cracks.',
+            bereich: 'Method B is valid from 1 to 20 ml/100 g. Basic coated and dry: 3 to 5. Rutile or damp: 10 to 15.',
+            tipp: 'The value is in the consumable data sheet. 5 ml/100 g is a sensible starting point for dry basic electrodes.' },
+      pt: { was: 'Teor de hidrogénio do metal depositado. O hidrogénio é a verdadeira causa das fissuras a frio.',
+            bereich: 'O Método B é válido de 1 a 20 ml/100 g. Básico e seco: 3 a 5. Rutilo ou húmido: 10 a 15.',
+            tipp: 'O valor está na ficha do consumível. 5 ml/100 g é um ponto de partida razoável para elétrodos básicos secos.' }
+    },
+    fld_sp_U: {
+      de: { was: 'Lichtbogenspannung beim Schweißen.',
+            bereich: 'MAG 18 bis 32 V, WIG 10 bis 15 V, Lichtbogenhand 20 bis 26 V.',
+            tipp: 'Ablesen am Gerät oder aus der Schweißanweisung übernehmen.' },
+      en: { was: 'Arc voltage during welding.',
+            bereich: 'MAG 18 to 32 V, TIG 10 to 15 V, MMA 20 to 26 V.',
+            tipp: 'Read it from the machine or take it from the welding procedure.' },
+      pt: { was: 'Tensão do arco durante a soldadura.',
+            bereich: 'MAG 18 a 32 V, TIG 10 a 15 V, eléctrodo revestido 20 a 26 V.',
+            tipp: 'Leia no equipamento ou retire da especificação.' }
+    },
+    fld_sp_I: {
+      de: { was: 'Schweißstrom.',
+            bereich: 'MAG 120 bis 350 A, WIG 60 bis 200 A, Lichtbogenhand 80 bis 250 A.',
+            tipp: 'Ablesen am Gerät oder aus der Schweißanweisung übernehmen.' },
+      en: { was: 'Welding current.',
+            bereich: 'MAG 120 to 350 A, TIG 60 to 200 A, MMA 80 to 250 A.',
+            tipp: 'Read it from the machine or take it from the welding procedure.' },
+      pt: { was: 'Corrente de soldadura.',
+            bereich: 'MAG 120 a 350 A, TIG 60 a 200 A, eléctrodo revestido 80 a 250 A.',
+            tipp: 'Leia no equipamento ou retire da especificação.' }
+    },
+    fld_sp_v: {
+      de: { was: 'Schweißgeschwindigkeit, also wie schnell der Brenner läuft.',
+            bereich: 'MAG 3 bis 8 mm/s, entspricht 180 bis 480 mm/min.',
+            tipp: 'Aus der Nahtlänge geteilt durch die Schweißzeit. Wer schneller schweißt, bringt weniger Wärme ein und kühlt schneller ab.' },
+      en: { was: 'Travel speed, that is how fast the torch moves.',
+            bereich: 'MAG 3 to 8 mm/s, i.e. 180 to 480 mm/min.',
+            tipp: 'Weld length divided by welding time. Faster welding means less heat input and faster cooling.' },
+      pt: { was: 'Velocidade de soldadura, ou seja, a rapidez do maçarico.',
+            bereich: 'MAG 3 a 8 mm/s, isto é 180 a 480 mm/min.',
+            tipp: 'Comprimento do cordão a dividir pelo tempo. Soldar mais depressa reduz o aporte e acelera o arrefecimento.' }
+    },
+    fld_T0: {
+      de: { was: 'Die Temperatur des Bauteils beim Schweißen: Vorwärm- oder Zwischenlagentemperatur.',
+            bereich: 'Ohne Vorwärmung 20 °C. Die Zwischenlagentemperatur soll 300 °C nicht übersteigen.',
+            tipp: 'Leer lassen: dann rechnet das Programm mit der eigenen erforderlichen Vorwärmtemperatur, was der übliche Fall ist.' },
+      en: { was: 'The component temperature during welding: preheat or interpass temperature.',
+            bereich: 'Without preheating 20 °C. The interpass temperature should not exceed 300 °C.',
+            tipp: 'Leave empty: the program then uses its own required preheat temperature, which is the usual case.' },
+      pt: { was: 'A temperatura da peça durante a soldadura: pré-aquecimento ou entre passes.',
+            bereich: 'Sem pré-aquecimento 20 °C. A temperatura entre passes não deve exceder 300 °C.',
+            tipp: 'Deixe vazio: o programa usa então a sua própria temperatura de pré-aquecimento necessária.' }
+    },
+    fld_t85_min: {
+      de: { was: 'Untere Grenze des angestrebten Zeitfensters. Zu schnelles Abkühlen härtet auf und begünstigt Kaltrisse.',
+            bereich: 'Vorbelegt sind 10 s — die Überschneidung von TÜV SÜD (5 bis 20 s) und VdTÜV Wbl. 257 (10 bis 25 s).',
+            tipp: 'Nur ändern, wenn Ihre Schweißanweisung oder das Herstellerdatenblatt etwas anderes vorgibt.' },
+      en: { was: 'Lower bound of the intended time window. Cooling too fast hardens the material and promotes cold cracks.',
+            bereich: 'Preset 10 s — the overlap of TÜV SÜD (5 to 20 s) and VdTÜV Wbl. 257 (10 to 25 s).',
+            tipp: 'Change it only if your welding procedure or the maker’s data sheet says otherwise.' },
+      pt: { was: 'Limite inferior da janela pretendida. Arrefecer depressa demais endurece e favorece fissuras a frio.',
+            bereich: 'Predefinido 10 s — a sobreposição de TÜV SÜD (5 a 20 s) e VdTÜV Wbl. 257 (10 a 25 s).',
+            tipp: 'Altere só se a sua especificação ou a ficha do fabricante indicar outra coisa.' }
+    },
+    fld_t85_max: {
+      de: { was: 'Obere Grenze des angestrebten Zeitfensters. Zu langsames Abkühlen kostet Zähigkeit und Festigkeit.',
+            bereich: 'Vorbelegt sind 20 s. Für unlegierte Baustähle führen unsere Quellen kein Fenster — dort bleibt die Bewertung aus.',
+            tipp: 'Nur ändern, wenn Ihre Schweißanweisung oder das Herstellerdatenblatt etwas anderes vorgibt.' },
+      en: { was: 'Upper bound of the intended time window. Cooling too slowly costs toughness and strength.',
+            bereich: 'Preset 20 s. For non-alloy structural steels our sources give no window — there no assessment is made.',
+            tipp: 'Change it only if your welding procedure or the maker’s data sheet says otherwise.' },
+      pt: { was: 'Limite superior da janela pretendida. Arrefecer devagar demais custa tenacidade e resistência.',
+            bereich: 'Predefinido 20 s. Para aços não ligados as fontes não indicam janela — aí não há avaliação.',
+            tipp: 'Altere só se a sua especificação ou a ficha do fabricante indicar outra coisa.' }
+    },
+    fld_F2: {
+      de: { was: 'Nahtfaktor für zweidimensionale Wärmeableitung, also dünne Bleche.',
+            bereich: 'Auftragraupe 1,0 · Stumpfnaht 0,9 · Kehlnaht am Eckstoß 0,45 bis 0,67 · Kehlnaht am T-Stoß 0,67.',
+            tipp: 'Voreinstellung 1,0. Bei Kehlnähten deutlich kleiner — dort fließt die Wärme in mehr Richtungen ab.' },
+      en: { was: 'Joint factor for two-dimensional heat flow, i.e. thin plates.',
+            bereich: 'Bead on plate 1.0 · butt weld 0.9 · fillet at corner joint 0.45 to 0.67 · fillet at T-joint 0.67.',
+            tipp: 'Default 1.0. Considerably smaller for fillet welds — there the heat flows away in more directions.' },
+      pt: { was: 'Fator de junta para fluxo bidimensional, ou seja, chapas finas.',
+            bereich: 'Cordão sobre chapa 1,0 · topo 0,9 · filete em canto 0,45 a 0,67 · filete em T 0,67.',
+            tipp: 'Predefinição 1,0. Bem menor em filetes — aí o calor escoa em mais direções.' }
+    },
+    fld_F3: {
+      de: { was: 'Nahtfaktor für dreidimensionale Wärmeableitung, also dicke Bleche.',
+            bereich: 'Auftragraupe 1,0 · Stumpfnaht 0,9 · Kehlnaht am Eckstoß 0,67 · Kehlnaht am T-Stoß 0,67 bis 0,9.',
+            tipp: 'Voreinstellung 1,0. Wie F₂ bei Kehlnähten kleiner ansetzen.' },
+      en: { was: 'Joint factor for three-dimensional heat flow, i.e. thick plates.',
+            bereich: 'Bead on plate 1.0 · butt weld 0.9 · fillet at corner joint 0.67 · fillet at T-joint 0.67 to 0.9.',
+            tipp: 'Default 1.0. Like F₂, use a smaller value for fillet welds.' },
+      pt: { was: 'Fator de junta para fluxo tridimensional, ou seja, chapas espessas.',
+            bereich: 'Cordão sobre chapa 1,0 · topo 0,9 · filete em canto 0,67 · filete em T 0,67 a 0,9.',
+            tipp: 'Predefinição 1,0. Como o F₂, use valor menor em filetes.' }
+    },
+    grp_endkrater: {
+      de: { was: 'Am Anfang und Ende einer offenen Naht ist die Schweißqualität schlechter – der Lichtbogen wird gezündet und wieder abgesetzt. Deshalb wird an jedem freien Ende die Länge a abgezogen, zusammen 2·a je Nahtzug.',
+            bereich: 'Voreinstellung ist der Abzug. Bei umlaufenden Nähten gibt es keine freien Enden, dort ändert die Einstellung nichts.',
+            tipp: 'Abziehen lassen. Ohne Abzug rechnet das Programm etwa 15 % günstiger – das ist nur dann richtig, wenn An- und Auslaufbleche verwendet und danach entfernt werden, oder wenn Sie ein Lehrbuchbeispiel nachrechnen, das ohne Abzug arbeitet.' },
+      en: { was: 'At the start and end of an open weld the quality is poorer – the arc is struck and broken. The length a is therefore deducted at each free end, 2·a per weld run in total.',
+            bereich: 'Deduction is the default. Continuous welds have no free ends, so the setting changes nothing there.',
+            tipp: 'Leave the deduction on. Without it the program calculates about 15 % more favourably – correct only if run-on and run-off plates are used and removed afterwards, or when checking a textbook example that works without the deduction.' },
+      pt: { was: 'No início e no fim de um cordão aberto a qualidade é pior – o arco é aberto e interrompido. Por isso deduz-se o comprimento a em cada extremidade livre, 2·a por cordão.',
+            bereich: 'A dedução é a predefinição. Cordões contínuos não têm extremidades livres, aí a opção não altera nada.',
+            tipp: 'Deixe a dedução ativa. Sem ela o programa calcula cerca de 15 % mais favoravelmente – só é correto com chapas de entrada e saída removidas depois, ou ao verificar um exemplo de livro que trabalha sem dedução.' }
+    },
 
     grp_a_rundung: {
       de: { was: 'Auf welches Fertigungsmaß das errechnete a-Maß aufgerundet wird. Auf der Zeichnung steht a4 oder a5 – kein Schweißer stellt auf 4,37 mm ein.',

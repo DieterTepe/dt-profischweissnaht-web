@@ -35,12 +35,12 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.10.1';
-  var ETAPPE = 'N9a';
+  var VERSION = '0.11.0';
+  var ETAPPE = 'N9b';
   /* Plan-Version, die zu diesem Stand gehoert. Sie ist die EINZIGE von Hand
      gepflegte Zahl der Versionszeile — alles andere kommt aus den geladenen
      Modulen selbst (Plan 3.6). */
-  var PLAN = '2.47';
+  var PLAN = '2.50';
   var SPRACHEN = ['de', 'en', 'pt'];
 
   /* Plan 3.1 (bindend): die Oberflaeche startet IMMER im dunklen Design —
@@ -49,7 +49,7 @@
   var START_SPRACHE = 'de';
 
   var BEREICHE = ['grund', 'werkstoff', 'naht', 'geometrie',
-                  'lasten', 'beiwerte', 'zusatz', 'ausfuehrung'];
+                  'lasten', 'beiwerte', 'zusatz', 'thermik', 'ausfuehrung'];
 
   /* Nur dieser eine Bereich ist beim Start offen — Handy zuerst. */
   var BEREICH_START_OFFEN = 'grund';
@@ -83,7 +83,7 @@
       felder: ['a', 'z', 'a_steg', 'a_flansch'] },
 
     { code: 'geometrie', leit: 'profil',
-      gruppen: ['profil', 'kanten'],
+      gruppen: ['profil', 'kanten', 'endkrater'],
       felder: ['b', 'h', 'd', 'tw', 'tf', 'r_ecke', 't1', 't2'] },
 
     { code: 'lasten', leit: 'lasteingabe',
@@ -96,6 +96,15 @@
       felder: ['gammaM2', 'gammaMw', 'betaW', 'S', 'nu', 'Re'] },
 
     { code: 'zusatz', leit: null, gruppen: [], felder: [], zusatz: true },
+
+    /* N9b · Waermefuehrung. Erscheint erst, wenn der Bereich oben
+       zugeschaltet ist — er ist eine eigene Rechnung neben dem
+       Festigkeitsnachweis, kein Teil davon. */
+    { code: 'thermik', leit: null, optional_wenn: { thermik_aktiv: [true] },
+      gruppen: [],
+      felder: ['an_C', 'an_Si', 'an_Mn', 'an_Cr', 'an_Mo', 'an_V', 'an_Cu', 'an_Ni',
+               'CET', 'HD', 'sp_U', 'sp_I', 'sp_v', 'T0',
+               't85_min', 't85_max', 'F2', 'F3'] },
 
     /* N5d: der Block "Ausfuehrung und Dokumentation" (Plan 2.7 / 5.1-1).
        hinweise    = i18n-Codes, die als Hinweiszeile unter dem Block stehen —
@@ -137,6 +146,11 @@
     'assistModal', 'assistTitel', 'assistFortschritt', 'assistSkizze',
     'assistLegende', 'assistWas', 'assistTippLbl', 'assistTipp', 'assistHost',
     'assistAbbruch', 'assistZurueck', 'assistUeber', 'assistWeiter',
+    /* N9b */
+    'cardThermik', 'thermikEyebrow', 'thermikHead', 'thermikKopf',
+    'thermikWeg', 'thermikHinweise',
+    'acc_thermik', 'accBtn_thermik', 'accBody_thermik', 'accTitel_thermik',
+    'accHint_thermik', 'accCaret_thermik', 'host_thermik',
     'hilfeModal', 'hilfeTitel', 'hilfeWasLbl', 'hilfeWas', 'hilfeBereichLbl',
     'hilfeBereich', 'hilfeTippLbl', 'hilfeTipp', 'hilfeClose',
     /* N5d */
@@ -170,7 +184,10 @@
     'assist-fortschritt', 'assist-skizze', 'assist-legende', 'assist-host',
     'assist-wahl', 'assist-wahl-vorschlag', 'assist-feld', 'assist-einheit',
     'assist-haken', 'assist-folgt', 'assist-actions', 'modal-assist', 'gewaehlt',
-    'assist-wahl-bild'
+    'assist-wahl-bild',
+    /* N9b */
+    'th-kopf', 'th-weg', 'th-hinweise', 'th-wert', 'th-zeile', 'th-ampel',
+    'th-gruen', 'th-rot', 'th-grau'
   ];
 
   /* Buttons, die bewusst noch nicht verdrahtet sind: Id -> ehrliche Meldung.
@@ -1234,6 +1251,134 @@
       return r;
     }
 
+    /* ==================================================================== */
+    /* N9b · WAERMEFUEHRUNG — nur anzeigen, nichts rechnen                   */
+    /*                                                                       */
+    /* Alles Fachliche steht in thermik.js: die Formeln, die Grenzen, das    */
+    /* Zielfenster und die Entscheidung, wann NICHT gerechnet wird. Diese    */
+    /* Schicht sammelt die Felder ein, reicht sie hin und traegt ein, was    */
+    /* zurueckkommt. Sie hat KEINE eigene Ampel-Regel und keinen eigenen     */
+    /* Grenzwert (Plan 4.10).                                                */
+    /* ==================================================================== */
+
+    function thermikEingabe(z, w) {
+      function nz(k) { return istLeer(w[k]) ? null : w[k]; }
+      return {
+        werkstoffgruppe: z.werkstoffgruppe, werkstoff: z.werkstoff,
+        stossart: z.stossart, verfahren: z.schweissverfahren,
+        analyse: { C: nz('an_C'), Si: nz('an_Si'), Mn: nz('an_Mn'),
+                   Cr: nz('an_Cr'), Mo: nz('an_Mo'), V: nz('an_V'),
+                   Cu: nz('an_Cu'), Ni: nz('an_Ni') },
+        CET: nz('CET'), HD: nz('HD'),
+        U: nz('sp_U'), I: nz('sp_I'), v: nz('sp_v'), T0: nz('T0'),
+        t85_min: nz('t85_min'), t85_max: nz('t85_max'),
+        F2: nz('F2'), F3: nz('F3'),
+        /* Die Blechdicken kommen aus der Geometrie — dieselben Felder, die
+           auch der Festigkeitsnachweis benutzt. Zwei Eingaben fuer dieselbe
+           Dicke waeren zwei Gelegenheiten, sie verschieden anzugeben. */
+        dicken: [nz('t1'), nz('t2'), nz('tw'), nz('tf')].filter(function (x) { return x !== null; })
+      };
+    }
+
+    function thermikZeile(host, label, wert, klasse) {
+      var z = neu('div', 'th-zeile', null);
+      var l = neu('span', null, null);
+      setzeText(l, label);
+      var v = neu('span', 'th-wert' + (klasse ? ' ' + klasse : ''), null);
+      setzeText(v, wert);
+      z.appendChild(l); z.appendChild(v);
+      host.appendChild(z);
+      return z;
+    }
+
+    /* Nur beim vollstaendigen Leeren. NICHT beim Abbruch des
+       Festigkeitsnachweises: die Waermefuehrung ist eine eigene Rechnung
+       und darf ihr Ergebnis behalten, wenn nebenan etwas fehlt (N9b). */
+    function thermikLeeren() {
+      var tk = el(doc, 'cardThermik');
+      if (tk) zeige(tk, false);
+      var tw = el(doc, 'thermikWeg'); if (tw) tw.innerHTML = '';
+      var tko = el(doc, 'thermikKopf'); if (tko) tko.innerHTML = '';
+      var th = el(doc, 'thermikHinweise'); if (th) th.innerHTML = '';
+      S.letzteThermik = null;
+      return true;
+    }
+
+    function thermikZeigen(z, w) {
+      var karte = el(doc, 'cardThermik');
+      var kopf = el(doc, 'thermikKopf'), weg = el(doc, 'thermikWeg');
+      var hin = el(doc, 'thermikHinweise');
+      var T = win.DTNThermik, l = S.sprache, i, sch;
+      if (!karte) return null;
+      if (kopf) kopf.innerHTML = '';
+      if (weg) weg.innerHTML = '';
+      if (hin) hin.innerHTML = '';
+
+      if (!T || z.thermik_aktiv !== true) { zeige(karte, false); return null; }
+      zeige(karte, true);
+
+      var b = T.bericht(thermikEingabe(z, w));
+      if (!b.ok) {
+        for (i = 0; i < b.fehler.length; i++) {
+          zeile(hin, 'pruef-fehler', txt(win, b.fehler[i].code, l));
+        }
+        return b;
+      }
+
+      /* Kopf: die zwei Zahlen, auf die es ankommt. */
+      thermikZeile(kopf, txt(win, 'th_tp', l),
+                   b.vorwaermung_erforderlich
+                     ? (zahlText(b.Tp_gerundet, 0) + ' ' + txt(win, 'unit_gradC', l))
+                     : txt(win, 'th_keine_vorw', l));
+      var ampelKlasse = (b.ampel === 'gruen') ? 'th-gruen'
+                      : (b.ampel === 'rot') ? 'th-rot' : 'th-grau';
+      thermikZeile(kopf, txt(win, 'th_t85', l),
+                   zahlText(b.t85, 1) + ' ' + txt(win, 'unit_s', l), ampelKlasse);
+      thermikZeile(kopf, txt(win, 'th_s_fenster', l),
+                   b.fenster.min === null
+                     ? txt(win, 'th_fenster_offen', l)
+                     : fuelle(txt(win, 'th_fenster_von_bis', l),
+                              [zahlText(b.fenster.min, 0), zahlText(b.fenster.max, 0)]),
+                   ampelKlasse);
+
+      /* Der Rechenweg: jeder Schritt mit seinen Zahlen. */
+      for (i = 0; i < b.schritte.length; i++) {
+        sch = b.schritte[i];
+        var t = neu('div', 'rw-abschnitt', null);
+        setzeText(t, txt(win, sch.code, l));
+        weg.appendChild(t);
+        if (sch.code === 'th_s_aequivalente') {
+          thermikZeile(weg, 'CET', zahlText(sch.CET, 3));
+          thermikZeile(weg, 'CEV', zahlText(sch.CEV, 3));
+          thermikZeile(weg, 'Pcm', zahlText(sch.Pcm, 3));
+        } else if (sch.code === 'th_s_dicke') {
+          thermikZeile(weg, 'd', zahlText(sch.d, 0) + ' ' + txt(win, 'unit_mm', l));
+        } else if (sch.code === 'th_s_waerme') {
+          thermikZeile(weg, 'k', zahlText(sch.k, 2));
+          thermikZeile(weg, 'Q', zahlText(sch.Q, 3) + ' ' + txt(win, 'unit_kj_mm', l));
+        } else if (sch.code === 'th_s_vorwaermung') {
+          thermikZeile(weg, 'CET', zahlText(sch.teile.CET, 1));
+          thermikZeile(weg, 'd', zahlText(sch.teile.d, 1));
+          thermikZeile(weg, 'HD', zahlText(sch.teile.HD, 1));
+          thermikZeile(weg, 'Q', zahlText(sch.teile.Q, 1));
+          thermikZeile(weg, 'Tp', zahlText(sch.Tp, 1) + ' ' + txt(win, 'unit_gradC', l));
+        } else if (sch.code === 'th_s_abkuehlzeit') {
+          thermikZeile(weg, 'T0', zahlText(sch.T0, 0) + ' ' + txt(win, 'unit_gradC', l));
+          thermikZeile(weg, '2D', zahlText(sch.t85_2d, 1) + ' ' + txt(win, 'unit_s', l));
+          thermikZeile(weg, '3D', zahlText(sch.t85_3d, 1) + ' ' + txt(win, 'unit_s', l));
+        }
+      }
+
+      /* Und was NICHT gerechnet wurde — jeder Hinweis, jede Warnung. */
+      for (i = 0; i < b.warnungen.length; i++) {
+        zeile(hin, 'pruef-warnung', txt(win, b.warnungen[i].code, l));
+      }
+      for (i = 0; i < b.hinweise.length; i++) {
+        zeile(hin, 'gap-note', '\u00b7 ' + txt(win, b.hinweise[i].code, l));
+      }
+      return b;
+    }
+
     /* ------------------------------------------------------------ Pruefen */
     /* N5b rechnet NICHT. "Berechnen" prueft die Eingaben und sagt ehrlich,
        was fehlt; das Rechnen selbst folgt in Etappe N5c. */
@@ -1443,6 +1588,14 @@
        nicht bestanden hat — sonst entstuende ein Ergebnis auf unsicherem
        Grund (Plan 3.1/3.4). */
     function rechnen() {
+      /* DIE WAERMEFUEHRUNG IST EINE EIGENE RECHNUNG (N9b) und laeuft
+         deshalb ZUERST und unabhaengig davon, ob der Festigkeitsnachweis
+         durchgeht. Stuende sie hinter dem Abbruch, bliebe bei einem
+         unvollstaendigen Formular ihr VORIGES Ergebnis stehen — und das
+         waere die schlimmste Sorte Fehler: eine alte Zahl, die aussieht
+         wie eine neue. Der DOM-Smoke hat genau das gefunden. */
+      S.letzteThermik = thermikZeigen(zustand(), werte());
+
       var r = pruefen();
       if (!r || r.ok !== true) { ergebnisLeeren(); return null; }
 
@@ -1759,6 +1912,7 @@
       /* Ein offener Assistent wird mit uebersetzt — sonst stuende das
          Dialogfenster nach dem Umschalten noch in der alten Sprache. */
       if (S.assi) assistZeigen();
+      if (S.letzteThermik) thermikZeigen(zustand(), werte());
       return S.sprache;
     }
 
@@ -1834,6 +1988,7 @@
        her, den die frisch geoeffnete Seite hat (Standardwerte in gesperrten
        Feldern, ein Bereich offen, keine Meldung). */
     function leeren() {
+      thermikLeeren();
       var i, e, typ, n = 0;
       var ein = alle(doc, 'input');
       for (i = 0; i < ein.length; i++) {

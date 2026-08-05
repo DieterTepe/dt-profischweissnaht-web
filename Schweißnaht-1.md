@@ -8,7 +8,8 @@
 > Abstimmung vom **2026-07-24** (alle offenen Fragen aus Abschnitt 0 geklärt) und nach den
 > abgenommenen Bausteinen **N1, N2, N2b, N2c, N3, N4 und N5 vollständig
 > (N5a, N5b, N5c-1 bis N5c-3 und N5d)**, **N6b**, **N7** und **N8 vollständig
-> (N8a, N8b-1, N8b-2, N8c)** und **N9a** — Stand 2026-08-05.
+> (N8a, N8b-1, N8b-2, N8c)** und **N9a**, dazu **N9b gebaut und geliefert
+> (Abnahme offen)** — Stand 2026-08-05.
 > Sie ist so geschrieben, dass ein **neuer Chat ohne Vorwissen** damit weiterarbeiten kann.
 > **Das WARUM steht in `Schweißnaht-Historie.md`** (Entscheidungslog + Changelog im
 > Volltext) — dort nachschlagen, bevor etwas geändert wird, das falsch aussieht.
@@ -17,8 +18,8 @@
 > in 4.11 und in der Historie. Im Projektordner liegt **keine Vorlaufdatei** mehr.
 
 ```
-Plan-Version : 2.49 · Stand 2026-08-05
-Codestand    : Plan 2.47 · ui 0.10.1 · N9a
+Plan-Version : 2.50 · Stand 2026-08-05
+Codestand    : Plan 2.50 · ui 0.11.0 · N9b
                (Die Planversion, gegen die der CODE gebaut ist. Sie steht auch
                in ui.js als PLAN und wird von einer Assertion damit verglichen.
                Sie wandert nur mit, wenn sich Code ändert — reine Plan- oder
@@ -60,18 +61,21 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                dazu mehrere durchgerechnete Beispiele und ein
                Assistentenlauf — die vier Module mit der
                Ein-Zeilen-Änderung haben nichts gestört.
-               → NÄCHSTER SCHRITT: **N9b** — Panel, Rechenweg,
-                 Assistenten-Schritte und das **Endkrater-Ankreuzfeld**
-                 (2.2b). Einstieg „weiter mit N9b".
-                 **Das t8/5-Zielfenster ist entschieden** (5.1-6a) und
-                 muss vor dem Bau nicht mehr besprochen werden.
+               **Etappe N9b ist GEBAUT und GELIEFERT** — Abnahme steht
+               aus. Damit ist **Baustein N9 vollständig**: Panel,
+               Rechenweg, Assistenten-Schritt und das
+               Endkrater-Ankreuzfeld. Die Versionszeile zeigt weiterhin
+               **17 Module**, aber acht davon mit neuer Kennung.
+               → NÄCHSTER SCHRITT: **N9 am Handy abnehmen.** Danach
+                 Baustein **N10 (Kosten, Zeit, Draht)** — Einstieg
+                 „weiter mit N10", **Umfang vor dem Bau abstimmen**.
                  Schnittstellen: 4.5 (naht.js), 4.6 (profil.js),
                  4.7 (svglib.js + schaubild.js), 4.8 (solver.js),
                  4.9 (rechenweg.js), 4.10 / 4.10b / 4.10c / 4.10d (ui.js),
                  4.11 (symbol.js).
                Große Bausteine (N5, N8, N13, N14) werden in ETAPPEN gebaut — Regel in
                Kickoff-Punkt 5c, Etappen in Abschnitt 5.2.
-Basislinie   : 1939 Assertions · DOM-Smokes 663 (voll) + 664 (test) · i18n-Parität 0 Abweichungen
+Basislinie   : 2005 Assertions · DOM-Smokes 748 (voll) + 749 (test) · i18n-Parität 0 Abweichungen
                (VERBINDLICH. Basislinie darf nur WACHSEN — nie schrumpfen, nie gelockert werden.)
 Dateistand   : siehe Abschnitt 8.1 — dort steht, was fertig ist und was noch fehlt.
 ⚠️ SYNC       : Am 2026-08-03 lag im Projektordner eine **elf Versionen alte**
@@ -129,7 +133,7 @@ welche Dateien zu überschreiben sind** → Dieter bestätigt am Handy → erst 
 Schritt. Danach Plan-Kopf (Version/Status/Basislinie) + Changelog pflegen.
 
 **5b) WIEDEREINSTIEG IN EINEM NEUEN CHAT — genau diese Reihenfolge:**
-Einstiegssatz von Dieter: **„weiter mit N9b"**.
+Einstiegssatz von Dieter: **„weiter mit N10"**.
 1. Diese Datei komplett lesen (`Schweißnaht-1.md`, sie ist die alleinige Grundlage
    für das Bauen).
    **`Schweißnaht-Historie.md` NICHT vorab lesen** — sie enthält Entscheidungslog und
@@ -160,7 +164,7 @@ Einstiegssatz von Dieter: **„weiter mit N9b"**.
    schon zweimal Dateien verlorengegangen, beide Male hat diese Prüfung es gefunden.
 11. Arbeitsordner herstellen (Befehl unter Punkt 6 der Kickoff-Liste), dann
    `node test_naht.js`, `node dom_smoke_voll.js`, `node dom_smoke_test.js` laufen lassen
-   und die Basislinie aus dem Plan-Kopf bestätigen (**1939 / 663 / 664 · 0 Fehler**),
+   und die Basislinie aus dem Plan-Kopf bestätigen (**2005 / 748 / 749 · 0 Fehler**),
    **bevor** etwas gebaut wird. Weicht etwas ab, erst das klären.
    ⚠️ **Diese drei Läufe sind zugleich die Probe, ob Plandatei und Code zusammenpassen.**
    Steht im Kopfblock eine andere Basislinie als gemessen, ist eine der beiden Seiten alt —
@@ -1508,8 +1512,8 @@ im Wörterbuch; eine weitere Assertion verbietet einen zweiten Text daneben.
 | **N6b** ✅ | **ISO-2553-Symbolgenerator — ABGENOMMEN 2026-08-04** | `symbol.js`: Pfeil-/Gegenseite, a- bzw. z-Maß, Länge, Rundumnaht, Baustellennaht. Nutzt `svglib.js` aus N2c. Bewusst **vor** dem Launch — Verkaufsargument. |
 | **N7** ✅ | **Beispielkatalog — ABGENOMMEN 2026-08-04** | **Zwölf Beispiele, sechs je Bemessungswelt**, als reine Daten in `optionen.js` auf `profil.js` aufgesetzt, mit Merkmalen für die **kontextbezogene Beispielliste** (3.2). Hat **vier Fehler aus N5c aufgedeckt und behoben** — Ergebnis in 5.1-3. |
 | **N8** ✅ | **Assistent — vollständig ABGENOMMEN 2026-08-04** | `assistent.js` (DOM-freie Dialoglogik) + Overlay-UI, Button-Einstieg, tabellengestützt aus `optionen.js`, mit Erklärungen/Tipps/Skizzen je Dialog, Übernahme vorhandener Eingaben. |
-| **N9** ⬅ | **Vorwärmung & t8/5** — **N9a ABGENOMMEN, N9b offen** | `thermik.js` + Panel + Rechenweg + Assistenten-Schritte. Umfang festgelegt 2026-08-05, Ergebnis in 5.1-6. Geteilt in **N9a** (Kennungsabsicherung + Rechenkern, DOM-frei) und **N9b** (Panel, Rechenweg, Assistent, Endkrater-Ankreuzfeld). |
-| **N10** | **Kosten/Zeit/Draht** | `kosten.js` + Panel + Rechenweg + Assistenten-Schritte. |
+| **N9** ✅ | **Vorwärmung & t8/5 — vollständig gebaut 2026-08-05, Abnahme offen** | `thermik.js` + Panel + Rechenweg + Assistenten-Schritte. Umfang festgelegt 2026-08-05, Ergebnis in 5.1-6. Geteilt in **N9a** (Kennungsabsicherung + Rechenkern, DOM-frei) und **N9b** (Panel, Rechenweg, Assistent, Endkrater-Ankreuzfeld). |
+| **N10** ⬅ | **Kosten/Zeit/Draht** *(nächster Bau — Umfang vorher abstimmen)* | `kosten.js` + Panel + Rechenweg + Assistenten-Schritte. |
 | **N11** | **Ausgaben** | `report.js`: `.dts` speichern/öffnen (**erst leeren, dann laden** + Formatversion), Druck/PDF, Word (.rtf), `guard()`-Gating. Aktionsleiste **oben**, Dateiname trägt Bezeichnung + Datum. **Jede Ausgabe trägt die Versionszeile** (3.6) — **dabei die Modulnamen an die Dateinamen angleichen UND die Modulkennungen mitwachsen lassen**, beide Merkposten in 3.6. |
 | **N12** | **Edition/Registrierung/Impressum** | Testbalken, Aktivierungsdialog beim Erststart (Name + Schlüssel, **keine Formatprüfung**), „Vollversion · lizenziert für <Name>", **10-s-Long-Press** = Reset, Info-ⓘ mit Impressum. |
 | **★** | **LAUNCH-CHECKPOINT** | **Ab hier verkaufsfähig.** Dieter entscheidet: weiterbauen oder veröffentlichen. |
@@ -2161,6 +2165,68 @@ verwendeten Fensters.
 
 ---
 
+#### 5.1-6b · N9b — **GEBAUT UND GELIEFERT 2026-08-05, Abnahme offen**
+
+**Damit ist Baustein N9 vollständig.** Geliefert wurden drei Dinge:
+
+**1 · Das Endkrater-Ankreuzfeld** (2.2b). Es wurde eine **Auswahlgruppe**
+statt eines Hakens — damit greift die vorhandene Mechanik von selbst:
+Filterung, Bereinigung, Dreisprachigkeit, Laien-ⓘ und der Assistenten-Schritt.
+**Voreinstellung bleibt „Abziehen"**; nur ein ausdrückliches „ohne" schaltet
+ab, jede andere Lage lässt ihn an. **Die unsichere Seite kann nicht durch
+Weglassen entstehen.** Gemessen: bei reinem Zug rund 8 %, mit Biegung über
+12 % — weil das Widerstandsmoment mit dem Quadrat der Länge geht. Er hat eine
+eigene **Skizze** bekommen: zwei Bilder in der Draufsicht, mit Abzug sind die
+Enden abgesetzt.
+
+**2 · Das Wärmeführungs-Panel.** Achtzehn neue Felder im eigenen Bereich
+*Vorwärmung & t8/5*: die acht Analysewerte, CET (überschreibbar), HD,
+Schweißparameter U/I/v, Arbeitstemperatur, das Zielfenster und die
+Nahtfaktoren. Sie sind **nur Pflicht, wenn der Bereich zugeschaltet ist** —
+sonst stünde ein Laie vor einer Schmelzenanalyse, die er gar nicht braucht.
+
+**3 · Die eigene Ergebniskarte** mit eigener Ampel und eigenem Rechenweg in
+sechs Schritten. Sie zeigt die Vorwärmtemperatur mit ihren **vier
+Teilbeträgen**, die Abkühlzeit in beiden Ableitungsarten und das Zielfenster.
+
+**DREI ENTSCHEIDUNGEN, DIE BEIM BAUEN FIELEN:**
+
+**Gerechnet wird mit der tatsächlichen Arbeitstemperatur.** Ohne eigene
+Angabe ist das die **erforderliche Vorwärmtemperatur**, nicht 20 °C. Mit
+Raumtemperatur zu rechnen, während das Bauteil auf 155 °C vorgewärmt wird,
+wäre schlicht falsch — und ergäbe eine zu kurze Abkühlzeit, also die
+unsichere Seite.
+
+**Die Wärmeführung läuft unabhängig vom Festigkeitsnachweis** und deshalb
+**vor** ihm. Der DOM-Smoke hat das gefunden: stand sie hinter dem Abbruch,
+blieb bei unvollständigem Formular ihr **voriges** Ergebnis stehen — eine
+alte Zahl, die aussieht wie eine neue. Entsprechend räumt `leeren()` die
+Karte weg, das Abräumen des Nachweises aber **nicht**.
+
+**EN 1011-2 gilt für ferritische Stähle.** Für nichtrostende Stähle und
+Aluminium wird **nicht gerechnet**, sondern gesagt, dass EN 1011-3 und
+EN 1011-4 gelten. Dieselbe Haltung wie beim Geltungsbereich der Methode B.
+
+**Das Zielfenster** ist wie in 5.1-6a entschieden umgesetzt: **10–20 s** für
+S420 und S460 (die es nur als Feinkornstähle gibt), **graue Ampel** für S235,
+S275 und S355, und ein eigenes Fenster schaltet die Bewertung überall frei.
+
+**Der Assistent bringt seinen Schritt mit** (Prozessregel 3.3) — und der
+**Zusatzschritt steht jetzt vor den Feldern**. Vorher wäre die Wärmeführung
+schon vorbeigezogen, bevor man sie einschalten konnte.
+
+**Basislinie 1939 → 2005 Assertions · Smokes 663/664 → 748/749.** Neue
+Sektion **S45**. **Acht Module haben eine neue Kennung** — der Wächter aus
+N9a hat jede einzelne eingefordert.
+
+**Erwarteter Beleg am Handy:** Im Bereich *Geometrie* steht die neue Auswahl
+**Endkraterabzug**; auf „Volle Länge ansetzen" umgestellt sinkt die
+Ausnutzung sichtbar. Unter *Zusatzbereiche* schaltet **Vorwärmung & t8/5**
+einen neuen Aufklappbereich frei; nach dem Rechnen steht eine **zweite
+Ergebniskarte** da.
+
+---
+
 ### 5.1a Auftrag für N5c-1 — „Es rechnet" *(ERLEDIGT 2026-07-28, hier nur noch als Begründung)*
 
 > **Dieser Auftrag ist entschieden, nicht mehr Vorschlag.** Dieter hat die offenen Fragen
@@ -2620,6 +2686,17 @@ Solver.
 
 **Basislinie nach N7: 1553 Assertions · 611 / 612 DOM-Smokes · i18n-Parität 0.**
 
+**Nachtrag N9b (2026-08-05) — 13 Dateien:** `thermik.js` (Zielfenster,
+Bericht) · `optionen.js` (Gruppe `endkrater`) · `validate.js` (18 Felder,
+Endkrater durchgereicht) · `i18n_kern.js` · `i18n_hilfe.js` (18 Laienhilfen) ·
+`skizze.js` (Endkraterskizze) · `assistent.js` (Bereich *thermik*,
+Schrittreihenfolge) · `ui.js` (Panel, Ergebniskarte, Kennungen 0.11.0 / N9b /
+2.50) · `style.css` · **beide HTMLs** · `test_naht.js` (**S45**) ·
+`dom_smoke_voll.js`.
+**Nicht angefasst:** `solver.js`, `rechenweg.js`, `naht.js`, `profil.js`,
+`daten.js`, `svglib.js`, `schaubild.js`, `symbol.js`, `i18n_kerbfall.js`,
+`dom_smoke_test.js`. **Der Rechenkern der Statik blieb wieder unberührt.**
+
 **Nachtrag N9a (2026-08-05) — 7 Dateien:** **neu `thermik.js`** ·
 `i18n_kern.js` (16 Meldungstexte, Kennung auf N9a) · `ui.js` (nur Kennungen:
 0.10.1 / N9a / 2.47) · **beide HTMLs** (Skript-Zeile) · `test_naht.js`
@@ -2757,7 +2834,7 @@ Formsache, und der Basislinien-Abgleich aus Kickoff-Punkt 11 ebenso wenig.
 **Erste Handlung im neuen Chat:** Vollständigkeit gegen die Tabelle oben prüfen
 (**17 Module**, `style.css`, beide HTMLs, **alle drei** DEV-ONLY-Dateien, dazu Plandatei und
 `Schweißnaht-Historie.md`), Arbeitsordner herstellen, die drei Testläufe starten.
-Melden müssen sie **1939 / 663 / 664 · 0 Fehler**. Weicht etwas ab, erst das klären —
+Melden müssen sie **2005 / 748 / 749 · 0 Fehler**. Weicht etwas ab, erst das klären —
 nicht bauen.
 
 **Was N6b überschreiben wird** (zur Vorwarnung, nicht als Auftrag): neu `symbol.js`,
@@ -2972,34 +3049,6 @@ Changelog — **die vollständige Fassung ab v1.0 steht in `Schweißnaht-Histori
 Hier stehen nur die letzten drei Einträge. Wer wissen will, wie eine Entscheidung
 zustande kam, findet die Kette dort — lückenlos ab der Erstfassung vom 2026-07-23.
 
-**v2.47 (2026-08-05):** **Etappe N9a gebaut und geliefert — Kennungswächter und
-Wärmeführungs-Rechenkern.** Umfang von N9 festgelegt (5.1-6): Vorwärmung nur
-nach **Methode B**, CET aus der Analyse, kombinierte Dicke als Summe, t8/5 in
-beiden Ableitungsarten plus Auslegung aufs Zielfenster. **Methode A ist nach
-gezielter Recherche nicht ehrlich baubar** — 13 Nomogramme, nie tabelliert
-oder als Formel veröffentlicht; sie wird als benannte Lücke neben jedem
-Ergebnis genannt. Dieselbe Recherche löste zwei alte Widersprüche: die
-kombinierte Dicke ist die **Summe** (das verbreitete ½·(t1+t2) stammt aus der
-australischen AS 3992 und liegt auf der unsicheren Seite), und die
-CEV-Grenzwerte für S420/S460/S690 liegen nun vor. Geliefert wurde zuerst der
-**Wächter für die Modulkennungen** (S43) — je Modul VERSION plus Prüfsumme,
-Gegenprobe bestanden, **fünf Kennungen korrigiert** —, dann `thermik.js` als
-DOM-freier Rechenkern. **Drei publizierte Anker:** t8/5 3D 5,29 gegen 5,3 s,
-2D 17,76 gegen 17,8 s, Vorwärmung 162,83 °C gegen eine **Diagrammablesung**
-von 155 °C, deren eigene Kontrollrechnung „rund 162" nennt — unsere
-SEW-Fassung trifft sie auf 0,1 °C. Die Gegenprobe der Auslegung fand einen
-echten Denkfehler: sie löste eine Ableitungsart auf, während vorwärts der
-größere Wert gilt. Geändert: neu `thermik.js`, dazu `i18n_kern.js`, `ui.js`,
-beide HTMLs, `test_naht.js` (**S43**, **S44**), `dom_smoke_voll.js`, sowie je
-eine Kennungszeile in `solver.js`, `rechenweg.js`, `validate.js`,
-`assistent.js`.
-**Basislinie 1825 → 1939 Assertions · Smokes 662/663 → 663/664 · i18n-Parität 0.**
-**Codestand 2.44 → 2.47** (`ui` 0.10.0 → 0.10.1, Etappe N8c → N9a, **17 Module**).
-**Nächster Schritt: N9a am Handy abnehmen, dann N9b — Panel, Rechenweg,
-Assistenten-Schritte und das Endkrater-Ankreuzfeld. Einstieg: „weiter mit N9b".**
-
-
-
 **v2.48 (2026-08-05):** **Etappe N9a von Dieter am Handy geprüft und ABGENOMMEN —
 ohne Nacharbeit.** Die Versionszeile zeigt „Programmstand N9a · Plan 2.47 ·
 17 Module" mit `thermik 0.1.0-N9a` und `ui 0.10.1`; **alle fünf korrigierten
@@ -3032,6 +3081,32 @@ Vorbelegung, und bei zwei sich widersprechenden Empfehlungen ist die
 **Basislinie unverändert: 1939 Assertions · Smokes 663 / 664 · i18n-Parität 0.**
 **Nächster Schritt: N9b — das Zielfenster muss vor dem Bau nicht mehr
 besprochen werden. Einstieg: „weiter mit N9b".**
+
+
+
+**v2.50 (2026-08-05):** **Etappe N9b gebaut und geliefert — Baustein N9 ist
+vollständig.** Drei Dinge: das **Endkrater-Ankreuzfeld** als Auswahlgruppe
+(Voreinstellung bleibt der Abzug, gemessene Wirkung 8 % bei Zug und über 12 %
+mit Biegung, mit eigener Skizze), das **Wärmeführungs-Panel** mit 18 Feldern in
+einem eigenen zuschaltbaren Bereich, und eine **eigene Ergebniskarte** mit
+eigener Ampel und einem Rechenweg in sechs Schritten. Drei Entscheidungen
+fielen beim Bauen: gerechnet wird mit der **tatsächlichen Arbeitstemperatur**
+(ohne Angabe die erforderliche Vorwärmtemperatur, nicht 20 °C — sonst käme eine
+zu kurze Abkühlzeit heraus); die Wärmeführung läuft **unabhängig vom
+Festigkeitsnachweis und vor ihm**, weil sonst bei unvollständigem Formular ihr
+voriges Ergebnis stehen blieb (vom DOM-Smoke gefunden); und für nichtrostende
+Stähle und Aluminium wird **nicht gerechnet**, weil dort EN 1011-3 und -4
+gelten. Das Zielfenster ist wie in 5.1-6a entschieden umgesetzt, samt grauer
+Ampel für unlegierte Baustähle. Der Assistent bringt seinen Schritt mit, und
+der **Zusatzschritt steht jetzt vor den Feldern**. Geändert: `thermik.js`,
+`optionen.js`, `validate.js`, `i18n_kern.js`, `i18n_hilfe.js`, `skizze.js`,
+`assistent.js`, `ui.js`, `style.css`, beide HTMLs, `test_naht.js` (**S45**),
+`dom_smoke_voll.js`.
+**Basislinie 1939 → 2005 Assertions · Smokes 663/664 → 748/749 · i18n-Parität 0.**
+**Codestand 2.47 → 2.50** (`ui` 0.10.1 → 0.11.0, Etappe N9a → N9b; **acht
+Module mit neuer Kennung**, jede vom Wächter eingefordert).
+**Nächster Schritt: N9 am Handy abnehmen, dann Baustein N10 (Kosten, Zeit,
+Draht). Einstieg: „weiter mit N10".**
 
 
 ═══════════════════════════════════════════════════════════════════════════

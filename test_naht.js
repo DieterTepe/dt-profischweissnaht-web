@@ -214,7 +214,7 @@ ok(codes(rMax.warnungen).indexOf('msg_a_max') >= 0, 'a > 0,7*t_min wird als Warn
    Geprueft wird hier beides: dass das Feld weg ist UND dass die Pruefung
    noch greift. ----------------------------------------------------------- */
 ok(Valid.feld('l') === null, 'Feld l ist aus dem Schema entfernt (Nahtlaenge kommt aus der Geometrie)');
-eq(Valid.SCHEMA.length, 28, 'das Feldschema hat nach der Bereinigung 28 Felder');
+eq(Valid.SCHEMA.length, 46, 'N9b: das Feldschema hat 46 Felder — 18 kamen mit der Waermefuehrung dazu');
 
 function laengenFall(b, a) {
   var r = Solver.rechne({
@@ -318,7 +318,9 @@ for (i = 0; i < Valid.SCHEMA.length; i++) {
   var fs = Valid.SCHEMA[i];
   if (!Kern.has(fs.label)) { feldOhne++; console.log('    ohne Text: ' + fs.label); }
   if (!Hilfe.has(fs.hilfe)) { feldOhne++; console.log('    ohne Laien-Hilfe: ' + fs.hilfe); }
-  if (!Kern.has(fs.einheit)) { feldOhne++; console.log('    ohne Einheit: ' + fs.einheit); }
+  /* Dimensionslose Felder (Nahtfaktoren F2/F3) tragen bewusst keine
+     Einheit — eine erfundene waere schlimmer als keine. */
+  if (fs.einheit !== null && !Kern.has(fs.einheit)) { feldOhne++; console.log('    ohne Einheit: ' + fs.einheit); }
 }
 eq(feldOhne, 0, 'Laien-ⓘ und Beschriftung an JEDEM Eingabefeld');
 
@@ -1760,7 +1762,7 @@ ok(typeof Ui.start === 'function', 'ui.js bietet start(win, doc)');
 eq(Ui.START_THEME, 'dark', 'BINDEND (Plan 3.1): die Oberflaeche startet immer im dunklen Design');
 eq(Ui.START_SPRACHE, 'de', 'Startsprache ist Deutsch');
 eq(Ui.SPRACHEN.length, 3, 'drei Sprachen DE/EN/PT');
-eq(Ui.BEREICHE.length, 8, 'acht aufklappbare Bereiche im Formulargeruest');
+eq(Ui.BEREICHE.length, 9, 'N9b: neun aufklappbare Bereiche im Formulargeruest');
 ok(Ui.BEREICHE.indexOf(Ui.BEREICH_START_OFFEN) >= 0, 'der beim Start offene Bereich gehoert zur Liste');
 ok(Ui.start(null, null) === null, 'ohne DOM tut ui.js nichts und wirft nicht');
 
@@ -1979,7 +1981,7 @@ for (s30i = 0; s30i < Ui2.ZUORDNUNG.length; s30i++) {
   if (Ui2.BEREICHE.indexOf(Ui2.ZUORDNUNG[s30i].code) < 0) s30Fremd.push(Ui2.ZUORDNUNG[s30i].code);
 }
 eq(s30Fremd.length, 0, 'N5b: die Zuordnung nutzt nur die acht Bereiche aus N5a (' + s30Fremd.join(',') + ')');
-eq(Ui2.ZUORDNUNG.length, Ui2.BEREICHE.length, 'N5b: jeder der acht Bereiche kommt in der Zuordnung vor');
+eq(Ui2.ZUORDNUNG.length, Ui2.BEREICHE.length, 'N9b: jeder bekannte Bereich kommt in der Zuordnung vor');
 
 /* --- Der Block Ausfuehrung: in N5b datiert, seit N5d gebaut ------------ */
 eq(s30G.iso5817, 'ausfuehrung', 'N5b: ISO 5817 ist dem Block Ausfuehrung zugeordnet');
@@ -1995,7 +1997,7 @@ var s30Gebaut = 0;
 for (s30i = 0; s30i < Ui2.ZUORDNUNG.length; s30i++) {
   if (!Ui2.ZUORDNUNG[s30i].etappe) s30Gebaut += Ui2.ZUORDNUNG[s30i].gruppen.length;
 }
-eq(s30Gebaut, 25, 'N6b: alle 25 Gruppen werden gebaut — keine ist datiert (ist ' + s30Gebaut + ')');
+eq(s30Gebaut, 26, 'N6b: alle 26 Gruppen werden gebaut — keine ist datiert (ist ' + s30Gebaut + ')');
 
 /* --- Zusatzbereiche stimmen mit optionen.js ueberein -------------------- */
 var s30Zus = [], s30ZusOpt = [];
@@ -2520,8 +2522,10 @@ for (var s34i = 0; s34i < s34Module.length; s34i++) {
 eq(s34OhneVersion.length, 0,
    'N6b: JEDES der 14 Module traegt eine VERSION — auch das neue' +
    (s34OhneVersion.length ? ' (offen: ' + s34OhneVersion.join(', ') + ')' : ''));
-eq(Kern.VERSION, '0.2.0-N9a', 'N5d: i18n_kern.js traegt seine Kennung — seit N9a mit den Waermefuehrungstexten');
-eq(Hilfe.VERSION, '0.1.0-N1', 'N5d: i18n_hilfe.js hat jetzt eine Kennung');
+/* NICHT gegen eine feste Zeichenkette — der Waechter aus S43 fuehrt den
+   Stand. Hier wird nur noch geprueft, DASS eine Kennung da ist. */
+ok(/^\d+\.\d+\.\d+-N\w+$/.test(Kern.VERSION), 'N5d: i18n_kern.js traegt eine Kennung (' + Kern.VERSION + ')');
+ok(/^\d+\.\d+\.\d+-N\w+$/.test(Hilfe.VERSION), 'N5d: i18n_hilfe.js traegt eine Kennung (' + Hilfe.VERSION + ')');
 eq(Kerb.VERSION, '0.1.0-N1', 'N5d: i18n_kerbfall.js hat jetzt eine Kennung');
 /* --- DER FUND VOM 2026-08-04 -------------------------------------------
    Die Versionszeile liest die Module selbst aus — aber Etappe und
@@ -3029,7 +3033,7 @@ eq(s37Doppelt.length, 0,
    'N6b: und KEINE hat zusaetzlich einen eigenen Text — sonst stuenden die Namen zweimal da');
 eq(Options.gruppe('sym_grund').optionen.length, 23, 'N6b: 23 Symbole zur Wahl');
 eq(Options.gruppe('sym_gegen').optionen.length, 23, 'N6b: die Gegenseite bietet dieselben an');
-eq(Options.GRUPPEN.length, 25, 'N6b: 25 Auswahlgruppen insgesamt');
+eq(Options.GRUPPEN.length, 26, 'N9b: 26 Auswahlgruppen insgesamt');
 var s37Rechen = [];
 for (s37i = 0; s37i < Options.GRUPPEN.length; s37i++) {
   if (Options.GRUPPEN[s37i].code.indexOf('sym_') === 0 && Options.GRUPPEN[s37i].rechenwirksam !== false) {
@@ -3560,7 +3564,7 @@ var s40i, s40j, s40k;
 /* --- 1) Aufbau und Grenzen des Moduls ---------------------------------- */
 ok(typeof Assi === 'object' && Assi !== null, 'S40: assistent.js laedt');
 eq(Assi.NAME, 'assistent', 'S40: es nennt sich beim Namen');
-ok(/^0\.\d+\.\d+-N8[ab]$/.test(Assi.VERSION), 'S40: und traegt eine N8-Kennung (' + Assi.VERSION + ')');
+ok(/^0\.\d+\.\d+-N[89][ab]?$/.test(Assi.VERSION), 'S40: und traegt eine Kennung (' + Assi.VERSION + ')');
 var s40Fn = ['starte', 'schritt', 'schritte', 'anzahl', 'antworte', 'zurueck',
              'springe', 'ueberspringe', 'fertig', 'ergebnis', 'offen', 'fortschritt'];
 for (s40i = 0; s40i < s40Fn.length; s40i++) {
@@ -3574,8 +3578,12 @@ for (s40i = 0; s40i < s40Fn.length; s40i++) {
 var s40Src = fsU.readFileSync(__dirname + '/assistent.js', 'utf8');
 ok(s40Src.indexOf('Math.') < 0 || s40Src.indexOf('Math.min') >= 0,
    'S40: keine freie Rechnerei im Assistenten');
+/* 'ui.js' steht hier nicht mehr: der Assistent NENNT die Oberflaeche in
+   einem Kommentar (wo die Freischalt-Haken gefuehrt werden), haengt aber
+   nach wie vor nicht an ihr. Geprueft wird das eine Zeile tiefer ueber die
+   tatsaechlichen Abhaengigkeiten. */
 var s40Verboten = ['solver.js', 'naht.js', 'profil.js', 'daten.js', 'rechenweg.js',
-                   'schaubild.js', 'svglib.js', 'symbol.js', 'ui.js'];
+                   'schaubild.js', 'svglib.js', 'symbol.js'];
 var s40Treffer = [];
 for (s40i = 0; s40i < s40Verboten.length; s40i++) {
   if (s40Src.indexOf(s40Verboten[s40i]) >= 0) s40Treffer.push(s40Verboten[s40i]);
@@ -3780,7 +3788,8 @@ for (s40i = 0; s40i < s40ZSch.bereiche.length; s40i++) {
 }
 ok(s40Folgt >= 4, 'S40: und benennt bei jedem, mit welchem Baustein er kommt');
 var s40ZA = Assi.antworte(s40ZS, { thermik: true });
-ok(s40ZA.werte.thermik_aktiv === true, 'S40: ein angehakter Bereich landet als <code>_aktiv in den Werten');
+ok(s40ZA.auswahl.thermik_aktiv === true,
+   'S40: ein angehakter Bereich landet als <code>_aktiv in der AUSWAHL — dort fuehrt ihn auch das Formular');
 var s40SySch = Assi.schritt(Assi.springe(s40ZA, Assi.SCHRITT_SYMBOL));
 eq(s40SySch.art, 'symbol', 'S40: der Symbolschritt steht am Schluss');
 ok(s40SySch.freiwillig === true, 'S40: und ist ausdruecklich freiwillig');
@@ -3813,7 +3822,7 @@ sek('S41 · N8b-1 Dialogskizzen — zeichnen, was erklaert');
 var s41i, s41j;
 
 eq(Skizze.NAME, 'skizze', 'S41: skizze.js nennt sich beim Namen');
-ok(/^0\.\d+\.\d+-N8b$/.test(Skizze.VERSION), 'S41: und traegt eine N8b-Kennung (' + Skizze.VERSION + ')');
+ok(/^0\.\d+\.\d+-N[89]b$/.test(Skizze.VERSION), 'S41: und traegt eine Kennung (' + Skizze.VERSION + ')');
 
 /* --- 1) Jede Option jeder bedienten Gruppe wird gezeichnet -------------- */
 var s41Fehl = [], s41N = 0;
@@ -4094,23 +4103,23 @@ function s43Summe(text) {
    ZWEI Etappen gilt die Regel dagegen streng: geaenderter Quelltext ohne
    Kennungswechsel ist rot. */
 var S43_STAND = [
-  { datei: 'i18n_kern.js',     version: '0.2.0-N9a',  summe: 'd99a8439' },
-  { datei: 'i18n_hilfe.js',    version: '0.1.0-N1',   summe: '81c40a74' },
-  { datei: 'i18n_kerbfall.js', version: '0.1.0-N1',   summe: '64438e87' },
-  { datei: 'daten.js',         version: '0.1.0-N1',   summe: '4f0ba1bd' },
-  { datei: 'optionen.js',      version: '0.1.0-N1',   summe: '4f244f48' },
-  { datei: 'validate.js',      version: '0.2.0-N8a',  summe: '63ece918' },
-  { datei: 'naht.js',          version: '0.1.0-N2',   summe: 'c0284f44' },
-  { datei: 'profil.js',        version: '0.1.0-N2b',  summe: 'e31a9ce3' },
-  { datei: 'svglib.js',        version: '0.1.0-N2c',  summe: 'b50173d8' },
-  { datei: 'schaubild.js',     version: '0.1.0-N2c',  summe: 'bfdb51b8' },
-  { datei: 'solver.js',        version: '0.2.0-N7',   summe: 'e8baa119' },
-  { datei: 'rechenweg.js',     version: '0.2.0-N7',   summe: '3ee50905' },
-  { datei: 'symbol.js',        version: '0.1.0-N6b',  summe: '9e1cac0f' },
-  { datei: 'thermik.js',       version: '0.1.0-N9a',  summe: '7b7c1f0d' },
-  { datei: 'skizze.js',        version: '0.1.0-N8b',  summe: '99feb661' },
-  { datei: 'assistent.js',     version: '0.2.0-N8b',  summe: 'c0a7e2bb' },
-  { datei: 'ui.js',            version: '0.10.1',     summe: '1984c404' }
+  { datei: 'i18n_kern.js', version: '0.3.0-N9b', summe: '2f7809be' },
+  { datei: 'i18n_hilfe.js', version: '0.2.0-N9b', summe: '1a4ad1af' },
+  { datei: 'i18n_kerbfall.js', version: '0.1.0-N1', summe: '64438e87' },
+  { datei: 'daten.js', version: '0.1.0-N1', summe: '4f0ba1bd' },
+  { datei: 'optionen.js', version: '0.2.0-N9b', summe: '19b719b1' },
+  { datei: 'validate.js', version: '0.3.0-N9b', summe: 'f3c402cd' },
+  { datei: 'naht.js', version: '0.1.0-N2', summe: 'c0284f44' },
+  { datei: 'profil.js', version: '0.1.0-N2b', summe: 'e31a9ce3' },
+  { datei: 'svglib.js', version: '0.1.0-N2c', summe: 'b50173d8' },
+  { datei: 'schaubild.js', version: '0.1.0-N2c', summe: 'bfdb51b8' },
+  { datei: 'solver.js', version: '0.2.0-N7', summe: 'e8baa119' },
+  { datei: 'rechenweg.js', version: '0.2.0-N7', summe: '3ee50905' },
+  { datei: 'symbol.js', version: '0.1.0-N6b', summe: '9e1cac0f' },
+  { datei: 'thermik.js', version: '0.2.0-N9b', summe: '93598ef5' },
+  { datei: 'skizze.js', version: '0.2.0-N9b', summe: 'f015fa89' },
+  { datei: 'assistent.js', version: '0.3.0-N9b', summe: '634a0304' },
+  { datei: 'ui.js', version: '0.11.0', summe: '29a758bc' }
 ];
 
 var s43i, s43Fehl = [], s43Src, s43M, s43S;
@@ -4156,8 +4165,8 @@ ok(s43Summe('') === s43Summe(''), 'S43: und ist bestimmt');
    auffiele. Sie waren der Anlass fuer diese Sektion. */
 ok(require('./solver.js').VERSION.indexOf('N7') > 0, 'S43: solver.js traegt seine N7-Kennung');
 ok(require('./rechenweg.js').VERSION.indexOf('N7') > 0, 'S43: rechenweg.js ebenso');
-ok(require('./validate.js').VERSION.indexOf('N8a') > 0, 'S43: validate.js traegt seine N8a-Kennung');
-ok(require('./assistent.js').VERSION.indexOf('N8b') > 0, 'S43: assistent.js traegt seine N8b-Kennung');
+ok(require('./validate.js').VERSION.indexOf('N9b') > 0, 'S43: validate.js traegt seine N9b-Kennung');
+ok(require('./assistent.js').VERSION.indexOf('N9b') > 0, 'S43: assistent.js traegt seine N9b-Kennung');
 
 sek('S44 · N9a Waermefuehrung — Vorwaermung und Abkuehlzeit nach EN 1011-2');
 
@@ -4168,7 +4177,7 @@ sek('S44 · N9a Waermefuehrung — Vorwaermung und Abkuehlzeit nach EN 1011-2');
 var s44i;
 
 eq(Therm.NAME, 'thermik', 'S44: thermik.js nennt sich beim Namen');
-ok(/^0\.\d+\.\d+-N9a$/.test(Therm.VERSION), 'S44: und traegt eine N9a-Kennung (' + Therm.VERSION + ')');
+ok(/^0\.\d+\.\d+-N9[ab]$/.test(Therm.VERSION), 'S44: und traegt eine N9-Kennung (' + Therm.VERSION + ')');
 var s44Src = fsU.readFileSync(__dirname + '/thermik.js', 'utf8');
 ok(s44Src.indexOf('document') < 0 && s44Src.indexOf('window') < 0,
    'S44: N9a ist DOM-frei — die Oberflaeche kommt mit N9b');
@@ -4378,6 +4387,202 @@ Therm.vorwaermung(s44E1);
 eq(JSON.stringify(s44E1), s44Vor, 'S44: die Eingabe wird nicht veraendert');
 eq(JSON.stringify(Therm.vorwaermung(s44E1)), JSON.stringify(Therm.vorwaermung(s44E1)),
    'S44: zweimal gerechnet ergibt dasselbe');
+
+sek('S45 · N9b Waermefuehrung an der Oberflaeche und der Endkraterabzug');
+
+var s45i;
+
+/* --- 1) DER ENDKRATERABZUG IST WAEHLBAR — die konservative Seite bleibt
+       die Voreinstellung (Plan 2.2b, 9.2). Wer nichts waehlt, bekommt den
+       Abzug; nur ein ausdrueckliches 'ohne' schaltet ihn ab. Die unsichere
+       Seite darf NIE durch Weglassen entstehen. */
+var s45G = Options.gruppe('endkrater');
+ok(!!s45G, 'S45: es gibt eine Auswahlgruppe fuer den Endkraterabzug');
+eq(s45G.standard, 'abzug', 'S45: und ihre Voreinstellung ist der ABZUG');
+eq(s45G.optionen.length, 2, 'S45: mit genau zwei Moeglichkeiten');
+function s45Pe(wert) {
+  var au = { welt: 'A', rechenrichtung: 'nachweis', lasteingabe: 'direkt',
+             werkstoffgruppe: 'stahl', werkstoff: 'S235', stossart: 'ueberlappstoss',
+             nahtart: 'kehl_doppel', nachweisverfahren: 'richtungsbezogen',
+             profil: 'blech', kanten: 'flanken' };
+  if (wert) au.endkrater = wert;
+  return Valid.rechenEingabe({ gammaM2: 1.25, b: 80, t1: 10, a: 3, N: 15000, Q: 0 }, au)
+              .eingabe.profil_eingabe.endkrater;
+}
+eq(s45Pe(null), true, 'S45: ohne Auswahl wird abgezogen');
+eq(s45Pe('abzug'), true, 'S45: mit "abzug" ebenso');
+eq(s45Pe('ohne'), false, 'S45: nur "ohne" schaltet ab');
+eq(s45Pe('unfug'), true, 'S45: und ein unbekannter Wert schaltet NICHT ab');
+/* Die Wirkung muss messbar sein — sonst waere der Schalter Zierrat. */
+function s45Eta(wert, werte) {
+  var au = { welt: 'A', rechenrichtung: 'nachweis', lasteingabe: 'direkt',
+             werkstoffgruppe: 'stahl', werkstoff: 'S235', stossart: 'ueberlappstoss',
+             nahtart: 'kehl_doppel', nachweisverfahren: 'richtungsbezogen',
+             profil: 'blech', kanten: 'flanken', endkrater: wert };
+  var e = Solver.rechne(Valid.rechenEingabe(werte, au).eingabe);
+  return e.ok ? e.eta : null;
+}
+/* REINER ZUG: die Wirkung geht linear ueber die Flaeche. */
+var s45W1 = { gammaM2: 1.25, b: 80, t1: 10, a: 3, N: 15000, Q: 0 };
+var s45Mit = s45Eta('abzug', s45W1), s45Ohne = s45Eta('ohne', s45W1);
+ok(s45Mit > s45Ohne, 'S45: mit Abzug rechnet das Programm unguenstiger');
+ok((s45Mit - s45Ohne) / s45Ohne > 0.05,
+   'S45: bei reinem Zug rund acht Prozent (' +
+   (100 * (s45Mit - s45Ohne) / s45Ohne).toFixed(1) + ' %)');
+/* MIT BIEGUNG wird es deutlich mehr — das Widerstandsmoment geht mit dem
+   QUADRAT der Laenge. Genau dieser Fall stand in S39 mit rund 15 %. */
+var s45W2 = { gammaM2: 1.25, b: 80, t1: 10, a: 3, N: 15000, Q: 0, Mz: 900 };
+var s45MitB = s45Eta('abzug', s45W2), s45OhneB = s45Eta('ohne', s45W2);
+ok((s45MitB - s45OhneB) / s45OhneB > 0.12,
+   'S45: mit Biegung ueber zwoelf Prozent (' +
+   (100 * (s45MitB - s45OhneB) / s45OhneB).toFixed(1) +
+   ' %) — deshalb MUSS der Rechenweg die gewaehlte Seite nennen');
+ok(Kern.has('rw_endkrater_abzug') && Kern.has('rw_endkrater_ohne'),
+   'S45: fuer beide Seiten gibt es einen Text im Rechenweg');
+/* Und die Skizze dazu — S41 verlangt fuer jede Gruppe eine Entscheidung. */
+ok(Skizze.hat('endkrater'), 'S45: der Endkraterabzug wird gezeichnet');
+ok(Skizze.zeichne('endkrater', 'abzug', Svg).ok === true, 'S45: mit Abzug');
+ok(Skizze.zeichne('endkrater', 'ohne', Svg).ok === true, 'S45: und ohne');
+eq(Assi.skizzeZu('endkrater'), 'skizze', 'S45: und der Assistent kennt die Quelle');
+
+/* --- 2) Die Waermefuehrung ist ein eigener Bereich mit eigenen Feldern --- */
+var s45TF = [];
+for (s45i = 0; s45i < Valid.SCHEMA.length; s45i++) {
+  if (Valid.SCHEMA[s45i].bereich === 'thermik') s45TF.push(Valid.SCHEMA[s45i].code);
+}
+eq(s45TF.length, 18, 'S45: achtzehn Felder gehoeren zur Waermefuehrung');
+/* Sie sind NUR Pflicht, wenn der Bereich zugeschaltet ist — sonst stuende
+   ein Laie vor einer Schmelzenanalyse, die er gar nicht braucht. */
+var s45Pf = [], s45PfAus = [];
+for (s45i = 0; s45i < Valid.SCHEMA.length; s45i++) {
+  if (Valid.SCHEMA[s45i].bereich !== 'thermik') continue;
+  if (Valid.istPflicht(Valid.SCHEMA[s45i], { thermik_aktiv: true })) s45Pf.push(Valid.SCHEMA[s45i].code);
+  if (Valid.istPflicht(Valid.SCHEMA[s45i], {})) s45PfAus.push(Valid.SCHEMA[s45i].code);
+}
+eq(s45PfAus.length, 0, 'S45: ohne zugeschalteten Bereich ist KEIN Feld Pflicht (' + s45PfAus.join(',') + ')');
+ok(s45Pf.length >= 4, 'S45: mit zugeschaltetem Bereich schon (' + s45Pf.join(',') + ')');
+/* Der Assistent fragt entsprechend — das ist die Prozessregel aus 3.3. */
+function s45Schritte(aktiv) {
+  var st = Assi.starte(aktiv ? { thermik_aktiv: true } : {}, {}), n = 0, hat = false, sch;
+  while (!Assi.fertig(st) && n < 60) {
+    n++; sch = Assi.schritt(st);
+    if (sch.code === 'thermik') hat = true;
+    if (sch.art === 'auswahl') st = Assi.antworte(st, sch.optionen.length ? sch.optionen[0].code : null);
+    else if (sch.art === 'felder') {
+      var v = {}, j;
+      for (j = 0; j < sch.felder.length; j++) v[sch.felder[j].code] = sch.felder[j].standard !== null ? sch.felder[j].standard : 1;
+      st = Assi.antworte(st, v);
+    } else if (sch.art === 'zusatz') st = Assi.antworte(st, {});
+    else st = Assi.ueberspringe(st);
+  }
+  return hat;
+}
+ok(s45Schritte(false) === false, 'S45: ohne Waermefuehrung fragt der Assistent nicht danach');
+ok(s45Schritte(true) === true, 'S45: mit Waermefuehrung schon — der Baustein liefert seinen Schritt MIT (3.3)');
+/* Und der Zusatzschritt kommt VOR den Feldern, sonst koennte man den
+   Bereich gar nicht mehr einschalten. */
+/* Geprueft an einer Sitzung, in der es ueberhaupt Felder gibt — am leeren
+   Start ist noch nichts Pflicht, also gibt es auch keinen Feldschritt. */
+var s45F = Assi.schritte(Assi.starte(Options.beispiel('blech').auswahl,
+                                     Options.beispiel('blech').felder));
+var s45iZ = -1, s45iF = -1;
+for (s45i = 0; s45i < s45F.length; s45i++) {
+  if (s45F[s45i].code === Assi.SCHRITT_ZUSATZ) s45iZ = s45i;
+  if (s45F[s45i].art === 'felder' && s45iF < 0) s45iF = s45i;
+}
+ok(s45iZ >= 0 && s45iF >= 0 && s45iZ < s45iF,
+   'S45: der Zusatzschritt steht VOR den Feldern (' + s45iZ + ' vor ' + s45iF + ')');
+
+/* --- 3) Der Bericht setzt die Kette zusammen ---------------------------- */
+var s45B = Therm.bericht({
+  werkstoffgruppe: 'stahl', werkstoff: 'S460', stossart: 't_stoss', dicken: [15],
+  analyse: { C: 0.18, Mn: 1.40, Cr: 0.20, Mo: 0.10, Cu: 0.30, Ni: 0.40 },
+  HD: 5, verfahren: 'mag', U: 28, I: 250, v: 4
+});
+ok(s45B.ok === true, 'S45: der Bericht rechnet durch');
+eq(s45B.schritte.length, 6, 'S45: in sechs Schritten');
+ok(Math.abs(s45B.d_kombiniert - 45) < 1e-9, 'S45: T-Stoss mit t=15 gibt 45 mm kombinierte Dicke');
+ok(s45B.Tp > 100 && s45B.Tp < 200, 'S45: mit einer plausiblen Vorwaermtemperatur (' + s45B.Tp.toFixed(0) + ' °C)');
+/* GERECHNET WIRD MIT DER TATSAECHLICHEN ARBEITSTEMPERATUR: ohne eigene
+   Angabe ist das die erforderliche Vorwaermtemperatur. Mit 20 °C zu
+   rechnen, waehrend das Bauteil auf 155 °C vorgewaermt wird, waere falsch. */
+ok(Math.abs(s45B.T0 - s45B.Tp_gerundet) < 1e-9,
+   'S45: ohne eigene Angabe wird mit der erforderlichen Vorwaermtemperatur gerechnet');
+var s45B20 = Therm.bericht({
+  werkstoffgruppe: 'stahl', werkstoff: 'S460', stossart: 't_stoss', dicken: [15],
+  analyse: { C: 0.18, Mn: 1.40, Cr: 0.20, Mo: 0.10, Cu: 0.30, Ni: 0.40 },
+  HD: 5, verfahren: 'mag', U: 28, I: 250, v: 4, T0: 20
+});
+ok(s45B20.t85 < s45B.t85,
+   'S45: ohne Vorwaermung kuehlt es schneller ab (' + s45B20.t85.toFixed(1) +
+   ' gegen ' + s45B.t85.toFixed(1) + ' s)');
+
+/* --- 4) DAS ZIELFENSTER — drei Zustaende, und wo kein Beleg ist, keiner - */
+eq(Therm.ZIELFENSTER.min, 10, 'S45: die Vorbelegung beginnt bei 10 s');
+eq(Therm.ZIELFENSTER.max, 20, 'S45: und endet bei 20 s — die Ueberschneidung beider Quellfenster');
+ok(Kern.has(Therm.ZIELFENSTER.quelle), 'S45: die Quelle des Fensters ist benannt');
+var s45Fk = ['S420', 'S460'], s45Un = ['S235', 'S275', 'S355'];
+for (s45i = 0; s45i < s45Fk.length; s45i++) {
+  ok(Therm.zielfenster(s45Fk[s45i]).belegt === true,
+     'S45: ' + s45Fk[s45i] + ' ist ein Feinkornstahl — Fenster belegt');
+}
+for (s45i = 0; s45i < s45Un.length; s45i++) {
+  (function (w) {
+    var zf = Therm.zielfenster(w);
+    ok(zf.belegt === false, 'S45: ' + w + ' ist unlegiert — KEIN erfundenes Fenster');
+    ok(Kern.has(zf.grund), 'S45: und der Grund wird gesagt');
+  }(s45Un[s45i]));
+}
+/* Die Ampel kennt drei Zustaende. Grau ist kein Mangel, sondern eine
+   zutreffende Auskunft: die Frage stellt sich dort kaum. */
+function s45Ampel(w) {
+  return Therm.bericht({ werkstoffgruppe: 'stahl', werkstoff: w, stossart: 't_stoss',
+    dicken: [15], analyse: { C: 0.18, Mn: 1.40, Cr: 0.20, Mo: 0.10, Cu: 0.30, Ni: 0.40 },
+    HD: 5, verfahren: 'mag', U: 28, I: 250, v: 4 }).ampel;
+}
+eq(s45Ampel('S235'), 'grau', 'S45: bei unlegiertem Stahl bleibt die Ampel GRAU');
+ok(s45Ampel('S460') !== 'grau', 'S45: beim Feinkornstahl wird bewertet');
+/* Ein eigenes Fenster schaltet die Bewertung ueberall frei. */
+var s45Eig = Therm.bericht({ werkstoffgruppe: 'stahl', werkstoff: 'S235', stossart: 't_stoss',
+  dicken: [15], analyse: { C: 0.18, Mn: 1.40, Cr: 0.20, Mo: 0.10, Cu: 0.30, Ni: 0.40 },
+  HD: 5, verfahren: 'mag', U: 28, I: 250, v: 4, t85_min: 5, t85_max: 30 });
+ok(s45Eig.ampel !== 'grau', 'S45: mit eigenem Fenster wird auch dort bewertet');
+ok(s45Eig.fenster.eigen === true, 'S45: und es ist als eigenes gekennzeichnet');
+
+/* --- 5) EN 1011-2 GILT FUER FERRITISCHE STAEHLE ------------------------- */
+/* Fuer nichtrostende Staehle und Aluminium gelten andere Normen mit ganz
+   anderen Regeln. Die Formeln trotzdem anzuwenden waere derselbe Fehler
+   wie eine Formel ausserhalb ihres Geltungsbereichs. */
+var s45Fremd = [['edelstahl', '1.4301'], ['alu', 'AW6082']];
+for (s45i = 0; s45i < s45Fremd.length; s45i++) {
+  (function (g) {
+    var r = Therm.bericht({ werkstoffgruppe: g[0], werkstoff: g[1], stossart: 't_stoss',
+      dicken: [15], analyse: { C: 0.05 }, HD: 5, verfahren: 'wig', U: 12, I: 120, v: 2 });
+    ok(r.ok === false, 'S45: fuer ' + g[0] + ' wird NICHT gerechnet');
+    var hat = false, j;
+    for (j = 0; j < r.fehler.length; j++) if (r.fehler[j].code === 'msg_th_nur_ferritisch') hat = true;
+    ok(hat === true, 'S45: und der Grund wird benannt');
+  }(s45Fremd[s45i]));
+}
+
+/* --- 6) Die Oberflaeche rechnet nichts ---------------------------------- */
+var s45Ui = fsU.readFileSync(__dirname + '/ui.js', 'utf8');
+ok(s45Ui.indexOf('DTNThermik') > 0, 'S45: ui.js holt die Waermefuehrung beim Modul');
+ok(s45Ui.indexOf('697') < 0 && s45Ui.indexOf('6700') < 0 && s45Ui.indexOf('tanh') < 0,
+   'S45: und traegt keine einzige Formel der Waermefuehrung');
+ok(s45Ui.indexOf('ZIELFENSTER') < 0 && s45Ui.indexOf('10, 20') < 0,
+   'S45: auch das Zielfenster steht nicht in der Oberflaeche');
+/* Jeder Schrittcode und jeder Anzeigetext ist belegt. */
+var s45Texte = ['th_titel', 'th_tp', 'th_t85', 'th_keine_vorw',
+                'th_fenster_von_bis', 'th_fenster_offen', 'sec_thermik',
+                'sec_thermik_hint', 'ber_thermik'];
+var s45Ohne = [];
+for (s45i = 0; s45i < s45Texte.length; s45i++) if (!Kern.has(s45Texte[s45i])) s45Ohne.push(s45Texte[s45i]);
+eq(s45Ohne.length, 0, 'S45: jeder Anzeigetext der Waermefuehrung ist belegt (' + s45Ohne.join(',') + ')');
+for (s45i = 0; s45i < s45B.schritte.length; s45i++) {
+  ok(Kern.has(s45B.schritte[s45i].code),
+     'S45: der Schritt ' + s45B.schritte[s45i].code + ' hat einen Text');
+}
 
 /* ========================================================================= */
 console.log('\n════════════════════════════════════════════');

@@ -150,6 +150,20 @@
         </div>
       </section>
 
+      <!-- N9b · Wärmeführung. Erscheint erst, wenn der Bereich oben
+           zugeschaltet ist — eine eigene Rechnung neben dem
+           Festigkeitsnachweis, kein Teil davon. -->
+      <section class="acc" id="acc_thermik">
+        <button type="button" class="acc-head" id="accBtn_thermik" aria-expanded="false" aria-controls="accBody_thermik">
+          <span class="acc-caret" id="accCaret_thermik" aria-hidden="true">▸</span>
+          <span class="acc-titel" id="accTitel_thermik" data-i18n="sec_thermik">Vorwärmung &amp; t8/5</span>
+        </button>
+        <div class="acc-body" id="accBody_thermik" hidden>
+          <p class="acc-hint" id="accHint_thermik" data-i18n="sec_thermik_hint"></p>
+          <div class="feldgruppe" id="host_thermik"></div>
+        </div>
+      </section>
+
       <section class="acc" id="acc_ausfuehrung">
         <button type="button" class="acc-head" id="accBtn_ausfuehrung" aria-expanded="false" aria-controls="accBody_ausfuehrung">
           <span class="acc-caret" id="accCaret_ausfuehrung" aria-hidden="true">▸</span>
@@ -201,6 +215,22 @@
         <div class="status-banner idle" id="pathIdle" data-i18n="pathIdle"></div>
       </div>
     </section>
+
+    <!-- N9b · Ergebnis der Waermefuehrung. Eine EIGENE Karte neben dem
+         Festigkeitsnachweis: eigene Ampel, eigener Rechenweg, eigene
+         Grenzen. Sie erscheint nur, wenn der Bereich zugeschaltet ist. -->
+    <section class="card" id="cardThermik" aria-labelledby="thermikHead" hidden>
+      <div class="card-head">
+        <span class="eyebrow" id="thermikEyebrow" data-i18n="sec_thermik">Vorwärmung &amp; t8/5</span>
+        <h2 id="thermikHead" data-i18n="th_titel">Wärmeführung nach EN 1011-2</h2>
+      </div>
+      <div class="card-body">
+        <div class="th-kopf" id="thermikKopf"></div>
+        <div class="th-weg" id="thermikWeg"></div>
+        <div class="th-hinweise" id="thermikHinweise"></div>
+      </div>
+    </section>
+
 
   </div>
 </main>

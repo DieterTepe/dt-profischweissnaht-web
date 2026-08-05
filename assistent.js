@@ -39,12 +39,15 @@
   'use strict';
 
   var NAME = 'assistent';
-  var VERSION = '0.2.0-N8b';
+  var VERSION = '0.3.0-N9b';
 
   /* Die Bereiche, in denen Eingabefelder gebuendelt werden. Die Reihenfolge
      ist die Reihenfolge im Dialog. Welches Feld in welchen Bereich gehoert,
      steht am Feld selbst (validate.js, `bereich`) — nicht hier. */
-  var FELD_BEREICHE = ['naht', 'geometrie', 'lasten', 'beiwerte'];
+  /* 'thermik' erscheint nur, wenn der Bereich zugeschaltet ist — die
+     Felder sind dann Pflicht, und validate.js sagt es. N9b, Prozessregel
+     aus 3.3: der Baustein liefert seinen Assistenten-Schritt MIT. */
+  var FELD_BEREICHE = ['naht', 'geometrie', 'lasten', 'beiwerte', 'thermik'];
 
   /* Die sechs Symbolgruppen sind NICHT rechenwirksam. Sie kommen als EIN
      freiwilliger Schritt ganz am Schluss (Dieters Festlegung 2026-08-04) —
@@ -72,6 +75,7 @@
     lastfall:       'skizze',
     rechenrichtung: 'skizze',
     lasteingabe:    'skizze',
+    endkrater:      'skizze',
     nahtart:        'symbol',
     profil:         'schaubild',
     kanten:         'schaubild',
@@ -139,17 +143,29 @@
      gamma_M2 nie abbilden, und derselbe Fall kaeme ueber Formular und
      Assistent unterschiedlich heraus. Genau das darf nicht sein. */
   function feldSchritte(auswahl, werte) {
-    var raus = [], b, i, j, sicht, f, liste;
+    var raus = [], b, i, j, sicht, f, liste, gebraucht;
     sicht = Valid.sichtbareFelder(auswahl);
+    werte = werte || {};
     for (i = 0; i < FELD_BEREICHE.length; i++) {
       b = FELD_BEREICHE[i];
       liste = [];
+      gebraucht = false;
       for (j = 0; j < sicht.length; j++) {
         f = sicht[j];
         if (f.bereich !== b) continue;
         liste.push(f.code);
+        /* OB der Bereich ueberhaupt gefragt wird, entscheidet sich daran,
+           ob dort etwas GEBRAUCHT wird: mindestens ein Pflichtfeld oder ein
+           bereits gefuellter Wert. Sonst wuerde der Dialog nach der
+           Waermefuehrung fragen, auch wenn niemand sie zugeschaltet hat —
+           und der Laie stuende vor einer Schmelzenanalyse, die er gar nicht
+           braucht.
+           WELCHE Felder dann erscheinen, ist eine andere Frage: dann alle
+           sichtbaren des Bereichs, auch die ueberschreibbaren (Plan 3.3,
+           in N8a schmerzhaft gelernt). */
+        if (Valid.istPflicht(f, auswahl) || !istLeer(werte[f.code])) gebraucht = true;
       }
-      if (liste.length) raus.push({ art: 'felder', code: b, felder: liste });
+      if (liste.length && gebraucht) raus.push({ art: 'felder', code: b, felder: liste });
     }
     return raus;
   }
@@ -162,8 +178,12 @@
      Bereiche spaeter dabei sein sollen. Er behauptet nichts anderes. */
   function folge(auswahl, werte) {
     var f = auswahlSchritte(auswahl);
-    f = f.concat(feldSchritte(auswahl, werte));
+    /* DER ZUSATZSCHRITT STEHT VOR DEN FELDERN (seit N9b). Erst entscheiden,
+       welche Bereiche dabei sein sollen — dann danach gefragt werden. In
+       der umgekehrten Reihenfolge waere die Waermefuehrung schon
+       vorbeigezogen, bevor man sie einschalten konnte. */
     f.push({ art: 'zusatz', code: SCHRITT_ZUSATZ });
+    f = f.concat(feldSchritte(auswahl, werte));
     f.push({ art: 'symbol', code: SCHRITT_SYMBOL, freiwillig: true });
     return f;
   }
@@ -246,7 +266,7 @@
           folgt: g.baustein || null,               /* ehrlich: kommt erst noch */
           nur_abschaetzung: g.nur_abschaetzung === true,
           rechenwirksam: g.rechenwirksam !== false,
-          wert: s.werte[g.code + '_aktiv'] === true
+          wert: s.auswahl[g.code + '_aktiv'] === true
         });
       }
       return {
@@ -314,10 +334,15 @@
         }
       }
     } else if (akt.art === 'zusatz') {
+      /* DIE FREISCHALT-HAKEN GEHOEREN IN DIE AUSWAHL, nicht in die Werte —
+         genau dort fuehrt sie auch das Formular (ui.js zustand()). Lagen
+         sie hier woanders, wuerde validate.js die Pflichtfelder des
+         Bereichs nicht sehen und der Assistent fragte nie danach. */
       for (i = 0; i < Options.ZUSATZBEREICHE.length; i++) {
         k = Options.ZUSATZBEREICHE[i].code;
         if (wert && Object.prototype.hasOwnProperty.call(wert, k)) {
-          n.werte[k + '_aktiv'] = wert[k] === true;
+          if (wert[k] === true) n.auswahl[k + '_aktiv'] = true;
+          else delete n.auswahl[k + '_aktiv'];
         }
       }
     } else {

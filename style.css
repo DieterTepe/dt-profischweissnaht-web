@@ -364,3 +364,15 @@ input.feld,select.feld{display:block; width:100%; margin:0}
 .assist-wahl{display:flex; align-items:center; gap:.7rem}
 .assist-wahl-bild{flex:0 0 88px; display:block; background:var(--card); border-radius:8px; padding:.2rem}
 .assist-wahl-bild svg{display:block; width:100%; height:auto}
+
+/* ---- N9b · Wärmeführung ------------------------------------------------ */
+.th-kopf{display:flex; flex-direction:column; gap:.35rem; margin-bottom:.8rem}
+.th-weg{border-top:1px solid var(--linie); padding-top:.6rem}
+.th-hinweise{margin-top:.6rem}
+.th-zeile{display:flex; justify-content:space-between; align-items:baseline;
+          gap:1rem; padding:.22rem 0; font-size:.9rem}
+.th-wert{font-variant-numeric:tabular-nums; font-weight:600; color:var(--text)}
+.th-ampel{display:inline-block; width:.7rem; height:.7rem; border-radius:50%}
+.th-gruen{color:var(--ok)}
+.th-rot{color:var(--warn)}
+.th-grau{color:var(--dim)}

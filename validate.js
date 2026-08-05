@@ -19,7 +19,7 @@
 }(typeof self !== 'undefined' ? self : this, function (Data, Options) {
   'use strict';
 
-  var VERSION = '0.2.0-N8a';
+  var VERSION = '0.3.0-N9b';
 
   /* --------------------------------------------------------------------- */
   /* Feldschema — eine Quelle fuer Formular, Assistent und Pruefung         */
@@ -132,7 +132,34 @@
     /* R_e wird aus der Werkstofftabelle vorbelegt und ist per Haken
        ueberschreibbar (Regel 3.1) — nur Welt B rechnet mit der Streckgrenze. */
     { code: 'Re', bereich: 'beiwerte', typ: 'zahl', einheit: 'unit_Nmm2', min: 100, max: 1000, dez: 0,
-      label: 'fld_Re', hilfe: 'fld_Re', pflicht: false, ueberschreibbar: true }
+      label: 'fld_Re', hilfe: 'fld_Re', pflicht: false, ueberschreibbar: true },
+
+    /* ---- Wärmeführung (N9b) — alle nur bei zugeschaltetem Bereich ------
+       Die Schmelzenanalyse steht im Abnahmezeugnis. Wer sie nicht hat,
+       trägt das CET direkt ein — deshalb ist keine einzelne Analysezahl
+       Pflicht, wohl aber am Ende ein CET (das prüft thermik.js). */
+    { code: 'an_C',  bereich: 'thermik', typ: 'zahl', einheit: 'unit_prozent', min: 0, max: 2, dez: 3, label: 'fld_an_C',  hilfe: 'fld_an_C',  pflicht: false },
+    { code: 'an_Si', bereich: 'thermik', typ: 'zahl', einheit: 'unit_prozent', min: 0, max: 2, dez: 3, label: 'fld_an_Si', hilfe: 'fld_an_Si', pflicht: false },
+    { code: 'an_Mn', bereich: 'thermik', typ: 'zahl', einheit: 'unit_prozent', min: 0, max: 3, dez: 3, label: 'fld_an_Mn', hilfe: 'fld_an_Mn', pflicht: false },
+    { code: 'an_Cr', bereich: 'thermik', typ: 'zahl', einheit: 'unit_prozent', min: 0, max: 3, dez: 3, label: 'fld_an_Cr', hilfe: 'fld_an_Cr', pflicht: false },
+    { code: 'an_Mo', bereich: 'thermik', typ: 'zahl', einheit: 'unit_prozent', min: 0, max: 2, dez: 3, label: 'fld_an_Mo', hilfe: 'fld_an_Mo', pflicht: false },
+    { code: 'an_V',  bereich: 'thermik', typ: 'zahl', einheit: 'unit_prozent', min: 0, max: 1, dez: 3, label: 'fld_an_V',  hilfe: 'fld_an_V',  pflicht: false },
+    { code: 'an_Cu', bereich: 'thermik', typ: 'zahl', einheit: 'unit_prozent', min: 0, max: 2, dez: 3, label: 'fld_an_Cu', hilfe: 'fld_an_Cu', pflicht: false },
+    { code: 'an_Ni', bereich: 'thermik', typ: 'zahl', einheit: 'unit_prozent', min: 0, max: 5, dez: 3, label: 'fld_an_Ni', hilfe: 'fld_an_Ni', pflicht: false },
+    { code: 'CET',   bereich: 'thermik', typ: 'zahl', einheit: 'unit_prozent', min: 0.10, max: 0.80, dez: 3, label: 'fld_CET', hilfe: 'fld_CET', pflicht: false, ueberschreibbar: true },
+    { code: 'HD',    bereich: 'thermik', typ: 'zahl', einheit: 'unit_ml100g', min: 0.5, max: 30, dez: 1, label: 'fld_HD', hilfe: 'fld_HD', standard: 5, ueberschreibbar: true,
+      pflicht_wenn: { thermik_aktiv: [true] } },
+    { code: 'sp_U',  bereich: 'thermik', typ: 'zahl', einheit: 'unit_volt', min: 5, max: 60, dez: 1, label: 'fld_sp_U', hilfe: 'fld_sp_U',
+      pflicht_wenn: { thermik_aktiv: [true] } },
+    { code: 'sp_I',  bereich: 'thermik', typ: 'zahl', einheit: 'unit_ampere', min: 20, max: 1200, dez: 0, label: 'fld_sp_I', hilfe: 'fld_sp_I',
+      pflicht_wenn: { thermik_aktiv: [true] } },
+    { code: 'sp_v',  bereich: 'thermik', typ: 'zahl', einheit: 'unit_mm_s', min: 0.5, max: 50, dez: 2, label: 'fld_sp_v', hilfe: 'fld_sp_v',
+      pflicht_wenn: { thermik_aktiv: [true] } },
+    { code: 'T0',    bereich: 'thermik', typ: 'zahl', einheit: 'unit_grad', min: -20, max: 400, dez: 0, label: 'fld_T0', hilfe: 'fld_T0', pflicht: false, ueberschreibbar: true },
+    { code: 't85_min', bereich: 'thermik', typ: 'zahl', einheit: 'unit_s', min: 1, max: 100, dez: 1, label: 'fld_t85_min', hilfe: 'fld_t85_min', pflicht: false, ueberschreibbar: true },
+    { code: 't85_max', bereich: 'thermik', typ: 'zahl', einheit: 'unit_s', min: 1, max: 200, dez: 1, label: 'fld_t85_max', hilfe: 'fld_t85_max', pflicht: false, ueberschreibbar: true },
+    { code: 'F2',    bereich: 'thermik', typ: 'zahl', einheit: null, min: 0.3, max: 1.2, dez: 2, label: 'fld_F2', hilfe: 'fld_F2', standard: 1, pflicht: false, ueberschreibbar: true },
+    { code: 'F3',    bereich: 'thermik', typ: 'zahl', einheit: null, min: 0.3, max: 1.2, dez: 2, label: 'fld_F3', hilfe: 'fld_F3', standard: 1, pflicht: false, ueberschreibbar: true }
   ];
 
   function feld(code) {
@@ -332,6 +359,11 @@
 
     pe.profil = z.profil;
     pe.kanten = z.kanten;
+    /* ENDKRATERABZUG (N9b): waehlbar, Voreinstellung ist der Abzug. Nur
+       ein ausdrueckliches 'ohne' schaltet ihn ab — jede andere Lage,
+       auch eine leere, laesst ihn an. Die unsichere Seite darf nie durch
+       Weglassen entstehen. */
+    pe.endkrater = (z.endkrater !== 'ohne');
     for (i = 0; i < PROFIL_FELDER.length; i++) {
       if (typeof w[PROFIL_FELDER[i]] === 'number') pe[PROFIL_FELDER[i]] = w[PROFIL_FELDER[i]];
     }

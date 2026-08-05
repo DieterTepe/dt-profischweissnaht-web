@@ -47,7 +47,7 @@
   'use strict';
 
   var NAME = 'thermik';
-  var VERSION = '0.1.0-N9a';
+  var VERSION = '0.2.0-N9b';
 
   /* --------------------------------------------------------------------- */
   /* Tabellen                                                               */
@@ -64,6 +64,14 @@
     '138': 0.8,   /* MAG Fuelldraht, metallpulvergefuellt */
     '141': 0.6,   /* WIG                                */
     '15':  0.6    /* Plasma                             */
+  };
+
+  /* DIE AUSWAHLGRUPPE 'schweissverfahren' FUEHRT NAMEN, die Norm fuehrt
+     Prozesskennzahlen. Statt die vorhandene Gruppe umzubauen, wird hier
+     zugeordnet — eine Zeile Tabelle gegen einen Eingriff in eine Gruppe,
+     an der Formular, Assistent und zwoelf Beispiele haengen. */
+  var VERFAHREN_NR = {
+    mag: '135', mig: '131', wig: '141', ehand: '111', up: '121'
   };
 
   /* Wasserstoffskala nach EN 1011-2, Table C.2 (ml/100 g abgeschmolzenes
@@ -114,7 +122,9 @@
     'msg_th_kein_cet', 'msg_th_2d_oder_3d', 'msg_th_massgebend_groesser',
     'msg_th_interpass_grenze', 'msg_th_methode_a_fehlt', 'msg_th_keine_vorwaermung',
     'msg_th_cev_ueber_norm', 'msg_th_kombinierte_dicke_summe',
-    'msg_th_zielfenster_unerreichbar', 'msg_th_toleranz_zehn_prozent'
+    'msg_th_zielfenster_unerreichbar', 'msg_th_toleranz_zehn_prozent',
+    'msg_th_ausserhalb_zielfenster', 'msg_th_kein_fenster_unlegiert',
+    'msg_th_kein_fenster_werkstoff', 'msg_th_nur_ferritisch'
   ];
 
   /* --------------------------------------------------------------------- */
@@ -136,6 +146,20 @@
       if (Object.prototype.hasOwnProperty.call(zusatz, k)) e[k] = zusatz[k];
     }
     liste.push(e);
+  }
+
+  /* Nimmt die Prozesskennzahl ('135') oder den Gruppencode ('mag'). */
+  function nummer(verfahren) {
+    if (!verfahren) return null;
+    var v = String(verfahren);
+    if (Object.prototype.hasOwnProperty.call(WIRKUNGSGRAD, v)) return v;
+    if (Object.prototype.hasOwnProperty.call(VERFAHREN_NR, v)) return VERFAHREN_NR[v];
+    return null;
+  }
+
+  function wirkungsgrad(verfahren) {
+    var nr = nummer(verfahren);
+    return (nr === null) ? null : WIRKUNGSGRAD[nr];
   }
 
   function fehlErgebnis(fehler) {
@@ -227,11 +251,9 @@
     var fehler = [];
 
     if (k === null) {
-      if (!ein.verfahren || !Object.prototype.hasOwnProperty.call(WIRKUNGSGRAD, String(ein.verfahren))) {
-        schiebe(fehler, 'msg_th_kein_verfahren');
-      } else {
-        k = WIRKUNGSGRAD[String(ein.verfahren)];
-      }
+      var nr = nummer(ein.verfahren);
+      if (nr === null) schiebe(fehler, 'msg_th_kein_verfahren');
+      else k = WIRKUNGSGRAD[nr];
     }
     if (U === null || I === null || v === null || v <= 0) {
       return { ok: false, fehler: [{ code: 'msg_th_kein_verfahren' }] };
@@ -415,10 +437,7 @@
     if (T0 === null || d === null || tMin === null || tMax === null || tMax <= tMin) {
       return fehlErgebnis([{ code: 'msg_th_keine_analyse' }]);
     }
-    if (k === null && ein.verfahren &&
-        Object.prototype.hasOwnProperty.call(WIRKUNGSGRAD, String(ein.verfahren))) {
-      k = WIRKUNGSGRAD[String(ein.verfahren)];
-    }
+    if (k === null) k = wirkungsgrad(ein.verfahren);
 
     /* DIE UMKEHRUNG MUSS DIESELBE REGEL BEFOLGEN WIE DIE VORWAERTSRECHNUNG.
        Vorwaerts ist der GROESSERE der beiden Werte massgebend. Loeste man
@@ -475,11 +494,156 @@
     };
   }
 
+  /* --------------------------------------------------------------------- */
+  /* 7 · Zielfenster fuer t8/5                                              */
+  /* --------------------------------------------------------------------- */
+
+  /* VORBELEGUNG 10–20 s — der UEBERSCHNEIDUNGSBEREICH der beiden
+     veroeffentlichten Empfehlungen (5–20 s nach TUEV SUED, 10–25 s nach
+     VdTUEV Wbl. 257 / Killing 2022). Wer darin liegt, erfuellt BEIDE. Es ist
+     an beiden Enden die strengere Grenze, warnt also eher zu frueh.
+     Entschieden 2026-08-05 (Plan 5.1-6a).
+
+     UND WO ES KEINEN BELEG GIBT, GIBT ES KEINE VORBELEGUNG:
+     - Unlegierte Baustaehle (S235/S275/S355): unsere Quellen fuehren kein
+       Fenster, und das ist kein Versehen — t8/5 ist dort praktisch kein
+       Thema. Der Wert wird gerechnet und gezeigt, die Ampel bleibt GRAU.
+       Ein erfundenes Fenster waere bei den haeufigsten Staehlen die
+       auffaelligste Luege.
+     - Verguetete hochfeste Gueten (S690Q aufwaerts): die Quellen sagen
+       ausdruecklich "enger, herstellerspezifisch" — ohne Zahlen. Verwiesen
+       wird auf die Herstellerangabe. */
+  var ZIELFENSTER = { min: 10, max: 20, quelle: 'qu_t85_fenster' };
+
+  /* Das Programm kennt fuenf Stahlsorten. S235, S275 und S355 sind
+     unlegierte Baustaehle nach EN 10025-2 — fuer sie fuehren unsere Quellen
+     kein Zeitfenster. S420 und S460 gibt es ausschliesslich als
+     Feinkornstaehle (EN 10025-3 N/NL bzw. -4 M/ML); fuer die ist das
+     Fenster gedacht und belegt. */
+  var UNLEGIERT   = ['S235', 'S275', 'S355'];
+  var FEINKORN    = ['S420', 'S460'];
+
+  function inListe(liste, wert) {
+    for (var i = 0; i < liste.length; i++) if (liste[i] === wert) return true;
+    return false;
+  }
+
+  function zielfenster(werkstoff) {
+    var w = werkstoff ? String(werkstoff) : '';
+    if (inListe(FEINKORN, w)) {
+      return { belegt: true, min: ZIELFENSTER.min, max: ZIELFENSTER.max,
+               quelle: ZIELFENSTER.quelle };
+    }
+    if (inListe(UNLEGIERT, w)) return { belegt: false, grund: 'msg_th_kein_fenster_unlegiert' };
+    return { belegt: false, grund: 'msg_th_kein_fenster_werkstoff' };
+  }
+
+  /* --------------------------------------------------------------------- */
+  /* 8 · Bericht — alles zusammen, in Schritten                             */
+  /* --------------------------------------------------------------------- */
+
+  /* Setzt die Einzelteile zu EINEM Ergebnis zusammen und gibt es in
+     Schritten heraus — sprachneutrale Schluessel, keine Texte. Die
+     Oberflaeche traegt das nur ein; sie rechnet nichts und entscheidet
+     nichts (Plan 4.10). */
+  function bericht(ein) {
+    ein = ein || {};
+    var schritte = [], warn = [], hin = [], fehler = [];
+    var raus = { ok: false, version: VERSION, schritte: schritte,
+                 fehler: fehler, warnungen: warn, hinweise: hin };
+
+    /* EN 1011-2 GILT FUER FERRITISCHE STAEHLE. Fuer nichtrostende Staehle
+       und Aluminium gelten EN 1011-3 und EN 1011-4 mit ganz anderen Regeln
+       — dort ist Vorwaermung meist unerwuenscht, und t8/5 ist keine
+       sinnvolle Groesse. Die Formeln hier trotzdem anzuwenden waere derselbe
+       Fehler wie eine Formel ausserhalb ihres Geltungsbereichs: eine
+       plausible Zahl ohne Deckung. */
+    if (ein.werkstoffgruppe && ein.werkstoffgruppe !== 'stahl') {
+      schiebe(fehler, 'msg_th_nur_ferritisch', { gruppe: ein.werkstoffgruppe });
+      return raus;
+    }
+
+    /* 1 · Aequivalente */
+    var ae = aequivalente(ein.analyse);
+    var cetEigen = zahl(ein.CET);
+    var CET = (cetEigen !== null) ? cetEigen : (ae.C > 0 ? ae.CET : null);
+    if (CET === null) { schiebe(fehler, 'msg_th_kein_cet'); return raus; }
+    schritte.push({ code: 'th_s_aequivalente', CET: CET, CEV: ae.CEV, Pcm: ae.Pcm,
+                    eigen: cetEigen !== null,
+                    empfohlen: empfohlenesAequivalent(ae.C) });
+
+    /* 2 · kombinierte Dicke */
+    var kd = kombinierteDicke(ein.stossart, ein.dicken);
+    var d = (zahl(ein.d_kombiniert) !== null) ? zahl(ein.d_kombiniert)
+          : (kd ? kd.wert : null);
+    if (d === null) { schiebe(fehler, 'msg_th_keine_analyse'); return raus; }
+    schritte.push({ code: 'th_s_dicke', d: d, pfade: kd ? kd.pfade : null,
+                    einzeln: kd ? kd.einzeln : null });
+    schiebe(hin, 'msg_th_kombinierte_dicke_summe');
+
+    /* 3 · Waermeeinbringen */
+    var q = waermeeinbringen(ein);
+    if (!q.ok) { for (var i = 0; i < q.fehler.length; i++) schiebe(fehler, q.fehler[i].code); return raus; }
+    schritte.push({ code: 'th_s_waerme', E: q.E, k: q.k, Q: q.Q,
+                    U: q.U, I: q.I, v: q.v, verfahren: nummer(ein.verfahren) });
+
+    /* 4 · Vorwaermung */
+    var vw = vorwaermung({ CET: CET, d: d, HD: ein.HD, Q: q.Q, formel: ein.formel });
+    if (!vw.ok) {
+      for (var j = 0; j < vw.fehler.length; j++) fehler.push(vw.fehler[j]);
+      return raus;
+    }
+    schritte.push({ code: 'th_s_vorwaermung', Tp: vw.Tp, Tp_gerundet: vw.Tp_gerundet,
+                    teile: vw.teile, formel: vw.formel, erforderlich: vw.erforderlich });
+    for (var h1 = 0; h1 < vw.hinweise.length; h1++) schiebe(hin, vw.hinweise[h1].code);
+
+    /* 5 · Abkuehlzeit — gerechnet wird mit der TATSAECHLICHEN
+       Arbeitstemperatur: entweder der eingegebenen oder, wenn keine da ist,
+       der erforderlichen Vorwaermtemperatur. Mit 20 °C zu rechnen, waehrend
+       das Bauteil auf 150 °C vorgewaermt wird, waere schlicht falsch. */
+    var T0 = zahl(ein.T0);
+    if (T0 === null) T0 = vw.erforderlich ? vw.Tp_gerundet : 20;
+    var ak = abkuehlzeit({ T0: T0, Q: q.Q, d: d, F2: ein.F2, F3: ein.F3 });
+    if (!ak.ok) { for (var j2 = 0; j2 < ak.fehler.length; j2++) fehler.push(ak.fehler[j2]); return raus; }
+    schritte.push({ code: 'th_s_abkuehlzeit', t85: ak.t85, t85_2d: ak.t85_2d,
+                    t85_3d: ak.t85_3d, uebergangsdicke: ak.uebergangsdicke,
+                    waermeableitung: ak.waermeableitung, T0: T0,
+                    T0_aus_vorwaermung: zahl(ein.T0) === null });
+    for (var h2 = 0; h2 < ak.hinweise.length; h2++) schiebe(hin, ak.hinweise[h2].code);
+
+    /* 6 · Zielfenster und Ampel — DREI Zustaende. */
+    var zf = zielfenster(ein.werkstoff);
+    var tMin = zahl(ein.t85_min), tMax = zahl(ein.t85_max);
+    var eigenFenster = (tMin !== null && tMax !== null);
+    if (!eigenFenster && zf.belegt) { tMin = zf.min; tMax = zf.max; }
+    var ampel = 'grau';
+    if (tMin !== null && tMax !== null) {
+      ampel = (ak.t85 >= tMin && ak.t85 <= tMax) ? 'gruen' : 'rot';
+      if (ampel === 'rot') schiebe(warn, 'msg_th_ausserhalb_zielfenster');
+    } else {
+      schiebe(hin, zf.grund || 'msg_th_kein_fenster_unlegiert');
+    }
+    schritte.push({ code: 'th_s_fenster', min: tMin, max: tMax, ampel: ampel,
+                    belegt: zf.belegt, eigen: eigenFenster, quelle: zf.quelle || null });
+
+    raus.ok = true;
+    raus.CET = CET; raus.CEV = ae.CEV; raus.Pcm = ae.Pcm;
+    raus.d_kombiniert = d; raus.Q = q.Q; raus.Tp = vw.Tp;
+    raus.Tp_gerundet = vw.Tp_gerundet; raus.vorwaermung_erforderlich = vw.erforderlich;
+    raus.t85 = ak.t85; raus.T0 = T0; raus.ampel = ampel;
+    raus.fenster = { min: tMin, max: tMax, belegt: zf.belegt, eigen: eigenFenster };
+    return raus;
+  }
+
   return {
     NAME: NAME, VERSION: VERSION,
-    WIRKUNGSGRAD: WIRKUNGSGRAD, H_SKALA: H_SKALA, WAERMEPFADE: WAERMEPFADE,
+    WIRKUNGSGRAD: WIRKUNGSGRAD, VERFAHREN_NR: VERFAHREN_NR,
+    H_SKALA: H_SKALA, WAERMEPFADE: WAERMEPFADE,
     BEREICH_B: BEREICH_B, INTERPASS_MAX: INTERPASS_MAX, CODES: CODES,
     aequivalente: aequivalente, empfohlenesAequivalent: empfohlenesAequivalent,
+    nummer: nummer, wirkungsgrad: wirkungsgrad, ZIELFENSTER: ZIELFENSTER,
+    UNLEGIERT: UNLEGIERT, FEINKORN: FEINKORN,
+    zielfenster: zielfenster, bericht: bericht,
     hSkala: hSkala, kombinierteDicke: kombinierteDicke,
     waermeeinbringen: waermeeinbringen, vorwaermung: vorwaermung,
     abkuehlzeit: abkuehlzeit, auslegung: auslegung,
