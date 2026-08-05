@@ -9,8 +9,7 @@
 > abgenommenen Bausteinen **N1, N2, N2b, N2c, N3, N4 und N5 vollständig
 > (N5a, N5b, N5c-1 bis N5c-3 und N5d)**, **N6b**, **N7** und **N8 vollständig
 > (N8a, N8b-1, N8b-2, N8c)**, **N9a** und **N9b**, dazu **N9c gebaut und
-> **N9 vollständig (N9a–N9d)**, dazu **N10a gebaut und geliefert (Abnahme
-> offen)** — Stand 2026-08-05.
+> **N9 vollständig (N9a–N9d)** und **N10a** — Stand 2026-08-05.
 > Sie ist so geschrieben, dass ein **neuer Chat ohne Vorwissen** damit weiterarbeiten kann.
 > **Das WARUM steht in `Schweißnaht-Historie.md`** (Entscheidungslog + Changelog im
 > Volltext) — dort nachschlagen, bevor etwas geändert wird, das falsch aussieht.
@@ -19,7 +18,7 @@
 > in 4.11 und in der Historie. Im Projektordner liegt **keine Vorlaufdatei** mehr.
 
 ```
-Plan-Version : 2.57 · Stand 2026-08-05
+Plan-Version : 2.58 · Stand 2026-08-05
 Codestand    : Plan 2.57 · ui 0.14.0 · N10a
                (Die Planversion, gegen die der CODE gebaut ist. Sie steht auch
                in ui.js als PLAN und wird von einer Assertion damit verglichen.
@@ -71,9 +70,11 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                **Baustein N9 ist vollständig von Dieter am Handy geprüft
                und ABGENOMMEN (2026-08-05).** Damit sind **sechs von zehn
                Bausteinen bis zum Verkaufsstand** fertig.
-               **Etappe N10a ist GEBAUT und GELIEFERT** — Abnahme steht
-               aus. `kosten.js` als DOM-freier Rechenkern (**18 Module**);
-               am Handy ist außer der Versionszeile nichts zu sehen.
+               **Etappe N10a ist von Dieter am Handy geprüft und
+               ABGENOMMEN (2026-08-05).** Belegt durch die Versionszeile
+               mit **18 Modulen** und ein gerechnetes Beispiel mit
+               vollständiger Wärmeführungsanzeige — `i18n_kern.js` und
+               beide HTMLs waren angefasst worden.
                → NÄCHSTER SCHRITT: **N10b** — Felder, Panel, Rechenweg,
                  Assistenten-Schritte und die Beispiele. Einstieg
                  „weiter mit N10b".
@@ -2403,7 +2404,14 @@ kommt fast ganz vom Streifzug.
 
 ---
 
-#### 5.1-7 · N10 — Umfang festgelegt · **N10a GEBAUT UND GELIEFERT 2026-08-05**
+#### 5.1-7 · N10 — Umfang festgelegt · **N10a ABGENOMMEN 2026-08-05**
+
+> ✅ **Von Dieter am Handy geprüft und ABGENOMMEN — ohne Nacharbeit.**
+> **Offene Beobachtung für N10b:** Die Felder *Zielfenster von/bis* stehen
+> leer, während das Ergebnis „10 bis 20 s" zeigt. Das ist so gewollt — es
+> gibt keine allgemeine Vorbelegung, weil für unlegierte Baustähle kein
+> Fenster belegt ist. Ob das für einen Laien deutlich genug ist, bleibt zu
+> entscheiden.
 
 **Der abgestimmte Umfang** *(Dieter, 2026-08-05)*: **alle zehn
 Kostenpositionen** und **Beispielpreise mit Jahresangabe**.
@@ -3350,26 +3358,6 @@ Changelog — **die vollständige Fassung ab v1.0 steht in `Schweißnaht-Histori
 Hier stehen nur die letzten drei Einträge. Wer wissen will, wie eine Entscheidung
 zustande kam, findet die Kette dort — lückenlos ab der Erstfassung vom 2026-07-23.
 
-**v2.55 (2026-08-05):** **Etappe N9d gebaut und geliefert — der Streifzug und
-die Anhaltswerte.** Auf Dieters Anstoß, intern Probefälle durchzuspielen und
-Felder vorzubelegen. Der **Streifzug (S46)** betritt jede Option jeder
-rechenwirksamen Gruppe einmal (87 Fälle) und verlangt entweder eine Rechnung
-oder einen **benannten** Grund — und hat beim ersten Lauf einen echten
-Widerspruch gefunden: Bei der Auslegung beschrieb das Nahtbild die Naht mit dem
-**erforderlichen**, Fläche und Ausnutzung aber die mit dem **gewählten** a-Maß.
-Jetzt läuft ein letzter Durchgang mit dem gewählten Maß; dadurch ändert sich
-eine gemessene Zahl (`konsole` 760 mm / 0,842 statt 764 / 0,837) — die
-Korrektur, nicht die Regression. Als Folgefund schweigt die Rechenprobe
-`a_erf = a_bezug · η` dort, wo die Geometrie selbst am a-Maß hängt. Neu sind
-außerdem die **Anhaltswerte (S47)**: Spannung, Strom und Geschwindigkeit werden
-vorbelegt, tragen aber einen sichtbaren Hinweis, dass keine Norm dahintersteht
-— unterschieden von den Tabellenwerten. Dazu die Quelle unter dem Zielfenster.
-**Basislinie 2107 → 2942 Assertions · Smokes 784/785 → 801/802 · i18n-Parität 0.**
-**Codestand 2.53 → 2.55** (`ui` 0.12.1 → 0.13.0, Etappe N9c → N9d).
-**Nächster Schritt: N9d am Handy abnehmen, dann Baustein N10.**
-
-
-
 **v2.56 (2026-08-05):** **Baustein N9 vollständig von Dieter am Handy geprüft
 und ABGENOMMEN.** Die Versionszeile zeigt „N9d · Plan 2.55 · 17 Module" mit
 `solver 0.4.0-N9d`, `rechenweg 0.4.0-N9d`, `validate 0.5.0-N9d`,
@@ -3403,6 +3391,22 @@ geraten. Geändert: neu `kosten.js`, dazu `i18n_kern.js`, `ui.js`, beide HTMLs,
 **Codestand 2.55 → 2.57** (`ui` 0.13.0 → 0.14.0, Etappe N9d → N10a, **18 Module**).
 **Nächster Schritt: N10a am Handy abnehmen, dann N10b — Felder, Panel,
 Rechenweg, Assistenten-Schritte und die Beispiele.**
+
+
+
+**v2.58 (2026-08-05):** **Etappe N10a von Dieter am Handy geprüft und
+ABGENOMMEN.** Die Versionszeile zeigt „N10a · Plan 2.57 · 18 Module" mit
+`kosten 0.1.0-N10a`, `kern 0.6.0-N10a` und `ui 0.14.0`; ein Bildschirmfoto
+belegt ein gerechnetes Beispiel mit vollständiger Wärmeführungsanzeige — die
+angefassten Dateien `i18n_kern.js` und beide HTMLs haben nichts gestört. Auch
+die „eigener Wert"-Haken der Nahtfaktoren stehen richtig, weil `winkel_v` sie
+mitbringt. **Eine Beobachtung bleibt für N10b offen:** Die Felder *Zielfenster
+von/bis* stehen leer, während das Ergebnis das Fenster zeigt — gewollt, weil
+es keine allgemeine Vorbelegung geben kann, aber möglicherweise erklärungs-
+bedürftig. **Code unverändert, `Codestand` bleibt 2.57.**
+**Basislinie unverändert: 3015 Assertions · Smokes 802 / 803 · i18n-Parität 0.**
+**Nächster Schritt: N10b — Felder, Panel, Rechenweg, Assistenten-Schritte und
+die Beispiele. Einstieg: „weiter mit N10b".**
 
 
 ═══════════════════════════════════════════════════════════════════════════

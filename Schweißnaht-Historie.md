@@ -2230,3 +2230,30 @@ einer gerechneten zu unterscheiden.
 **Basislinie 2942 → 3015 Assertions · Smokes 801/802 → 802/803.**
 **Codestand 2.55 → 2.57 · 18 Module.**
 **Nächster Schritt: N10a abnehmen, dann N10b.**
+
+
+**v2.58 (2026-08-05):** **N10a abgenommen — und ein Bild, das diesmal nichts Neues zeigte.**
+
+Dieter hat N10a geprüft: Versionszeile mit 18 Modulen, dazu ein
+Bildschirmfoto der gerechneten Wärmeführung. Das war die eigentliche Prüfung —
+N10a selbst ist DOM-frei, aber es hat `i18n_kern.js` und beide HTMLs angefasst,
+und das sind die Dateien, über die alles andere läuft.
+
+**Diesmal zeigte das Bild nichts Unerwartetes**, und auch das ist eine
+Information: Vier Teilbeträge der Vorwärmformel, grüne Ampel, die
+„eigener Wert"-Haken der Nahtfaktoren richtig gesetzt, weil das Beispiel sie
+mitbringt. Nach dem Fund aus v2.53 — wo ein Foto zwei Fehler enthielt, von
+denen einer gar nicht erwähnt war — lohnt es sich, das festzuhalten: **Die
+Gewohnheit, ein Bild zu schicken, ist mehr wert als die Frage, die dabeisteht.**
+
+**Eine Beobachtung bleibt offen.** Die Felder *Zielfenster von/bis* stehen
+leer, während das Ergebnis „10 bis 20 s" zeigt. Das ist die Folge einer
+bewussten Entscheidung aus N9d: Es kann keine allgemeine Vorbelegung geben,
+weil für unlegierte Baustähle gar kein Fenster belegt ist. Richtig — aber ein
+leeres Feld neben einem gefüllten Ergebnis ist für einen Laien erklärungs-
+bedürftig. Notiert für N10b, nicht sofort geändert: Eine Lösung, die dem
+Anwender das Fenster ins Feld schreibt, würde bei S235 wieder eine erfundene
+Zahl erzeugen.
+
+**Code unverändert, `Codestand` bleibt 2.57.**
+**Nächster Schritt: N10b.**
