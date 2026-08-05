@@ -4120,7 +4120,7 @@ var S43_STAND = [
   { datei: 'i18n_hilfe.js', version: '0.3.0-N9c', summe: 'e2a7a98f' },
   { datei: 'i18n_kerbfall.js', version: '0.1.0-N1', summe: '64438e87' },
   { datei: 'daten.js', version: '0.1.0-N1', summe: '4f0ba1bd' },
-  { datei: 'optionen.js', version: '0.3.0-N9c', summe: 'de6d065c' },
+  { datei: 'optionen.js', version: '0.3.1-N9c', summe: 'a0e4115d' },
   { datei: 'validate.js', version: '0.4.0-N9c', summe: '6a775ade' },
   { datei: 'naht.js', version: '0.1.0-N2', summe: 'c0284f44' },
   { datei: 'profil.js', version: '0.1.0-N2b', summe: 'e31a9ce3' },
@@ -4132,7 +4132,7 @@ var S43_STAND = [
   { datei: 'thermik.js', version: '0.3.0-N9c', summe: '1bf966a2' },
   { datei: 'skizze.js', version: '0.3.0-N9c', summe: '447c40cd' },
   { datei: 'assistent.js', version: '0.4.0-N9c', summe: '1bfc4bb8' },
-  { datei: 'ui.js', version: '0.12.0', summe: 'c0d8515c' }
+  { datei: 'ui.js', version: '0.12.1', summe: '2bfad2cd' }
 ];
 
 var s43i, s43Fehl = [], s43Src, s43M, s43S;
