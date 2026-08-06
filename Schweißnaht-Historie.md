@@ -2338,3 +2338,43 @@ ist danach nicht mehr korrigierbar.
 
 **Code unverändert, `Codestand` bleibt 2.59.**
 **Nächster Schritt: N11 (Ausgaben).**
+
+
+**v2.61 (2026-08-06):** **Zwei Fehler, die beide Smokes nicht gesehen haben.**
+
+Dieter meldete zwei Beobachtungen aus dem Alltagsgebrauch — beide echt, beide
+von den 905 Prüfungen nicht berührt.
+
+**Der erste war der unauffälligere und deshalb der gefährlichere.** Nach einem
+Sprachwechsel stand die Kostenkarte gemischt da: Überschriften auf Englisch,
+Zeilen auf Deutsch. Ein neues Durchrechnen räumte es auf — genau das ließ es
+harmlos aussehen. **Eine halb übersetzte Anzeige ist schlimmer als eine gar
+nicht übersetzte: Sie sieht aus, als wäre sie fertig.** Die Ursache war banal:
+Die Kostenkarte fehlte in der Liste der Anzeigen, die beim Umschalten neu
+gebaut werden. Die Wärmeführung stand dort seit N9b, die Kosten hatte ich
+schlicht vergessen — bei einer Karte, die ich selbst zwei Stunden zuvor gebaut
+hatte.
+
+**Der zweite ist zum vierten Mal dieselbe Ursache.** Bei der Auslegung ist das
+Feld `a` leer, weil a gerade gesucht wird. Die Kostenrechnung las es trotzdem
+aus dem Formular und meldete „Angaben zur Naht fehlen", obwohl das Ergebnis
+ein fertiges `a_gewaehlt` enthielt.
+
+Vorher: das Nahtbild in N7, die Lastprobe in N9c, die Auslegungsgeometrie in
+N9d. Immer las ein Folgeschritt aus dem **Formular** statt aus dem
+**Ergebnis**. Viermal reicht — die Regel steht jetzt in 9.2 und gilt für jeden
+künftigen Folgeschritt: **Gerechnet wird mit dem, womit gerechnet wurde.**
+
+**Die Gegenprobe war diesmal ausdrücklich Teil der Arbeit.** Beide Fixes wurden
+nach dem Bau der Prüfungen wieder entfernt: Ohne den ersten fallen zwei Zeilen,
+ohne den zweiten genau eine. **Eine Prüfung, die ohne den Fix nicht rot wird,
+ist wertlos** — und sie sieht genauso grün aus wie eine, die etwas taugt.
+
+**Und eine Beobachtung über den Streifzug:** Er hat beide Fehler nicht
+gefunden, obwohl er 87 Fälle betritt. Der erste braucht einen Sprachwechsel
+**nach** dem Rechnen, der zweite eine zugeschaltete Kostenrechnung **bei
+Auslegung** — beides Kombinationen aus zwei Zuständen, nicht einzelne Optionen.
+Der Streifzug prüft eine Dimension; Dieter prüft die Fläche.
+
+**Basislinie 3053 unverändert · Smokes 905/906 → 915/916.**
+**Codestand 2.59 → 2.61.**

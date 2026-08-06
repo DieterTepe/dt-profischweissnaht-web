@@ -9,8 +9,8 @@
 > abgenommenen Bausteinen **N1, N2, N2b, N2c, N3, N4 und N5 vollständig
 > (N5a, N5b, N5c-1 bis N5c-3 und N5d)**, **N6b**, **N7** und **N8 vollständig
 > (N8a, N8b-1, N8b-2, N8c)**, **N9a** und **N9b**, dazu **N9c gebaut und
-> **N9 vollständig (N9a–N9d)** und **N10 vollständig (N10a, N10b)** —
-> Stand 2026-08-05.
+> **N9 vollständig (N9a–N9d)** und **N10 (N10a, N10b)**, dazu **N10c
+> gebaut und geliefert (Abnahme offen)** — Stand 2026-08-06.
 > Sie ist so geschrieben, dass ein **neuer Chat ohne Vorwissen** damit weiterarbeiten kann.
 > **Das WARUM steht in `Schweißnaht-Historie.md`** (Entscheidungslog + Changelog im
 > Volltext) — dort nachschlagen, bevor etwas geändert wird, das falsch aussieht.
@@ -19,8 +19,8 @@
 > in 4.11 und in der Historie. Im Projektordner liegt **keine Vorlaufdatei** mehr.
 
 ```
-Plan-Version : 2.60 · Stand 2026-08-05
-Codestand    : Plan 2.59 · ui 0.15.0 · N10b
+Plan-Version : 2.61 · Stand 2026-08-06
+Codestand    : Plan 2.61 · ui 0.16.0 · N10c
                (Die Planversion, gegen die der CODE gebaut ist. Sie steht auch
                in ui.js als PLAN und wird von einer Assertion damit verglichen.
                Sie wandert nur mit, wenn sich Code ändert — reine Plan- oder
@@ -80,7 +80,10 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                und ABGENOMMEN (2026-08-05)** — einschließlich der Probe,
                dass ein größeres a-Maß den Drahtbedarf mitzieht. Damit sind
                **sieben von zehn Bausteinen bis zum Verkaufsstand** fertig.
-               → NÄCHSTER SCHRITT: Baustein **N11 (Ausgaben)** — Einstieg „weiter mit N11",
+               **N10c hat zwei von Dieter gefundene Fehler behoben**
+               (2026-08-06, 5.1-7c) — Abnahme steht aus.
+               → NÄCHSTER SCHRITT: **N10c am Handy prüfen.** Danach
+                 Baustein **N11 (Ausgaben)** — Einstieg „weiter mit N11",
                  **Umfang vor dem Bau abstimmen**. Dort ist der
                  **Versionsstempel im Dateiformat** zu entscheiden (5.2,
                  drängt vor der Ermüdung) und der Namensabgleich aus 3.6
@@ -91,7 +94,7 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                  4.11 (symbol.js).
                Große Bausteine (N5, N8, N13, N14) werden in ETAPPEN gebaut — Regel in
                Kickoff-Punkt 5c, Etappen in Abschnitt 5.2.
-Basislinie   : 3053 Assertions · DOM-Smokes 905 (voll) + 906 (test) · i18n-Parität 0 Abweichungen
+Basislinie   : 3053 Assertions · DOM-Smokes 915 (voll) + 916 (test) · i18n-Parität 0 Abweichungen
                (VERBINDLICH. Basislinie darf nur WACHSEN — nie schrumpfen, nie gelockert werden.)
 Dateistand   : siehe Abschnitt 8.1 — dort steht, was fertig ist und was noch fehlt.
 ⚠️ SYNC       : Am 2026-08-03 lag im Projektordner eine **elf Versionen alte**
@@ -180,7 +183,7 @@ Einstiegssatz von Dieter: **„weiter mit N11"**.
    schon zweimal Dateien verlorengegangen, beide Male hat diese Prüfung es gefunden.
 11. Arbeitsordner herstellen (Befehl unter Punkt 6 der Kickoff-Liste), dann
    `node test_naht.js`, `node dom_smoke_voll.js`, `node dom_smoke_test.js` laufen lassen
-   und die Basislinie aus dem Plan-Kopf bestätigen (**3053 / 905 / 906 · 0 Fehler**),
+   und die Basislinie aus dem Plan-Kopf bestätigen (**3053 / 915 / 916 · 0 Fehler**),
    **bevor** etwas gebaut wird. Weicht etwas ab, erst das klären.
    ⚠️ **Diese drei Läufe sind zugleich die Probe, ob Plandatei und Code zusammenpassen.**
    Steht im Kopfblock eine andere Basislinie als gemessen, ist eine der beiden Seiten alt —
@@ -2551,6 +2554,36 @@ Drahtbedarf, Zeit und Summe.
 
 ---
 
+#### 5.1-7c · N10c — **zwei Fehler aus Dieters Test, behoben 2026-08-06**
+
+**Beide Smokes liefen vorher grün**, ohne einen der beiden zu berühren.
+
+**1 · Nach dem Sprachwechsel stand die Kostenkarte gemischt da.** Die
+Überschriften wanderten mit, weil sie über `beschrifte()` laufen und damit ein
+`data-i18n` tragen — die programmatisch gesetzten Zeilen blieben in der alten
+Sprache. Ein neues Durchrechnen räumte es auf, was den Fehler harmlos
+aussehen ließ. **Eine halb übersetzte Anzeige ist schlimmer als eine gar nicht
+übersetzte: Sie sieht aus, als wäre sie fertig.** Die Kostenkarte fehlte
+schlicht in der Liste der Karten, die beim Umschalten neu gebaut werden.
+
+**2 · Bei der Auslegung meldete die Kostenrechnung „Angaben zur Naht
+fehlen".** Das Feld `a` ist dort **leer** — das a wird ja gerade gesucht. Die
+Kostenrechnung las es trotzdem aus dem Formular, obwohl das Ergebnis ein
+fertiges `a_gewaehlt` enthält.
+
+**Das ist zum vierten Mal dieselbe Ursache:** Nahtbild (N7), Lastprobe (N9c),
+Auslegungsgeometrie (N9d), jetzt das a-Maß. Immer las ein Folgeschritt aus dem
+**Formular** statt aus dem **Ergebnis**. Die Regel steht jetzt in 9.2, und sie
+gilt für jeden künftigen Folgeschritt.
+
+**Gegenprobe bestanden:** Ohne den ersten Fix fallen zwei Prüfzeilen, ohne den
+zweiten genau eine. Eine Prüfung, die ohne den Fix nicht rot wird, wäre
+wertlos.
+
+**Basislinie 3053 Assertions unverändert · Smokes 905/906 → 915/916.**
+
+---
+
 ### 5.1a Auftrag für N5c-1 — „Es rechnet" *(ERLEDIGT 2026-07-28, hier nur noch als Begründung)*
 
 > **Dieser Auftrag ist entschieden, nicht mehr Vorschlag.** Dieter hat die offenen Fragen
@@ -3194,7 +3227,7 @@ Formsache, und der Basislinien-Abgleich aus Kickoff-Punkt 11 ebenso wenig.
 **Erste Handlung im neuen Chat:** Vollständigkeit gegen die Tabelle oben prüfen
 (**18 Module**, `style.css`, beide HTMLs, **alle drei** DEV-ONLY-Dateien, dazu Plandatei und
 `Schweißnaht-Historie.md`), Arbeitsordner herstellen, die drei Testläufe starten.
-Melden müssen sie **3053 / 905 / 906 · 0 Fehler**. Weicht etwas ab, erst das klären —
+Melden müssen sie **3053 / 915 / 916 · 0 Fehler**. Weicht etwas ab, erst das klären —
 nicht bauen.
 
 **Was N6b überschreiben wird** (zur Vorwarnung, nicht als Auftrag): neu `symbol.js`,
@@ -3377,6 +3410,16 @@ will. Also: Vorschriften und Wegweiser bleiben hier, die Erzählung wandert.
 - **Drei Sorten Wert, sichtbar unterschieden** (2026-08-05): **Tabellenwert**
   aus der Norm, **Anhaltswert** aus der Praxis, **Preisannahme** mit Jahr. Wer
   sie gleich aussehen lässt, macht aus einem Preis von 2019 eine Vorschrift.
+- **Gerechnet wird mit dem, WOMIT gerechnet wurde — nie mit dem Eingabefeld**
+  (2026-08-06, viermal aufgefallen): Nahtbild (N7), Lastprobe (N9c),
+  Auslegungsgeometrie (N9d), a-Maß in der Kostenrechnung (N10c). Immer war die
+  Ursache dieselbe: Ein Folgeschritt las aus dem Formular statt aus dem
+  Ergebnis. Bei der Auslegung ist das Feld **leer**, weil der Wert gerade
+  gesucht wird. **Jeder neue Folgeschritt nimmt seine Werte aus dem Ergebnis.**
+- **Eine halb übersetzte Anzeige ist schlimmer als eine gar nicht übersetzte**
+  (2026-08-06, N10c): Sie sieht aus, als wäre sie fertig. Programmatisch
+  gesetzte Texte wandern beim Sprachwechsel **nicht** von selbst mit — jede
+  neue Karte muss dort ausdrücklich neu gebaut werden.
 - **Token-Pause: 4 Stunden.**
 
 ---
@@ -3434,22 +3477,6 @@ Changelog — **die vollständige Fassung ab v1.0 steht in `Schweißnaht-Histori
 Hier stehen nur die letzten drei Einträge. Wer wissen will, wie eine Entscheidung
 zustande kam, findet die Kette dort — lückenlos ab der Erstfassung vom 2026-07-23.
 
-**v2.58 (2026-08-05):** **Etappe N10a von Dieter am Handy geprüft und
-ABGENOMMEN.** Die Versionszeile zeigt „N10a · Plan 2.57 · 18 Module" mit
-`kosten 0.1.0-N10a`, `kern 0.6.0-N10a` und `ui 0.14.0`; ein Bildschirmfoto
-belegt ein gerechnetes Beispiel mit vollständiger Wärmeführungsanzeige — die
-angefassten Dateien `i18n_kern.js` und beide HTMLs haben nichts gestört. Auch
-die „eigener Wert"-Haken der Nahtfaktoren stehen richtig, weil `winkel_v` sie
-mitbringt. **Eine Beobachtung bleibt für N10b offen:** Die Felder *Zielfenster
-von/bis* stehen leer, während das Ergebnis das Fenster zeigt — gewollt, weil
-es keine allgemeine Vorbelegung geben kann, aber möglicherweise erklärungs-
-bedürftig. **Code unverändert, `Codestand` bleibt 2.57.**
-**Basislinie unverändert: 3015 Assertions · Smokes 802 / 803 · i18n-Parität 0.**
-**Nächster Schritt: N10b — Felder, Panel, Rechenweg, Assistenten-Schritte und
-die Beispiele. Einstieg: „weiter mit N10b".**
-
-
-
 **v2.59 (2026-08-05):** **Etappe N10b gebaut und geliefert — Baustein N10 ist
 vollständig.** Neu ist ein **geteilter Bereich für die Schweißparameter**:
 Spannung, Strom und Geschwindigkeit brauchen Wärmeführung und Kostenrechnung
@@ -3482,10 +3509,25 @@ identisch, `node --check` über 21 JS sauber, Läufe aus dem Ordner
 **3053 / 905 / 906 · 0 Fehler**. **Damit sind sieben von zehn Bausteinen bis
 zum Verkaufsstand fertig** (N1–N5, N6b, N7, N8, N9, N10); offen bleiben N11,
 N12 und N13/N14. **Code unverändert, `Codestand` bleibt 2.59.**
-**Nächster Schritt: Baustein N11 (Ausgaben) — Umfang vor dem Bau abstimmen.
-Dort ist der Versionsstempel im Dateiformat zu entscheiden (drängt vor der
-Ermüdung) und der Namensabgleich aus 3.6 zu erledigen. Einstieg:
-„weiter mit N11".**
+**Nächster Schritt: Baustein N11 (Ausgaben) — Umfang vor dem Bau abstimmen.**
+
+
+
+**v2.61 (2026-08-06):** **Etappe N10c — zwei von Dieter gefundene Fehler
+behoben.** **(1)** Nach dem Sprachwechsel stand die Kostenkarte **gemischt**
+da: Überschriften auf Englisch, Zeilen auf Deutsch. Die Karte fehlte in der
+Liste der Anzeigen, die beim Umschalten neu gebaut werden — programmatisch
+gesetzte Texte wandern nicht von selbst mit. **(2)** Bei der **Auslegung**
+meldete die Kostenrechnung „Angaben zur Naht fehlen", weil sie das a-Maß aus
+dem **leeren Eingabefeld** las statt aus dem Ergebnis; bei der Auslegung wird
+a ja gerade gesucht. **Das ist zum vierten Mal dieselbe Ursache** nach
+Nahtbild (N7), Lastprobe (N9c) und Auslegungsgeometrie (N9d) — die Regel steht
+jetzt in 9.2. Beide Smokes liefen vorher grün, ohne einen der Fehler zu
+berühren; die neuen Prüfungen wurden **gegengeprobt**: ohne Fix 1 fallen zwei
+Zeilen, ohne Fix 2 genau eine. Geändert: `ui.js` (0.16.0), `dom_smoke_voll.js`.
+**Basislinie 3053 Assertions unverändert · Smokes 905/906 → 915/916.**
+**Codestand 2.59 → 2.61.**
+**Nächster Schritt: N10c am Handy prüfen, dann Baustein N11 (Ausgaben).**
 
 
 ═══════════════════════════════════════════════════════════════════════════

@@ -35,12 +35,12 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.15.0';
-  var ETAPPE = 'N10b';
+  var VERSION = '0.16.0';
+  var ETAPPE = 'N10c';
   /* Plan-Version, die zu diesem Stand gehoert. Sie ist die EINZIGE von Hand
      gepflegte Zahl der Versionszeile — alles andere kommt aus den geladenen
      Modulen selbst (Plan 3.6). */
-  var PLAN = '2.59';
+  var PLAN = '2.61';
   var SPRACHEN = ['de', 'en', 'pt'];
 
   /* Plan 3.1 (bindend): die Oberflaeche startet IMMER im dunklen Design —
@@ -1506,9 +1506,25 @@
     function kostenEingabe(z, w, erg) {
       function nz(k) { return istLeer(w[k]) ? null : w[k]; }
       var typ = (erg && erg.nahttyp === 'kehl') ? 'kehl' : 'stumpf';
+      /* DAS a-MASS KOMMT AUS DEM ERGEBNIS, NICHT AUS DEM FORMULAR (N10c).
+         Bei der Auslegung ist das Eingabefeld leer — das a wird ja gerade
+         gesucht. Wer es dort liest, bekommt nichts und meldet "Angaben zur
+         Naht fehlen", obwohl das Ergebnis ein fertiges a_gewaehlt enthaelt.
+         Dasselbe Prinzip wie bei der Nahtlaenge und beim Nahtbild: gerechnet
+         wird mit dem, WOMIT gerechnet wurde. Zum vierten Mal dieselbe
+         Lehre — deshalb steht sie jetzt in 9.2. */
+      var aWert = null;
+      if (erg && erg.auslegung && erg.auslegung.a_gewaehlt !== null &&
+          erg.auslegung.a_gewaehlt !== undefined) {
+        aWert = erg.auslegung.a_gewaehlt;
+      } else if (erg && erg.nahtbild && erg.nahtbild.profil_eingabe) {
+        aWert = erg.nahtbild.profil_eingabe.a;
+      }
+      if (aWert === null || aWert === undefined) aWert = nz('a');
+
       return {
         nahttyp: typ,
-        a: nz('a'), t: nz('t1'), A_fuge: nz('A_fuge'),
+        a: aWert, t: nz('t1'), A_fuge: nz('A_fuge'),
         /* Die Nahtlaenge kommt aus dem GERECHNETEN Nahtbild — nicht aus
            einem eigenen Feld. Zwei Laengen fuer dieselbe Naht waeren zwei
            Gelegenheiten, sie verschieden anzugeben. */
@@ -2148,6 +2164,15 @@
          Dialogfenster nach dem Umschalten noch in der alten Sprache. */
       if (S.assi) assistZeigen();
       if (S.letzteThermik) thermikZeigen(zustand(), werte());
+      /* Die Kostenkarte gehoert MIT uebersetzt (N10c). Sie fehlte hier, und
+         das ergab nach dem Sprachwechsel ein gemischtes Bild: die
+         Ueberschriften wanderten mit, weil sie ueber beschrifte() laufen und
+         damit ein data-i18n tragen — die programmatisch gesetzten Zeilen
+         blieben stehen. Eine halb uebersetzte Anzeige ist schlimmer als eine
+         gar nicht uebersetzte: Sie sieht aus, als waere sie fertig. */
+      if (S.letzteKosten) {
+        kostenZeigen(zustand(), werte(), S.letztesErgebnis);
+      }
       return S.sprache;
     }
 

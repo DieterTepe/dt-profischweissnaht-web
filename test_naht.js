@@ -4137,7 +4137,7 @@ var S43_STAND = [
   { datei: 'thermik.js', version: '0.3.0-N9c', summe: '1bf966a2' },
   { datei: 'skizze.js', version: '0.3.0-N9c', summe: '447c40cd' },
   { datei: 'assistent.js', version: '0.5.0-N10b', summe: '4c015b50' },
-  { datei: 'ui.js', version: '0.15.0', summe: '7c9f2984' }
+  { datei: 'ui.js', version: '0.16.0', summe: '1cb66fb5' }
 ];
 
 var s43i, s43Fehl = [], s43Src, s43M, s43S;

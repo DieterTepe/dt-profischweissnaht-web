@@ -802,6 +802,66 @@ function lauf(edition) {
   s.leeren();
   ok(d.byId.cardKosten.hidden === true, 'N10b: Leeren raeumt auch die Kostenkarte weg');
 
+  /* Text eines Knotens samt aller Kinder — der DOM-Schatten gibt ueber
+     inhalt() nur die eigene Ebene heraus. */
+  function tiefText(k) {
+    if (!k) return '';
+    var t = (typeof k.inhalt === 'function') ? String(k.inhalt() || '') : '';
+    var kids = k.children || [];
+    for (var i = 0; i < kids.length; i++) t += ' ' + tiefText(kids[i]);
+    return t;
+  }
+
+  /* ---- N10c · ZWEI FEHLER AUS DIETERS TEST (2026-08-06) ----------------
+     Beide Smokes liefen vorher gruen, ohne einen davon zu beruehren.     */
+
+  /* (1) SPRACHWECHSEL NACH DEM RECHNEN: Die Kostenkarte blieb in der alten
+     Sprache stehen, waehrend die Ueberschriften mitwanderten — ein halb
+     uebersetztes Bild sieht aus, als waere es fertig. */
+  s.leeren();
+  s.beispielLaden('winkel_v');
+  s.rechnen();
+  var spDe = tiefText(d.byId.kostenWeg) + tiefText(d.byId.kostenKopf) +
+             tiefText(d.byId.kostenHinweise);
+  ok(spDe.indexOf('Lohn') >= 0, 'N10c: auf Deutsch steht "Lohn" in der Kostenkarte');
+  s.setSprache('en');
+  var spEn = tiefText(d.byId.kostenWeg) + tiefText(d.byId.kostenKopf) +
+             tiefText(d.byId.kostenHinweise);
+  ok(spEn.indexOf('Labour') >= 0,
+     'N10c: NACH DEM SPRACHWECHSEL steht dort "Labour" — ohne neu zu rechnen');
+  ok(spEn.indexOf('Lohn') < 0, 'N10c: und kein deutsches Wort mehr');
+  /* Auch die Waermefuehrung, die schon seit N9b mitwandert. */
+  s.setSprache('de');
+  ok(tiefText(d.byId.kostenWeg).indexOf('Lohn') >= 0, 'N10c: und wieder zurueck');
+
+  /* (2) AUSLEGUNG: Das Feld a ist leer, weil a gerade gesucht wird. Die
+     Kostenrechnung las es trotzdem dort und meldete "Angaben zur Naht
+     fehlen" — obwohl das Ergebnis ein fertiges a_gewaehlt enthaelt. */
+  s.leeren();
+  s.beispielLaden('konsole');
+  ok(istLeerW(d.byId.fld_a.value),
+     'N10c: bei der Auslegung ist das Feld a leer — es wird ja gesucht');
+  d.byId.zus_kosten.checked = true;
+  s.aktualisiere();
+  var auErg = s.rechnen();
+  ok(auErg && auErg.ok === true, 'N10c: der Auslegungsfall rechnet');
+  ok(auErg && auErg.auslegung && auErg.auslegung.a_gewaehlt > 0,
+     'N10c: und liefert ein gewaehltes a-Mass (' +
+     (auErg && auErg.auslegung ? auErg.auslegung.a_gewaehlt : '-') + ' mm)');
+  var auKo = s.letzteKosten ? s.letzteKosten() : null;
+  ok(auKo && auKo.ok === true,
+     'N10c: DIE KOSTENRECHNUNG LAEUFT AUCH BEI DER AUSLEGUNG — sie nimmt das ' +
+     'gerechnete a-Mass, nicht das leere Feld');
+  ok(auKo && auKo.m_draht > 0,
+     'N10c: und liefert einen Drahtbedarf (' + (auKo ? auKo.m_draht.toFixed(0) : '-') + ' g)');
+  /* Die Probe: der Drahtbedarf muss zum GEWAEHLTEN a passen, nicht zum
+     erforderlichen. */
+  var auK2 = win.DTNKosten.menge({ nahttyp: 'kehl', a: auErg.auslegung.a_gewaehlt,
+    l_ges: auErg.nahtbild.l_ges, verfahren: 'mag', werkstoffgruppe: 'stahl' });
+  ok(auK2.ok && Math.abs(auK2.m_draht - auKo.m_draht) < 0.5,
+     'N10c: und er deckt sich mit dem gewaehlten a-Mass');
+  s.leeren();
+
   /* ---- N9d · ANHALTSWERTE SIND SICHTBAR ANDERS -------------------------
      Ein Erfahrungswert, der aussieht wie ein Normwert, waere eine stille
      Behauptung. Deshalb traegt jedes Anhaltsfeld seinen eigenen Hinweis.  */
