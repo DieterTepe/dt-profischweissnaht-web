@@ -1843,6 +1843,46 @@ function lauf(edition) {
   ok(n11K.length === n11Ber.karten.length,
      'N11: das Blatt zeigt genau die Karten, die auch der Bildschirm zeigt');
 
+  /* BEFUND AUS DER ERSTEN WORD-DATEI (2026-08-07): Waermefuehrung und
+     Kostenrechnung bauen ihre Zeilen ANDERS als die Ergebniskacheln — zwei
+     schlichte <span> statt `.tile-k`/`.tile-wert`. Wer nur nach der Klasse
+     sucht, klebt Beschriftung und Wert zusammen: aus
+     "Mindest-Vorwaermtemperatur" und "120 °C" wurde
+     "Mindest-Vorwaermtemperatur120 °C" — und der Wert blieb leer.
+     Geprueft wird deshalb an einem Beispiel, das BEIDE Zusatzbereiche
+     mitbringt, dass die zweite Spalte wirklich ankommt. */
+  s.leeren();
+  s.beispielLaden('winkel_v');
+  s.rechnen();
+  ok(!!s.letzteThermik(), 'N11: das Feinkorn-Beispiel bringt die Waermefuehrung mit');
+  ok(!!s.letzteKosten(), 'N11: und die Kostenrechnung');
+  var n11KK = s.berichtKarten(), n11MitWert = 0, n11Geklebt = 0, n11Z;
+  for (i = 0; i < n11KK.length; i++) {
+    for (var n11j = 0; n11j < n11KK[i].zeilen.length; n11j++) {
+      n11Z = n11KK[i].zeilen[n11j];
+      if (n11Z.v) n11MitWert++;
+      /* Eine Beschriftung, die selbst schon eine Zahl mit Einheit traegt,
+         ist die verklebte Zeile von damals. */
+      if (!n11Z.v && /[0-9]\s*(mm|s|\u00b0C|kJ|kWh|g|min)$/.test(n11Z.k)) n11Geklebt++;
+    }
+  }
+  ok(n11KK.length >= 3, 'N11: alle drei Ergebniskarten stehen im Blatt (' + n11KK.length + ')');
+  ok(n11MitWert >= 10, 'N11: und ihre Werte kommen in der zweiten Spalte an (' + n11MitWert + ')');
+  ok(n11Geklebt === 0,
+     'N11: KEINE Zeile klebt Beschriftung und Wert zusammen (' + n11Geklebt + ')');
+
+  /* Und die Liste 2.4 steht im Blatt genau EINMAL — sie kam einmal als
+     Abschnitt des Rechenwegs und einmal angehaengt. */
+  var n11W2 = null;
+  s.wordText(function (r) { n11W2 = r; });
+  var n11T24 = require('./report.js').rtfText(Kern.t('rw_ab_nicht_geprueft', 'de'));
+  var n11N = 0, n11Von = 0, n11Ix;
+  while ((n11Ix = n11W2.text.indexOf(n11T24, n11Von)) >= 0) { n11N++; n11Von = n11Ix + 1; }
+  ok(n11N === 1, 'N11: "Was NICHT geprueft wird" steht genau einmal im Blatt (' + n11N + ')');
+  s.leeren();
+  s.beispielLaden('blech');
+  s.rechnen();
+
   /* --- Dreisprachig ------------------------------------------------------ */
   var n11Spr = ['en', 'pt', 'de'];
   for (i = 0; i < n11Spr.length; i++) {

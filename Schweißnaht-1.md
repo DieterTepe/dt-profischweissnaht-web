@@ -19,8 +19,8 @@
 > in 4.11 und in der Historie. Im Projektordner liegt **keine Vorlaufdatei** mehr.
 
 ```
-Plan-Version : 2.65 · Stand 2026-08-07
-Codestand    : Plan 2.65 · ui 0.17.0 · N11
+Plan-Version : 2.66 · Stand 2026-08-07
+Codestand    : Plan 2.66 · ui 0.17.1 · N11
                (Die Planversion, gegen die der CODE gebaut ist. Sie steht auch
                in ui.js als PLAN und wird von einer Assertion damit verglichen.
                Sie wandert nur mit, wenn sich Code ändert — reine Plan- oder
@@ -83,8 +83,12 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                **N10c ist geprüft und ABGENOMMEN (2026-08-06)** — beide
                Fehler sind weg. Das **Dateiformat für N11 ist entschieden**
                (5.1-8).
-               **Baustein N11 (Ausgaben) ist GEBAUT und GELIEFERT
-               (2026-08-07) — Abnahme steht aus.** Neu ist `report.js`
+               **Baustein N11 (Ausgaben) ist von Dieter am Handy geprüft
+               und ABGENOMMEN (2026-08-07)** — alle vier Ausgaben liefen.
+               **Zwei Befunde aus der gelieferten Word-Datei sind
+               nachgearbeitet** (5.1-9): die Karten der Wärmeführung und
+               der Kostenrechnung klebten Beschriftung und Wert zusammen,
+               und die Liste 2.4 stand zweimal im Blatt. Neu ist `report.js`
                (**19 Module**): `.dts` speichern und öffnen mit
                Versionsstempel, Drucken/PDF über ein eigenes Druckbild,
                Word (.rtf) mit Bildern und Rückfallweg, und das **Gating
@@ -105,7 +109,7 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                  4.11 (symbol.js), 4.12 (report.js).
                Große Bausteine (N5, N8, N13, N14) werden in ETAPPEN gebaut — Regel in
                Kickoff-Punkt 5c, Etappen in Abschnitt 5.2.
-Basislinie   : 3274 Assertions · DOM-Smokes 982 (voll) + 982 (test) · i18n-Parität 0 Abweichungen
+Basislinie   : 3283 Assertions · DOM-Smokes 988 (voll) + 988 (test) · i18n-Parität 0 Abweichungen
                (VERBINDLICH. Basislinie darf nur WACHSEN — nie schrumpfen, nie gelockert werden.)
 Dateistand   : siehe Abschnitt 8.1 — dort steht, was fertig ist und was noch fehlt.
 ⚠️ SYNC       : Am 2026-08-03 lag im Projektordner eine **elf Versionen alte**
@@ -194,7 +198,7 @@ Einstiegssatz von Dieter: **„weiter mit N12"**.
    schon zweimal Dateien verlorengegangen, beide Male hat diese Prüfung es gefunden.
 11. Arbeitsordner herstellen (Befehl unter Punkt 6 der Kickoff-Liste), dann
    `node test_naht.js`, `node dom_smoke_voll.js`, `node dom_smoke_test.js` laufen lassen
-   und die Basislinie aus dem Plan-Kopf bestätigen (**3274 / 982 / 982 · 0 Fehler**),
+   und die Basislinie aus dem Plan-Kopf bestätigen (**3283 / 988 / 988 · 0 Fehler**),
    **bevor** etwas gebaut wird. Weicht etwas ab, erst das klären.
    ⚠️ **Diese drei Läufe sind zugleich die Probe, ob Plandatei und Code zusammenpassen.**
    Steht im Kopfblock eine andere Basislinie als gemessen, ist eine der beiden Seiten alt —
@@ -1600,7 +1604,7 @@ nicht die Datei.**
 | **N8** ✅ | **Assistent — vollständig ABGENOMMEN 2026-08-04** | `assistent.js` (DOM-freie Dialoglogik) + Overlay-UI, Button-Einstieg, tabellengestützt aus `optionen.js`, mit Erklärungen/Tipps/Skizzen je Dialog, Übernahme vorhandener Eingaben. |
 | **N9** ✅ | **Vorwärmung & t8/5 — vollständig ABGENOMMEN 2026-08-05** | `thermik.js` + Panel + Rechenweg + Assistenten-Schritte. Umfang festgelegt 2026-08-05, Ergebnis in 5.1-6. Geteilt in **N9a** (Kennungsabsicherung + Rechenkern, DOM-frei) und **N9b** (Panel, Rechenweg, Assistent, Endkrater-Ankreuzfeld). |
 | **N10** ✅ | **Kosten/Zeit/Draht — vollständig ABGENOMMEN 2026-08-05** | `kosten.js` + Panel + Rechenweg + Assistenten-Schritte. |
-| **N11** ✅ | **Ausgaben** *(gebaut und geliefert 2026-08-07, Abnahme offen — Ergebnis in 5.1-9)* | `report.js`: `.dts` speichern/öffnen (**erst leeren, dann laden**, **Versionsstempel nach 5.1-8**, **nur Eingaben**, Lückenliste als Dokumentation), Druck/PDF, Word (.rtf), `guard()`-Gating. Aktionsleiste **oben**, Dateiname trägt Bezeichnung + Datum. **Jede Ausgabe trägt die Versionszeile** (3.6) — **dabei die Modulnamen an die Dateinamen angleichen UND die Modulkennungen mitwachsen lassen**, beide Merkposten in 3.6. |
+| **N11** ✅ | **Ausgaben** *(ABGENOMMEN 2026-08-07 — Ergebnis in 5.1-9)* | `report.js`: `.dts` speichern/öffnen (**erst leeren, dann laden**, **Versionsstempel nach 5.1-8**, **nur Eingaben**, Lückenliste als Dokumentation), Druck/PDF, Word (.rtf), `guard()`-Gating. Aktionsleiste **oben**, Dateiname trägt Bezeichnung + Datum. **Jede Ausgabe trägt die Versionszeile** (3.6) — **dabei die Modulnamen an die Dateinamen angleichen UND die Modulkennungen mitwachsen lassen**, beide Merkposten in 3.6. |
 | **N12** ⬅ | **Edition/Registrierung/Impressum** *(nächster Bau)* | Testbalken, Aktivierungsdialog beim Erststart (Name + Schlüssel, **keine Formatprüfung**), „Vollversion · lizenziert für <Name>", **10-s-Long-Press** = Reset, Info-ⓘ mit Impressum. |
 | **★** | **LAUNCH-CHECKPOINT** | **Ab hier verkaufsfähig.** Dieter entscheidet: weiterbauen oder veröffentlichen. |
 | **N13** | **Ermüdung — Rechenkern** | `ermuedung.js`: Wöhlerlinie m=3/5, γ_Mf, Miner, Kollektive + Rechenweg. **Hier Dieter nach seinen Praxis-Kerbfällen fragen.** |
@@ -2719,7 +2723,44 @@ ein altes.**
 
 ---
 
-#### 5.1-9 · N11 — **GEBAUT UND GELIEFERT 2026-08-07, Abnahme offen**
+#### 5.1-9 · N11 — **GEBAUT, GELIEFERT UND ABGENOMMEN 2026-08-07**
+
+> ✅ **Von Dieter am Handy geprüft und ABGENOMMEN.** Alle vier Ausgaben liefen;
+> die Versionszeile nannte 19 Module mit den neuen **Dateinamen**.
+> **Die Canvas-Rasterung trägt:** die gelieferte `.rtf` enthielt das Nahtbild als
+> `\pict\pngblip` mit 640×480 px — der Rückfallweg musste gar nicht greifen.
+> Am Handy war es nur nicht **sichtbar**, weil der dortige RTF-Betrachter
+> eingebettete Bilder nicht anzeigt; in Word oder LibreOffice steht es da.
+> **Das ist eine Eigenschaft des Betrachters, kein Programmverhalten** — und
+> genau deshalb war es wichtig, die gelieferte Datei anzusehen statt dem
+> Bildschirm zu glauben.
+>
+> **ZWEI ECHTE FEHLER HAT ERST DIE FERTIGE DATEI GEZEIGT** (nachgearbeitet in
+> derselben Sitzung, `ui 0.17.1`, `report 0.1.1-N11`):
+> 1. **Die Karten der Wärmeführung und der Kostenrechnung klebten
+>    Beschriftung und Wert zusammen** — „Mindest-Vorwärmtemperatur120 °C",
+>    und die Wertspalte blieb leer. Ursache: sie bauen ihre Zeilen aus zwei
+>    schlichten `<span>`, während die Ergebniskacheln `.tile-k` und
+>    `.tile-wert` tragen. Die Ausgabe suchte nur nach der Klasse. **Jetzt
+>    wird die STRUKTUR gelesen** — erste Spalte Beschriftung, letzte Spalte
+>    Wert; eine Zeile ohne zweite Spalte ist eine Zwischenüberschrift und
+>    bekommt keinen Doppelpunkt angehängt.
+> 2. **„Was NICHT geprüft wird" stand zweimal im Blatt** — einmal als
+>    Abschnitt des Rechenwegs, einmal als angehängte Liste, beide Male
+>    derselbe Inhalt. Angehängt wird sie jetzt nur noch, wenn der Rechenweg
+>    sie **nicht** führt: die Liste 2.4 darf nie fehlen, aber auch nicht
+>    doppelt dastehen.
+>
+> **Ein dritter Befund ist KEIN Fehler und steht jetzt als Assertion fest:**
+> die Schrittnummern springen im Abschnitt *Selbstprüfung* (…31, 34, dann 32).
+> Das ist Bestandsverhalten von `rechenweg.js` und auf dem Bildschirm
+> genauso — die Summenzeile wird erst **nach** dem Zählen gebildet und trägt
+> deshalb die höchste Nummer (Plan 9.1). Wer das „korrigiert", macht eine
+> Absicht kaputt. S49 hält beides fest: dass die Nummern springen **und**
+> dass kein Schritt fehlt.
+>
+> **Basislinie 3274 → 3283 Assertions · Smokes 982/982 → 988/988.**
+
 
 **Der abgestimmte Umfang** *(Dieter, 2026-08-07)*: **einteilig komplett, aber mit vielen
 Prüfungen** · Word **mit** Bildern, die Ausführung an Claude delegiert („es muss laufen")
@@ -2777,9 +2818,17 @@ Steg- und Flanschdicke müssen **weg** sein. Ohne `leeren()` wird das rot.
 **Lehre, und sie ist die alte:** eine Prüfung, die ohne den Fix nicht rot wird, ist
 wertlos — auch dann, wenn sie das Richtige zu prüfen scheint.
 
-**Basislinie 3053 → 3274 Assertions · Smokes 915/916 → 982/982 · i18n-Parität 0.**
+**Basislinie 3053 → 3283 Assertions · Smokes 915/916 → 988/988 · i18n-Parität 0.**
 Neue Sektion **S49**. `report.js` hängt in beiden HTMLs — die Versionszeile zeigt
 **19 Module**.
+
+**LEHRE AUS DER NACHARBEIT (2026-08-07):** Beide Fehler lagen in der **fertigen
+Datei**, nicht im Rechenweg — und beide Testläufe waren grün. Der Grund ist
+derselbe wie bei der dritten Gegenprobe: geprüft wurde, dass die Karten
+**ankommen**, nicht **wie** sie ankommen. Eine Ausgabe ist erst geprüft, wenn
+jemand das Erzeugnis geöffnet und angesehen hat. **Der DOM-Smoke rechnet dafür
+jetzt ein Beispiel mit BEIDEN Zusatzbereichen durch** (`winkel_v`) und prüft,
+dass keine Beschriftung ihren eigenen Wert enthält.
 
 **Erwarteter Beleg am Handy:**
 - Die Versionszeile nennt „Programmstand **N11** · Plan **2.65** · **19 Module**" mit
@@ -3274,6 +3323,14 @@ was ohnehin da ist.
 neue Kennungen. Ihre Rechenwerte sind unverändert; der Wächter aus S43 hat
 jede einzelne eingefordert, und das ist der Beleg dafür.
 
+**Nachtrag N11-Nacharbeit (2026-08-07) — 5 Dateien:** `ui.js` (`karteZeilen()`
+liest die Struktur statt der Klasse; Kennungen 0.17.1 / N11 / 2.66) ·
+`report.js` (Zeile ohne Wert ohne Doppelpunkt, Überschrift ohne zweiten
+Doppelpunkt, keine doppelte Liste 2.4; Kennung 0.1.1-N11) ·
+`test_naht.js` (**S49** um die drei Befunde erweitert) ·
+`dom_smoke_voll.js` (`winkel_v` mit beiden Zusatzbereichen durchgerechnet) ·
+Plandatei und Historie. **Kein anderes Modul angefasst.**
+
 **Nachtrag N10b (2026-08-05) — 12 Dateien:** `validate.js` (ODER-Bedingung,
 20 Felder) · `ui.js` (zwei Bereiche, Kostenkarte, Preis-Hinweis, Kennungen
 0.15.0 / N10b / 2.59) · `optionen.js` (zwei Beispiele mit Kostenrechnung) ·
@@ -3458,7 +3515,7 @@ Formsache, und der Basislinien-Abgleich aus Kickoff-Punkt 11 ebenso wenig.
 **Erste Handlung im neuen Chat:** Vollständigkeit gegen die Tabelle oben prüfen
 (**19 Module**, `style.css`, beide HTMLs, **alle drei** DEV-ONLY-Dateien, dazu Plandatei und
 `Schweißnaht-Historie.md`), Arbeitsordner herstellen, die drei Testläufe starten.
-Melden müssen sie **3274 / 982 / 982 · 0 Fehler**. Weicht etwas ab, erst das klären —
+Melden müssen sie **3283 / 988 / 988 · 0 Fehler**. Weicht etwas ab, erst das klären —
 nicht bauen.
 
 **Was N6b überschreiben wird** (zur Vorwarnung, nicht als Auftrag): neu `symbol.js`,
@@ -3686,6 +3743,21 @@ will. Also: Vorschriften und Wegweiser bleiben hier, die Erzählung wandert.
   die Werte der DATEI ankommen. Entscheidend war, ob die Werte des VORIGEN Falls
   verschwinden. **Jede neue Prüfung wird einmal gegen den entfernten Fix gehalten** —
   sonst weiß niemand, ob sie etwas hält.
+- **Eine Ausgabe ist erst geprüft, wenn jemand das ERZEUGNIS geöffnet hat**
+  (2026-08-07, N11): Beide Fehler der ersten Word-Datei — verklebte Karten und
+  die doppelte Liste 2.4 — standen in der fertigen Datei, während alle drei
+  Testläufe grün meldeten. Geprüft war, dass die Karten **ankommen**, nicht
+  **wie** sie ankommen. Bei jedem neuen Ausgabeformat gehört ein Blick in das
+  Erzeugnis dazu, und was dabei auffällt, wird eine Assertion.
+- **Zwei Karten mit verschiedenem Aufbau brauchen eine Regel über die
+  STRUKTUR, nicht über die Klasse** (2026-08-07, N11): Die Ergebniskacheln
+  tragen `.tile-k`/`.tile-wert`, die Zeilen von Wärmeführung und Kosten zwei
+  schlichte `<span>`. Wer nach der Klasse sucht, findet an der zweiten Stelle
+  nichts — und klebt still zusammen, statt zu scheitern.
+- **Ein Bild kann in der Datei stehen und trotzdem unsichtbar sein**
+  (2026-08-07, N11): Der RTF-Betrachter am Handy zeigt eingebettete PNG nicht
+  an. Das ist eine Eigenschaft des Betrachters, kein Programmverhalten — bevor
+  ein Rückfallweg beschuldigt wird, gehört in die Datei selbst geschaut.
 - **Token-Pause: 4 Stunden.**
 
 ---
@@ -3744,23 +3816,6 @@ Changelog — **die vollständige Fassung ab v1.0 steht in `Schweißnaht-Histori
 Hier stehen nur die letzten drei Einträge. Wer wissen will, wie eine Entscheidung
 zustande kam, findet die Kette dort — lückenlos ab der Erstfassung vom 2026-07-23.
 
-**v2.63 (2026-08-06):** **Etappe N10c geprüft und ABGENOMMEN — beide Fehler sind
-weg.** Die Versionszeile zeigt „N10c · Plan 2.61 · 18 Module" mit `ui 0.16.0`.
-Der Sprachwechsel nach dem Rechnen lässt die Kostenkarte vollständig mitwandern,
-und die Kostenrechnung läuft auch bei der Auslegung, wo das Feld `a` leer ist.
-**Bemerkenswert am Vorgehen:** Weil die Bereitstellung auf GitHub Pages hing,
-hat Dieter alle Module in **eine HTML kopiert und offline geprüft** — derselbe
-Code, nur anders geladen; die Versionszeile meldete korrekt alle 18 Module.
-Das ist ein brauchbarer Ausweichweg und zugleich ein Hinweis darauf, dass eine
-**Einzeldatei-Fassung** als Auslieferungsform möglich wäre (offen für N12).
-**Damit ist Baustein N10 vollständig abgenommen; sieben von zehn Bausteinen bis
-zum Verkaufsstand sind fertig.** **Code unverändert, `Codestand` bleibt 2.61.**
-**Basislinie unverändert: 3053 Assertions · Smokes 915 / 916 · i18n-Parität 0.**
-**Nächster Schritt: Baustein N11 (Ausgaben) — Dateiformat entschieden (5.1-8),
-dazu die beiden Merkposten aus 3.6. Einstieg: „weiter mit N11".**
-
-
-
 **v2.64 (2026-08-06):** **Zwei Schäden im Plan-Kopf behoben — keine
 Codeänderung.** Durch wiederholtes Ersetzen war der Aufzählungssatz der
 abgenommenen Bausteine **zerrissen**: Er endete mitten in „dazu N9c gebaut
@@ -3795,6 +3850,28 @@ in 9.2. Ergebnis in **5.1-9**, Schnittstelle in **4.12**, fünf neue Festlegunge
 **Basislinie 3053 → 3274 Assertions · Smokes 915/916 → 982/982 · i18n-Parität 0.**
 **Nächster Schritt: N11 am Handy prüfen, dann Baustein N12 (Edition, Registrierung,
 Impressum) — danach ist der Launch-Checkpoint erreicht. Einstieg: „weiter mit N12".**
+
+
+
+**v2.66 (2026-08-07):** **Baustein N11 ABGENOMMEN — und die fertige Datei hat zwei
+Fehler gezeigt, die alle drei Testläufe nicht sahen.** Alle vier Ausgaben liefen am
+Handy. **Die Canvas-Rasterung trägt:** die gelieferte `.rtf` enthielt das Nahtbild als
+`\pict\pngblip` mit 640×480 px — der Rückfallweg musste gar nicht greifen; am Handy war
+es nur nicht sichtbar, weil der dortige Betrachter eingebettete Bilder nicht anzeigt.
+**Zwei echte Fehler wurden nachgearbeitet:** Die Karten der Wärmeführung und der
+Kostenrechnung klebten Beschriftung und Wert zusammen („Mindest-Vorwärmtemperatur120 °C"),
+weil sie ihre Zeilen aus zwei schlichten `<span>` bauen statt aus `.tile-k`/`.tile-wert` —
+gelesen wird jetzt die **Struktur** statt der Klasse. Und **„Was NICHT geprüft wird" stand
+zweimal im Blatt**, weil der Rechenweg die Liste schon als Abschnitt führt. Ein dritter
+Befund ist **kein** Fehler und steht jetzt als Assertion fest: die springenden
+Schrittnummern sind Bestandsverhalten aus 9.1. **Die Lehre, in 9.2 aufgenommen:** eine
+Ausgabe ist erst geprüft, wenn jemand das **Erzeugnis** geöffnet hat — geprüft war, dass
+die Karten ankommen, nicht **wie** sie ankommen.
+**Codestand 2.65 → 2.66 · ui 0.17.0 → 0.17.1 · report 0.1.0 → 0.1.1-N11.**
+**Basislinie 3274 → 3283 Assertions · Smokes 982/982 → 988/988 · i18n-Parität 0.**
+**Damit sind acht von zehn Bausteinen bis zum Verkaufsstand fertig.**
+**Nächster Schritt: Baustein N12 (Edition, Registrierung, Impressum) — danach der
+Launch-Checkpoint. Einstieg: „weiter mit N12".**
 
 
 ═══════════════════════════════════════════════════════════════════════════

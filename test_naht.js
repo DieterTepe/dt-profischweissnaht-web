@@ -4150,8 +4150,8 @@ var S43_STAND = [
   { datei: 'thermik.js', version: '0.3.0-N9c', summe: '1bf966a2' },
   { datei: 'skizze.js', version: '0.3.0-N9c', summe: '447c40cd' },
   { datei: 'assistent.js', version: '0.5.0-N10b', summe: '4c015b50' },
-  { datei: 'ui.js', version: '0.17.0', summe: '7d291a4c' },
-  { datei: 'report.js', version: '0.1.0-N11', summe: 'b689ae97' }
+  { datei: 'ui.js', version: '0.17.1', summe: '85d9afa3' },
+  { datei: 'report.js', version: '0.1.1-N11', summe: 'ef412ad3' }
 ];
 
 var s43i, s43Fehl = [], s43Src, s43M, s43S;
@@ -5504,6 +5504,71 @@ for (s49i = 0; s49i < s49Kl.length; s49i++) {
       s49Ui.indexOf("'" + s49Kl[s49i] + "'") < 0) s49KlFehlt.push(s49Kl[s49i]);
 }
 eq(s49KlFehlt.length, 0, 'S49: jede angesprochene Klasse gibt es wirklich (' + s49KlFehlt.join(',') + ')');
+
+/* --- 19) DIE ZWEI BEFUNDE AUS DER ERSTEN WORD-DATEI (2026-08-07) -------- */
+/* Dieter hat die erste .rtf geoeffnet. Das Nahtbild war drin — die Rasterung
+   traegt also. Zwei andere Dinge waren falsch, und beide sahen im Test
+   gruen aus, weil kein Auge darauf lag. */
+
+/* BEFUND A: eine Zeile OHNE Wert bekam trotzdem einen Doppelpunkt, und eine
+   Ueberschrift, die im Woerterbuch schon einen traegt, bekam einen zweiten.
+   Aus "Kohlenstoffaequivalente aus der Analyse" wurde
+   "Kohlenstoffaequivalente aus der Analyse:  ". */
+var s49BerZ = Rep.baueBericht({
+  rw: s49Rw, sprache: 'de', datum: '2026-08-07',
+  anforderung: 'ISO 5817 B',
+  karten: [{ titel: 'Probe:', zeilen: [
+    { k: 'Mit Wert', v: '12 mm' },
+    { k: 'Zwischenueberschrift', v: '' }
+  ] }]
+});
+var s49RZ = Rep.baueRtf(s49BerZ);
+ok(s49RZ.text.indexOf('Mit Wert:  12 mm') >= 0, 'S49: eine Zeile MIT Wert traegt den Doppelpunkt');
+ok(s49RZ.text.indexOf('Zwischenueberschrift:') < 0,
+   'S49: eine Zeile OHNE Wert bekommt KEINEN Doppelpunkt angehaengt');
+ok(s49RZ.text.indexOf('Zwischenueberschrift\\par') >= 0, 'S49: sie steht aber sehr wohl da');
+ok(s49RZ.text.indexOf('{\\b\\fs28 Probe}') >= 0,
+   'S49: eine Ueberschrift bekommt keinen zweiten Doppelpunkt');
+
+/* BEFUND B: "Was NICHT geprueft wird" stand ZWEIMAL im Blatt — einmal als
+   Abschnitt des Rechenwegs, einmal als angehaengte Liste. Beide Male
+   derselbe Inhalt. Eine doppelte Liste laesst den Leser suchen, worin sie
+   sich unterscheiden. */
+function s49Zaehl(text, stueck) {
+  var n = 0, von = 0, i;
+  while ((i = text.indexOf(stueck, von)) >= 0) { n++; von = i + 1; }
+  return n;
+}
+var s49Titel24 = Kern.t('rw_ab_nicht_geprueft', 'de');
+eq(s49Zaehl(s49RZ.text, Rep.rtfText(s49Titel24)), 1,
+   'S49: die Liste 2.4 steht GENAU EINMAL im Blatt');
+ok(s49BerZ.abschnitt_codes.indexOf('rw_ab_nicht_geprueft') >= 0,
+   'S49: der Rechenweg fuehrt sie als eigenen Abschnitt');
+/* Gegenprobe: fuehrt der Rechenweg sie NICHT, wird sie sehr wohl angehaengt
+   — die Liste darf nie fehlen (Plan 2.4). */
+var s49OhneAbs = Rep.baueBericht({ rw: s49Rw, sprache: 'de', datum: '2026-08-07' });
+s49OhneAbs.abschnitt_codes = [];
+s49OhneAbs.abschnitte = [];
+ok(s49Zaehl(Rep.baueRtf(s49OhneAbs).text, Rep.rtfText(s49Titel24)) === 1,
+   'S49: fehlt der Abschnitt, wird die Liste angehaengt — sie darf nie fehlen');
+
+/* BEFUND C (kein Fehler, aber benannt): die Schrittnummern springen im
+   Abschnitt Selbstpruefung. Das ist BESTANDSVERHALTEN von rechenweg.js und
+   auf dem Bildschirm genauso — die Summenzeile wird erst NACH dem Zaehlen
+   gebildet und traegt deshalb die hoechste Nummer (Plan 9.1). Wer das
+   "korrigiert", macht eine Absicht kaputt. Hier festgehalten, damit es
+   niemand fuer einen Fehler der Ausgabe haelt. */
+var s49Nr = [], s49Abi, s49Sci;
+for (s49Abi = 0; s49Abi < s49Rw.abschnitte.length; s49Abi++) {
+  for (s49Sci = 0; s49Sci < s49Rw.abschnitte[s49Abi].schritte.length; s49Sci++) {
+    s49Nr.push(s49Rw.abschnitte[s49Abi].schritte[s49Sci].nr);
+  }
+}
+var s49Sprung = false;
+for (s49i = 1; s49i < s49Nr.length; s49i++) if (s49Nr[s49i] < s49Nr[s49i - 1]) s49Sprung = true;
+ok(s49Sprung === true,
+   'S49: die Schrittnummern springen — Bestandsverhalten aus Plan 9.1, kein Fehler der Ausgabe');
+eq(s49Nr.length, s49Rw.n_schritte, 'S49: aber es fehlt kein einziger Schritt im Blatt');
 
 /* ========================================================================= */
 console.log('\n════════════════════════════════════════════');

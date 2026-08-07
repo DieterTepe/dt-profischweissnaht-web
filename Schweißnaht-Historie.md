@@ -2572,3 +2572,67 @@ einteilig durchgezogen, wie ursprünglich abgestimmt. Der Haltepunkt hat damit g
 getan, wofür er gedacht ist: er hat eine Entscheidung ermöglicht, statt sie zu ersetzen.
 
 **Basislinie 3053 → 3274 Assertions · Smokes 915/916 → 982/982 · i18n-Parität 0.**
+
+---
+
+## Aus der Rückmeldung 2026-08-07 (N11 abgenommen — und die fertige Datei nachgesehen)
+
+**Alle vier Ausgaben liefen am Handy.** Die Versionszeile nannte 19 Module, alle mit
+Kennung, und die Namen waren zum ersten Mal Dateinamen: `daten`, `optionen`,
+`i18n_kern`, `i18n_hilfe`, `i18n_kerbfall` statt `data`, `options`, `kern`, `hilfe`,
+`kerbfall`. Der Merkposten aus 3.6, seit der N5d-Abnahme offen, ist damit am Gerät
+belegt.
+
+**Dieters Rückmeldung zum Nahtbild war: „ist nicht drin, nur der Hinweis."** Er hat die
+`.rtf` mitgeschickt. In der Datei stand:
+
+```
+{\pict\pngblip\picw640\pich480\picwgoal9000\pichgoal6750
+89504e470d0a1a0a…
+```
+
+**Das Bild war drin.** Die Canvas-Rasterung trägt auf dem Gerät; der Rückfallweg musste
+gar nicht greifen. Nur der RTF-Betrachter am Handy zeigt eingebettete PNG nicht an. Das
+ist eine Eigenschaft des Betrachters, kein Programmverhalten — und es wäre beinahe als
+Programmfehler in den Plan gewandert. **Bevor ein Rückfallweg beschuldigt wird, gehört
+in die Datei selbst geschaut.**
+
+**ZWEI ECHTE FEHLER HAT ERST DIE FERTIGE DATEI GEZEIGT — bei drei grünen Testläufen.**
+
+*Erstens:* Die Karten der Wärmeführung und der Kostenrechnung klebten Beschriftung und
+Wert zusammen. Im Blatt stand „Mindest-Vorwärmtemperatur120 °C:", und die Wertspalte
+blieb leer. Die Ursache ist banal und lehrreich zugleich: Die Ergebniskacheln des
+Nachweises tragen `.tile-k` und `.tile-wert`; die Zeilen von Wärmeführung und Kosten
+bauen sich aus zwei schlichten `<span>`, von denen nur der zweite eine Klasse hat. Die
+Ausgabe suchte nach der Klasse, fand an der zweiten Stelle nichts und fiel auf den
+gesamten Textinhalt der Zeile zurück — sie **scheiterte nicht, sie klebte still
+zusammen**. Gelesen wird jetzt die Struktur: erste Spalte Beschriftung, letzte Spalte
+Wert, und eine Zeile ohne zweite Spalte ist eine Zwischenüberschrift und bekommt keinen
+Doppelpunkt angehängt.
+
+*Zweitens:* „Was NICHT geprüft wird" stand zweimal im Blatt, beide Male mit demselben
+Inhalt — einmal als Abschnitt des Rechenwegs, einmal als angehängte Liste. Angehängt
+wird sie jetzt nur noch, wenn der Rechenweg sie nicht führt. Die Liste 2.4 darf nie
+fehlen, aber eine doppelte Liste lässt den Leser suchen, worin sie sich unterscheiden.
+
+**Ein dritter Befund ist KEIN Fehler.** Die Schrittnummern springen im Abschnitt
+*Selbstprüfung* — …31, dann 34, dann 32 im nächsten Abschnitt. Das sah nach einem Fehler
+der Ausgabe aus und ist Bestandsverhalten von `rechenweg.js`: Die Summenzeile der
+Selbstprüfung wird erst **nach** dem Zählen gebildet und trägt deshalb die höchste
+Nummer. Genau davor warnt 9.1. Statt es zu „korrigieren", hält S49 jetzt beides fest:
+dass die Nummern springen **und** dass kein Schritt fehlt. Wer künftig darüber stolpert,
+findet die Prüfung, bevor er die Absicht kaputtmacht.
+
+**Die Lehre, und sie schließt an die dritte Gegenprobe an.** Beide Fehler standen in der
+fertigen Datei, während alle drei Testläufe grün meldeten. Geprüft war, dass die Karten
+**ankommen** — nicht, **wie** sie ankommen. Dasselbe Muster wie beim vergessenen
+`leeren()`: die Prüfung sah die richtige Sache an der falschen Stelle. Daraus die Regel
+in 9.2: **Eine Ausgabe ist erst geprüft, wenn jemand das Erzeugnis geöffnet hat.** Der
+DOM-Smoke rechnet dafür jetzt ein Beispiel mit **beiden** Zusatzbereichen durch
+(`winkel_v`) und prüft, dass keine Beschriftung ihren eigenen Wert enthält.
+
+**Nacharbeit: 5 Dateien** — `ui.js` (0.17.1), `report.js` (0.1.1-N11), `test_naht.js`,
+`dom_smoke_voll.js`, dazu Plan und Historie. Kein anderes Modul angefasst.
+
+**Basislinie 3274 → 3283 Assertions · Smokes 982/982 → 988/988 · i18n-Parität 0.**
+**Damit sind acht von zehn Bausteinen bis zum Verkaufsstand fertig.**

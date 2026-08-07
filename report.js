@@ -49,7 +49,7 @@
   'use strict';
 
   var NAME = 'report';
-  var VERSION = '0.1.0-N11';
+  var VERSION = '0.1.1-N11';
 
   /* Der Programmname steht in der Datei, damit eine fremde .dts nicht
      stillschweigend als eigene gelesen wird. */
@@ -434,7 +434,8 @@
       version: istText(e.version) ? e.version : '',
       module: [],
       anforderung: istText(e.anforderung) ? e.anforderung : '',
-      karten: [], abschnitte: [], luecken: [], warnungen: [], hinweise: [],
+      karten: [], abschnitte: [], abschnitt_codes: [],
+      luecken: [], warnungen: [], hinweise: [],
       bilder: [], fehler: []
     };
 
@@ -487,6 +488,7 @@
 
     for (i = 0; i < g.abschnitte.length; i++) {
       b.abschnitte.push({ titel: g.abschnitte[i].titel, schritte: g.abschnitte[i].schritte });
+      b.abschnitt_codes.push(g.abschnitte[i].code);
     }
     b.selbstpruefung_ok = g.selbstpruefung_ok;
     b.nachweis_ok = rw.nachweis_ok;
@@ -523,7 +525,13 @@
     function p(s) { t.push(s); }
     function zeile(s) { p(rtfText(s) + '\\par'); }
     function fett(s) { p('{\\b ' + rtfText(s) + '}\\par'); }
-    function ueber(s) { p('\\par{\\b\\fs28 ' + rtfText(s) + '}\\par'); }
+    /* Manche Beschriftungen tragen im Woerterbuch schon einen Doppelpunkt —
+       als Ueberschrift sieht das falsch aus. */
+    function ueber(s) { p('\\par{\\b\\fs28 ' + rtfText(String(s || '').replace(/\s*:\s*$/, '')) + '}\\par'); }
+    /* Eine Zwischenueberschrift innerhalb einer Karte hat keinen Wert. Ihr
+       einen Doppelpunkt anzuhaengen macht aus einer Ueberschrift eine leere
+       Angabe. */
+    function paar(k, v) { zeile(v ? (k + ':  ' + v) : k); }
 
     p('{\\rtf1\\ansi\\ansicpg1252\\uc1\\deff0' +
       '{\\fonttbl{\\f0\\fswiss\\fcharset0 Arial;}}' +
@@ -541,7 +549,7 @@
     for (i = 0; i < bericht.karten.length; i++) {
       ueber(bericht.karten[i].titel);
       for (j = 0; j < bericht.karten[i].zeilen.length; j++) {
-        zeile(bericht.karten[i].zeilen[j].k + ':  ' + bericht.karten[i].zeilen[j].v);
+        paar(bericht.karten[i].zeilen[j].k, bericht.karten[i].zeilen[j].v);
       }
     }
 
@@ -581,12 +589,19 @@
       }
     }
 
-    if (bericht.warnungen.length) {
+    /* DER RECHENWEG FUEHRT BEIDE LISTEN BEREITS ALS EIGENEN ABSCHNITT.
+       Sie ein zweites Mal anzuhaengen hat in der ersten Word-Datei dazu
+       gefuehrt, dass "Was NICHT geprueft wird" zweimal im Blatt stand
+       (Befund 2026-08-07). Gedruckt werden sie deshalb nur, wenn der
+       Rechenweg sie NICHT hat — die Liste 2.4 darf nie fehlen, aber sie
+       darf auch nicht doppelt dastehen. */
+    var hatAbschnitt = bericht.abschnitt_codes || [];
+    if (bericht.warnungen.length && hatAbschnitt.indexOf('rw_ab_hinweise') < 0) {
       ueber(T('rw_ab_hinweise', lang));
       for (i = 0; i < bericht.warnungen.length; i++) zeile('\u2013 ' + bericht.warnungen[i]);
     }
 
-    if (bericht.luecken.length) {
+    if (bericht.luecken.length && hatAbschnitt.indexOf('rw_ab_nicht_geprueft') < 0) {
       ueber(T('rw_ab_nicht_geprueft', lang));
       for (i = 0; i < bericht.luecken.length; i++) zeile('\u2013 ' + bericht.luecken[i]);
     }

@@ -35,12 +35,12 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.17.0';
+  var VERSION = '0.17.1';
   var ETAPPE = 'N11';
   /* Plan-Version, die zu diesem Stand gehoert. Sie ist die EINZIGE von Hand
      gepflegte Zahl der Versionszeile — alles andere kommt aus den geladenen
      Modulen selbst (Plan 3.6). */
-  var PLAN = '2.65';
+  var PLAN = '2.66';
   var SPRACHEN = ['de', 'en', 'pt'];
 
   /* Plan 3.1 (bindend): die Oberflaeche startet IMMER im dunklen Design —
@@ -2546,17 +2546,28 @@
       ['kostenHinweise', 'sec_kosten']
     ];
 
+    /* EINE ZEILE HAT ZWEI SPALTEN — aber nicht ueberall dieselben Klassen.
+       Die Ergebniskacheln tragen `.tile-k` und `.tile-wert`, die Zeilen der
+       Waermefuehrung und der Kostenrechnung zwei schlichte `<span>`, von
+       denen nur der zweite eine Klasse hat. Wer nur nach `.tile-k` sucht,
+       findet dort nichts und klebt Beschriftung und Wert zusammen —
+       "Mindest-Vorwaermtemperatur120 °C". Genau so stand es in der ersten
+       Word-Datei (Befund vom 2026-08-07).
+       Deshalb wird die STRUKTUR gelesen, nicht die Klasse: erste Spalte ist
+       die Beschriftung, letzte Spalte der Wert. Eine Zeile ohne zweite
+       Spalte ist eine Zwischenueberschrift und bleibt ohne Wert. */
     function karteZeilen(host) {
-      var zeilen = [], i, j, kind, k, v, enkel;
+      var zeilen = [], i, kind, kinder, k, v;
       for (i = 0; i < (host.children || []).length; i++) {
         kind = host.children[i];
-        k = ''; v = '';
-        for (j = 0; j < (kind.children || []).length; j++) {
-          enkel = kind.children[j];
-          if (enkel.classList && enkel.classList.contains('tile-k')) k = enkel.textContent;
-          else if (!v) v = enkel.textContent;
+        kinder = kind.children || [];
+        if (kinder.length >= 2) {
+          k = kinder[0].textContent;
+          v = kinder[kinder.length - 1].textContent;
+        } else {
+          k = kind.textContent;
+          v = '';
         }
-        if (!k) { k = kind.textContent; v = ''; }
         if (k) zeilen.push({ k: k, v: v });
       }
       return zeilen;
