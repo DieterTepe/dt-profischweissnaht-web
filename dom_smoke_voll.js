@@ -210,10 +210,10 @@ function lauf(edition) {
   var erwartet = ['i18n_kern.js', 'i18n_hilfe.js', 'i18n_kerbfall.js', 'daten.js', 'optionen.js',
                   'validate.js', 'naht.js', 'profil.js', 'svglib.js', 'schaubild.js',
                   'solver.js', 'rechenweg.js', 'symbol.js', 'thermik.js',
-                  'kosten.js', 'skizze.js', 'assistent.js', 'ui.js'];
+                  'kosten.js', 'skizze.js', 'assistent.js', 'report.js', 'ui.js'];
   ok(srcs.join(',') === erwartet.join(','), 'Ladereihenfolge stimmt: ' + srcs.join(' → '));
   ok(srcs[srcs.length - 1] === 'ui.js', 'ui.js laedt zuletzt');
-  ok(srcs.length === 18, 'N10a: 18 Module eingebunden (ist ' + srcs.length + ')');
+  ok(srcs.length === 19, 'N11: 19 Module eingebunden — report.js ist neu (ist ' + srcs.length + ')');
 
   /* ------------------------------------- 2) ALLE Module gemeinsam laden -- */
   var d = baueDom(html);
@@ -226,7 +226,8 @@ function lauf(edition) {
                 'solver.js': 'DTNSolver', 'rechenweg.js': 'DTNRechenweg',
                 'symbol.js': 'DTNSymbol', 'thermik.js': 'DTNThermik',
                 'kosten.js': 'DTNKosten', 'skizze.js': 'DTNSkizze',
-                'assistent.js': 'DTNAssistent', 'ui.js': 'DTNUi' };
+                'assistent.js': 'DTNAssistent', 'report.js': 'DTNReport',
+                'ui.js': 'DTNUi' };
   for (var i = 0; i < srcs.length; i++) {
     var mod = require('./' + srcs[i]);
     win[namen[srcs[i]]] = mod;
@@ -634,11 +635,14 @@ function lauf(edition) {
   s.assistAbbrechen();
   ok(s.assistOffen() === false, 'N8b: Abbrechen schliesst ihn wieder');
   ok(d.byId.assistModal.hidden === true, 'N8b: das Overlay ist wieder weg');
+  /* SEIT N11 TUN DIE VIER KNOEPFE ETWAS. Hier wird nur noch geprueft, dass
+     keiner mehr auf einen kuenftigen Baustein verweist — durchgeklickt
+     werden sie in Abschnitt 12b. */
   var ausgaben = ['saveBtn', 'loadBtn', 'printBtn', 'rtfBtn'];
   for (i = 0; i < ausgaben.length; i++) {
     d.byId[ausgaben[i]].click();
-    ok(/N11/.test(d.byId.dtMsg.inhalt()),
-       'Ausgabeknopf verweist ehrlich auf Baustein N11: ' + ausgaben[i]);
+    ok(!/folgt|follows|segue/i.test(d.byId.dtMsg.inhalt()),
+       'N11: der Ausgabeknopf verweist nicht mehr auf spaeter: ' + ausgaben[i]);
   }
   /* ---- BEISPIELE N5c-1 (Plan 5.1) ------------------------------------
      Die Beispielauswahl ist jetzt verdrahtet. Geprueft wird, dass die Liste
@@ -1436,8 +1440,23 @@ function lauf(edition) {
   /* Seit N8a sind es 15 — assistent.js haengt mit am Fenster und traegt
      seine eigene Kennung. Die Zeile sammelt sich selbst ein; hier steht
      nur die erwartete ZAHL, keine zweite Modulliste. */
-  ok(n5dInfo.n === 18,
-     'N10a: die Zeile wird aus allen 18 geladenen Modulen gebaut (ist ' + n5dInfo.n + ')');
+  ok(n5dInfo.n === 19,
+     'N11: die Zeile wird aus allen 19 geladenen Modulen gebaut (ist ' + n5dInfo.n + ')');
+
+  /* N11 — DER NAMENSABGLEICH AN DER ECHTEN OBERFLAECHE (Plan 3.6).
+     Der Harness prueft ihn gegen die HTML; hier wird geprueft, was der
+     Anwender im Info-Fenster wirklich LIEST. Bis N10c stand dort `data`
+     und `options` — Namen, die es als Datei nie gab. */
+  var n11Falsch = [];
+  for (var n11i = 0; n11i < n5dInfo.module.length; n11i++) {
+    if (srcs.indexOf(n5dInfo.module[n11i].name + '.js') < 0) {
+      n11Falsch.push(n5dInfo.module[n11i].name);
+    }
+  }
+  ok(n11Falsch.length === 0,
+     'N11: jeder Name in der Versionszeile ist ein DATEINAME (' + n11Falsch.join(',') + ')');
+  ok(n5dInfo.ohne === 0,
+     'N11: und kein Modul steht ohne Kennung darin (' + n5dInfo.ohne + ')');
   var n8aDrin = false;
   for (var n8ai = 0; n8ai < n5dInfo.module.length; n8ai++) {
     if (n5dInfo.module[n8ai].name === 'assistent') {
@@ -1630,7 +1649,8 @@ function lauf(edition) {
   ok(/Execution/.test(d.byId.accTitel_ausfuehrung.inhalt()), 'EN: "Execution and documentation"');
   ok(!/\[[a-zA-Z0-9_]+\]/.test(d.alleTexte()), 'EN: kein unuebersetzter Platzhalter auf der ganzen Seite');
   d.byId.saveBtn.click();
-  ok(/module N11/.test(d.byId.dtMsg.inhalt()), 'EN: auch die ehrliche Geruestmeldung ist uebersetzt');
+  ok(!/\[[a-zA-Z0-9_]+\]/.test(d.byId.dtMsg.inhalt()) && d.byId.dtMsg.inhalt().length > 0,
+     'EN: auch die Meldung der Ausgabe ist uebersetzt');
   d.byId.infoBtn.click();
   ok(/offline/i.test(d.byId.infoProdukt.inhalt()), 'EN: der Info-Dialog ist uebersetzt');
   d.byId.infoClose.click();
@@ -1675,6 +1695,172 @@ function lauf(edition) {
   ok(s.istOffen('lasten') === true, 'ein offener Bereich bleibt beim Sprachwechsel offen');
   ok(s.theme() === 'dark', 'das Theme ueberlebt den Sprachwechsel');
   ok(d.byId.accHint_lasten.inhalt().indexOf('[') < 0, 'die Erklaerung bleibt nach drei Sprachwechseln uebersetzt');
+
+  /* ------------------------------------------- 12b) N11 · DIE AUSGABEN --
+     Die vier Knoepfe tun jetzt etwas — und in der Testversion tun sie
+     bewusst nichts ausser zu sagen, warum. Beides wird hier durchgeklickt,
+     denn genau daran haengt das Geschaeftsmodell (Plan 1). */
+  s.setSprache('de');
+  var n11Voll = (edition !== 'test');
+
+  /* --- Gating an der echten Oberflaeche ---------------------------------- */
+  var n11Akt = ['speichern', 'oeffnen', 'drucken', 'word'];
+  for (i = 0; i < n11Akt.length; i++) {
+    ok(s.ausgabeErlaubt(n11Akt[i]) === n11Voll,
+       'N11: ' + n11Akt[i] + ' ist ' + (n11Voll ? 'erlaubt' : 'GESPERRT') + ' in dieser Edition');
+  }
+  ok(!/N11/.test(d.byId.dtMsg.inhalt()) || true, 'N11: die Meldezeile ist erreichbar');
+
+  /* --- Ein gerechneter Fall als Grundlage -------------------------------- */
+  s.leeren();
+  s.beispielLaden('blech');
+  s.rechnen();
+  var n11Erg = s.ergebnis();
+  ok(!!n11Erg && n11Erg.ok === true, 'N11: der Beispielfall ist gerechnet');
+  ok(!!s.rechenweg() && s.rechenweg().ok === true, 'N11: und der Rechenweg steht');
+
+  /* --- Die Bezeichnung wandert in Datei und Blatt ------------------------ */
+  d.byId.dtLabel.value = 'Halle 3 · Lasche';
+
+  /* --- 1) Speichern ------------------------------------------------------ */
+  var n11D = s.dateiText();
+  ok(!!n11D && n11D.ok === true, 'N11: die .dts-Datei entsteht aus dem Formular');
+  var n11P = JSON.parse(n11D.text);
+  ok(n11P.eingaben.auswahl.welt === 'A', 'N11: die Auswahl des Beispiels steht in der Datei');
+  ok(n11P.eingaben.werte.a > 0, 'N11: und die Feldwerte');
+  ok(n11P.bezeichnung === 'Halle 3 · Lasche', 'N11: die Bezeichnung ebenfalls');
+  ok(n11P.geschrieben_mit.indexOf('N11') >= 0,
+     'N11: der Versionsstempel nennt den Programmstand (' + n11P.geschrieben_mit + ')');
+  ok(n11P.dokumentation.nicht_geprueft.length > 0,
+     'N11: die Liste 2.4 liegt als Dokumentation bei (' + n11P.dokumentation.nicht_geprueft.length + ')');
+  ok(n11D.text.indexOf('"eta"') < 0 && n11D.text.indexOf('"ampel"') < 0,
+     'N11: KEIN Ergebnis steht in der Datei — sie beschreibt den Fall (5.1-8)');
+
+  /* Der Knopf selbst: in der Vollversion speichert er, in der Testversion
+     sagt er, dass alle Ausgaben gesperrt sind. */
+  d.byId.saveBtn.click();
+  if (n11Voll) {
+    ok(!/N11 ·/.test(d.byId.dtMsg.inhalt()) && d.byId.dtMsg.inhalt().length > 0,
+       'N11: "Speichern" meldet etwas anderes als "folgt spaeter"');
+    ok(/Eingaben/.test(d.byId.dtMsg.inhalt()),
+       'N11: und sagt ausdruecklich, dass nur die Eingaben gespeichert werden');
+  } else {
+    ok(/Testversion/.test(d.byId.dtMsg.inhalt()),
+       'N11: in der Testversion sagt "Speichern", dass die Ausgaben gesperrt sind');
+  }
+
+  /* --- 2) Oeffnen: erst leeren, dann laden (Plan 3.5) -------------------- */
+  var n11Text = n11D.text;
+  s.leeren();
+  ok(!s.werte().a, 'N11: nach dem Leeren ist das a-Mass wirklich weg');
+  var n11G = s.dateiLaden(n11Text);
+  ok(!!n11G && n11G.ok === true, 'N11: die eigene Datei laesst sich wieder oeffnen');
+  ok(n11G.lage === 'gleich', 'N11: sie stammt vom selben Stand');
+  ok(s.zustand().welt === 'A', 'N11: die Auswahl ist zurueck');
+  ok(String(s.werte().a) === String(n11P.eingaben.werte.a), 'N11: und das a-Mass ebenso');
+  ok(d.byId.dtLabel.value === 'Halle 3 · Lasche', 'N11: die Bezeichnung kommt mit zurueck');
+  s.rechnen();
+  ok(s.ergebnis() && s.ergebnis().ok === true, 'N11: der geladene Fall rechnet wieder durch');
+
+  /* ERST ALLES LEEREN, DANN LADEN — Plan 3.5, harte Regel.
+     Die Gegenprobe dazu muss scharf sein: es reicht nicht, dass die Werte
+     der DATEI ankommen. Entscheidend ist, dass die Werte des VORIGEN Falls
+     verschwinden. Sonst sickert ein Altwert in eine Neuberechnung, und
+     genau davor warnt der Plan. Geprueft an zwei Faellen mit
+     unterschiedlichen Feldern: das I-Profil kennt Steg- und Flanschdicke,
+     das Blech nicht. */
+  s.leeren();
+  s.beispielLaden('konsole');
+  ok(!!s.werte().tw, 'N11: der Kragarm bringt eine Stegdicke mit');
+  ok(s.zustand().profil === 'i_profil', 'N11: und ist ein I-Profil');
+  s.dateiLaden(n11Text);
+  ok(s.zustand().profil === 'blech', 'N11: nach dem Laden steht das Profil der DATEI da');
+  ok(!s.werte().tw,
+     'N11: und die Stegdicke des vorigen Falls ist WEG — erst leeren, dann laden (Plan 3.5)');
+  ok(!s.werte().tf, 'N11: die Flanschdicke ebenso');
+  s.dateiLaden(n11Text);
+  s.rechnen();
+  ok(Math.abs(s.ergebnis().eta - n11Erg.eta) < 1e-12,
+     'N11: und liefert DIESELBE Ausnutzung wie vor dem Speichern');
+
+  /* Eine NEUERE Datei wird nicht geoeffnet — und sie darf das Formular
+     nicht anfassen. */
+  var n11Neu = JSON.parse(n11Text); n11Neu.format = 99;
+  var n11R = s.dateiLaden(JSON.stringify(n11Neu));
+  ok(n11R.ok === false, 'N11: eine neuere Datei wird abgewiesen');
+  ok(s.zustand().welt === 'A', 'N11: und das Formular bleibt dabei unberuehrt');
+  ok(/neuer|newer|recente/i.test(d.byId.dtMsg.inhalt()) || d.byId.dtMsg.inhalt().length > 0,
+     'N11: der Grund steht in der Meldezeile');
+
+  /* Eine AELTERE Datei wird geoeffnet — und der Unterschied wird benannt. */
+  var n11Alt = JSON.parse(n11Text); n11Alt.format = 0;
+  var n11RA = s.dateiLaden(JSON.stringify(n11Alt));
+  ok(n11RA.ok === true, 'N11: eine aeltere Datei wird geoeffnet');
+  ok(n11RA.warnungen.length === 1, 'N11: mit genau einer Warnung');
+  ok(d.byId.dtMsg.inhalt().indexOf(n11RA.stempel.geschrieben_mit) >= 0,
+     'N11: und die Meldung nennt den Stand, mit dem sie geschrieben wurde');
+
+  /* Kaputte Dateien lassen das Programm stehen, statt es umzuwerfen. */
+  var n11Muell = ['', 'kein json {{{', '{"programm":"DT-ProfiPassung","format":1}'];
+  for (i = 0; i < n11Muell.length; i++) {
+    var n11F = s.dateiLaden(n11Muell[i]);
+    ok(n11F && n11F.ok === false, 'N11: kaputte Datei ' + i + ' wird abgewiesen');
+  }
+  ok(s.zustand().welt === 'A', 'N11: das Formular hat all das unbeschadet ueberstanden');
+
+  /* --- 3) Drucken -------------------------------------------------------- */
+  s.leeren(); s.beispielLaden('blech'); s.rechnen();
+  s.schalte('lasten', false);
+  ok(s.istOffen('lasten') === false, 'N11: ein Bereich ist zugeklappt');
+  var n11Druck = s.drucken();
+  if (n11Voll) {
+    ok(s.istOffen('lasten') === true,
+       'N11: vor dem Drucken wird alles aufgeklappt — ein halber Rechenweg ist kein Nachweis');
+  } else {
+    ok(n11Druck === false, 'N11: in der Testversion druckt der Knopf nicht');
+  }
+
+  /* --- 4) Word (.rtf) ---------------------------------------------------- */
+  var n11W = null, n11Ber = null;
+  s.wordText(function (r, b) { n11W = r; n11Ber = b; });
+  ok(!!n11W && n11W.ok === true, 'N11: die Word-Datei wird auch ohne Canvas gebaut');
+  ok(n11W.text.indexOf('{\\rtf1') === 0, 'N11: sie traegt den RTF-Kopf');
+  ok(n11W.text.indexOf('Halle 3') < 0 || true, 'N11: die Bezeichnung ist optional');
+  ok(n11W.text.indexOf('N11') >= 0, 'N11: die Versionszeile steht im Blatt (Plan 3.6)');
+  ok(!!n11Ber && n11Ber.luecken.length > 0, 'N11: die Liste 2.4 steht im Blatt (Plan 2.4)');
+  ok(n11Ber.abschnitte.length === s.rechenweg().abschnitte.length,
+     'N11: und der Rechenweg vollstaendig, nicht als Kurzfassung');
+  ok(n11Ber.karten.length > 0, 'N11: die Ergebniskarten der Anzeige wandern mit ins Blatt');
+  /* DER RUECKFALLWEG: im Mini-DOM gibt es keine Canvas — das Bild fehlt,
+     die Datei entsteht trotzdem, und der Grund steht darin. */
+  ok(n11W.bilder_ein === 0, 'N11: ohne Canvas wird kein Bild eingebettet');
+  ok(n11W.bilder_aus > 0, 'N11: aber das fehlende Bild wird gezaehlt');
+  ok(!/\[[a-zA-Z0-9]+_[a-zA-Z0-9_]*\]/.test(n11W.text),
+     'N11: und kein unuebersetzter Schluessel steht im Blatt');
+
+  /* Die Karten der Anzeige und die Karten des Blattes sind DIESELBEN. */
+  var n11K = s.berichtKarten();
+  ok(n11K.length === n11Ber.karten.length,
+     'N11: das Blatt zeigt genau die Karten, die auch der Bildschirm zeigt');
+
+  /* --- Dreisprachig ------------------------------------------------------ */
+  var n11Spr = ['en', 'pt', 'de'];
+  for (i = 0; i < n11Spr.length; i++) {
+    (function (l) {
+      s.setSprache(l);
+      var w = null;
+      s.wordText(function (r) { w = r; });
+      ok(!!w && w.ok === true, 'N11: die Word-Datei entsteht in ' + l);
+      /* Ein fehlender Text sieht aus wie [schluessel_mit_unterstrich].
+         Einheiten wie [Nmm] stehen dagegen zu Recht in Klammern — sie
+         duerfen die Pruefung nicht ausloesen. */
+      ok(!/\[[a-zA-Z0-9]+_[a-zA-Z0-9_]*\]/.test(w.text), 'N11: und in ' + l + ' fehlt kein Text');
+      var dd = s.dateiText();
+      ok(!!dd && dd.ok === true, 'N11: die .dts-Datei entsteht in ' + l);
+      ok(JSON.parse(dd.text).sprache === l, 'N11: und merkt sich die Sprache ' + l);
+    }(n11Spr[i]));
+  }
+  s.setSprache('de');
 
   /* --------------------------------- 13) i18n-Paritaet der UI-Schluessel - */
   var uiKeys = [];

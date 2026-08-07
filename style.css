@@ -377,3 +377,44 @@ input.feld,select.feld{display:block; width:100%; margin:0}
 .th-rot{color:var(--warn)}
 .th-grau{color:var(--dim)}
 .anhalt-note{flex-basis:100%; font-style:italic}
+
+/* ============================================================================
+ * N11 — DAS DRUCKBILD (Drucken / PDF)
+ *
+ * Gedruckt wird die LEBENDE SEITE, nicht eine zweite Darstellung. Damit kann
+ * das Blatt nie etwas anderes zeigen als der Bildschirm — es gibt nur eine
+ * Quelle (Plan 3.4). Hier steht deshalb kein einziger Inhalt, nur was auf
+ * Papier keinen Sinn ergibt: Knoepfe, Umschalter, Overlays.
+ *
+ * Und alles Zugeklappte wird geoeffnet. `ui.js` klappt vorher zusaetzlich
+ * programmatisch auf; diese Regeln fangen ab, was dabei uebrig bleibt — ein
+ * Nachweis mit halbem Rechenweg waere kein Nachweis.
+ * ========================================================================== */
+@media print {
+  :root, [data-theme="dark"] {
+    --bg:#fff; --card:#fff; --text:#000; --dim:#333; --line:#999;
+  }
+  html, body { background:#fff !important; color:#000 !important; }
+
+  /* Bedienelemente gehoeren nicht aufs Papier. */
+  .actionbar, .subbar, .header-controls, .edition-bar, .btn,
+  .modal-overlay, .dt-msg, .app-footer, .geruest-note,
+  .status-banner { display:none !important; }
+
+  /* Nichts bleibt zugeklappt. */
+  .acc-body, .acc-body[hidden], .card-body, .card-body[hidden],
+  .weg-box, .weg-box[hidden], .erg-box, .erg-box[hidden],
+  .grafik-box, .grafik-box[hidden] { display:block !important; }
+  .acc-caret { display:none !important; }
+
+  /* Karten sollen nicht mitten durchgeschnitten werden. */
+  .card, .acc, .rw-abschnitt, .tile { break-inside:avoid; page-break-inside:avoid; }
+  .card { border:1px solid #999 !important; box-shadow:none !important; margin:0 0 8px; }
+
+  /* Die ehrlichen Luecken und die Selbstpruefung stehen mit auf dem Blatt
+     (Plan 2.4) — sie sind der Grund, warum dieses Programm ehrlich ist. */
+  .gap-note, .rw-bilanz { display:block !important; color:#000 !important; }
+
+  .grafik-svg svg { max-width:100%; height:auto; }
+  a[href]:after { content:""; }
+}

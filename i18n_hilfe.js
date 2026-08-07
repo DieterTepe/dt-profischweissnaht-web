@@ -14,7 +14,7 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.4.0-N10b';
+  var VERSION = '0.5.0-N11';
   var SPRACHEN = ['de', 'en', 'pt'];
   var FELDER = ['was', 'bereich', 'tipp'];
 
@@ -1269,5 +1269,5 @@
     return r;
   }
 
-  return { NAME: 'hilfe', VERSION: VERSION, SPRACHEN: SPRACHEN, FELDER: FELDER, dict: H, h: h, has: has, keys: keys };
+  return { NAME: 'i18n_hilfe', VERSION: VERSION, SPRACHEN: SPRACHEN, FELDER: FELDER, dict: H, h: h, has: has, keys: keys };
 }));

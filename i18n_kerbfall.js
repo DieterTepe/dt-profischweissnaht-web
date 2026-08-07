@@ -14,7 +14,7 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.1.0-N1';
+  var VERSION = '0.2.0-N11';
   var SPRACHEN = ['de', 'en', 'pt'];
 
   var K = {
@@ -68,6 +68,6 @@
     return r;
   }
 
-  return { NAME: 'kerbfall', VERSION: VERSION, SPRACHEN: SPRACHEN, dict: K, KATALOG: KATALOG,
+  return { NAME: 'i18n_kerbfall', VERSION: VERSION, SPRACHEN: SPRACHEN, dict: K, KATALOG: KATALOG,
            t: t, has: has, keys: keys };
 }));

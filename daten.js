@@ -18,7 +18,7 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.1.0-N1';
+  var VERSION = '0.2.0-N11';
 
   /* --------------------------------------------------------------------- */
   /* 0) Quellenverzeichnis (Kurzcodes -> Klartext; erscheint im Rechenweg)  */
@@ -640,6 +640,7 @@
   }
 
   return {
+    NAME: 'daten',
     VERSION: VERSION,
     QUELLEN: QUELLEN,
     WELTEN: WELTEN,

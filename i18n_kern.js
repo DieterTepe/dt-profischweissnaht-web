@@ -12,7 +12,7 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.7.0-N10b';
+  var VERSION = '0.8.0-N11';
   var SPRACHEN = ['de', 'en', 'pt'];
 
   var D = {
@@ -1162,6 +1162,31 @@
     rw_p_grenze:            { de: 'Probe: der Grenzwert wird gegen die eingesetzten Zahlen gehalten.', en: 'Cross-check: the limit value is checked against the figures used.', pt: 'Verificação: o valor-limite é confrontado com os números utilizados.' },
     rw_p_gesamt:            { de: 'Alle Rechenproben zusammengezählt. Ein einziges fehlendes Häkchen bedeutet einen Rechenfehler und nicht etwa einen nicht erfüllten Nachweis – beides wird getrennt ausgewiesen.', en: 'All cross-checks added up. A single missing tick means a calculation error, not an unsatisfied verification – the two are reported separately.', pt: 'Todas as verificações cruzadas somadas. Um único visto em falta significa um erro de cálculo e não uma verificação não cumprida – ambos são indicados em separado.' },
 
+    /* --- N11 Ausgaben: Gating, Dateiformat, Word ------------------------- */
+    msg_rep_gesperrt:          { de: 'In der Testversion sind alle Ausgaben gesperrt. Gerechnet werden darf alles – gespeichert, geöffnet, gedruckt und exportiert wird nur mit der Vollversion.', en: 'In the test edition all outputs are locked. Everything may be calculated – saving, opening, printing and exporting require the full edition.', pt: 'Na versão de teste todas as saídas estão bloqueadas. Pode calcular tudo – guardar, abrir, imprimir e exportar exigem a versão completa.' },
+    msg_rep_aktion_unbekannt:  { de: 'Diese Ausgabe kennt das Programm nicht.', en: 'The program does not know this output.', pt: 'O programa não conhece esta saída.' },
+    msg_rep_keine_eingaben:    { de: 'Es liegen keine Eingaben vor, die sich speichern ließen.', en: 'There are no entries that could be saved.', pt: 'Não há entradas que possam ser guardadas.' },
+    msg_rep_kein_text:         { de: 'Die Datei ist leer.', en: 'The file is empty.', pt: 'O ficheiro está vazio.' },
+    msg_rep_kein_json:         { de: 'Die Datei ist keine gültige Berechnungsdatei – ihr Aufbau lässt sich nicht lesen.', en: 'The file is not a valid calculation file – its structure cannot be read.', pt: 'O ficheiro não é um ficheiro de cálculo válido – a sua estrutura não pode ser lida.' },
+    msg_rep_fremdes_programm:  { de: 'Diese Datei stammt aus einem anderen Programm und wird nicht geöffnet.', en: 'This file comes from a different program and will not be opened.', pt: 'Este ficheiro provém de outro programa e não será aberto.' },
+    msg_rep_format_fehlt:      { de: 'Der Datei fehlt die Formatangabe. Ohne sie ist nicht zu erkennen, ob sie zu diesem Programmstand passt.', en: 'The file has no format entry. Without it there is no way to tell whether it matches this program state.', pt: 'O ficheiro não tem indicação de formato. Sem ela não é possível saber se corresponde a este estado do programa.' },
+    msg_rep_datei_neuer:       { de: 'Diese Datei stammt aus einer NEUEREN Fassung des Programms und wird deshalb nicht geöffnet. Sie enthält möglicherweise Angaben, die dieser Stand nicht kennt – sie halb zu lesen wäre schlimmer, als sie abzulehnen. Bitte das Programm aktualisieren.', en: 'This file was written by a NEWER version of the program and is therefore not opened. It may contain entries this version does not know – reading it in part would be worse than refusing it. Please update the program.', pt: 'Este ficheiro foi escrito por uma versão MAIS RECENTE do programa e por isso não é aberto. Pode conter dados que esta versão desconhece – lê-lo em parte seria pior do que recusá-lo. Atualize o programa.' },
+    msg_rep_datei_aelter:      { de: 'Diese Datei stammt aus einer älteren Fassung des Programms. Sie wird geöffnet – gerechnet wird aber mit dem heutigen Stand, und der kann inzwischen korrigiert worden sein. Ein anderes Ergebnis als damals ist deshalb möglich und kein Fehler.', en: 'This file was written by an older version of the program. It is opened – but the calculation uses today\u2019s state, which may have been corrected since. A result differing from back then is therefore possible and not an error.', pt: 'Este ficheiro foi escrito por uma versão anterior do programa. É aberto – mas o cálculo usa o estado atual, que entretanto pode ter sido corrigido. Um resultado diferente do de então é possível e não é um erro.' },
+    msg_rep_ohne_eingaben:     { de: 'Die Datei enthält keine Eingaben.', en: 'The file contains no entries.', pt: 'O ficheiro não contém entradas.' },
+    msg_rep_nur_eingaben:      { de: 'Gespeichert werden ausschließlich die Eingaben. Die Datei beschreibt den Fall, nicht das Ergebnis – so kann keine Zahl darin veralten.', en: 'Only the entries are saved. The file describes the case, not the result – so no figure in it can go stale.', pt: 'Apenas as entradas são guardadas. O ficheiro descreve o caso, não o resultado – assim nenhum número nele pode ficar desatualizado.' },
+    msg_rep_erst_leeren:       { de: 'Vor dem Laden wird das Formular vollständig geleert – es bleibt kein alter Wert stehen.', en: 'Before loading, the form is cleared completely – no old value remains.', pt: 'Antes de carregar, o formulário é totalmente limpo – nenhum valor antigo permanece.' },
+    msg_rep_dokumentation:     { de: 'Die Liste der nicht geprüften Punkte steht in dieser Datei nur zur Dokumentation. Sie hält fest, was damals galt; ausgewertet wird beim Öffnen immer der aktuelle Stand.', en: 'The list of items not checked is kept in this file for documentation only. It records what applied at the time; on opening, the current state always governs.', pt: 'A lista de pontos não verificados consta deste ficheiro apenas para documentação. Regista o que se aplicava então; ao abrir vale sempre o estado atual.' },
+    msg_rep_bild_fehlt:        { de: 'Für diesen Fall liegt keine Zeichnung vor – der Text ist vollständig, nur das Bild fehlt.', en: 'No drawing is available for this case – the text is complete, only the image is missing.', pt: 'Não há desenho para este caso – o texto está completo, falta apenas a imagem.' },
+    msg_rep_bild_kein_canvas:  { de: 'Das Bild ließ sich auf diesem Gerät nicht in die Word-Datei übernehmen. Die Datei ist vollständig, nur diese Zeichnung fehlt – im Programm und im Ausdruck ist sie zu sehen.', en: 'The image could not be embedded into the Word file on this device. The file is complete, only this drawing is missing – it can be seen in the program and in the printout.', pt: 'A imagem não pôde ser incorporada no ficheiro Word neste dispositivo. O ficheiro está completo, falta apenas este desenho – pode vê-lo no programa e na impressão.' },
+    msg_rep_ohne_ergebnis:     { de: 'Es liegt noch kein gerechnetes Ergebnis vor. Bitte zuerst „Berechnen“ drücken.', en: 'There is no calculated result yet. Please press “Calculate” first.', pt: 'Ainda não há resultado calculado. Prima primeiro “Calcular”.' },
+
+    /* --- N11 Beschriftungen der Ausgaben --------------------------------- */
+    rep_bild_nahtbild:  { de: 'Nahtbild', en: 'Weld group', pt: 'Grupo de solda' },
+    rep_bild_symbol:    { de: 'Zeichnungssymbol nach EN ISO 2553', en: 'Drawing symbol to EN ISO 2553', pt: 'Símbolo de desenho segundo EN ISO 2553' },
+    rep_gespeichert:    { de: 'Die Berechnung wurde gespeichert.', en: 'The calculation has been saved.', pt: 'O cálculo foi guardado.' },
+    rep_geoeffnet:      { de: 'Die Berechnung wurde geladen. Bitte „Berechnen“ drücken.', en: 'The calculation has been loaded. Please press “Calculate”.', pt: 'O cálculo foi carregado. Prima “Calcular”.' },
+    rep_stempel:        { de: 'Geschrieben mit', en: 'Written with', pt: 'Escrito com' },
+
     /* --- Benannte Grundlagen --------------------------------------------- */
     qu_ec3_1_8:        { de: 'EN 1993-1-8 – Anschlüsse und Schweißnähte', en: 'EN 1993-1-8 – joints and welds', pt: 'EN 1993-1-8 – ligações e soldas' },
     qu_ec3_1_4:        { de: 'EN 1993-1-4 – nichtrostende Stähle', en: 'EN 1993-1-4 – stainless steels', pt: 'EN 1993-1-4 – aços inoxidáveis' },
@@ -1187,5 +1212,5 @@
     return r;
   }
 
-  return { NAME: 'kern', VERSION: VERSION, SPRACHEN: SPRACHEN, dict: D, t: t, has: has, keys: keys };
+  return { NAME: 'i18n_kern', VERSION: VERSION, SPRACHEN: SPRACHEN, dict: D, t: t, has: has, keys: keys };
 }));

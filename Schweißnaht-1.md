@@ -6,21 +6,21 @@
 > **Diese Datei ersetzt `Schweißnaht.md` vollständig.** Sie enthält den Stand nach dem
 > Konzeptgespräch (2026-07-23), nach der abgeschlossenen Recherche (R1–R6), nach der
 > Abstimmung vom **2026-07-24** (alle offenen Fragen aus Abschnitt 0 geklärt) und nach den
-> abgenommenen Bausteinen **N1, N2, N2b, N2c, N3, N4 und N5 vollständig
-> (N5a, N5b, N5c-1 bis N5c-3 und N5d)**, **N6b**, **N7** und **N8 vollständig
-> (N8a, N8b-1, N8b-2, N8c)**, **N9a** und **N9b**, dazu **N9c gebaut und
-> **N9 vollständig (N9a–N9d)** und **N10 (N10a, N10b)**, dazu **N10c
-> gebaut und geliefert (Abnahme offen)** — Stand 2026-08-06.
+> abgenommenen Bausteinen **N1, N2, N2b, N2c, N3, N4**, **N5 vollständig**
+> (N5a, N5b, N5c-1 bis N5c-3, N5d), **N6b**, **N7**, **N8 vollständig**
+> (N8a, N8b-1, N8b-2, N8c), **N9 vollständig** (N9a–N9d) und
+> **N10 vollständig** (N10a–N10c), dazu **N11 (Ausgaben)** gebaut und geliefert —
+> Stand 2026-08-07.
 > Sie ist so geschrieben, dass ein **neuer Chat ohne Vorwissen** damit weiterarbeiten kann.
 > **Das WARUM steht in `Schweißnaht-Historie.md`** (Entscheidungslog + Changelog im
 > Volltext) — dort nachschlagen, bevor etwas geändert wird, das falsch aussieht.
-> Einstieg dort: **„weiter mit N8"** — dann der Reihenfolge in Kickoff-Punkt 5b folgen.
+> Einstieg: **„weiter mit N12"** — davor der Reihenfolge in Kickoff-Punkt 5b folgen.
 > `N6b_Vorlauf-Messwerte.md` ist nach der Abnahme **gelöscht worden** — der Inhalt steht
 > in 4.11 und in der Historie. Im Projektordner liegt **keine Vorlaufdatei** mehr.
 
 ```
-Plan-Version : 2.61 · Stand 2026-08-06
-Codestand    : Plan 2.61 · ui 0.16.0 · N10c
+Plan-Version : 2.65 · Stand 2026-08-07
+Codestand    : Plan 2.65 · ui 0.17.0 · N11
                (Die Planversion, gegen die der CODE gebaut ist. Sie steht auch
                in ui.js als PLAN und wird von einer Assertion damit verglichen.
                Sie wandert nur mit, wenn sich Code ändert — reine Plan- oder
@@ -80,21 +80,32 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                und ABGENOMMEN (2026-08-05)** — einschließlich der Probe,
                dass ein größeres a-Maß den Drahtbedarf mitzieht. Damit sind
                **sieben von zehn Bausteinen bis zum Verkaufsstand** fertig.
-               **N10c hat zwei von Dieter gefundene Fehler behoben**
-               (2026-08-06, 5.1-7c) — Abnahme steht aus.
-               → NÄCHSTER SCHRITT: **N10c am Handy prüfen.** Danach
-                 Baustein **N11 (Ausgaben)** — Einstieg „weiter mit N11",
-                 **Umfang vor dem Bau abstimmen**. Dort ist der
-                 **Versionsstempel im Dateiformat** zu entscheiden (5.2,
-                 drängt vor der Ermüdung) und der Namensabgleich aus 3.6
-                 zu erledigen.
+               **N10c ist geprüft und ABGENOMMEN (2026-08-06)** — beide
+               Fehler sind weg. Das **Dateiformat für N11 ist entschieden**
+               (5.1-8).
+               **Baustein N11 (Ausgaben) ist GEBAUT und GELIEFERT
+               (2026-08-07) — Abnahme steht aus.** Neu ist `report.js`
+               (**19 Module**): `.dts` speichern und öffnen mit
+               Versionsstempel, Drucken/PDF über ein eigenes Druckbild,
+               Word (.rtf) mit Bildern und Rückfallweg, und das **Gating
+               gebündelt an einer einzigen Stelle**. Der **Namensabgleich
+               aus 3.6 ist damit erledigt** — die Versionszeile zeigt jetzt
+               Dateinamen. Ergebnis in **5.1-9**, Schnittstelle in **4.12**.
+               Damit sind **acht von zehn Bausteinen bis zum Verkaufsstand**
+               fertig.
+               → NÄCHSTER SCHRITT: Baustein **N12 (Edition, Registrierung,
+                 Impressum)** — Einstieg „weiter mit N12",
+                 **Umfang vor dem Bau abstimmen**. Danach ist der
+                 **LAUNCH-CHECKPOINT** erreicht. Offen für N12 ist außerdem
+                 die **Einzeldatei-Fassung** als Auslieferungsform (aus der
+                 N10c-Abnahme).
                  Schnittstellen: 4.5 (naht.js), 4.6 (profil.js),
                  4.7 (svglib.js + schaubild.js), 4.8 (solver.js),
                  4.9 (rechenweg.js), 4.10 / 4.10b / 4.10c / 4.10d (ui.js),
-                 4.11 (symbol.js).
+                 4.11 (symbol.js), 4.12 (report.js).
                Große Bausteine (N5, N8, N13, N14) werden in ETAPPEN gebaut — Regel in
                Kickoff-Punkt 5c, Etappen in Abschnitt 5.2.
-Basislinie   : 3053 Assertions · DOM-Smokes 915 (voll) + 916 (test) · i18n-Parität 0 Abweichungen
+Basislinie   : 3274 Assertions · DOM-Smokes 982 (voll) + 982 (test) · i18n-Parität 0 Abweichungen
                (VERBINDLICH. Basislinie darf nur WACHSEN — nie schrumpfen, nie gelockert werden.)
 Dateistand   : siehe Abschnitt 8.1 — dort steht, was fertig ist und was noch fehlt.
 ⚠️ SYNC       : Am 2026-08-03 lag im Projektordner eine **elf Versionen alte**
@@ -152,7 +163,7 @@ welche Dateien zu überschreiben sind** → Dieter bestätigt am Handy → erst 
 Schritt. Danach Plan-Kopf (Version/Status/Basislinie) + Changelog pflegen.
 
 **5b) WIEDEREINSTIEG IN EINEM NEUEN CHAT — genau diese Reihenfolge:**
-Einstiegssatz von Dieter: **„weiter mit N11"**.
+Einstiegssatz von Dieter: **„weiter mit N12"**.
 1. Diese Datei komplett lesen (`Schweißnaht-1.md`, sie ist die alleinige Grundlage
    für das Bauen).
    **`Schweißnaht-Historie.md` NICHT vorab lesen** — sie enthält Entscheidungslog und
@@ -173,17 +184,17 @@ Einstiegssatz von Dieter: **„weiter mit N11"**.
    (Grundgerüst), **4.10b** (Eingabeseite, N5b) und **4.10c** (Ergebnisseite, N5c). Dort
    steht das Id-Schema, die Zuordnung, die Sichtbarkeitsregel, welche drei Module `ui.js`
    aufrufen darf und ausdrücklich, was es nicht tut.
-9. Abschnitt **5.1** lesen: 5.1-1 ist der **gelieferte** Umfang von N5d (nur noch
-   Begründung), 5.1-2 der **nächste** Auftrag **N6b** — **vor dem Bau mit Dieter
-   bestätigen**. Abschnitt **5.2**: die Etappen von N5.
-10. **Vollständigkeit des Projektordners prüfen** (Liste in 8.1): 18 Module, `style.css`,
+9. Abschnitt **5.1** lesen: alles dort ist **gelieferter** Umfang und damit nur noch
+   Begründung; **5.1-8** (Dateiformat) und **5.1-9** (N11) sind die jüngsten.
+   Abschnitt **5.2**: die Etappenteilung der großen Bausteine.
+10. **Vollständigkeit des Projektordners prüfen** (Liste in 8.1): 19 Module, `style.css`,
    beide HTMLs und **alle drei** DEV-ONLY-Dateien, dazu `Schweißnaht-Historie.md`.
    `dom_smoke_test.js` allein läuft nicht, sie ruft `dom_smoke_voll.js` auf — fehlt eine
    davon, zuerst bei Dieter nachfragen. **Das ist keine Formsache:** beim Austausch sind
    schon zweimal Dateien verlorengegangen, beide Male hat diese Prüfung es gefunden.
 11. Arbeitsordner herstellen (Befehl unter Punkt 6 der Kickoff-Liste), dann
    `node test_naht.js`, `node dom_smoke_voll.js`, `node dom_smoke_test.js` laufen lassen
-   und die Basislinie aus dem Plan-Kopf bestätigen (**3053 / 915 / 916 · 0 Fehler**),
+   und die Basislinie aus dem Plan-Kopf bestätigen (**3274 / 982 / 982 · 0 Fehler**),
    **bevor** etwas gebaut wird. Weicht etwas ab, erst das klären.
    ⚠️ **Diese drei Läufe sind zugleich die Probe, ob Plandatei und Code zusammenpassen.**
    Steht im Kopfblock eine andere Basislinie als gemessen, ist eine der beiden Seiten alt —
@@ -629,12 +640,17 @@ aber **nichts davon ist sichtbar** — der Info-ⓘ nennt bisher nur die Edition
 > wieder passt — und genau solche Pflichtänderungen erzeugen die Flüchtigkeitsfehler, die
 > hier verhindert werden sollen. `Codestand` wandert nur mit, wenn sich Code ändert.
 
-> **Offener Punkt für N11 (aus der Abnahme von N5d, 2026-08-03):** Die Zeile zeigt die
-> **Modulnamen**, nicht die **Dateinamen** — `data` statt `daten.js`, `options` statt
-> `optionen.js`, `kern`/`hilfe`/`kerbfall` statt der drei `i18n_*.js`. Zum Erkennen eines
-> fehlenden oder alten Moduls reicht das; sobald die Zeile aber in Druck, PDF, Word und
-> `.dts` wandert, sollen die Namen den Dateinamen entsprechen. Das ist **eine Zeile je
-> Modul** (`NAME`) und gehört **in N11 mitgemacht**, nicht als eigener Bau.
+> ✅ **ERLEDIGT MIT N11 (2026-08-07).** Die Zeile zeigte die **Modulnamen** statt der
+> **Dateinamen** — `data` statt `daten.js`, `options` statt `optionen.js`,
+> `kern`/`hilfe`/`kerbfall` statt der drei `i18n_*.js`. Zum Erkennen eines fehlenden
+> Moduls reichte das; seit die Zeile in Druck, PDF, Word und `.dts` wandert, nicht mehr.
+> **Angefasst wurden genau die fünf Module, die abwichen** — die übrigen tragen keinen
+> eigenen `NAME` und laufen über dieselbe Rückfallregel wie in `ui.js`
+> (`DTNSolver` → `solver`), die dort bereits den Dateinamen trifft. Ein Eingriff hätte
+> dort nur die Kennungen zerstört, die seit N2 belegen, dass sie unverändert sind.
+> Geprüft wird **gegen die HTML**: für jedes eingebundene Modul muss `NAME + '.js'`
+> der Dateiname sein — und der DOM-Smoke prüft dasselbe an der Zeile, die der Anwender
+> wirklich liest.
 
 > **Zweiter offener Punkt für N11 (aus der Abnahme von N7, 2026-08-04):** Die
 > ✅ **ERLEDIGT MIT N9a (2026-08-05).** Der Wächter steht in Sektion **S43**:
@@ -733,6 +749,7 @@ dt-profischweissnaht-web/
 ├── assistent.js   (DTNAssistent)  → Dialoglogik (DOM-frei, Node-testbar)
 ├── report.js      (DTNReport)     → Ausgaben: .dts speichern/öffnen, Druck/PDF,
 │                                     Word (.rtf), **Gating gebündelt hier**
+│                                     ✅ fertig (N11) · Schnittstelle in 4.12
 ├── ui.js          (DTNUi)         → Formular, Modi, Zusatzbereiche, i18n, Theme, Rechenweg,
 │                                     Grafik, Presets, Laien-ⓘ, Assistent-Overlay, Aktionsleiste
 │                                     ✅ Grundgerüst (N5a) · Schnittstelle in 4.10
@@ -1324,9 +1341,13 @@ Grafik weg.**
 ### 4.10c Was N5c zu `ui.js` hinzugefügt hat (Ergebnisseite)
 
 **DIE GRENZE VON `ui.js` — GESCHÄRFT, NICHT AUFGEWEICHT (bindend):**
-`ui.js` ruft **genau drei** Module auf: **`DTNSolver`** (rechnet), **`DTNRechenweg`**
-(beschriftet und formatiert), **`DTNSchaubild`** (zeichnet). Die drei liefern Fertiges —
+`ui.js` ruft **genau vier** Module auf: **`DTNSolver`** (rechnet), **`DTNRechenweg`**
+(beschriftet und formatiert), **`DTNSchaubild`** (zeichnet) und **seit N11
+`DTNReport`** (gibt heraus). Die vier liefern Fertiges —
 `ui.js` rechnet nichts nach und formatiert nichts nach.
+**Die Liste ist zweimal um genau einen Namen gewachsen** (N5c: Rechenweg und Schaubild,
+N11: Report) — jedes Mal, weil eine neue Aufgabe eine Adresse brauchte, nie weil eine
+Grenze störte.
 **Verboten bleiben `DTNNaht`, `DTNProfil` und `DTNData`** — die holt sich der Solver
 selbst. Ebenso verboten bleibt jede eigene Rechnung; die Assertion auf `Math.` gilt
 unverändert. Aus „kein Rechenmodul" ist damit „diese drei" geworden, nicht „alles erlaubt".
@@ -1510,6 +1531,52 @@ im Wörterbuch; eine weitere Assertion verbietet einen zweiten Text daneben.
 
 ---
 
+### 4.12 Schnittstelle `report.js` (fertig aus N11)
+
+> **Nicht ändern, nur benutzen.** `report.js` ist **DOM-frei**, deterministisch und mutiert
+> seine Eingaben nicht. Namensraum `DTNReport`. Lädt **nach** `i18n_kern.js` und
+> `rechenweg.js`, **vor** `ui.js`.
+
+**Warum DOM-frei, obwohl es Dateien schreibt:** Es schreibt gar keine. Es **baut und liest
+Zeichenketten** — den `.dts`-Text, den RTF-Text, die Bildmaße. Den letzten Millimeter
+(Blob, Download, Dateiwahl, Canvas, Drucken) erledigt `ui.js`. Genau dieser Schnitt macht
+jeden Schritt in Node prüfbar; ohne ihn wäre die Hälfte von N11 ungetestet.
+
+| Aufruf | Rückgabe / Zweck |
+|---|---|
+| `guard(aktion, edition)` | `{erlaubt, aktion, code}` — **das gesamte Gating**. Vier Aktionen: `speichern` · `oeffnen` · `drucken` · `word`. Alles außer `edition === 'full'` sperrt |
+| `stempel({etappe, plan, datum})` | der Versionsstempel aus 5.1-8 |
+| `baueDatei({auswahl, werte, bezeichnung, sprache, etappe, plan, datum, nicht_geprueft, module})` | `{ok, text, stempel, daten, fehler}` — **nur die Eingaben** |
+| `lieseDatei(text)` | `{ok, fehler, warnungen, stempel, lage, eingaben, dokumentation, bezeichnung, sprache}`; `lage` ist `gleich` · `aelter` · `neuer` |
+| `dateiname(bezeichnung, datum, endung)` · `saeubere(s)` | Dateiname aus Bezeichnung + Datum, ohne Zeichen, an denen ein Dateisystem hängenbleibt |
+| `bildMasse(b_px, h_px, maxTwips)` · `svgMitMassen(svg, skala)` | Bildmaße für RTF und Canvas. **Die Rechnung sitzt hier, weil `ui.js` kein `Math.` enthalten darf** |
+| `b64ZuHex(b64)` · `rtfText(s)` · `bildBlock(png, masse)` | die RTF-Bausteine |
+| `baueBericht({rw, sprache, bezeichnung, datum, version, module, anforderung, karten, bilder})` | der Bericht als **Daten** — dieselbe Haltung wie die Schrittliste in 4.9 |
+| `baueRtf(bericht, opt)` | `{ok, text, bilder_ein, bilder_aus, fehler}` |
+
+**Das Datum kommt IMMER von außen herein.** Das Modul holt sich die Uhr nicht selbst —
+sonst wäre es nicht bestimmt und kein Test könnte es festnageln. Eine Assertion prüft,
+dass weder `new Date` noch `Date.now` im Quelltext steht.
+
+**DIE BILDER IM WORD-DOKUMENT — der Rückfallweg (Dieters Delegation 2026-08-07: „es muss
+laufen"):** RTF kann ein PNG tragen (`\pict\pngblip`). Das SVG dafür zu rastern geht nur
+im Browser über Canvas — **der einzige Schritt in N11, den kein Node-Test erreicht**.
+Deshalb nimmt `baueRtf()` die Bilddaten **entgegen**, statt sie zu erzeugen: der ganze
+Zusammenbau ist prüfbar. Fehlt ein Bild (keine Canvas, kaputtes PNG, leeres SVG), wird die
+Datei **trotzdem geschrieben** — ohne das Bild, mit einer sichtbaren Zeile, die den Grund
+nennt. Beide Wege sind durch Assertions belegt. **Ein fehlendes Bild kostet eine Zeile,
+nicht die Datei.**
+
+**WAS `report.js` BEWUSST NICHT TUT:**
+- **es rechnet nichts nach** — Zahlen und Beschriftungen kommen fertig aus
+  `rechenweg.rendere()`,
+- **es speichert und lädt keine Datei** — das ist der Millimeter in `ui.js`,
+- **es kennt die Oberfläche nicht** und holt sich kein Datum,
+- **es schreibt kein Ergebnis in die Datei** (5.1-8) — eine Assertion sucht zehn
+  Ergebnisnamen und darf keinen finden.
+
+---
+
 ## 5. Bausteine — risikosortiert, mit Launch-Checkpoint
 
 > Voller Umfang in V1. Nicht der Umfang wird reduziert, sondern die **Reihenfolge**
@@ -1533,8 +1600,8 @@ im Wörterbuch; eine weitere Assertion verbietet einen zweiten Text daneben.
 | **N8** ✅ | **Assistent — vollständig ABGENOMMEN 2026-08-04** | `assistent.js` (DOM-freie Dialoglogik) + Overlay-UI, Button-Einstieg, tabellengestützt aus `optionen.js`, mit Erklärungen/Tipps/Skizzen je Dialog, Übernahme vorhandener Eingaben. |
 | **N9** ✅ | **Vorwärmung & t8/5 — vollständig ABGENOMMEN 2026-08-05** | `thermik.js` + Panel + Rechenweg + Assistenten-Schritte. Umfang festgelegt 2026-08-05, Ergebnis in 5.1-6. Geteilt in **N9a** (Kennungsabsicherung + Rechenkern, DOM-frei) und **N9b** (Panel, Rechenweg, Assistent, Endkrater-Ankreuzfeld). |
 | **N10** ✅ | **Kosten/Zeit/Draht — vollständig ABGENOMMEN 2026-08-05** | `kosten.js` + Panel + Rechenweg + Assistenten-Schritte. |
-| **N11** ⬅ | **Ausgaben** *(nächster Bau — Umfang vorher abstimmen)* | `report.js`: `.dts` speichern/öffnen (**erst leeren, dann laden** + Formatversion), Druck/PDF, Word (.rtf), `guard()`-Gating. Aktionsleiste **oben**, Dateiname trägt Bezeichnung + Datum. **Jede Ausgabe trägt die Versionszeile** (3.6) — **dabei die Modulnamen an die Dateinamen angleichen UND die Modulkennungen mitwachsen lassen**, beide Merkposten in 3.6. |
-| **N12** | **Edition/Registrierung/Impressum** | Testbalken, Aktivierungsdialog beim Erststart (Name + Schlüssel, **keine Formatprüfung**), „Vollversion · lizenziert für <Name>", **10-s-Long-Press** = Reset, Info-ⓘ mit Impressum. |
+| **N11** ✅ | **Ausgaben** *(gebaut und geliefert 2026-08-07, Abnahme offen — Ergebnis in 5.1-9)* | `report.js`: `.dts` speichern/öffnen (**erst leeren, dann laden**, **Versionsstempel nach 5.1-8**, **nur Eingaben**, Lückenliste als Dokumentation), Druck/PDF, Word (.rtf), `guard()`-Gating. Aktionsleiste **oben**, Dateiname trägt Bezeichnung + Datum. **Jede Ausgabe trägt die Versionszeile** (3.6) — **dabei die Modulnamen an die Dateinamen angleichen UND die Modulkennungen mitwachsen lassen**, beide Merkposten in 3.6. |
+| **N12** ⬅ | **Edition/Registrierung/Impressum** *(nächster Bau)* | Testbalken, Aktivierungsdialog beim Erststart (Name + Schlüssel, **keine Formatprüfung**), „Vollversion · lizenziert für <Name>", **10-s-Long-Press** = Reset, Info-ⓘ mit Impressum. |
 | **★** | **LAUNCH-CHECKPOINT** | **Ab hier verkaufsfähig.** Dieter entscheidet: weiterbauen oder veröffentlichen. |
 | **N13** | **Ermüdung — Rechenkern** | `ermuedung.js`: Wöhlerlinie m=3/5, γ_Mf, Miner, Kollektive + Rechenweg. **Hier Dieter nach seinen Praxis-Kerbfällen fragen.** |
 | **N14** | **Kerbfallkatalog** | `kerbfall.js` + SVG-Skizzen + Auswahl-UI mit Filter. Struktur vollständig, Füllung gestaffelt (Start 25–35 Details, je 2 Quellen), **ehrliche Lücken sichtbar**. Mehrere Etappen. |
@@ -2554,7 +2621,16 @@ Drahtbedarf, Zeit und Summe.
 
 ---
 
-#### 5.1-7c · N10c — **zwei Fehler aus Dieters Test, behoben 2026-08-06**
+#### 5.1-7c · N10c — **ABGENOMMEN 2026-08-06**
+
+> ✅ **Von Dieter geprüft und ABGENOMMEN — beide Fehler sind weg.**
+> **Bemerkenswert am Vorgehen:** Weil die Bereitstellung auf GitHub Pages
+> hing, hat Dieter alle Module in **eine HTML kopiert und offline geprüft**.
+> Das prüft denselben Code, nur anders geladen — und die Versionszeile
+> meldete korrekt alle 18 Module, was belegt, dass sich jedes registriert
+> hat. **Ein brauchbarer Weg, wenn die Bereitstellung hakt** — und ein
+> Hinweis darauf, dass eine Einzeldatei-Fassung als Auslieferungsform
+> möglich wäre (offen für N12).
 
 **Beide Smokes liefen vorher grün**, ohne einen der beiden zu berühren.
 
@@ -2581,6 +2657,143 @@ zweiten genau eine. Eine Prüfung, die ohne den Fix nicht rot wird, wäre
 wertlos.
 
 **Basislinie 3053 Assertions unverändert · Smokes 905/906 → 915/916.**
+
+---
+
+#### 5.1-8 · N11 — **Dateiformat entschieden 2026-08-06**
+
+Die Entscheidung stand seit v2.46 aus und drängte, weil sie **vor** der
+Ermüdung fallen musste: Eine gespeicherte Rechnung mit Kerbfallcode muss sich
+später noch öffnen lassen, wenn der Katalog von dreizehn auf achtzig Details
+gewachsen ist.
+
+**DER VERSIONSSTEMPEL.** Jede gespeicherte Datei trägt einen Kopf:
+
+```
+programm        DT-ProfiSchweissnaht
+format          1
+geschrieben_mit N11 · Plan 2.62
+datum           2026-08-06
+```
+
+**Nur `format` steuert das Lesen.** Es steigt ausschließlich, wenn sich der
+Aufbau so ändert, dass eine alte Datei nicht mehr unmittelbar passt — ein Feld
+wird umbenannt, eine Auswahl bekommt neue Bedeutung. Das ist selten, vielleicht
+zwei- oder dreimal in der Lebenszeit des Programms. `geschrieben_mit` und
+`datum` sind für den Menschen: Wenn in zwei Jahren jemand fragt, warum sein
+Ergebnis anders aussieht, steht dort die Antwort.
+
+**Drei Fälle beim Öffnen:**
+
+| Format | Verhalten |
+|---|---|
+| gleich | öffnen |
+| **älter** | öffnen, **aber sagen**, aus welcher Fassung die Datei stammt — nie stillschweigend umrechnen |
+| **neuer** | **NICHT öffnen** — sie enthält womöglich Angaben, die dieses Programm nicht kennt; sie halb zu lesen wäre schlimmer als sie abzulehnen |
+
+**GESPEICHERT WERDEN NUR DIE EINGABEN** *(Dieter, 2026-08-06)*. Die Datei
+beschreibt den **Fall**, nicht das **Ergebnis**. Eine gespeicherte Zahl wäre
+ohnehin nur so lange richtig, wie das Programm sich nicht ändert.
+
+**Die Folge muss benannt sein:** Öffnet jemand in einem Jahr eine alte Datei
+und das Programm wurde inzwischen korrigiert, bekommt er ein anderes Ergebnis.
+Genau das ist in diesem Projekt schon geschehen — die `konsole` liefert seit
+N9d 760 mm statt 764. Dagegen hilft der Stempel: Beim Öffnen zeigt das
+Programm **sichtbar**, mit welchem Stand die Datei geschrieben wurde. Das
+ersetzt keinen Vergleich, aber es lässt den Unterschied nicht stumm.
+
+**Die Liste der nicht geprüften Punkte kommt mit in die Datei** — aber
+ausdrücklich **nur als Dokumentation, nie zum Zurücklesen**. Sie hält fest, was
+damals galt; ausgewertet wird beim Öffnen immer der aktuelle Stand. Ohne sie
+sähe eine zwei Jahre alte Datei vollständiger aus, als sie war.
+
+**IM LOKALEN SPEICHER NUR PROGRAMMBEDINGUNGEN** *(Dieter, 2026-08-06)*:
+**Sprache** und später die **Edition** (Voll oder Test). **Nicht** der letzte
+Stand der Eingaben.
+
+Die Begründung geht über Bequemlichkeit hinaus: **Ein halb ausgefülltes
+Formular vom Vortag sieht aus wie ein frischer Fall.** Der Anwender öffnet das
+Programm, sieht Zahlen stehen, ändert zwei davon und rechnet — mit drei
+Werten, die er längst vergessen hat. **Ein leeres Formular ist ehrlicher als
+ein altes.**
+
+---
+
+#### 5.1-9 · N11 — **GEBAUT UND GELIEFERT 2026-08-07, Abnahme offen**
+
+**Der abgestimmte Umfang** *(Dieter, 2026-08-07)*: **einteilig komplett, aber mit vielen
+Prüfungen** · Word **mit** Bildern, die Ausführung an Claude delegiert („es muss laufen")
+· das Freitextfeld für die **WPS-Nummer bleibt weiterhin weg**.
+
+**DER SCHNITT, DER ALLES TRÄGT: `report.js` ist DOM-frei.** Es baut und liest nur
+Zeichenketten; Blob, Dateiwahl, Canvas und Drucken bleiben in `ui.js`. Ohne diesen Schnitt
+wäre die Hälfte des Bausteins ungetestet — mit ihm sind **196 Assertions** allein auf die
+Ausgaben gefallen. Schnittstelle in **4.12**.
+
+**1 · DAS GATING SITZT HINTER GENAU EINER TÜR.** Alle vier Ausgaben fragen
+`Report.guard()`, und `ui.js` ruft es an **einer einzigen Stelle**. Eine Assertion zählt
+das nach. Zwei Türen wären zwei Gelegenheiten, eine davon zu vergessen — und vergessen
+hieße hier: eine Ausgabe läuft in der Testversion doch durch. Gesperrt ist außerdem die
+**sichere Seite**: eine leere oder unbekannte Edition gibt nichts frei, statt „alles außer
+`test`" zu erlauben.
+
+**2 · DAS DATEIFORMAT wie in 5.1-8 entschieden.** Die scharfe Probe ist die Gegenprobe:
+eine Assertion sucht **zehn Ergebnisnamen** (`eta`, `ampel`, `a_gewaehlt`, `erfuellt`,
+`sigma_v` …) im Dateitext und darf **keinen** finden. Die Datei beschreibt den Fall, nicht
+das Ergebnis. Eine **ältere** Datei wird geöffnet und der Unterschied benannt — die
+Meldung nennt den Stand, mit dem sie geschrieben wurde. Eine **neuere** gibt **kein
+einziges Feld** heraus. Sieben kaputte Dateien werfen keine Ausnahme, sondern nennen je
+einen eigenen Grund.
+
+**3 · DRUCKEN/PDF über die LEBENDE SEITE.** Ein eigenes `@media print` in `style.css`,
+kein zweiter Rendering-Weg — der könnte etwas anderes zeigen als der Bildschirm. Vorher
+klappt `ui.js` alles auf: **ein Nachweis mit halbem Rechenweg wäre kein Nachweis.** Die
+ehrlichen Lücken und die Bilanz der Selbstprüfung stehen ausdrücklich **mit** auf dem
+Blatt. Eine Assertion prüft, dass jede vom Druckbild angesprochene Klasse wirklich
+existiert — eine Regel auf einen Tippfehler blendet nichts aus.
+
+**4 · WORD (.rtf) MIT BILDERN UND RÜCKFALLWEG.** Begründung in 4.12. Geprüft sind **beide**
+Wege: mit PNG steht der `\pngblip`-Block samt der Bytes im Blatt, ohne PNG steht der
+**Grund** dort und die Datei entsteht trotzdem. Dazu die Dinge, an denen eine RTF-Datei
+sonst stirbt: die geschweiften Klammern werden **gezählt** (eine zu viel, und Word öffnet
+nichts mehr), **jeder** Rechenwegschritt muss im Blatt stehen, und kein unübersetzter
+Schlüssel darf durch — in allen drei Sprachen. Die eigene Base64-Umrechnung ist gegen Node
+**auf das Byte** gegengerechnet, auch bei allen Füllzeichen-Längen.
+
+**DIE AUSGABE GIBT WIEDER, WAS DIE ERGEBNISSEITE ZEIGT.** Die Karten für Nachweis,
+Wärmeführung und Kosten werden aus der Anzeige gelesen, nicht ein zweites Mal
+zusammengestellt. Zwei Wege zu einer Zahl wären zwei Gelegenheiten, sie verschieden zu
+zeigen (3.4). Der DOM-Smoke prüft, dass Blatt und Bildschirm dieselben Karten führen.
+
+**5 · DER NAMENSABGLEICH aus 3.6 ist erledigt** — Begründung und Umfang dort.
+
+**DREI GEGENPROBEN, UND DIE DRITTE HAT ETWAS GEFUNDEN.** Nimmt man das Gating heraus,
+fallen 12 Assertions und 5 Smoke-Zeilen; lässt man die neuere Datei doch zu, fallen 3 und
+1. **Ließ man aber `leeren()` vor dem Laden weg, blieb alles grün.** Genau das verlangt
+Plan 3.5 als harte Regel. Der Fehler lag in der Prüfung, nicht im Code: sie sah nur nach,
+ob die Werte der **Datei** ankommen — entscheidend ist aber, ob die Werte des **vorigen
+Falls** verschwinden. Jetzt wird der Kragarm geladen, danach die Blech-Datei, und die
+Steg- und Flanschdicke müssen **weg** sein. Ohne `leeren()` wird das rot.
+**Lehre, und sie ist die alte:** eine Prüfung, die ohne den Fix nicht rot wird, ist
+wertlos — auch dann, wenn sie das Richtige zu prüfen scheint.
+
+**Basislinie 3053 → 3274 Assertions · Smokes 915/916 → 982/982 · i18n-Parität 0.**
+Neue Sektion **S49**. `report.js` hängt in beiden HTMLs — die Versionszeile zeigt
+**19 Module**.
+
+**Erwarteter Beleg am Handy:**
+- Die Versionszeile nennt „Programmstand **N11** · Plan **2.65** · **19 Module**" mit
+  `ui 0.17.0` und `report 0.1.0-N11` — und die Namen sind jetzt **Dateinamen**
+  (`daten`, `optionen`, `i18n_kern` statt `data`, `options`, `kern`).
+- In der **Vollversion**: einen Fall rechnen, eine Bezeichnung eintragen, **Speichern** →
+  eine `.dts` mit Bezeichnung und Datum im Namen. **Öffnen** → das Formular ist erst leer
+  und dann gefüllt, „Berechnen" liefert dasselbe Ergebnis. **Drucken** → ein Blatt ohne
+  Knöpfe, mit vollem Rechenweg und den ehrlichen Lücken. **Word** → eine `.rtf`, die sich
+  öffnen lässt; das Nahtbild sollte darin stehen, und wenn nicht, sagt eine Zeile warum.
+- In der **Testversion**: alle vier Knöpfe melden, dass die Ausgaben gesperrt sind.
+
+**Offen für N12:** die **Einzeldatei-Fassung** als Auslieferungsform (aus der
+N10c-Abnahme), Registrierung und Lizenzzeile.
 
 ---
 
@@ -3043,6 +3256,24 @@ Solver.
 
 **Basislinie nach N7: 1553 Assertions · 611 / 612 DOM-Smokes · i18n-Parität 0.**
 
+**Nachtrag N11 (2026-08-07) — 12 Dateien:** **neu `report.js`** ·
+`ui.js` (die vier Ausgaben verdrahtet, `versionText()` herausgelöst,
+Kennungen 0.17.0 / N11 / 2.65) · `style.css` (Druckbild `@media print`) ·
+`i18n_kern.js` (21 neue Texte dreisprachig, **NAME `i18n_kern`**) ·
+`i18n_hilfe.js`, `i18n_kerbfall.js`, `daten.js`, `optionen.js` (**nur
+`NAME` und Kennung** — der Namensabgleich aus 3.6) · **beide HTMLs**
+(Skript-Zeile) · `test_naht.js` (**S49**, S43-Tabelle, S42, S29/S30
+nachgezogen) · `dom_smoke_voll.js` (N11-Durchlauf).
+**Nicht angefasst:** `solver.js`, `rechenweg.js`, `naht.js`, `profil.js`,
+`svglib.js`, `schaubild.js`, `validate.js`, `symbol.js`, `skizze.js`,
+`thermik.js`, `kosten.js`, `assistent.js`, `dom_smoke_test.js`.
+**Der gesamte Rechenkern blieb unberührt** — die vier Ausgaben lesen nur,
+was ohnehin da ist.
+⚠️ **Vier Module wurden allein wegen ihres Anzeigenamens angefasst**
+(`daten`, `optionen`, `i18n_hilfe`, `i18n_kerbfall`) und tragen deshalb
+neue Kennungen. Ihre Rechenwerte sind unverändert; der Wächter aus S43 hat
+jede einzelne eingefordert, und das ist der Beleg dafür.
+
 **Nachtrag N10b (2026-08-05) — 12 Dateien:** `validate.js` (ODER-Bedingung,
 20 Felder) · `ui.js` (zwei Bereiche, Kostenkarte, Preis-Hinweis, Kennungen
 0.15.0 / N10b / 2.59) · `optionen.js` (zwei Beispiele mit Kostenrechnung) ·
@@ -3225,9 +3456,9 @@ Versionen alt). Deshalb ist die Vollständigkeitsprüfung gegen die Tabelle oben
 Formsache, und der Basislinien-Abgleich aus Kickoff-Punkt 11 ebenso wenig.
 
 **Erste Handlung im neuen Chat:** Vollständigkeit gegen die Tabelle oben prüfen
-(**18 Module**, `style.css`, beide HTMLs, **alle drei** DEV-ONLY-Dateien, dazu Plandatei und
+(**19 Module**, `style.css`, beide HTMLs, **alle drei** DEV-ONLY-Dateien, dazu Plandatei und
 `Schweißnaht-Historie.md`), Arbeitsordner herstellen, die drei Testläufe starten.
-Melden müssen sie **3053 / 915 / 916 · 0 Fehler**. Weicht etwas ab, erst das klären —
+Melden müssen sie **3274 / 982 / 982 · 0 Fehler**. Weicht etwas ab, erst das klären —
 nicht bauen.
 
 **Was N6b überschreiben wird** (zur Vorwarnung, nicht als Auftrag): neu `symbol.js`,
@@ -3420,6 +3651,41 @@ will. Also: Vorschriften und Wegweiser bleiben hier, die Erzählung wandert.
   (2026-08-06, N10c): Sie sieht aus, als wäre sie fertig. Programmatisch
   gesetzte Texte wandern beim Sprachwechsel **nicht** von selbst mit — jede
   neue Karte muss dort ausdrücklich neu gebaut werden.
+- **Eine gespeicherte Datei beschreibt den Fall, nicht das Ergebnis**
+  (2026-08-06, 5.1-8): Gespeichert werden nur die Eingaben. Eine mitgespeicherte
+  Zahl wäre nur so lange richtig, wie das Programm sich nicht ändert — und
+  dieses Programm ändert sich. Der **Versionsstempel** sorgt dafür, dass ein
+  Unterschied nicht stumm bleibt.
+- **Ein leeres Formular ist ehrlicher als ein altes** (2026-08-06, 5.1-8): Der
+  lokale Speicher führt nur Sprache und Edition, nie die letzten Eingaben. Ein
+  halb ausgefülltes Formular vom Vortag sieht aus wie ein frischer Fall.
+- **Eine Datei aus einer neueren Fassung wird NICHT geöffnet** (2026-08-06,
+  5.1-8): Sie halb zu lesen wäre schlimmer, als sie abzulehnen.
+- **Der Plan-Kopf wird vor jeder Chat-Übergabe GELESEN, nicht nur geschrieben**
+  (2026-08-06): Er ist das Erste, was ein neuer Chat sieht. Wiederholtes
+  Ersetzen an derselben Stelle kann Sätze zerreißen, ohne dass ein Testlauf es
+  merkt — die Prüfungen kennen den Fließtext nicht.
+- **Das Gating hat genau eine Tür** (2026-08-07, N11): Alle vier Ausgaben fragen
+  `Report.guard()`, und `ui.js` ruft es an **einer einzigen Stelle** — eine Assertion
+  zählt das nach. Zwei Türen wären zwei Gelegenheiten, eine davon zu vergessen, und
+  vergessen hieße: eine Ausgabe läuft in der Testversion doch durch. **Gesperrt ist die
+  sichere Seite** — eine unbekannte Edition gibt nichts frei.
+- **Ein Modul, das etwas herausgibt, gehört DOM-frei geschnitten** (2026-08-07, N11):
+  `report.js` baut und liest nur Zeichenketten; Blob, Dateiwahl, Canvas und Drucken
+  bleiben in `ui.js`. Nur so ist die Ausgabe in Node prüfbar. Der eine Schritt, der
+  ohnehin nicht prüfbar ist (die Rasterung), bekommt einen **sichtbaren Rückfallweg**
+  statt einer stillen Lücke.
+- **Ein fehlendes Bild kostet eine Zeile, nicht die Datei** (2026-08-07, N11): Wo ein
+  Teil der Ausgabe scheitern kann, entsteht die Ausgabe trotzdem — und benennt, was
+  fehlt. Eine Datei, die gar nicht erst geschrieben wird, hilft niemandem.
+- **Die Ausgabe gibt wieder, was die Ergebnisseite zeigt** (2026-08-07, N11): Die Karten
+  werden aus der Anzeige gelesen, nicht ein zweites Mal zusammengestellt. Zwei Wege zu
+  einer Zahl wären zwei Gelegenheiten, sie verschieden zu zeigen.
+- **Eine Prüfung, die ohne den Fix nicht rot wird, ist wertlos** (2026-08-07, N11):
+  Die Gegenprobe zu „erst leeren, dann laden" (3.5) blieb grün, weil sie nur nachsah, ob
+  die Werte der DATEI ankommen. Entscheidend war, ob die Werte des VORIGEN Falls
+  verschwinden. **Jede neue Prüfung wird einmal gegen den entfernten Fix gehalten** —
+  sonst weiß niemand, ob sie etwas hält.
 - **Token-Pause: 4 Stunden.**
 
 ---
@@ -3460,6 +3726,7 @@ Die Blöcke stehen dort in dieser Reihenfolge; jeder nennt Datum und Baustein:
 - Aus N7 (2026-08-04) — Beispielkatalog, vier Befunde aus N5c, Prüfkultur
 - Aus der Rückmeldung 2026-08-04 (N7 abgenommen)
 - Aus S39 (2026-08-04) — Verifikation gegen publizierte Rechenbeispiele
+- Aus N11 (2026-08-07) — Ausgaben, Dateiformat, Gating, Namensabgleich
 - Aus der Rückmeldung 2026-07-27 (N5a abgenommen)
 - Aus N5a (2026-07-26)
 - Aus der Rückmeldung 2026-07-26 (N2c abgenommen)
@@ -3477,57 +3744,57 @@ Changelog — **die vollständige Fassung ab v1.0 steht in `Schweißnaht-Histori
 Hier stehen nur die letzten drei Einträge. Wer wissen will, wie eine Entscheidung
 zustande kam, findet die Kette dort — lückenlos ab der Erstfassung vom 2026-07-23.
 
-**v2.59 (2026-08-05):** **Etappe N10b gebaut und geliefert — Baustein N10 ist
-vollständig.** Neu ist ein **geteilter Bereich für die Schweißparameter**:
-Spannung, Strom und Geschwindigkeit brauchen Wärmeführung und Kostenrechnung
-gleichermaßen, und zweimal dasselbe Feld wären zwei Gelegenheiten, es
-verschieden anzugeben. Dafür wurde die Bedingungsauswertung um ein **ODER**
-erweitert (ein Array von Bedingungen gilt, wenn eine zutrifft) — in
-`validate.js` und `ui.js` nach derselben Regel. Dazu **zwanzig neue Felder**,
-die **Preisannahme als sichtbar dritte Sorte** (jedes Preisfeld nennt sein
-Jahr) und eine Ergebniskarte mit Mengen, Summe, allen zehn Positionen einzeln
-**und der Liste dessen, was auf null steht**. Die Nahtlänge kommt aus dem
-gerechneten Nahtbild, nicht aus einem eigenen Feld — deshalb läuft die
-Kostenrechnung nach dem Nachweis. Auch eine rechenbare Position kann leer
-bleiben: ohne Spannung und Strom gibt es keine Energie, und das wird gesagt
-statt still auf null gesetzt. Die zwei Feinkorn-Beispiele bringen die
-Kostenrechnung eingeschaltet mit.
-**Basislinie 3015 → 3053 Assertions · Smokes 802/803 → 905/906 · i18n-Parität 0.**
-**Codestand 2.57 → 2.59** (`ui` 0.14.0 → 0.15.0, Etappe N10a → N10b).
-**Nächster Schritt: N10 am Handy abnehmen, dann Baustein N11 (Ausgaben) — dort
-ist der Versionsstempel im Dateiformat zu entscheiden.**
+**v2.63 (2026-08-06):** **Etappe N10c geprüft und ABGENOMMEN — beide Fehler sind
+weg.** Die Versionszeile zeigt „N10c · Plan 2.61 · 18 Module" mit `ui 0.16.0`.
+Der Sprachwechsel nach dem Rechnen lässt die Kostenkarte vollständig mitwandern,
+und die Kostenrechnung läuft auch bei der Auslegung, wo das Feld `a` leer ist.
+**Bemerkenswert am Vorgehen:** Weil die Bereitstellung auf GitHub Pages hing,
+hat Dieter alle Module in **eine HTML kopiert und offline geprüft** — derselbe
+Code, nur anders geladen; die Versionszeile meldete korrekt alle 18 Module.
+Das ist ein brauchbarer Ausweichweg und zugleich ein Hinweis darauf, dass eine
+**Einzeldatei-Fassung** als Auslieferungsform möglich wäre (offen für N12).
+**Damit ist Baustein N10 vollständig abgenommen; sieben von zehn Bausteinen bis
+zum Verkaufsstand sind fertig.** **Code unverändert, `Codestand` bleibt 2.61.**
+**Basislinie unverändert: 3053 Assertions · Smokes 915 / 916 · i18n-Parität 0.**
+**Nächster Schritt: Baustein N11 (Ausgaben) — Dateiformat entschieden (5.1-8),
+dazu die beiden Merkposten aus 3.6. Einstieg: „weiter mit N11".**
 
 
 
-**v2.60 (2026-08-05):** **Baustein N10 vollständig von Dieter am Handy geprüft
-und ABGENOMMEN.** Die Versionszeile zeigt „N10b · Plan 2.59 · 18 Module" mit
-`ui 0.15.0`, `validate 0.6.0-N10b` und `kosten 0.2.0-N10b`. Alle Bereiche
-liefen, und die Probe auf die Kopplung ging auf: **ein größeres a-Maß zieht den
-Drahtbedarf mit**, weil die Nahtlänge aus dem gerechneten Nahtbild kommt und
-nicht aus einem zweiten Feld. Projektordner gegengeprüft: 36 Dateien byteweise
-identisch, `node --check` über 21 JS sauber, Läufe aus dem Ordner
-**3053 / 905 / 906 · 0 Fehler**. **Damit sind sieben von zehn Bausteinen bis
-zum Verkaufsstand fertig** (N1–N5, N6b, N7, N8, N9, N10); offen bleiben N11,
-N12 und N13/N14. **Code unverändert, `Codestand` bleibt 2.59.**
-**Nächster Schritt: Baustein N11 (Ausgaben) — Umfang vor dem Bau abstimmen.**
+**v2.64 (2026-08-06):** **Zwei Schäden im Plan-Kopf behoben — keine
+Codeänderung.** Durch wiederholtes Ersetzen war der Aufzählungssatz der
+abgenommenen Bausteine **zerrissen**: Er endete mitten in „dazu N9c gebaut
+und" und ging dann in einen anderen Satz über. Zwei Zeilen tiefer stand noch
+der veraltete Einstiegssatz „weiter mit N8". Beides ist genau die Sorte Fehler,
+die einen neuen Chat auf die falsche Fährte bringt — der Kopf ist das Erste,
+was gelesen wird. **Neue Regel in 9.2: Der Plan-Kopf wird vor jeder
+Chat-Übergabe gelesen, nicht nur geschrieben.**
+**Code unverändert, `Codestand` bleibt 2.61.**
+**Basislinie unverändert: 3053 Assertions · Smokes 915 / 916 · i18n-Parität 0.**
+**Nächster Schritt: Baustein N11 (Ausgaben). Einstieg: „weiter mit N11".**
 
 
 
-**v2.61 (2026-08-06):** **Etappe N10c — zwei von Dieter gefundene Fehler
-behoben.** **(1)** Nach dem Sprachwechsel stand die Kostenkarte **gemischt**
-da: Überschriften auf Englisch, Zeilen auf Deutsch. Die Karte fehlte in der
-Liste der Anzeigen, die beim Umschalten neu gebaut werden — programmatisch
-gesetzte Texte wandern nicht von selbst mit. **(2)** Bei der **Auslegung**
-meldete die Kostenrechnung „Angaben zur Naht fehlen", weil sie das a-Maß aus
-dem **leeren Eingabefeld** las statt aus dem Ergebnis; bei der Auslegung wird
-a ja gerade gesucht. **Das ist zum vierten Mal dieselbe Ursache** nach
-Nahtbild (N7), Lastprobe (N9c) und Auslegungsgeometrie (N9d) — die Regel steht
-jetzt in 9.2. Beide Smokes liefen vorher grün, ohne einen der Fehler zu
-berühren; die neuen Prüfungen wurden **gegengeprobt**: ohne Fix 1 fallen zwei
-Zeilen, ohne Fix 2 genau eine. Geändert: `ui.js` (0.16.0), `dom_smoke_voll.js`.
-**Basislinie 3053 Assertions unverändert · Smokes 905/906 → 915/916.**
-**Codestand 2.59 → 2.61.**
-**Nächster Schritt: N10c am Handy prüfen, dann Baustein N11 (Ausgaben).**
+**v2.65 (2026-08-07):** **Baustein N11 (Ausgaben) gebaut und geliefert — Abnahme
+offen.** Neu ist **`report.js`** (19 Module): `.dts` speichern und öffnen mit
+Versionsstempel nach 5.1-8, Drucken/PDF über ein eigenes Druckbild auf der lebenden
+Seite, Word (.rtf) mit Bildern, und das **Gating gebündelt hinter genau einer Tür** —
+`ui.js` fragt es an einer einzigen Stelle, eine Assertion zählt das nach.
+**Der tragende Schnitt: `report.js` ist DOM-frei** und baut nur Zeichenketten; Blob,
+Dateiwahl, Canvas und Drucken bleiben in `ui.js`. Deshalb sind **196 der 221 neuen
+Assertions** auf die Ausgaben gefallen, statt ungeprüft zu bleiben. Der einzige Schritt,
+den kein Node-Test erreicht — die Rasterung des SVG für Word —, bekommt einen
+**sichtbaren Rückfallweg**: fehlt das Bild, entsteht die Datei trotzdem und nennt den
+Grund. **Der Namensabgleich aus 3.6 ist erledigt** (`data → daten`, `options → optionen`,
+`kern/hilfe/kerbfall → i18n_*`); angefasst wurden nur die fünf Module, die abwichen.
+**Drei Gegenproben, und die dritte hat etwas gefunden:** ohne `leeren()` vor dem Laden
+blieb alles grün, obwohl 3.5 es hart verlangt — die Prüfung sah nur nach, ob die Werte
+der Datei ankommen, nicht ob die des vorigen Falls verschwinden. Daraus die neue Regel
+in 9.2. Ergebnis in **5.1-9**, Schnittstelle in **4.12**, fünf neue Festlegungen in 9.2.
+**Codestand 2.61 → 2.65 · ui 0.16.0 → 0.17.0 · Etappe N11.**
+**Basislinie 3053 → 3274 Assertions · Smokes 915/916 → 982/982 · i18n-Parität 0.**
+**Nächster Schritt: N11 am Handy prüfen, dann Baustein N12 (Edition, Registrierung,
+Impressum) — danach ist der Launch-Checkpoint erreicht. Einstieg: „weiter mit N12".**
 
 
 ═══════════════════════════════════════════════════════════════════════════

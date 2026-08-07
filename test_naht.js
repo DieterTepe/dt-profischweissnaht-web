@@ -1784,7 +1784,11 @@ var uiSrc = fsU.readFileSync(__dirname + '/ui.js', 'utf8');
    "dieses eine". Der Rechenweg kommt in N5c-2 dazu — dann waechst die Liste
    um genau einen Namen. Geprueft wird der Quelltext als Zeichenkette,
    Kommentare eingeschlossen. */
-var uiErlaubt  = ['DTNSolver', 'DTNRechenweg', 'DTNSchaubild'];
+/* N11: die Liste waechst um GENAU EINEN Namen — `DTNReport`. Die Ausgaben
+   brauchen eine Adresse, an die sie sich wenden koennen. Die VERBOTE
+   darunter bleiben unveraendert: Nahtbild, Profil und Werkstoffkennwerte
+   holt sich weiterhin der Solver, und gerechnet wird hier gar nichts. */
+var uiErlaubt  = ['DTNSolver', 'DTNRechenweg', 'DTNSchaubild', 'DTNReport'];
 var uiVerboten = ['DTNNaht', 'DTNProfil', 'DTNData'];
 var uiTreffer = [];
 for (uiI = 0; uiI < uiVerboten.length; uiI++) {
@@ -1882,7 +1886,7 @@ eq((uiHtml.match(/<script>/g) || []).length, 1,
 
 var uiSrcRe = /<script src="([^"]+)"><\/script>/g, uiSrcs = [], uiM;
 while ((uiM = uiSrcRe.exec(uiHtml)) !== null) uiSrcs.push(uiM[1]);
-eq(uiSrcs.length, 18, '18 Module in der HTML eingebunden — kosten.js ist mit N10a dazugekommen');
+eq(uiSrcs.length, 19, '19 Module in der HTML eingebunden — report.js ist mit N11 dazugekommen');
 eq(uiSrcs[uiSrcs.length - 1], 'ui.js', 'ui.js laedt zuletzt');
 var uiDateiFehlt = [];
 for (uiI = 0; uiI < uiSrcs.length; uiI++) {
@@ -2536,7 +2540,9 @@ eq(s34OhneVersion.length, 0,
    Stand. Hier wird nur noch geprueft, DASS eine Kennung da ist. */
 ok(/^\d+\.\d+\.\d+-N\w+$/.test(Kern.VERSION), 'N5d: i18n_kern.js traegt eine Kennung (' + Kern.VERSION + ')');
 ok(/^\d+\.\d+\.\d+-N\w+$/.test(Hilfe.VERSION), 'N5d: i18n_hilfe.js traegt eine Kennung (' + Hilfe.VERSION + ')');
-eq(Kerb.VERSION, '0.1.0-N1', 'N5d: i18n_kerbfall.js hat jetzt eine Kennung');
+/* KEIN HANDWERT (Lehre aus v2.36 und N7): geprueft wird die FORM, den Stand
+   fuehrt der Waechter in S43. */
+ok(/^\d+\.\d+\.\d+-N\w+$/.test(Kerb.VERSION), 'N5d: i18n_kerbfall.js traegt eine Kennung (' + Kerb.VERSION + ')');
 /* --- DER FUND VOM 2026-08-04 -------------------------------------------
    Die Versionszeile liest die Module selbst aus — aber Etappe und
    Planversion sind von Hand gepflegt, und genau die blieben nach N6b auf
@@ -4020,8 +4026,12 @@ ok(s42Src.indexOf('SKIZZE_QUELLE') < 0,
 var s42Geruest = [];
 for (s42i = 0; s42i < Ui2.GERUEST_BUTTONS.length; s42i++) s42Geruest.push(Ui2.GERUEST_BUTTONS[s42i][0]);
 ok(s42Geruest.indexOf('assistBtn') < 0, 'S42: der Assistentenknopf gilt nicht mehr als unverdrahtet');
-ok(s42Geruest.indexOf('saveBtn') >= 0 && s42Geruest.indexOf('printBtn') >= 0,
-   'S42: die Ausgabeknoepfe verweisen weiterhin ehrlich auf N11');
+/* SEIT N11 SIND AUCH SIE VERDRAHTET. Die Geruestliste ist damit leer —
+   und genau das muss sie sein: ein Knopf, der noch dort steht, obwohl er
+   laengst etwas tut, wuerde dem Anwender "folgt spaeter" melden. */
+ok(s42Geruest.indexOf('saveBtn') < 0 && s42Geruest.indexOf('printBtn') < 0,
+   'S42: die Ausgabeknoepfe gelten seit N11 nicht mehr als unverdrahtet');
+eq(Ui2.GERUEST_BUTTONS.length, 0, 'S42: es steht kein unverdrahteter Knopf mehr in der Liste');
 
 /* --- 4) Alle Bedientexte dreisprachig ----------------------------------- */
 var s42Keys = ['uiAssAbbruch', 'uiAssZurueck', 'uiAssUeber', 'uiAssWeiter',
@@ -4110,7 +4120,10 @@ function s43Summe(text) {
   return h.toString(16);
 }
 
-/* Stand 2026-08-05, N9a. Vier Kennungen wurden hier zugleich korrigiert:
+/* Stand 2026-08-07, N11. Fuenf Kennungen sind mit dem Namensabgleich
+   mitgewachsen (i18n_kern, i18n_hilfe, i18n_kerbfall, daten, optionen) und
+   report.js ist neu dazugekommen.
+   Zuvor, Stand N9a: vier Kennungen wurden dort zugleich korrigiert:
    solver und rechenweg auf N7, validate auf N8a, assistent auf N8b; dazu
    i18n_kern auf N9a wegen der Waermefuehrungstexte.
    DIE TABELLE BESCHREIBT DEN AUSGELIEFERTEN STAND, nicht jeden
@@ -4120,11 +4133,11 @@ function s43Summe(text) {
    ZWEI Etappen gilt die Regel dagegen streng: geaenderter Quelltext ohne
    Kennungswechsel ist rot. */
 var S43_STAND = [
-  { datei: 'i18n_kern.js', version: '0.7.0-N10b', summe: '715ae7e8' },
-  { datei: 'i18n_hilfe.js', version: '0.4.0-N10b', summe: 'f220fb9' },
-  { datei: 'i18n_kerbfall.js', version: '0.1.0-N1', summe: '64438e87' },
-  { datei: 'daten.js', version: '0.1.0-N1', summe: '4f0ba1bd' },
-  { datei: 'optionen.js', version: '0.4.0-N10b', summe: '7a881ae2' },
+  { datei: 'i18n_kern.js', version: '0.8.0-N11', summe: '38e9e59c' },
+  { datei: 'i18n_hilfe.js', version: '0.5.0-N11', summe: '8cc6c8aa' },
+  { datei: 'i18n_kerbfall.js', version: '0.2.0-N11', summe: 'b986cce4' },
+  { datei: 'daten.js', version: '0.2.0-N11', summe: '5e696f0e' },
+  { datei: 'optionen.js', version: '0.5.0-N11', summe: '9a3fe873' },
   { datei: 'validate.js', version: '0.6.0-N10b', summe: '4532dc9e' },
   { datei: 'naht.js', version: '0.1.0-N2', summe: 'c0284f44' },
   { datei: 'profil.js', version: '0.1.0-N2b', summe: 'e31a9ce3' },
@@ -4137,7 +4150,8 @@ var S43_STAND = [
   { datei: 'thermik.js', version: '0.3.0-N9c', summe: '1bf966a2' },
   { datei: 'skizze.js', version: '0.3.0-N9c', summe: '447c40cd' },
   { datei: 'assistent.js', version: '0.5.0-N10b', summe: '4c015b50' },
-  { datei: 'ui.js', version: '0.16.0', summe: '1cb66fb5' }
+  { datei: 'ui.js', version: '0.17.0', summe: '7d291a4c' },
+  { datei: 'report.js', version: '0.1.0-N11', summe: 'b689ae97' }
 ];
 
 var s43i, s43Fehl = [], s43Src, s43M, s43S;
@@ -5055,6 +5069,441 @@ Kost.bericht(s48Ein);
 eq(JSON.stringify(s48Ein), s48Vor, 'S48: die Eingabe wird nicht veraendert');
 eq(JSON.stringify(Kost.bericht(s48Ein)), JSON.stringify(Kost.bericht(s48Ein)),
    'S48: zweimal gerechnet ergibt dasselbe');
+
+sek('S49 · N11 Ausgaben — Gating, Dateiformat, Word und der Namensabgleich');
+
+/* WARUM DIESE SEKTION SO GROSS IST (Dieters Vorgabe 2026-08-07: "einteilig
+   komplett, aber mit vielen Pruefungen"):
+   report.js ist das erste Modul, dessen Ergebnis das Programm VERLAESST.
+   Eine falsch geschriebene Datei faellt nicht beim Rechnen auf, sondern
+   erst, wenn sie Jahre spaeter nicht mehr aufgeht. Deshalb wird hier jeder
+   Weg begangen — auch jeder, der scheitern SOLL. */
+
+var Rep = require('./report.js');
+
+/* --- 1) Das Modul selbst ------------------------------------------------ */
+eq(Rep.NAME, 'report', 'S49: report.js nennt sich beim Namen');
+ok(/^\d+\.\d+\.\d+-N11$/.test(Rep.VERSION), 'S49: und traegt eine N11-Kennung (' + Rep.VERSION + ')');
+var s49Src = fsU.readFileSync(__dirname + '/report.js', 'utf8');
+ok(s49Src.indexOf('document') < 0, 'S49: report.js fasst kein document an');
+ok(s49Src.indexOf('window') < 0, 'S49: und kein window — es ist DOM-frei und damit hier pruefbar');
+ok(s49Src.indexOf('Date.now') < 0 && s49Src.indexOf('new Date') < 0,
+   'S49: es holt sich das Datum NICHT selbst — sonst waere es nicht bestimmt');
+eq(Rep.FORMAT, 1, 'S49: die Formatnummer steht auf 1 (5.1-8)');
+eq(Rep.PROGRAMM, 'DT-ProfiSchweissnaht', 'S49: der Programmname steht in jeder Datei');
+eq(Rep.ENDUNG, '.dts', 'S49: die Endung ist .dts (Plan 1)');
+
+/* --- 2) DAS GATING IST GEBUENDELT (Plan 4.4) ---------------------------- */
+eq(Rep.AKTIONEN.length, 4, 'S49: es gibt genau vier Ausgaben');
+var s49i, s49a;
+for (s49i = 0; s49i < Rep.AKTIONEN.length; s49i++) {
+  (function (a) {
+    ok(Rep.guard(a, 'full').erlaubt === true, 'S49: ' + a + ' ist in der Vollversion erlaubt');
+    ok(Rep.guard(a, 'test').erlaubt === false, 'S49: ' + a + ' ist in der Testversion GESPERRT (Plan 1)');
+    eq(Rep.guard(a, 'test').code, Rep.CODES.gesperrt, 'S49: ' + a + ' nennt beim Sperren den Grund');
+  }(Rep.AKTIONEN[s49i]));
+}
+/* Eine unbekannte Edition darf nicht versehentlich freischalten — gesperrt
+   ist die sichere Seite, nicht "alles ausser test". */
+ok(Rep.guard('drucken', '').erlaubt === false, 'S49: eine leere Edition gibt nichts frei');
+ok(Rep.guard('drucken', undefined).erlaubt === false, 'S49: eine fehlende Edition ebenso');
+ok(Rep.guard('drucken', 'demo').erlaubt === false, 'S49: und eine unbekannte Edition auch nicht');
+ok(Rep.guard('mailen', 'full').erlaubt === false, 'S49: eine unbekannte Aktion wird abgewiesen');
+eq(Rep.guard('mailen', 'full').code, Rep.CODES.aktion_unbekannt, 'S49: und benennt das');
+/* Die vier Aktionen muessen die vier Knoepfe sein — sonst laeuft eine
+   Ausgabe am Gating vorbei, und genau dafuer sitzt es an EINER Stelle. */
+var s49Btn = require('./ui.js').GERUEST_BUTTONS;
+ok(s49Btn.length === 0 || s49Btn.length === 4,
+   'S49: die Geruest-Knoepfe sind entweder alle verdrahtet oder alle noch offen');
+
+/* --- 3) DER VERSIONSSTEMPEL (5.1-8) ------------------------------------- */
+var s49St = Rep.stempel({ etappe: 'N11', plan: '2.65', datum: '2026-08-07' });
+eq(s49St.programm, 'DT-ProfiSchweissnaht', 'S49: der Stempel nennt das Programm');
+eq(s49St.format, 1, 'S49: die Formatnummer');
+eq(s49St.datum, '2026-08-07', 'S49: das Datum');
+ok(s49St.geschrieben_mit.indexOf('N11') >= 0 && s49St.geschrieben_mit.indexOf('2.65') >= 0,
+   'S49: und womit die Datei geschrieben wurde (' + s49St.geschrieben_mit + ')');
+eq(Rep.stempel({ etappe: 'N11', plan: '2.65', datum: new Date(2026, 7, 7) }).datum, '2026-08-07',
+   'S49: ein Date-Objekt wird genauso gelesen wie eine Zeichenkette');
+
+/* --- 4) GESPEICHERT WERDEN NUR DIE EINGABEN (Dieter, 2026-08-06) -------- */
+var s49Aus = { welt: 'A', werkstoff: 'S235', nahtart: 'kehlnaht', thermik_aktiv: true, leer: '' };
+var s49We = { a: 5, b: 80, t1: 10, N: 150000, nichts: null };
+var s49D = Rep.baueDatei({
+  auswahl: s49Aus, werte: s49We, bezeichnung: 'Lasche Halle 3', sprache: 'de',
+  etappe: 'N11', plan: '2.65', datum: '2026-08-07',
+  nicht_geprueft: Data.NICHT_GEPRUEFT.map(function (x) { return x.code || x; }),
+  module: [{ name: 'ui', version: '0.17.0' }]
+});
+ok(s49D.ok === true, 'S49: die Datei wird gebaut');
+var s49P = JSON.parse(s49D.text);
+eq(s49P.format, 1, 'S49: sie traegt die Formatnummer');
+eq(s49P.eingaben.auswahl.welt, 'A', 'S49: die Auswahl steht drin');
+eq(s49P.eingaben.werte.a, 5, 'S49: die Feldwerte stehen drin');
+ok(s49P.eingaben.auswahl.thermik_aktiv === true, 'S49: auch die Freischalt-Haken (N9c-Lehre)');
+ok(!('leer' in s49P.eingaben.auswahl), 'S49: leere Auswahlen werden nicht mitgeschleppt');
+ok(!('nichts' in s49P.eingaben.werte), 'S49: leere Felder ebenso wenig');
+/* DIE SCHARFE GEGENPROBE: kein Ergebnis darf in der Datei landen. Eine
+   gespeicherte Zahl waere nur so lange richtig, wie sich das Programm nicht
+   aendert — und die `konsole` liefert seit N9d 760 statt 764 mm. */
+var s49Verboten = ['eta', 'ampel', 'a_gewaehlt', 'a_erf', 'erfuellt', 'sigma_v',
+                   'nachweise', 'massgebend', 'widerstand', 'punkte'];
+var s49Gef = [];
+for (s49i = 0; s49i < s49Verboten.length; s49i++) {
+  if (s49D.text.indexOf('"' + s49Verboten[s49i] + '"') >= 0) s49Gef.push(s49Verboten[s49i]);
+}
+eq(s49Gef.length, 0, 'S49: KEIN Ergebniswert steht in der Datei (' + s49Gef.join(',') + ')');
+/* Die Liste 2.4 ist Dokumentation — sie steht drin, aber nicht bei den Eingaben. */
+ok(s49P.dokumentation.nicht_geprueft.length === Data.NICHT_GEPRUEFT.length,
+   'S49: die Liste der nicht geprueften Punkte liegt als Dokumentation bei');
+ok(!('nicht_geprueft' in s49P.eingaben), 'S49: aber NICHT bei den Eingaben (5.1-8)');
+eq(s49P.dokumentation.hinweis, Rep.CODES.dokumentation, 'S49: und sie sagt selbst, dass sie nur Doku ist');
+ok(Rep.baueDatei({}).ok === false, 'S49: ohne Eingaben wird keine Datei gebaut');
+eq(Rep.baueDatei({}).fehler[0].code, Rep.CODES.keine_eingaben, 'S49: und der Grund wird benannt');
+
+/* --- 5) DER RUNDLAUF ---------------------------------------------------- */
+var s49L = Rep.lieseDatei(s49D.text);
+ok(s49L.ok === true, 'S49: die eigene Datei laesst sich wieder lesen');
+eq(s49L.lage, 'gleich', 'S49: dieselbe Formatnummer heisst "gleich"');
+eq(JSON.stringify(s49L.eingaben.auswahl), JSON.stringify(s49P.eingaben.auswahl),
+   'S49: die Auswahl kommt unveraendert zurueck');
+eq(JSON.stringify(s49L.eingaben.werte), JSON.stringify(s49P.eingaben.werte),
+   'S49: und die Feldwerte ebenso');
+eq(s49L.bezeichnung, 'Lasche Halle 3', 'S49: die Bezeichnung kommt mit');
+eq(s49L.warnungen.length, 0, 'S49: eine Datei desselben Standes warnt nicht');
+ok(!('nicht_geprueft' in s49L.eingaben), 'S49: die Doku wird NICHT als Eingabe herausgegeben');
+ok(s49L.dokumentation !== null, 'S49: sie ist aber lesbar, wenn jemand nachsehen will');
+
+/* --- 6) DIE DREI FAELLE BEIM OEFFNEN (5.1-8) ---------------------------- */
+function s49Mit(feld, wert) {
+  var o = JSON.parse(s49D.text);
+  if (wert === undefined) delete o[feld]; else o[feld] = wert;
+  return JSON.stringify(o);
+}
+var s49Alt = Rep.lieseDatei(s49Mit('format', 0));
+ok(s49Alt.ok === true, 'S49: eine AELTERE Datei wird geoeffnet');
+eq(s49Alt.lage, 'aelter', 'S49: und als aeltere erkannt');
+eq(s49Alt.warnungen.length, 1, 'S49: sie bringt genau eine Warnung mit');
+eq(s49Alt.warnungen[0].code, Rep.CODES.datei_aelter, 'S49: der Unterschied wird BENANNT, nicht stumm umgerechnet');
+ok(s49Alt.warnungen[0].geschrieben_mit.indexOf('N11') >= 0,
+   'S49: und die Warnung sagt, mit welchem Stand die Datei geschrieben wurde');
+ok(s49Alt.eingaben !== null, 'S49: die Eingaben der aelteren Datei kommen trotzdem an');
+
+var s49Neu = Rep.lieseDatei(s49Mit('format', 2));
+ok(s49Neu.ok === false, 'S49: eine NEUERE Datei wird NICHT geoeffnet');
+eq(s49Neu.lage, 'neuer', 'S49: und als neuere erkannt');
+eq(s49Neu.fehler[0].code, Rep.CODES.datei_neuer, 'S49: mit ehrlicher Begruendung');
+ok(s49Neu.eingaben === null,
+   'S49: und es wird KEIN einziges Feld herausgegeben — halb lesen waere schlimmer als ablehnen');
+ok(Rep.lieseDatei(s49Mit('format', 99)).ok === false, 'S49: auch eine weit neuere Datei bleibt zu');
+
+/* --- 7) Jeder kaputte Weg endet mit einem BENANNTEN Grund --------------- */
+eq(Rep.lieseDatei('').fehler[0].code, Rep.CODES.kein_text, 'S49: leerer Text');
+eq(Rep.lieseDatei('   \n ').fehler[0].code, Rep.CODES.kein_text, 'S49: nur Leerzeichen');
+eq(Rep.lieseDatei(null).fehler[0].code, Rep.CODES.kein_text, 'S49: gar kein Text');
+eq(Rep.lieseDatei('kein json {{{').fehler[0].code, Rep.CODES.kein_json, 'S49: kaputtes JSON');
+eq(Rep.lieseDatei('[1,2,3]').fehler[0].code, Rep.CODES.fremdes_programm, 'S49: eine Liste ist keine Berechnung');
+eq(Rep.lieseDatei(s49Mit('programm', 'DT-ProfiPassung')).fehler[0].code, Rep.CODES.fremdes_programm,
+   'S49: die Datei des Schwesterprogramms wird abgewiesen');
+eq(Rep.lieseDatei(s49Mit('format', undefined)).fehler[0].code, Rep.CODES.format_fehlt, 'S49: fehlendes Format');
+eq(Rep.lieseDatei(s49Mit('format', 'eins')).fehler[0].code, Rep.CODES.format_fehlt, 'S49: Format ist keine Zahl');
+eq(Rep.lieseDatei(s49Mit('eingaben', undefined)).fehler[0].code, Rep.CODES.ohne_eingaben, 'S49: Datei ohne Eingaben');
+eq(Rep.lieseDatei(s49Mit('eingaben', { auswahl: {} })).fehler[0].code, Rep.CODES.ohne_eingaben,
+   'S49: halbe Eingaben zaehlen nicht als Eingaben');
+/* Keiner dieser Wege darf eine Ausnahme werfen — sonst steht der Anwender
+   vor einem stehengebliebenen Programm statt vor einer Meldung. */
+var s49Roh = ['', '{', 'null', '0', 'true', '"text"', '{"programm":"DT-ProfiSchweissnaht"}'];
+for (s49i = 0; s49i < s49Roh.length; s49i++) {
+  (function (r) {
+    var fiel = false;
+    try { Rep.lieseDatei(r); } catch (ex) { fiel = true; }
+    ok(!fiel, 'S49: das Lesen wirft keine Ausnahme bei ' + JSON.stringify(r));
+  }(s49Roh[s49i]));
+}
+
+/* --- 8) Der Dateiname (Bezeichnung + Datum) ----------------------------- */
+eq(Rep.dateiname('Lasche Halle 3', '2026-08-07'),
+   'DT-ProfiSchweissnaht_Lasche_Halle_3_2026-08-07.dts', 'S49: Bezeichnung und Datum stehen im Namen');
+eq(Rep.dateiname('', '2026-08-07'), 'DT-ProfiSchweissnaht_2026-08-07.dts',
+   'S49: ohne Bezeichnung bleibt ein brauchbarer Name');
+eq(Rep.dateiname('!!!???', '2026-08-07'), 'DT-ProfiSchweissnaht_2026-08-07.dts',
+   'S49: eine Bezeichnung aus lauter Sonderzeichen macht den Namen nicht kaputt');
+eq(Rep.saeubere('Träger Süd/Ost'), 'Traeger_Sued_Ost', 'S49: Umlaute werden umschrieben, Schraegstriche trennen');
+eq(Rep.saeubere('a\\b:c*d?e'), 'a_bcde', 'S49: kein Zeichen, an dem ein Dateisystem haengenbleibt');
+ok(Rep.saeubere(new Array(200).join('x')).length <= 40, 'S49: und der Name bleibt kurz genug');
+eq(Rep.dateiname('Fall', '2026-08-07', '.rtf'), 'DT-ProfiSchweissnaht_Fall_2026-08-07.rtf',
+   'S49: dieselbe Regel traegt die Word-Datei');
+
+/* --- 9) Base64 -> Hex, gegen Node gegengerechnet ------------------------ */
+var s49Roh2 = Buffer.from([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x01, 0xFF, 0xFE, 0x7B]);
+eq(Rep.b64ZuHex(s49Roh2.toString('base64')), s49Roh2.toString('hex'),
+   'S49: die eigene Base64-Umrechnung trifft Node auf das Byte genau');
+eq(Rep.b64ZuHex('data:image/png;base64,' + s49Roh2.toString('base64')), s49Roh2.toString('hex'),
+   'S49: auch mit data:-Praefix, so wie Canvas es liefert');
+for (s49i = 1; s49i <= 8; s49i++) {
+  (function (n) {
+    var b = Buffer.alloc(n);
+    for (var j = 0; j < n; j++) b[j] = (j * 37 + 11) & 255;
+    eq(Rep.b64ZuHex(b.toString('base64')), b.toString('hex'),
+       'S49: Base64 stimmt auch bei Laenge ' + n + ' (Fuellzeichen)');
+  }(s49i));
+}
+ok(Rep.b64ZuHex('!!!kein base64!!!') === null, 'S49: Muell wird als Muell erkannt, nicht halb umgerechnet');
+ok(Rep.b64ZuHex(null) === null, 'S49: und nichts bleibt nichts');
+
+/* --- 10) RTF: Sonderzeichen duerfen die Datei nicht sprengen ------------ */
+eq(Rep.rtfText('a\\b'), 'a\\\\b', 'S49: der Rueckstrich wird geschuetzt');
+eq(Rep.rtfText('{x}'), '\\{x\\}', 'S49: geschweifte Klammern ebenso — sie sind RTF-Struktur');
+eq(Rep.rtfText('a\nb'), 'a\\par b', 'S49: ein Zeilenumbruch wird zum Absatz');
+eq(Rep.rtfText('\u00fc'), '\\u252?', 'S49: Umlaute werden als Unicode geschrieben');
+eq(Rep.rtfText('\u2713'), '\\u10003?', 'S49: das Haekchen ebenso (U+2713)');
+eq(Rep.rtfText(''), '', 'S49: leer bleibt leer');
+eq(Rep.rtfText(0), '0', 'S49: und die Null verschwindet nicht');
+
+/* --- 11) Bildmasse (die Rechnung sitzt hier, nicht in ui.js) ------------ */
+var s49M = Rep.bildMasse(1200, 400);
+eq(s49M.breite_twips, Rep.MAX_TWIPS, 'S49: ein breites Bild wird auf die Seitenbreite begrenzt');
+eq(s49M.hoehe_twips, 3000, 'S49: und die Hoehe folgt im selben Verhaeltnis');
+var s49M2 = Rep.bildMasse(300, 200);
+eq(s49M2.breite_twips, 4500, 'S49: ein kleines Bild wird nicht aufgeblasen');
+nahe(s49M.breite_twips / s49M.hoehe_twips, 1200 / 400, 1e-6, 'S49: das Seitenverhaeltnis bleibt erhalten');
+ok(Rep.bildMasse(0, 100) === null, 'S49: Breite null gibt kein Mass');
+ok(Rep.bildMasse(100, 0) === null, 'S49: Hoehe null ebenso');
+ok(Rep.bildMasse('x', 'y') === null, 'S49: und Unsinn ebenso');
+
+/* Aus dem SVG von svglib werden feste Pixelmasse — ohne die zeichnet keine
+   Canvas, weil dort `width="100%"` steht. */
+var s49Svg = Svg.svg({ breite: 640, hoehe: 360 }, '<rect/>');
+var s49SM = Rep.svgMitMassen(s49Svg, 2);
+eq(s49SM.breite, 1280, 'S49: das SVG bekommt eine feste Breite');
+eq(s49SM.hoehe, 720, 'S49: und eine feste Hoehe');
+ok(s49SM.svg.indexOf('width="1280"') >= 0 && s49SM.svg.indexOf('height="720"') >= 0,
+   'S49: beide stehen wirklich im Markup');
+ok(s49SM.svg.indexOf('width="100%"') < 0, 'S49: und die Prozentbreite ist weg');
+ok(Rep.svgMitMassen('kein svg') === null, 'S49: was kein SVG ist, gibt kein Bild');
+ok(Rep.svgMitMassen('') === null, 'S49: leeres SVG ebenso');
+
+/* --- 12) DER BERICHT an einem echten, durchgerechneten Fall ------------- */
+var s49Bsp = Options.beispiel('blech');
+var s49W = Valid.standardwerte(s49Bsp.auswahl), s49k;
+for (s49k in s49Bsp.felder) if (Object.prototype.hasOwnProperty.call(s49Bsp.felder, s49k)) {
+  s49W[s49k] = s49Bsp.felder[s49k];
+}
+var s49Re = Valid.rechenEingabe(s49W, s49Bsp.auswahl);
+ok(s49Re.ok === true, 'S49: der Beispielfall uebersetzt sich ins Rechenformat');
+var s49Erg = Solver.rechne(s49Re.eingabe);
+ok(s49Erg.ok === true, 'S49: und rechnet durch');
+var s49Rw = Weg.ausErgebnis(s49Erg, s49Re.eingabe);
+ok(s49Rw.ok === true, 'S49: der Rechenweg steht');
+
+var s49Karten = [{ titel: 'Ergebnis', zeilen: [{ k: 'Ausnutzung', v: '0,842' }, { k: 'a-Maß', v: '5 mm' }] }];
+var s49Ber = Rep.baueBericht({
+  rw: s49Rw, sprache: 'de', bezeichnung: 'Probe', datum: '2026-08-07',
+  version: 'N11 · Plan 2.65 · 19 Module', karten: s49Karten,
+  anforderung: 'ISO 5817 B · EXC2',
+  module: [{ name: 'ui', version: '0.17.0' }],
+  bilder: [{ titel: 'Nahtbild', png: null, grund: Rep.CODES.bild_kein_canvas }]
+});
+ok(s49Ber.ok === true, 'S49: der Bericht entsteht');
+eq(s49Ber.abschnitte.length, s49Rw.abschnitte.length, 'S49: er fuehrt ALLE Abschnitte des Rechenwegs');
+eq(s49Ber.n_schritte, s49Rw.n_schritte, 'S49: und alle Schritte — keine Kurzfassung (Kickoff 8)');
+eq(s49Ber.luecken.length, Data.NICHT_GEPRUEFT.length,
+   'S49: die Liste 2.4 steht vollstaendig im Bericht (Plan 2.4)');
+eq(s49Ber.karten.length, 1, 'S49: die Ergebniskarte kommt so mit, wie sie angezeigt wird');
+ok(s49Ber.anforderung.indexOf('EXC2') >= 0, 'S49: die Anforderungszeile aus N5d ebenso');
+/* OHNE ERGEBNIS GIBT ES KEINEN BERICHT — kein leeres Blatt, das aussieht
+   wie ein Nachweis. */
+ok(Rep.baueBericht({ sprache: 'de' }).ok === false, 'S49: ohne Rechenweg entsteht kein Bericht');
+eq(Rep.baueBericht({ sprache: 'de' }).fehler[0].code, Rep.CODES.ohne_ergebnis, 'S49: und der Grund wird benannt');
+ok(Rep.baueBericht({ rw: { ok: false }, sprache: 'de' }).ok === false,
+   'S49: ein gescheiterter Rechenweg ergibt ebenfalls keinen Bericht');
+
+/* --- 13) DIE WORD-DATEI -------------------------------------------------- */
+var s49R = Rep.baueRtf(s49Ber);
+ok(s49R.ok === true, 'S49: die Word-Datei wird gebaut');
+ok(s49R.text.indexOf('{\\rtf1') === 0, 'S49: sie beginnt mit dem RTF-Kopf');
+ok(s49R.text.charAt(s49R.text.length - 1) === '}', 'S49: und endet mit der schliessenden Klammer');
+/* Ausgeglichene Klammern: eine einzige zu viel, und Word oeffnet die Datei
+   nicht mehr. Gezaehlt werden nur die ungeschuetzten. */
+var s49Auf = 0, s49Zu = 0, s49Schutz = false, s49c;
+for (s49i = 0; s49i < s49R.text.length; s49i++) {
+  s49c = s49R.text.charAt(s49i);
+  if (s49Schutz) { s49Schutz = false; continue; }
+  if (s49c === '\\') { s49Schutz = true; continue; }
+  if (s49c === '{') s49Auf++;
+  if (s49c === '}') s49Zu++;
+}
+eq(s49Auf, s49Zu, 'S49: die geschweiften Klammern sind ausgeglichen (' + s49Auf + '/' + s49Zu + ')');
+ok(s49Auf > 5, 'S49: und es sind wirklich welche da');
+ok(s49R.text.indexOf('DT-ProfiSchweissnaht') >= 0, 'S49: der Programmname steht im Blatt');
+ok(s49R.text.indexOf('Probe') >= 0, 'S49: die Bezeichnung ebenso');
+ok(s49R.text.indexOf('2026-08-07') >= 0, 'S49: das Datum ebenso');
+ok(s49R.text.indexOf('N11 ') >= 0, 'S49: und die Versionszeile (Plan 3.6: JEDE Ausgabe traegt sie)');
+/* Jeder Schritt des Rechenwegs muss auch wirklich im Blatt stehen. */
+var s49Fehlt = [];
+for (s49i = 0; s49i < s49Rw.schritte.length; s49i++) {
+  if (s49R.text.indexOf('{\\b ' + s49Rw.schritte[s49i].nr + '. ') < 0) s49Fehlt.push(s49Rw.schritte[s49i].nr);
+}
+eq(s49Fehlt.length, 0, 'S49: JEDER Rechenwegschritt steht in der Word-Datei (' + s49Fehlt.join(',') + ')');
+/* KEIN PLATZHALTER: ein [schluessel] im Blatt hiesse, ein Text fehlt. */
+ok(s49R.text.indexOf('[msg_') < 0 && s49R.text.indexOf('[rep_') < 0 && s49R.text.indexOf('[rw_') < 0,
+   'S49: kein unuebersetzter Schluessel steht in der Ausgabe');
+
+/* DER RUECKFALLWEG BEIM BILD — die Entscheidung von 2026-08-07.
+   Ohne PNG wird die Datei TROTZDEM geschrieben, und der Grund steht drin. */
+eq(s49R.bilder_aus, 1, 'S49: das fehlende Bild wird gezaehlt');
+eq(s49R.bilder_ein, 0, 'S49: und keines eingebettet');
+ok(s49R.text.indexOf('pngblip') < 0, 'S49: ohne PNG steht auch kein Bildblock im Blatt');
+ok(s49R.text.indexOf(Rep.rtfText(Kern.t(Rep.CODES.bild_kein_canvas, 'de')).substring(0, 30)) >= 0,
+   'S49: stattdessen steht der GRUND da — keine stille Luecke');
+
+/* Und mit PNG: derselbe Bericht traegt das Bild. */
+var s49Png = Buffer.alloc(120);
+for (s49i = 0; s49i < 120; s49i++) s49Png[s49i] = (s49i * 7 + 3) & 255;
+var s49BerB = Rep.baueBericht({
+  rw: s49Rw, sprache: 'de', datum: '2026-08-07', karten: s49Karten,
+  bilder: [{ titel: 'Nahtbild', png: s49Png.toString('base64'), breite_px: 640, hoehe_px: 360 }]
+});
+var s49RB = Rep.baueRtf(s49BerB);
+ok(s49RB.ok === true, 'S49: mit Bild wird die Datei ebenfalls gebaut');
+eq(s49RB.bilder_ein, 1, 'S49: das Bild ist eingebettet');
+eq(s49RB.bilder_aus, 0, 'S49: und keines fehlt');
+ok(s49RB.text.indexOf('\\pict\\pngblip') >= 0, 'S49: als PNG-Block nach RTF-Regel');
+ok(s49RB.text.indexOf('\\picwgoal9000') >= 0, 'S49: seitengerecht auf die Textbreite skaliert');
+ok(s49RB.text.indexOf(s49Png.toString('hex')) >= 0, 'S49: und die Bytes stehen unveraendert drin');
+/* Ein kaputtes PNG darf die Datei nicht sprengen — es faellt zurueck. */
+var s49RK = Rep.baueRtf(Rep.baueBericht({
+  rw: s49Rw, sprache: 'de', datum: '2026-08-07',
+  bilder: [{ titel: 'Nahtbild', png: '!!!kaputt!!!', breite_px: 640, hoehe_px: 360 }]
+}));
+ok(s49RK.ok === true, 'S49: ein kaputtes Bild kostet die Datei nicht');
+eq(s49RK.bilder_aus, 1, 'S49: es faellt zurueck und wird gezaehlt');
+ok(Rep.baueRtf({ ok: false }).ok === false, 'S49: ohne Bericht keine Word-Datei');
+
+/* --- 14) Dreisprachig (Plan 4.2) ---------------------------------------- */
+var s49Spr = ['de', 'en', 'pt'], s49Txt = {};
+for (s49i = 0; s49i < s49Spr.length; s49i++) {
+  (function (l) {
+    var b = Rep.baueBericht({ rw: s49Rw, sprache: l, datum: '2026-08-07', karten: s49Karten,
+                              bilder: [{ titel: 'x', png: null }] });
+    var r = Rep.baueRtf(b);
+    ok(r.ok === true, 'S49: die Word-Datei entsteht in ' + l);
+    ok(r.text.indexOf('[msg_') < 0 && r.text.indexOf('[rep_') < 0 && r.text.indexOf('[ng_') < 0,
+       'S49: und in ' + l + ' fehlt kein Text');
+    eq(b.luecken.length, Data.NICHT_GEPRUEFT.length, 'S49: die Liste 2.4 ist in ' + l + ' vollstaendig');
+    s49Txt[l] = r.text;
+  }(s49Spr[s49i]));
+}
+ok(s49Txt.de !== s49Txt.en, 'S49: Deutsch und Englisch unterscheiden sich wirklich');
+ok(s49Txt.en !== s49Txt.pt, 'S49: Englisch und Portugiesisch ebenso');
+
+/* --- 15) Bestimmtheit und Nichtmutation --------------------------------- */
+var s49Vor = JSON.stringify({ a: s49Aus, w: s49We });
+Rep.baueDatei({ auswahl: s49Aus, werte: s49We, etappe: 'N11', plan: '2.65', datum: '2026-08-07' });
+eq(JSON.stringify({ a: s49Aus, w: s49We }), s49Vor, 'S49: die Eingabe wird nicht veraendert');
+eq(Rep.baueDatei({ auswahl: s49Aus, werte: s49We, etappe: 'N11', plan: '2.65', datum: '2026-08-07' }).text,
+   Rep.baueDatei({ auswahl: s49Aus, werte: s49We, etappe: 'N11', plan: '2.65', datum: '2026-08-07' }).text,
+   'S49: zweimal gespeichert ergibt dieselbe Datei');
+eq(Rep.baueRtf(s49Ber).text, Rep.baueRtf(s49Ber).text, 'S49: und zweimal exportiert dieselbe Word-Datei');
+
+/* --- 16) DER NAMENSABGLEICH (Plan 3.6, Merkposten aus N5d) -------------- */
+/* Bis N10c zeigte die Versionszeile `data` statt `daten.js`, `options` statt
+   `optionen.js` und `kern`/`hilfe`/`kerbfall` statt der drei i18n-Dateien.
+   Zum Erkennen eines fehlenden Moduls reichte das; sobald die Zeile aber in
+   Druck, PDF, Word und .dts wandert, muessen die Namen den Dateinamen
+   entsprechen. Geprueft wird gegen die HTML — also gegen die Wahrheit, nicht
+   gegen eine Liste.
+   ANGEFASST WURDEN NUR DIE FUENF, DIE ABWICHEN. Die uebrigen tragen keinen
+   eigenen NAME und laufen ueber dieselbe Rueckfallregel wie in ui.js
+   (`DTNSolver` -> `solver`) — die trifft dort bereits den Dateinamen, und
+   ein Eingriff haette nur ihre Kennung zerstoert, die seit N2 belegt, dass
+   sie unveraendert sind. */
+function s49Anzeige(mod, global) {
+  return (mod && typeof mod.NAME === 'string' && mod.NAME) ? mod.NAME : global.substring(3).toLowerCase();
+}
+var s49GlobalVon = {
+  i18n_kern: 'DTNI18nKern', i18n_hilfe: 'DTNI18nHilfe', i18n_kerbfall: 'DTNI18nKerb',
+  daten: 'DTNData', optionen: 'DTNOptions', validate: 'DTNValidate', naht: 'DTNNaht',
+  profil: 'DTNProfil', svglib: 'DTNSvgLib', schaubild: 'DTNSchaubild', symbol: 'DTNSymbol',
+  skizze: 'DTNSkizze', solver: 'DTNSolver', rechenweg: 'DTNRechenweg', thermik: 'DTNThermik',
+  kosten: 'DTNKosten', assistent: 'DTNAssistent', report: 'DTNReport', ui: 'DTNUi'
+};
+var s49Html = fsU.readFileSync(__dirname + '/DT-ProfiSchweissnaht.html', 'utf8');
+var s49Src2 = s49Html.match(/<script src="([a-z0-9_]+\.js)"><\/script>/g) || [];
+var s49Falsch = [];
+for (s49i = 0; s49i < s49Src2.length; s49i++) {
+  (function (tag) {
+    var datei = tag.replace(/.*src="/, '').replace(/".*/, '');
+    var stamm = datei.replace(/\.js$/, '');
+    var g = s49GlobalVon[stamm];
+    ok(!!g, 'S49: der Fenstername von ' + datei + ' ist bekannt');
+    if (!g) return;
+    var anz = s49Anzeige(require('./' + datei), g);
+    if (anz + '.js' !== datei) s49Falsch.push(datei + ' zeigt sich als "' + anz + '"');
+  }(s49Src2[s49i]));
+}
+eq(s49Falsch.length, 0,
+   'S49: JEDES eingebundene Modul zeigt sich unter seinem DATEINAMEN (' + s49Falsch.join(' | ') + ')');
+eq(require('./daten.js').NAME, 'daten', 'S49: daten.js heisst nicht mehr "data"');
+eq(require('./optionen.js').NAME, 'optionen', 'S49: optionen.js nicht mehr "options"');
+eq(require('./i18n_kern.js').NAME, 'i18n_kern', 'S49: i18n_kern.js nicht mehr "kern"');
+eq(require('./i18n_hilfe.js').NAME, 'i18n_hilfe', 'S49: i18n_hilfe.js nicht mehr "hilfe"');
+eq(require('./i18n_kerbfall.js').NAME, 'i18n_kerbfall', 'S49: i18n_kerbfall.js nicht mehr "kerbfall"');
+/* Gegenprobe, damit die Regel nicht als Zufall besteht. */
+ok(s49Anzeige({ NAME: 'falsch' }, 'DTNData') + '.js' !== 'daten.js',
+   'S49: die Pruefung wuerde einen falschen Namen auch bemerken');
+
+/* --- 17) DIE ANBINDUNG AN DIE OBERFLAECHE ------------------------------- */
+var s49Ui = fsU.readFileSync(__dirname + '/ui.js', 'utf8');
+ok(s49Ui.indexOf('DTNReport') > 0, 'S49: ui.js kennt report.js als vierte erlaubte Adresse');
+ok(s49Ui.indexOf('Report.guard(') > 0, 'S49: und fragt vor jeder Ausgabe das Gating');
+/* GENAU EINE TUER: das Gating wird in ui.js an einer einzigen Stelle
+   gefragt. Zwei Stellen waeren zwei Gelegenheiten, eine davon zu vergessen
+   — und vergessen hiesse hier: eine Ausgabe laeuft in der Testversion doch
+   durch. Entschieden wird ohnehin in report.js. */
+eq((s49Ui.match(/Report\.guard\(/g) || []).length, 1,
+   'S49: ui.js fragt das Gating an genau EINER Stelle');
+var s49Wege = ['speichern', 'oeffnen', 'drucken', 'wordExport'];
+for (s49i = 0; s49i < s49Wege.length; s49i++) {
+  (function (fn) {
+    var von = s49Ui.indexOf('function ' + fn + '(');
+    ok(von > 0, 'S49: die Ausgabe ' + fn + ' gibt es');
+    ok(von > 0 && s49Ui.substring(von, von + 400).indexOf('ausgabeErlaubt(') > 0,
+       'S49: und ' + fn + ' fragt zuerst das Gating');
+  }(s49Wege[s49i]));
+}
+eq(require('./ui.js').GERUEST_BUTTONS.length, 0,
+   'S49: kein Ausgabeknopf steht mehr als unverdrahtet in der Liste');
+/* Die Versionszeile hat EINE Quelle — sie steht ab N11 auch in Druck,
+   Word und .dts (Plan 3.6). */
+ok(s49Ui.indexOf('function versionText()') > 0, 'S49: die Versionszeile wird an einer Stelle gebaut');
+ok((s49Ui.match(/uiVersionStand/g) || []).length === 1,
+   'S49: und nicht ein zweites Mal daneben zusammengesetzt');
+
+/* --- 18) DAS DRUCKBILD -------------------------------------------------- */
+/* Gedruckt wird die lebende Seite. Auf Papier duerfen die Bedienelemente
+   nicht stehen — und nichts darf zugeklappt bleiben. */
+var s49Css = fsU.readFileSync(__dirname + '/style.css', 'utf8');
+ok(/@media\s+print/.test(s49Css), 'S49: style.css traegt ein Druckbild');
+var s49Druck = s49Css.substring(s49Css.indexOf('@media print'));
+ok(s49Druck.indexOf('.actionbar') > 0, 'S49: die Aktionsleiste wird nicht mitgedruckt');
+ok(s49Druck.indexOf('.modal-overlay') > 0, 'S49: die Dialoge ebenso wenig');
+ok(s49Druck.indexOf('.acc-body[hidden]') > 0, 'S49: zugeklappte Bereiche werden zum Drucken geoeffnet');
+ok(s49Druck.indexOf('.gap-note') > 0,
+   'S49: und die ehrlichen Luecken stehen ausdruecklich MIT auf dem Blatt (Plan 2.4)');
+ok(s49Druck.indexOf('page-break-inside') > 0 || s49Druck.indexOf('break-inside') > 0,
+   'S49: Karten werden nicht mitten durchgeschnitten');
+/* Gegenprobe: die Klassen, die das Druckbild anspricht, muessen es wirklich
+   geben — eine Regel auf einen Tippfehler blendet nichts aus. */
+var s49Html2 = fsU.readFileSync(__dirname + '/DT-ProfiSchweissnaht.html', 'utf8');
+var s49Kl = ['actionbar', 'subbar', 'modal-overlay', 'acc-body', 'card'];
+var s49KlFehlt = [];
+for (s49i = 0; s49i < s49Kl.length; s49i++) {
+  if (s49Html2.indexOf('class="' + s49Kl[s49i]) < 0 &&
+      s49Html2.indexOf(s49Kl[s49i] + '"') < 0 &&
+      s49Ui.indexOf("'" + s49Kl[s49i] + "'") < 0) s49KlFehlt.push(s49Kl[s49i]);
+}
+eq(s49KlFehlt.length, 0, 'S49: jede angesprochene Klasse gibt es wirklich (' + s49KlFehlt.join(',') + ')');
 
 /* ========================================================================= */
 console.log('\n════════════════════════════════════════════');

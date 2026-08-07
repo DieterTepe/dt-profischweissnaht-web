@@ -2378,3 +2378,197 @@ Der Streifzug prüft eine Dimension; Dieter prüft die Fläche.
 
 **Basislinie 3053 unverändert · Smokes 905/906 → 915/916.**
 **Codestand 2.59 → 2.61.**
+
+
+**v2.62 (2026-08-06):** **Das Dateiformat — die Entscheidung, die vor die Ermüdung gehörte.**
+
+Sie stand seit v2.46 aus und war die einzige der damaligen Festlegungen mit
+einem Termin: Eine gespeicherte Rechnung mit Kerbfallcode muss sich noch öffnen
+lassen, wenn der Katalog von dreizehn auf achtzig Details gewachsen ist.
+
+**Der Kern ist die Trennung zwischen einer Zahl, auf die das Programm
+reagiert, und Zahlen, die für Menschen da sind.** `format` steuert das Lesen
+und steigt nur bei echten Strukturbrüchen — vielleicht zwei- oder dreimal in
+der Lebenszeit des Programms. `geschrieben_mit` und `datum` steuern nichts; sie
+beantworten die Frage, die in zwei Jahren kommt: *Warum sieht mein Ergebnis
+anders aus?*
+
+**Der schärfste Punkt ist das Verhalten bei einer neueren Datei: nicht
+öffnen.** Der Reflex wäre, so viel zu lesen wie möglich. Aber eine Datei aus
+einer neueren Fassung enthält womöglich Angaben, die dieses Programm nicht
+kennt — und die halb gelesene Datei rechnet dann etwas, das der Anwender nicht
+gemeint hat. **Eine Ablehnung ist sichtbar, ein halb gelesener Fall nicht.**
+
+**Dieters Festlegung, nur die Eingaben zu speichern, ist die sauberere
+Trennung**: Die Datei beschreibt den Fall, nicht das Ergebnis. Sie hat eine
+Folge, die benannt werden musste — beim Öffnen einer alten Datei kann ein
+anderes Ergebnis herauskommen, ohne dass es jemand sagt. Genau das ist in
+diesem Projekt schon passiert: Die `konsole` liefert seit N9d 760 mm statt 764,
+und die alte Zahl war zwei Tage lang abgenommen. Der sichtbare Stempel fängt
+das ab: Er ersetzt keinen Vergleich, aber er lässt den Unterschied nicht stumm.
+
+**Und eine Entscheidung, die mich überzeugt hat, weil ihre Begründung über
+Bequemlichkeit hinausgeht.** Dieter will im lokalen Speicher nur Sprache und
+Edition, nicht die letzten Eingaben. **Ein halb ausgefülltes Formular vom
+Vortag sieht aus wie ein frischer Fall** — der Anwender ändert zwei Werte und
+rechnet mit drei, die er längst vergessen hat. Ein leeres Formular ist
+ehrlicher als ein altes. Dieselbe Haltung wie bei der stehen gebliebenen
+Wärmeführungskarte in N9b: **Eine alte Zahl, die aussieht wie eine neue, ist
+die gefährlichste Sorte Fehler.**
+
+**Code unverändert, `Codestand` bleibt 2.61.**
+**Nächster Schritt: N10c prüfen, dann N11 bauen.**
+
+
+**v2.63 (2026-08-06):** **N10c abgenommen — und ein Ausweichweg, der etwas verrät.**
+
+Beide Fehler sind weg: Der Sprachwechsel lässt die Kostenkarte vollständig
+mitwandern, und die Kostenrechnung läuft auch bei der Auslegung mit leerem
+a-Feld.
+
+**Interessanter als die Abnahme war der Weg dorthin.** Weil die Bereitstellung
+auf GitHub Pages hängen blieb — der Build lief durch, nur das Ausrollen
+scheiterte —, hat Dieter alle Module in eine einzige HTML kopiert und offline
+geprüft. Derselbe Code, nur anders geladen. Dass die Versionszeile trotzdem
+korrekt alle 18 Module meldete, ist der Beleg, dass sich jedes registriert hat.
+
+**Daraus folgt etwas für später:** Wenn sich das Programm so ohne weiteres in
+eine einzige Datei falten lässt, ist das eine mögliche **Auslieferungsform** —
+eine HTML, kein Server, kein Netz. Für ein Werkzeug, das auf Baustellen und in
+Werkstätten benutzt wird, kann das mehr wert sein als eine Webadresse. Notiert
+für N12, nicht entschieden.
+
+**Und eine Beobachtung zur Diagnose:** Das Bildschirmfoto der GitHub-Prüfungen
+hat die Frage in einem Zug geklärt — Build erfolgreich, nur Bereitstellung
+gescheitert. Ohne das Bild hätte ich geraten, und der naheliegende Rat wäre
+falsch gewesen: noch einmal hochladen hätte nichts geändert, weil am Code
+nichts fehlte. **Zum dritten Mal hat ein Bild eine Vermutung ersetzt.**
+
+**Der Stand:** Sieben von zehn Bausteinen bis zum Verkaufsstand sind fertig.
+Offen bleiben N11 (Ausgaben, Dateiformat entschieden), N12 (Edition) und
+N13/N14 (Ermüdung).
+
+**Code unverändert, `Codestand` bleibt 2.61.**
+**Nächster Schritt: N11.**
+
+
+**v2.64 (2026-08-06):** **Der Plan-Kopf war zerrissen — und keine Prüfung hat es gemerkt.**
+
+Dieter fragte vor der Übergabe an einen neuen Chat, ob der Satz *„Lies dir
+Schweißnaht-1.md genau durch, danach weiter mit N11"* ausreicht. Beim
+Nachsehen fand sich, dass der erste Absatz des Plans durch wiederholtes
+Ersetzen **zerrissen** war: Er endete mitten in „dazu N9c gebaut und" und ging
+dann in einen anderen Satz über. Zwei Zeilen tiefer stand noch der veraltete
+Einstiegssatz „weiter mit N8" — aus einer Zeit vor vier Bausteinen.
+
+**Das ist eine eigene Fehlerklasse.** Über 3000 Assertions prüfen Zahlen,
+Codes, Texte und Modulkennungen — aber keine einzige liest den Fließtext des
+Plans. Der Kopf ist zugleich das Erste, was ein neuer Chat sieht. Ein
+abgebrochener Halbsatz dort ist folgenloser als ein Rechenfehler und
+gleichzeitig gefährlicher, weil er die Arbeit in die falsche Richtung lenkt,
+bevor sie beginnt.
+
+**Bemerkenswert ist, wodurch es aufgefallen ist:** nicht durch einen Test,
+sondern durch die **Frage nach der Übergabe**. Dieter wollte nur wissen, ob ein
+Satz genügt — und weil ich nachgesehen statt geantwortet habe, kam es heraus.
+**Eine Frage nach der Vollständigkeit ist selbst eine Prüfung**, wenn man sie
+ernst nimmt, statt sie aus dem Gedächtnis zu beantworten.
+
+Neue Regel in 9.2: Der Plan-Kopf wird vor jeder Chat-Übergabe **gelesen**,
+nicht nur geschrieben.
+
+**Code unverändert, `Codestand` bleibt 2.61.**
+**Nächster Schritt: N11.**
+
+---
+
+## Aus N11 (2026-08-07) — Ausgaben, Dateiformat, Gating, Namensabgleich
+
+**Der abgestimmte Umfang (Dieter, 2026-08-07).** Drei Fragen, drei Antworten:
+*einteilig komplett, aber mit vielen Prüfungen* · Word *mit Bildern, auf der Seite
+angepasst — entscheide du, es muss laufen* · das Freitextfeld für die WPS-Nummer
+*weiter weglassen*.
+
+**Die delegierte Entscheidung und wie sie ausgefallen ist.** RTF kann ein PNG tragen
+(`\pict\pngblip`). Das SVG dafür zu rastern geht nur im Browser über Canvas — und das
+ist der einzige Schritt in ganz N11, den kein Node-Test erreicht. Deshalb nimmt
+`baueRtf()` die Bilddaten *entgegen*, statt sie zu erzeugen: der gesamte Zusammenbau
+bleibt prüfbar, nur der eine Millimeter nicht. Und dieser eine Millimeter bekommt einen
+Rückfallweg: Fehlt das Bild, entsteht die Datei trotzdem und nennt den Grund. Dieters
+Satz „es muss laufen" ist damit wörtlich umgesetzt — es gibt keinen Weg, auf dem die
+Word-Ausgabe gar nichts liefert.
+
+**Warum `report.js` DOM-frei ist, obwohl es Dateien schreibt.** Es schreibt keine. Es
+baut und liest Zeichenketten; Blob, Dateiwahl, Canvas und Drucken bleiben in `ui.js`.
+Der Schnitt war die wichtigste Entscheidung des Bausteins: 196 der 221 neuen Assertions
+liegen auf der Ausgabeseite. Ohne ihn wäre die Hälfte von N11 ungeprüft geblieben —
+und Ausgaben sind die Stelle, an der ein Fehler nicht beim Rechnen auffällt, sondern
+Jahre später, wenn eine Datei nicht mehr aufgeht.
+
+**Das Gating hat genau eine Tür.** Alle vier Ausgaben fragen `Report.guard()`, und
+`ui.js` ruft es an einer einzigen Stelle; eine Assertion zählt das nach. Beim Bauen war
+zuerst eine zweite Stelle entstanden (die Sitzungsfunktion für den DOM-Smoke) — sie ist
+zu einem gemeinsamen `gating()` zusammengezogen worden. Zwei Türen wären zwei
+Gelegenheiten, eine davon zu vergessen, und vergessen hieße hier: eine Ausgabe läuft in
+der Testversion doch durch. Gesperrt ist außerdem die sichere Seite — eine leere oder
+unbekannte Edition gibt nichts frei, statt „alles außer `test`" zu erlauben.
+
+**Die scharfe Probe am Dateiformat.** Dass die Eingaben in der Datei stehen, prüft sich
+leicht. Die eigentliche Festlegung aus 5.1-8 ist die umgekehrte: dass *kein Ergebnis*
+darin steht. Eine Assertion sucht deshalb zehn Ergebnisnamen im Dateitext und darf
+keinen finden. Ebenso beim Öffnen: dass eine neuere Datei abgelehnt wird, reicht nicht —
+geprüft wird, dass sie *kein einziges Feld* herausgibt. Halb zu lesen wäre schlimmer,
+als abzulehnen, und eine Prüfung, die nur die Ablehnung sieht, würde ein halbes Lesen
+nicht bemerken.
+
+**DIE DRITTE GEGENPROBE HAT ETWAS GEFUNDEN — und der Fehler saß im Test.**
+Zur Kontrolle wurden drei Fixe testweise entfernt. Ohne das Gating fielen 12 Assertions
+und 5 Smoke-Zeilen; ließ man die neuere Datei doch zu, fielen 3 und 1. Ließ man aber
+`leeren()` vor dem Laden weg — die harte Regel aus Plan 3.5 —, blieb **alles grün**.
+Die Prüfung sah nur nach, ob die Werte der *Datei* ankommen. Entscheidend ist aber, ob
+die Werte des *vorigen Falls* verschwinden. Jetzt wird erst der Kragarm geladen, dann
+die Blech-Datei, und Steg- und Flanschdicke müssen weg sein; ohne `leeren()` wird das
+rot. Daraus die Regel in 9.2: **Jede neue Prüfung wird einmal gegen den entfernten Fix
+gehalten.** Eine Prüfung, die ohne den Fix nicht rot wird, ist wertlos — auch dann,
+wenn sie das Richtige zu prüfen scheint.
+
+**Der Namensabgleich — und warum nur fünf Module angefasst wurden.** Die Versionszeile
+zeigte `data`, `options`, `kern`, `hilfe`, `kerbfall` — Namen, die es als Datei nie gab.
+Solange die Zeile nur im Info-Fenster stand, reichte sie zum Erkennen eines fehlenden
+Moduls; seit sie in Druck, Word und `.dts` wandert, nicht mehr. Sieben weitere Module
+tragen gar keinen eigenen `NAME` und laufen über dieselbe Rückfallregel wie in `ui.js`
+(`DTNSolver` → `solver`) — die trifft dort bereits den Dateinamen. Sie anzufassen hätte
+nur ihre Kennungen zerstört, die seit N2 belegen, dass sie unverändert sind. Geprüft
+wird deshalb nicht die Liste, sondern das Ergebnis: für jedes in der HTML eingebundene
+Modul muss `NAME + '.js'` der Dateiname sein, und der DOM-Smoke prüft dasselbe an der
+Zeile, die der Anwender wirklich liest.
+
+**Der Kennungswächter aus S43 hat wieder gearbeitet.** Alle fünf umbenannten Module hat
+er sofort rot gemeldet und beide Zeilen eingefordert — Kennung *und* Prüfsumme. Vier von
+ihnen (`daten`, `optionen`, `i18n_hilfe`, `i18n_kerbfall`) wurden allein wegen ihres
+Anzeigenamens angefasst und tragen deshalb neue Kennungen, obwohl sich an ihren
+Rechenwerten nichts geändert hat. Das ist kein Schönheitsfehler, sondern genau der
+Zweck: die Kennung sagt „diese Datei ist nicht mehr die von gestern", nicht „hier wurde
+gerechnet".
+
+**Und noch ein Fund im Bestand.** In S34 stand `eq(Kerb.VERSION, '0.1.0-N1', …)` — ein
+festgeschriebener Handwert, also genau die Sorte Assertion, vor der v2.36 warnt: sie
+prüft eine Konstante gegen eine Konstante. Sie prüft jetzt die *Form* der Kennung; den
+Stand führt der Wächter in S43.
+
+**Drucken über die lebende Seite.** Ein eigenes `@media print`, kein zweiter
+Rendering-Weg — der könnte etwas anderes zeigen als der Bildschirm. Vorher klappt
+`ui.js` alles auf; ein Nachweis mit halbem Rechenweg wäre kein Nachweis. Die ehrlichen
+Lücken und die Bilanz der Selbstprüfung stehen ausdrücklich mit auf dem Blatt. Und weil
+eine CSS-Regel auf einen Tippfehler stumm nichts ausblendet, prüft eine Assertion, dass
+jede angesprochene Klasse wirklich existiert — beim ersten Entwurf waren `.acc-kopf`,
+`.hilfe-host` und `.info-host` erfunden; die Klassen heißen `.acc-head` und
+`.modal-overlay`.
+
+**Zum Verfahren.** Nach Drittel 1 stand ein Haltepunkt mit der ehrlichen Einschätzung,
+dass es knapp werden könnte, und dem Vorschlag, sauber in N11a/N11b zu schneiden.
+Dieter hat gemeldet, dass sein Kontingent bei 12 % steht — größeres Abo. Daraufhin wurde
+einteilig durchgezogen, wie ursprünglich abgestimmt. Der Haltepunkt hat damit genau
+getan, wofür er gedacht ist: er hat eine Entscheidung ermöglicht, statt sie zu ersetzen.
+
+**Basislinie 3053 → 3274 Assertions · Smokes 915/916 → 982/982 · i18n-Parität 0.**

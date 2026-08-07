@@ -35,12 +35,12 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.16.0';
-  var ETAPPE = 'N10c';
+  var VERSION = '0.17.0';
+  var ETAPPE = 'N11';
   /* Plan-Version, die zu diesem Stand gehoert. Sie ist die EINZIGE von Hand
      gepflegte Zahl der Versionszeile — alles andere kommt aus den geladenen
      Modulen selbst (Plan 3.6). */
-  var PLAN = '2.61';
+  var PLAN = '2.65';
   var SPRACHEN = ['de', 'en', 'pt'];
 
   /* Plan 3.1 (bindend): die Oberflaeche startet IMMER im dunklen Design —
@@ -213,13 +213,11 @@
 
   /* Buttons, die bewusst noch nicht verdrahtet sind: Id -> ehrliche Meldung.
      "Berechnen" ist ab N5b verdrahtet — es PRUEFT (Rechnen folgt in N5c). */
-  var GERUEST_BUTTONS = [
-    /* 'assistBtn' ist seit N8b verdrahtet und steht deshalb NICHT mehr hier. */
-    ['saveBtn', 'uiFolgtN11'],
-    ['loadBtn', 'uiFolgtN11'],
-    ['printBtn', 'uiFolgtN11'],
-    ['rtfBtn', 'uiFolgtN11']
-  ];
+  /* Knoepfe, die noch nichts tun, melden das ehrlich statt still zu
+     schweigen. Seit N11 ist die Liste LEER: 'assistBtn' wurde mit N8b
+     verdrahtet, die vier Ausgabeknoepfe mit N11. Die Mechanik bleibt
+     stehen — der naechste noch nicht gebaute Knopf traegt sich hier ein. */
+  var GERUEST_BUTTONS = [];
 
   /* ------------------------------------------------------------ Werkzeuge */
   function el(doc, x) { return doc && doc.getElementById ? doc.getElementById(x) : null; }
@@ -291,6 +289,12 @@
 
     var Options = win.DTNOptions || null;
     var Valid = win.DTNValidate || null;
+    /* N11: die vierte erlaubte Adresse. `ui.js` rief bis N10c genau drei
+       Module auf; die Ausgaben brauchen eine vierte. Die VERBOTE bleiben
+       unveraendert (Plan 4.10c) — der Rechenkern ist hier weiterhin nicht
+       zu finden, und gerechnet wird auch nicht: die Assertion darauf liest
+       den Quelltext als Zeichenkette, Kommentare eingeschlossen. */
+    var Report = win.DTNReport || null;
 
     var S = {
       sprache: START_SPRACHE,
@@ -2318,16 +2322,22 @@
                module: mods, n: mods.length, ohne: ohne };
     }
 
+    /* N11: DIESELBE Zeile steht jetzt auch in Druck, Word und .dts
+       (Plan 3.6). Sie wird deshalb an EINER Stelle gebaut — eine zweite
+       waere die naechste, die auseinanderlaeuft. */
+    function versionText() {
+      var v = versionInfo(), l = S.sprache;
+      var s1 = txt(win, 'uiVersionStand', l) + ' ' + v.stand + ' \u00b7 ' +
+               txt(win, 'uiVersionPlan', l) + ' ' + v.plan + ' \u00b7 ' +
+               v.n + ' ' + txt(win, 'uiVersionModule', l);
+      if (v.ohne) s1 += ' \u00b7 ' + v.ohne + ' ' + txt(win, 'uiVersionOhne', l);
+      return s1;
+    }
+
     function versionZeigen() {
       var v = versionInfo(), l = S.sprache, i, t = [];
       var kopf = el(doc, 'infoVersion');
-      if (kopf) {
-        var s1 = txt(win, 'uiVersionStand', l) + ' ' + v.stand + ' \u00b7 ' +
-                 txt(win, 'uiVersionPlan', l) + ' ' + v.plan + ' \u00b7 ' +
-                 v.n + ' ' + txt(win, 'uiVersionModule', l);
-        if (v.ohne) s1 += ' \u00b7 ' + v.ohne + ' ' + txt(win, 'uiVersionOhne', l);
-        kopf.textContent = s1;
-      }
+      if (kopf) kopf.textContent = versionText();
       var liste = el(doc, 'infoModule');
       if (liste) {
         for (i = 0; i < v.module.length; i++) {
@@ -2407,6 +2417,16 @@
         }(GERUEST_BUTTONS[i]));
       }
 
+      /* N11 · die vier Ausgaben. Jede fragt zuerst das Gating. */
+      b = el(doc, 'saveBtn');
+      if (b && b.addEventListener) b.addEventListener('click', function () { speichern(); });
+      b = el(doc, 'loadBtn');
+      if (b && b.addEventListener) b.addEventListener('click', function () { oeffnen(); });
+      b = el(doc, 'printBtn');
+      if (b && b.addEventListener) b.addEventListener('click', function () { drucken(); });
+      b = el(doc, 'rtfBtn');
+      if (b && b.addEventListener) b.addEventListener('click', function () { wordExport(); });
+
       /* N8b · Assistent */
       b = el(doc, 'assistBtn');
       if (b && b.addEventListener) b.addEventListener('click', function () { assistStart(); });
@@ -2439,6 +2459,324 @@
     bereicheStandard();
     verdrahte();
     uebersetze();
+
+    /* ======================================================================
+     * N11 — DIE AUSGABEN (report.js liefert, ui.js reicht durch)
+     *
+     * DIE ARBEITSTEILUNG IST DIE GANZE VORSICHT DIESES BAUSTEINS:
+     * `report.js` baut und liest die Zeichenketten und ist DOM-frei — es
+     * laesst sich deshalb in Node bis in jede Ecke pruefen. Hier steht nur
+     * der letzte Millimeter: Datei ablegen, Datei holen, Bild rastern,
+     * drucken. Gerechnet, geprueft und entschieden wird nichts davon hier.
+     *
+     * DAS GATING WIRD NIE HIER ENTSCHIEDEN. Jede der vier Ausgaben fragt
+     * zuerst das Gating drueben. Ob die Testversion sperrt, weiss allein
+     * report.js — sonst gaebe es zwei Stellen, an denen die Edition zaehlt.
+     * ==================================================================== */
+
+    /* GENAU EINE TUER. `Report.guard` wird in diesem Modul an einer einzigen
+       Stelle gerufen — sonst gaebe es zwei Orte, an denen die Edition
+       zaehlt, und einer davon wuerde eines Tages vergessen. */
+    function gating(aktion) {
+      if (!Report) return { erlaubt: false, code: 'msg_rep_ohne_ergebnis' };
+      return Report.guard(aktion, S.edition);
+    }
+
+    function ausgabeErlaubt(aktion) {
+      var g = gating(aktion);
+      if (!g.erlaubt) { meldung(txt(win, g.code, S.sprache)); return false; }
+      return true;
+    }
+
+    /* Eine Datei ablegen. Fehlt dem Geraet der Weg dorthin (Mini-DOM im
+       Test), wird nichts vorgetaeuscht — die Funktion sagt es. */
+    function dateiAblegen(name, text, typ) {
+      if (!win.Blob || !win.URL || !win.URL.createObjectURL) return false;
+      var a = doc.createElement('a');
+      if (!a || !a.click) return false;
+      var url = win.URL.createObjectURL(new win.Blob([text], { type: typ }));
+      a.setAttribute('href', url);
+      a.setAttribute('download', name);
+      a.click();
+      if (win.URL.revokeObjectURL) win.URL.revokeObjectURL(url);
+      return true;
+    }
+
+    function dateiHolen(aufText) {
+      var inp = doc.createElement('input');
+      if (!inp || !inp.click || !win.FileReader) return false;
+      inp.setAttribute('type', 'file');
+      inp.setAttribute('accept', Report.ENDUNG);
+      inp.addEventListener('change', function () {
+        var f = inp.files && inp.files[0];
+        if (!f) return;
+        var r = new win.FileReader();
+        r.onload = function () { aufText(String(r.result), f.name); };
+        r.readAsText(f);
+      });
+      inp.click();
+      return true;
+    }
+
+    function bezeichnung() {
+      var f = el(doc, 'dtLabel');
+      return (f && f.value) ? String(f.value) : '';
+    }
+
+    function heute() {
+      /* Die Uhr des Geraets — report.js holt sie sich bewusst NICHT selbst,
+         sonst waere es nicht bestimmt und kein Test koennte es festnageln. */
+      return (typeof win.Date === 'function') ? new win.Date() : new Date();
+    }
+
+    /* ------------------------------------------------------- Der Bericht */
+
+    /* DIE AUSGABE GIBT WIEDER, WAS DIE ERGEBNISSEITE ZEIGT. Sie liest die
+       fertigen Karten aus der Anzeige, statt dieselben Zahlen ein zweites
+       Mal zusammenzustellen — zwei Wege zu einer Zahl waeren zwei
+       Gelegenheiten, sie verschieden zu zeigen (Plan 3.4, "eine Quelle je
+       Sache"). Das gilt auch fuer Waermefuehrung und Kostenrechnung: was
+       dort auf dem Bildschirm steht, steht auch im Blatt. */
+    var BERICHT_TEILE = [
+      ['ergKacheln', 'rw_ab_nachweis'],
+      ['thermikKopf', 'sec_thermik'],
+      ['thermikWeg', 'sec_thermik'],
+      ['kostenKopf', 'sec_kosten'],
+      ['kostenWeg', 'sec_kosten'],
+      ['kostenHinweise', 'sec_kosten']
+    ];
+
+    function karteZeilen(host) {
+      var zeilen = [], i, j, kind, k, v, enkel;
+      for (i = 0; i < (host.children || []).length; i++) {
+        kind = host.children[i];
+        k = ''; v = '';
+        for (j = 0; j < (kind.children || []).length; j++) {
+          enkel = kind.children[j];
+          if (enkel.classList && enkel.classList.contains('tile-k')) k = enkel.textContent;
+          else if (!v) v = enkel.textContent;
+        }
+        if (!k) { k = kind.textContent; v = ''; }
+        if (k) zeilen.push({ k: k, v: v });
+      }
+      return zeilen;
+    }
+
+    function berichtKarten() {
+      var karten = [], i, host, zeilen, letzte = null;
+      for (i = 0; i < BERICHT_TEILE.length; i++) {
+        host = el(doc, BERICHT_TEILE[i][0]);
+        if (!host || host.hidden) continue;
+        zeilen = karteZeilen(host);
+        if (!zeilen.length) continue;
+        var titel = txt(win, BERICHT_TEILE[i][1], S.sprache);
+        if (letzte && letzte.titel === titel) {
+          for (var m = 0; m < zeilen.length; m++) letzte.zeilen.push(zeilen[m]);
+        } else {
+          letzte = { titel: titel, zeilen: zeilen };
+          karten.push(letzte);
+        }
+      }
+      return karten;
+    }
+
+    /* DIE BILDER — und der Rueckfallweg (Entscheidung 2026-08-07).
+       Ein SVG in ein PNG zu verwandeln geht nur ueber Canvas, und die gibt
+       es nur im Browser. Fehlt sie oder scheitert sie, wird die Datei
+       TROTZDEM geschrieben und der Grund steht darin. Ein fehlendes Bild
+       kostet eine Zeile, nicht die Datei. */
+    var BILD_QUELLEN = [['grafikSvg', 'rep_bild_nahtbild'], ['symBild', 'rep_bild_symbol']];
+
+    function bilderSammeln(fertig) {
+      var roh = [], i, host;
+      for (i = 0; i < BILD_QUELLEN.length; i++) {
+        host = el(doc, BILD_QUELLEN[i][0]);
+        if (!host || host.hidden || !host.innerHTML) continue;
+        roh.push({ titel: txt(win, BILD_QUELLEN[i][1], S.sprache), svg: host.innerHTML });
+      }
+      if (!roh.length) { fertig([]); return; }
+
+      var kannRastern = (typeof win.Image === 'function') && !!doc.createElement;
+      if (kannRastern) {
+        var probe = doc.createElement('canvas');
+        kannRastern = !!(probe && probe.getContext && probe.getContext('2d'));
+      }
+      var raus = [], offen = roh.length;
+
+      function ab(n, png, mass) {
+        raus[n] = {
+          titel: roh[n].titel,
+          png: png || null,
+          breite_px: mass ? mass.breite : 0,
+          hoehe_px: mass ? mass.hoehe : 0,
+          grund: png ? null : Report.CODES.bild_kein_canvas
+        };
+        offen--;
+        if (offen === 0) fertig(raus);
+      }
+
+      for (i = 0; i < roh.length; i++) {
+        (function (n) {
+          var mass = Report.svgMitMassen(roh[n].svg, 2);
+          if (!kannRastern || !mass) { ab(n, null, mass); return; }
+          var bild = new win.Image();
+          bild.onload = function () {
+            try {
+              var c = doc.createElement('canvas');
+              c.width = mass.breite; c.height = mass.hoehe;
+              var g = c.getContext('2d');
+              g.fillStyle = '#ffffff';
+              g.fillRect(0, 0, mass.breite, mass.hoehe);
+              g.drawImage(bild, 0, 0, mass.breite, mass.hoehe);
+              ab(n, c.toDataURL('image/png'), mass);
+            } catch (ex) { ab(n, null, mass); }
+          };
+          bild.onerror = function () { ab(n, null, mass); };
+          bild.src = 'data:image/svg+xml;charset=utf-8,' + win.encodeURIComponent(mass.svg);
+        }(i));
+      }
+    }
+
+    function berichtBauen(bilder) {
+      return Report.baueBericht({
+        rw: S.letzterWeg,
+        sprache: S.sprache,
+        bezeichnung: bezeichnung(),
+        datum: heute(),
+        version: versionText(),
+        module: versionInfo().module,
+        anforderung: anforderungText(),
+        karten: berichtKarten(),
+        bilder: bilder || []
+      });
+    }
+
+    /* ------------------------------------------------------- 1) Speichern */
+
+    function dateiText() {
+      if (!Report) return null;
+      var vi = versionInfo();
+      return Report.baueDatei({
+        auswahl: zustand(), werte: werte(),
+        bezeichnung: bezeichnung(), sprache: S.sprache,
+        etappe: vi.stand, plan: vi.plan, datum: heute(),
+        nicht_geprueft: nichtGeprueftCodes(),
+        module: vi.module
+      });
+    }
+
+    function nichtGeprueftCodes() {
+      var r = [], q = S.letzterWeg && S.letzterWeg.nicht_geprueft;
+      for (var i = 0; i < (q || []).length; i++) r.push(q[i]);
+      return r;
+    }
+
+    function speichern() {
+      if (!ausgabeErlaubt('speichern')) return null;
+      var d = dateiText();
+      if (!d || !d.ok) {
+        meldung(txt(win, (d && d.fehler[0] && d.fehler[0].code) || 'msg_rep_keine_eingaben', S.sprache));
+        return d;
+      }
+      dateiAblegen(Report.dateiname(bezeichnung(), heute(), Report.ENDUNG),
+                   d.text, 'application/json');
+      meldung(txt(win, 'rep_gespeichert', S.sprache) + ' ' +
+              txt(win, 'msg_rep_nur_eingaben', S.sprache));
+      return d;
+    }
+
+    /* --------------------------------------------------------- 2) Oeffnen */
+
+    /* ERST ALLES LEEREN, DANN LADEN (Plan 3.5, harte Regel). Nie Altwerte
+       in eine Neuberechnung einsickern lassen — und zwar auch dann nicht,
+       wenn die Datei aus einer aelteren Fassung stammt. */
+    function dateiLaden(text) {
+      if (!Report) return null;
+      var g = Report.lieseDatei(text);
+      if (!g.ok) {
+        meldung(txt(win, g.fehler[0].code, S.sprache));
+        return g;
+      }
+      leeren();
+      if (g.sprache && SPRACHEN.indexOf(g.sprache) >= 0) setSprache(g.sprache);
+      formularSetzen(g.eingaben.auswahl, g.eingaben.werte);
+      var f = el(doc, 'dtLabel');
+      if (f) f.value = g.bezeichnung || '';
+      var m = txt(win, 'rep_geoeffnet', S.sprache);
+      if (g.warnungen.length) {
+        /* DER UNTERSCHIED BLEIBT NICHT STUMM (5.1-8): der Stempel sagt,
+           mit welchem Stand die Datei geschrieben wurde. */
+        m += ' ' + txt(win, g.warnungen[0].code, S.sprache) +
+             ' (' + txt(win, 'rep_stempel', S.sprache) + ': ' +
+             (g.stempel.geschrieben_mit || '?') + ')';
+      }
+      meldung(m);
+      return g;
+    }
+
+    function oeffnen() {
+      if (!ausgabeErlaubt('oeffnen')) return false;
+      return dateiHolen(function (text) { dateiLaden(text); });
+    }
+
+    /* --------------------------------------------------------- 3) Drucken */
+
+    /* Gedruckt wird die LEBENDE SEITE mit eigenem Druckbild — es gibt keine
+       zweite Darstellung, die auseinanderlaufen koennte. Vorher wird alles
+       aufgeklappt, was zugeklappt ist: ein Nachweis mit halbem Rechenweg
+       waere kein Nachweis. */
+    function druckAufklappen() {
+      var i;
+      for (i = 0; i < BEREICHE.length; i++) schalte(BEREICHE[i], true);
+      var boxen = alle(doc, '.acc-body');
+      for (i = 0; i < boxen.length; i++) boxen[i].hidden = false;
+      var pfeile = alle(doc, '.acc-head');
+      for (i = 0; i < pfeile.length; i++) {
+        if (pfeile[i].setAttribute) pfeile[i].setAttribute('aria-expanded', 'true');
+      }
+    }
+
+    function drucken() {
+      if (!ausgabeErlaubt('drucken')) return false;
+      if (!S.letzterWeg || !S.letzterWeg.ok) {
+        meldung(txt(win, 'msg_rep_ohne_ergebnis', S.sprache));
+        return false;
+      }
+      druckAufklappen();
+      if (typeof win.print === 'function') { win.print(); return true; }
+      return false;
+    }
+
+    /* ------------------------------------------------------------ 4) Word */
+
+    function wordText(fertig) {
+      fertig = fertig || function () {};
+      if (!Report) { fertig(null); return; }
+      bilderSammeln(function (bilder) {
+        var ber = berichtBauen(bilder);
+        fertig(Report.baueRtf(ber), ber);
+      });
+    }
+
+    function wordExport() {
+      if (!ausgabeErlaubt('word')) return false;
+      if (!S.letzterWeg || !S.letzterWeg.ok) {
+        meldung(txt(win, 'msg_rep_ohne_ergebnis', S.sprache));
+        return false;
+      }
+      wordText(function (r) {
+        if (!r || !r.ok) {
+          meldung(txt(win, 'msg_rep_ohne_ergebnis', S.sprache));
+          return;
+        }
+        dateiAblegen(Report.dateiname(bezeichnung(), heute(), '.rtf'),
+                     r.text, 'application/rtf');
+        var m = txt(win, 'rep_gespeichert', S.sprache);
+        if (r.bilder_aus) m += ' ' + txt(win, 'msg_rep_bild_kein_canvas', S.sprache);
+        meldung(m);
+      });
+      return true;
+    }
 
     var sitzung = {
       VERSION: VERSION, ETAPPE: ETAPPE, PLAN: PLAN,
@@ -2502,7 +2840,19 @@
       version: versionInfo,
       symbol: function () { return S.letztesSymbol || null; },
       anforderung: anforderungText,
-      istSelbstGewaehlt: function (code) { return S.manuell[code] === true; }
+      istSelbstGewaehlt: function (code) { return S.manuell[code] === true; },
+      /* N11 — die Ausgaben. Von aussen bedienbar, damit der DOM-Smoke sie
+         durchklicken kann, ohne einen Dateidialog zu brauchen. */
+      versionText: versionText,
+      speichern: speichern,
+      oeffnen: oeffnen,
+      drucken: drucken,
+      word: wordExport,
+      dateiText: dateiText,
+      dateiLaden: dateiLaden,
+      wordText: wordText,
+      berichtKarten: berichtKarten,
+      ausgabeErlaubt: function (a) { return gating(a).erlaubt; }
     };
     api.sitzung = sitzung;
     return sitzung;

@@ -23,7 +23,7 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.4.0-N10b';
+  var VERSION = '0.5.0-N11';
 
   var KEHL = ['kehl_einseitig', 'kehl_doppel', 'kehl_flanke', 'kehl_stirn', 'kehl_umlaufend'];
   var STUMPF_VOLL = ['stumpf_i', 'stumpf_v', 'stumpf_dv', 'stumpf_dhv'];
@@ -794,6 +794,7 @@
   }
 
   return {
+    NAME: 'optionen',
     VERSION: VERSION,
     GRUPPEN: GRUPPEN,
     ZUSATZBEREICHE: ZUSATZBEREICHE,
