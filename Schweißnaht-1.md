@@ -9,18 +9,19 @@
 > abgenommenen Bausteinen **N1, N2, N2b, N2c, N3, N4**, **N5 vollständig**
 > (N5a, N5b, N5c-1 bis N5c-3, N5d), **N6b**, **N7**, **N8 vollständig**
 > (N8a, N8b-1, N8b-2, N8c), **N9 vollständig** (N9a–N9d) und
-> **N10 vollständig** (N10a–N10c), dazu **N11 (Ausgaben)** gebaut und geliefert —
-> Stand 2026-08-07.
+> **N10 vollständig** (N10a–N10c) und **N11 (Ausgaben)**, dazu **N12 (Edition,
+> Registrierung, Druckbild)** gebaut und geliefert — Stand 2026-08-07.
+> **Der LAUNCH-CHECKPOINT ist damit erreicht.**
 > Sie ist so geschrieben, dass ein **neuer Chat ohne Vorwissen** damit weiterarbeiten kann.
 > **Das WARUM steht in `Schweißnaht-Historie.md`** (Entscheidungslog + Changelog im
 > Volltext) — dort nachschlagen, bevor etwas geändert wird, das falsch aussieht.
-> Einstieg: **„weiter mit N12"** — davor der Reihenfolge in Kickoff-Punkt 5b folgen.
+> Einstieg: **„weiter mit N13"** — davor der Reihenfolge in Kickoff-Punkt 5b folgen.
 > `N6b_Vorlauf-Messwerte.md` ist nach der Abnahme **gelöscht worden** — der Inhalt steht
 > in 4.11 und in der Historie. Im Projektordner liegt **keine Vorlaufdatei** mehr.
 
 ```
-Plan-Version : 2.67 · Stand 2026-08-07
-Codestand    : Plan 2.67 · ui 0.17.2 · N11
+Plan-Version : 2.69 · Stand 2026-08-07
+Codestand    : Plan 2.69 · ui 0.18.0 · N12
                (Die Planversion, gegen die der CODE gebaut ist. Sie steht auch
                in ui.js als PLAN und wird von einer Assertion damit verglichen.
                Sie wandert nur mit, wenn sich Code ändert — reine Plan- oder
@@ -83,8 +84,13 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                **N10c ist geprüft und ABGENOMMEN (2026-08-06)** — beide
                Fehler sind weg. Das **Dateiformat für N11 ist entschieden**
                (5.1-8).
-               **Baustein N11 (Ausgaben) ist von Dieter am Handy geprüft
-               und ABGENOMMEN (2026-08-07)** — alle vier Ausgaben liefen.
+               **Baustein N11 (Ausgaben) ist von Dieter geprüft und
+               vollständig ABGENOMMEN (2026-08-07)** — alle vier Ausgaben
+               liefen; Word öffnet die Datei, und das eingebettete Nahtbild
+               ist am PC sichtbar. **Benannte Einschränkung: die Word-App
+               unter Android zeigt in RTF eingebettete Bilder nicht an** —
+               für ein Dokument mit Bild auf mobilen Geräten ist
+               „Drucken / PDF" der Weg (5.1-9).
                **Zwei Befunde aus der gelieferten Word-Datei sind
                nachgearbeitet** (5.1-9): die Karten der Wärmeführung und
                der Kostenrechnung klebten Beschriftung und Wert zusammen,
@@ -97,19 +103,33 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                Dateinamen. Ergebnis in **5.1-9**, Schnittstelle in **4.12**.
                Damit sind **acht von zehn Bausteinen bis zum Verkaufsstand**
                fertig.
-               → NÄCHSTER SCHRITT: Baustein **N12 (Edition, Registrierung,
-                 Impressum)** — Einstieg „weiter mit N12",
-                 **Umfang vor dem Bau abstimmen**. Danach ist der
-                 **LAUNCH-CHECKPOINT** erreicht. Offen für N12 ist außerdem
-                 die **Einzeldatei-Fassung** als Auslieferungsform (aus der
-                 N10c-Abnahme).
+               **Baustein N12 ist GEBAUT und GELIEFERT (2026-08-07)** —
+               Abnahme steht aus. Er bringt die **Registrierung** (Name +
+               Digistore-Schlüssel, ohne jede Prüfung), die **Lizenzzeile in
+               allen vier Ausgaben**, den **Lang-Druck zum Zurücksetzen** und
+               die Reparatur des **Druckbilds** samt eigenem Druckkopf und
+               Druckfuß. Ergebnis in **5.1-10**, ui-Teil in **4.10f**.
+               Damit sind **neun von zehn Bausteinen bis zum Verkaufsstand**
+               fertig und der **LAUNCH-CHECKPOINT ist erreicht**.
+               → NÄCHSTER SCHRITT: Baustein **N13 (Ermüdung)** — Einstieg
+                 „weiter mit N13", **Umfang vor dem Bau abstimmen**;
+                 Etappen und Festlegungen stehen in 5.2. Die **offene Frage
+                 vor N13a** (woher die Spannungsschwingbreite kommt) ist dort
+                 zu entscheiden.
+                 **Offen, aber bewusst zurückgestellt:** die
+                 **Einzeldatei-Fassung** als Auslieferungsform. Dieter
+                 2026-08-07: solange gebaut wird, müsste sie nach jeder
+                 Änderung neu erzeugt werden — GitHub Pages läuft mit den
+                 Einzelmodulen. Sie wird **nach dem Launch-Checkpoint** in
+                 einem Zug geliefert; im Notfall setzt Dieter sie von Hand
+                 zusammen.
                  Schnittstellen: 4.5 (naht.js), 4.6 (profil.js),
                  4.7 (svglib.js + schaubild.js), 4.8 (solver.js),
                  4.9 (rechenweg.js), 4.10 / 4.10b / 4.10c / 4.10d (ui.js),
                  4.11 (symbol.js), 4.12 (report.js).
                Große Bausteine (N5, N8, N13, N14) werden in ETAPPEN gebaut — Regel in
                Kickoff-Punkt 5c, Etappen in Abschnitt 5.2.
-Basislinie   : 3303 Assertions · DOM-Smokes 988 (voll) + 988 (test) · i18n-Parität 0 Abweichungen
+Basislinie   : 3414 Assertions · DOM-Smokes 1078 (voll) + 1039 (test) · i18n-Parität 0 Abweichungen
                (VERBINDLICH. Basislinie darf nur WACHSEN — nie schrumpfen, nie gelockert werden.)
 Dateistand   : siehe Abschnitt 8.1 — dort steht, was fertig ist und was noch fehlt.
 ⚠️ SYNC       : Am 2026-08-03 lag im Projektordner eine **elf Versionen alte**
@@ -167,7 +187,7 @@ welche Dateien zu überschreiben sind** → Dieter bestätigt am Handy → erst 
 Schritt. Danach Plan-Kopf (Version/Status/Basislinie) + Changelog pflegen.
 
 **5b) WIEDEREINSTIEG IN EINEM NEUEN CHAT — genau diese Reihenfolge:**
-Einstiegssatz von Dieter: **„weiter mit N12"**.
+Einstiegssatz von Dieter: **„weiter mit N13"**.
 1. Diese Datei komplett lesen (`Schweißnaht-1.md`, sie ist die alleinige Grundlage
    für das Bauen).
    **`Schweißnaht-Historie.md` NICHT vorab lesen** — sie enthält Entscheidungslog und
@@ -198,7 +218,7 @@ Einstiegssatz von Dieter: **„weiter mit N12"**.
    schon zweimal Dateien verlorengegangen, beide Male hat diese Prüfung es gefunden.
 11. Arbeitsordner herstellen (Befehl unter Punkt 6 der Kickoff-Liste), dann
    `node test_naht.js`, `node dom_smoke_voll.js`, `node dom_smoke_test.js` laufen lassen
-   und die Basislinie aus dem Plan-Kopf bestätigen (**3303 / 988 / 988 · 0 Fehler**),
+   und die Basislinie aus dem Plan-Kopf bestätigen (**3414 / 1078 / 1039 · 0 Fehler**),
    **bevor** etwas gebaut wird. Weicht etwas ab, erst das klären.
    ⚠️ **Diese drei Läufe sind zugleich die Probe, ob Plandatei und Code zusammenpassen.**
    Steht im Kopfblock eine andere Basislinie als gemessen, ist eine der beiden Seiten alt —
@@ -1481,6 +1501,39 @@ alle zwölf. Ebenso unverändert gültig: `EXC` kommt im Quelltext **null**mal v
 
 ---
 
+### 4.10f Was N12 zu `ui.js` hinzugefügt hat (Druckbild, Registrierung)
+
+**Neue Ids:** `printKopf` `printBezeichnung` `printLizenz` `printVersion` · `printFuss`
+`printHaftung` `printImpressum` · `licModal` `licTitel` `licText` `licNameLbl` `licName`
+`licKeyLbl` `licKey` `licHinweis` `licAktivieren` `licSpaeter`.
+**Neue Klassen:** `print-only` `print-kopf` `print-fuss` `print-mark` `print-tag`
+`print-zeile` · `lic-feld` · `license-line`.
+
+**DER DRUCKKOPF IST KEINE ZIERDE, SONDERN NOTWENDIG.** Marke, Programmstand und
+Haftungshinweis stehen am Bildschirm in der Kopfleiste, im Info-Dialog und in der
+Fußzeile — **alle drei sind im Druck ausgeblendet**, weil sie Bedienelemente tragen. Ohne
+`printKopf`/`printFuss` trüge das Blatt weder Namen noch Stand noch Hinweis. Plan 3.6
+verlangt die Versionszeile in *jeder* Ausgabe, Plan 2.4 den Hinweis.
+
+**Der Druckkopf wird programmatisch gefüllt** und deshalb bei **jedem Sprachwechsel neu**
+(Lehre aus N10c). Die festen Texte darin tragen `data-i18n` und laufen ohnehin mit.
+
+**DIE LIZENZZEILE HAT GENAU EINEN BESITZER: `lizenzZeigen()`.** Bis N12 leerte `edition()`
+sie bei jedem Aufruf — der Platzhalter aus N5a („setzt die Registrierung in N12"). Da
+`uebersetze()` diese Funktion mitruft, war die Zeile nach jedem Sprachwechsel weg. Zwei
+Besitzer für eine Zeile, und der eine wusste nichts vom anderen.
+
+**Der lange Druck (`LANG_DRUCK_MS` = 10 000) setzt NUR die Aktivierung zurück** — nicht die
+Sprache, nicht das Design, nicht die Eingaben. Drei Assertions halten das fest.
+Der lokale Speicher trägt ausschließlich die drei Lizenzschlüssel; fällt er aus, läuft das
+Programm weiter und sagt, dass die Aktivierung nur für diese Sitzung gilt.
+
+**Neue Sitzungsfunktionen:** `lizenz()` · `lizenzName()` · `lizenzDialog(auf)` ·
+`lizenzDialogOffen()` · `aktivieren()` · `spaeter()` · `zuruecksetzen()` ·
+`lizenzNeuLaden()` · `erststartFragen()` · `druckKopf()`.
+
+---
+
 ### 4.11 `symbol.js` — Zeichnungssymbole nach EN ISO 2553 (N6b)
 
 DOM-frei, deterministisch, **kein Text im SVG**. Zeichnet auf `svglib.js`, die unverändert
@@ -1557,6 +1610,18 @@ jeden Schritt in Node prüfbar; ohne ihn wäre die Hälfte von N11 ungetestet.
 | `b64ZuHex(b64)` · `rtfText(s)` · `bildBlock(png, masse)` | die RTF-Bausteine |
 | `baueBericht({rw, sprache, bezeichnung, datum, version, module, anforderung, karten, bilder})` | der Bericht als **Daten** — dieselbe Haltung wie die Schrittliste in 4.9 |
 | `baueRtf(bericht, opt)` | `{ok, text, bilder_ein, bilder_aus, fehler}` |
+| `lizenzName(s)` · `istAktiviert(name, key)` | **N12.** Name glätten (Leerraum zusammenziehen, max. 80). Aktiviert ist, wer BEIDES eingetragen hat — mehr wird nicht verlangt |
+| `lizenzPhrase(name, lang)` · `lizenzZeile(edition, name, lang)` | die eine Zeile für alle vier Ausgaben. `''`, wenn kein Name da ist **oder die Edition nicht `full` ist** |
+| `SPEICHER` · `NAME_MAX` | die drei Schlüssel des lokalen Speichers und die Namenslänge |
+
+**WARUM DIE REGISTRIERUNG HIER LIEGT (N12):** In diesem Modul sitzt bereits alles, was von
+der **Edition** abhängt — das Gating. Die Lizenzzeile ist dieselbe Sorte Sache, und sie muss
+in Kopfzeile, Ausdruck, Word-Dokument und `.dts` **wortgleich** stehen. Vier Stellen, die
+denselben Satz bauen, wären vier Gelegenheiten, ihn verschieden zu bauen (3.4).
+**ES WIRD NICHTS GEPRÜFT** (Plan 1, „keine Formatprüfung"): der Schlüssel wird verwahrt,
+nicht untersucht. Der Zweck des Namens ist die **Hemmschwelle zur Weitergabe**, kein
+Kopierschutz — wer hier eine Prüfung einbaut, verspricht eine Sicherheit, die es nicht
+gibt, und sperrt den aus, dessen Schlüssel anders aussieht als erwartet.
 
 **Das Datum kommt IMMER von außen herein.** Das Modul holt sich die Uhr nicht selbst —
 sonst wäre es nicht bestimmt und kein Test könnte es festnageln. Eine Assertion prüft,
@@ -1605,9 +1670,9 @@ nicht die Datei.**
 | **N9** ✅ | **Vorwärmung & t8/5 — vollständig ABGENOMMEN 2026-08-05** | `thermik.js` + Panel + Rechenweg + Assistenten-Schritte. Umfang festgelegt 2026-08-05, Ergebnis in 5.1-6. Geteilt in **N9a** (Kennungsabsicherung + Rechenkern, DOM-frei) und **N9b** (Panel, Rechenweg, Assistent, Endkrater-Ankreuzfeld). |
 | **N10** ✅ | **Kosten/Zeit/Draht — vollständig ABGENOMMEN 2026-08-05** | `kosten.js` + Panel + Rechenweg + Assistenten-Schritte. |
 | **N11** ✅ | **Ausgaben** *(ABGENOMMEN 2026-08-07 — Ergebnis in 5.1-9)* | `report.js`: `.dts` speichern/öffnen (**erst leeren, dann laden**, **Versionsstempel nach 5.1-8**, **nur Eingaben**, Lückenliste als Dokumentation), Druck/PDF, Word (.rtf), `guard()`-Gating. Aktionsleiste **oben**, Dateiname trägt Bezeichnung + Datum. **Jede Ausgabe trägt die Versionszeile** (3.6) — **dabei die Modulnamen an die Dateinamen angleichen UND die Modulkennungen mitwachsen lassen**, beide Merkposten in 3.6. |
-| **N12** ⬅ | **Edition/Registrierung/Impressum** *(nächster Bau)* | Testbalken, Aktivierungsdialog beim Erststart (Name + Schlüssel, **keine Formatprüfung**), „Vollversion · lizenziert für <Name>", **10-s-Long-Press** = Reset, Info-ⓘ mit Impressum. |
+| **N12** ✅ | **Edition/Registrierung/Impressum** *(gebaut und geliefert 2026-08-07, Abnahme offen — Ergebnis in 5.1-10)* | Testbalken, Aktivierungsdialog beim Erststart (Name + Schlüssel, **keine Formatprüfung**), „Vollversion · lizenziert für <Name>", **10-s-Long-Press** = Reset, Info-ⓘ mit Impressum. |
 | **★** | **LAUNCH-CHECKPOINT** | **Ab hier verkaufsfähig.** Dieter entscheidet: weiterbauen oder veröffentlichen. |
-| **N13** | **Ermüdung — Rechenkern** | `ermuedung.js`: Wöhlerlinie m=3/5, γ_Mf, Miner, Kollektive + Rechenweg. **Hier Dieter nach seinen Praxis-Kerbfällen fragen.** |
+| **N13** ⬅ | **Ermüdung — Rechenkern** *(nächster Bau)* | `ermuedung.js`: Wöhlerlinie m=3/5, γ_Mf, Miner, Kollektive + Rechenweg. **Hier Dieter nach seinen Praxis-Kerbfällen fragen.** |
 | **N14** | **Kerbfallkatalog** | `kerbfall.js` + SVG-Skizzen + Auswahl-UI mit Filter. Struktur vollständig, Füllung gestaffelt (Start 25–35 Details, je 2 Quellen), **ehrliche Lücken sichtbar**. Mehrere Etappen. |
 | **N15** | **Verzug & Schrumpfung** | `verzug.js` + Panel, klar als **Abschätzung** gekennzeichnet. |
 | **N16** | **Feinschliff + Build** | Presets ausbauen, Wissenstexte, Code-Audit, Bündelung + Obfuskierung (zwei Bündel, Unterschied nur `DT_EDITION`). **→ V1-Launch.** |
@@ -2773,6 +2838,24 @@ ein altes.**
 > Gefunden wurde er erst, als die gelieferte Datei selbst **vermessen** wurde.
 > Gegenprobe bestanden: ohne den Umbruch fallen drei Assertions.
 >
+> **ABSCHLUSS: DAS BILD IST DRIN — DIE ANDROID-APP ZEIGT ES NUR NICHT.**
+> Nach dem Umbruch öffnet Word die Datei. Dieter sah das Nahtbild trotzdem
+> nicht. Statt zu raten wurde das PNG **aus der gelieferten `.rtf`
+> herausgelöst und angesehen**: es ist genau das Nahtbild des Winkelprofils,
+> 640×480, gültig bis zum IEND. Die Datei hat 452 Zeilen, die längste hat
+> 201 Zeichen, keine geht über 255. **Ein Programmierkollege hat bestätigt,
+> dass das Bild am PC erscheint.**
+>
+> **BENANNTE EINSCHRÄNKUNG (keine Lücke der Rechnung):** Die **Word-App unter
+> Android** zeigt in RTF eingebettete Bilder nicht an — am Handy und am
+> Tablet gleichermaßen. Der Text ist dort vollständig, nur das Bild fehlt in
+> der Anzeige. **Wer ein Dokument MIT Bild auf einem mobilen Gerät braucht,
+> nimmt „Drucken / PDF"** — dieser Weg trägt das Bild überall, weil er die
+> lebende Seite druckt.
+> **Am Bildblock wird deshalb nichts geändert.** Er ist normgerecht, das PNG
+> ist gültig, Word lädt die Datei — eine Änderung ohne Befund würde nur das
+> kaputtmachen, was nachweislich funktioniert.
+>
 > **Basislinie 3274 → 3303 Assertions · Smokes 982/982 → 988/988.**
 
 
@@ -2857,6 +2940,86 @@ dass keine Beschriftung ihren eigenen Wert enthält.
 
 **Offen für N12:** die **Einzeldatei-Fassung** als Auslieferungsform (aus der
 N10c-Abnahme), Registrierung und Lizenzzeile.
+
+---
+
+#### 5.1-10 · N12 — **GEBAUT UND GELIEFERT 2026-08-07, Abnahme offen**
+
+**Der abgestimmte Umfang** *(Dieter, 2026-08-07)*: **alles zusammen in N12** statt einer
+eigenen Nacharbeit · Farbverlauf der Marke **wie im Schwesterprogramm** (Türkis → Messing)
+· Word-Dokument **wie zuletzt, nur ergänzt um Nutzernamen und Haftungshinweis** ·
+**Einzeldatei-Fassung zurückgestellt** bis nach dem Launch-Checkpoint.
+
+**VIER BEFUNDE AUS DEM GEDRUCKTEN PDF — und drei davon waren meine.**
+Dieter meldete: leere erste Seite, eine Seite schiebt sich über die nächste, ein Wort steht
+zur Hälfte auf zwei Seiten. Statt zu raten wurde das PDF **vermessen**: 25 Seiten, Seite 1
+mit **0 Byte** Inhalt, Seite 23 endete mit `Summe 200€` und Seite 24 begann mit
+`Summe 2,00 €` — dieselbe Zeile zweimal, einmal oben abgeschnitten.
+
+1. **`overflow:hidden` auf `.card` und `.acc`.** Am Bildschirm hält es die runden Ecken
+   sauber; im Druck **schneidet es jede Zeile ab, die über einen Seitenumbruch läuft**.
+   Das war die halbierte Zeile und die scheinbare Überlappung.
+2. **`break-inside:avoid` auf `.card` und `.acc`** — beide sind viel höher als eine Seite.
+   Der Browser kann die Regel nicht erfüllen und schiebt die erste Karte auf Seite 2.
+   Das war die leere Seite 1. Zusammengehalten wird jetzt an den **kleinen** Einheiten.
+3. **ES GAB ZWEI `@media print`-BLÖCKE** — einer aus N5a, einer aus N11 danebengeschrieben,
+   ohne den ersten zu bemerken. Der erste blendete `.app-header` aus. Genau die Doppelquelle,
+   die 3.4 verbietet. **Jetzt gibt es einen, und eine Assertion zählt das nach.**
+4. **Marke, Programmstand und Haftungshinweis fehlten im PDF vollständig.** Alle drei stehen
+   am Bildschirm an Stellen, die im Druck ausgeblendet sind. Neu sind deshalb **Druckkopf und
+   Druckfuß** (4.10f) — die einzige Stelle, an der sie aufs Blatt kommen.
+
+**DIE REGISTRIERUNG — Hemmschwelle, nicht Schloss.** Name + Digistore-Schlüssel,
+**nichts wird geprüft** (Plan 1). Ein einzelnes Zeichen genügt als Schlüssel; verlangt wird
+nur, dass beides dasteht. **„Später" ist erlaubt** — ein Dialog, den man nicht schließen
+kann, sperrt auch den aus, der gerade seinen Schlüssel sucht. Wer später drückt, wird nicht
+wieder gefragt und holt es über den langen Druck nach; das Programm läuft vollständig
+weiter, die Ausgaben tragen dann nur keinen Namen.
+
+**Die Lizenzzeile hat eine Quelle und vier Orte:** Kopfzeile, Druckkopf, Word-Blatt und
+`.dts`. In der Datei steht sie **nicht bei den Eingaben** — sie gehört dem, der die Datei
+geschrieben hat, nicht dem, der sie öffnet. **In der Testversion gibt es sie nie**, auch
+nicht mit von Hand eingetragenem Namen: sonst könnte man sich die Vollversion
+hineinschreiben. Dieselbe sichere Seite wie beim Gating.
+
+**Der lange Druck setzt NUR die Aktivierung zurück** — nicht Sprache, nicht Design, nicht
+Eingaben. Ein Reset, der mehr wegnimmt als angekündigt, ist eine Falle.
+
+**EIN FEHLER IM BESTAND KAM DABEI HERAUS:** `edition()` leerte die Lizenzzeile bei jedem
+Aufruf — der Platzhalter aus N5a. Da `uebersetze()` sie mitruft, war die Zeile nach jedem
+Sprachwechsel weg. **Zwei Besitzer für eine Zeile.** Begründung in 4.10f.
+
+**SECHS GEGENPROBEN, alle bestanden:** Überlauf nicht zurückgenommen → 7 rot · große
+Behälter dürfen nicht umbrechen → 2 · Druckkopf wandert beim Sprachwechsel nicht mit → 3 ·
+Lizenzzeile in der Testversion → 6 · Aktivierung ohne Schlüssel → 5 · Reset leert das
+Formular mit → 3.
+
+**Basislinie 3303 → 3414 Assertions · Smokes 988/988 → 1078/1039 · i18n-Parität 0.**
+Neue Sektionen **S50** (Druckbild) und **S51** (Registrierung).
+⚠️ **Die beiden Smokes sind seit N12 verschieden lang** — den Aktivierungsdialog gibt es
+nur in der Vollversion. Beide Zahlen sind Basislinie und dürfen nur wachsen.
+
+**WAS BEWUSST NICHT GEBAUT WURDE:**
+- **Die Eingabewerte im Word-Dokument** *(Dieter, 2026-08-07: „so wie es zuletzt war")*.
+  Angeboten war ein eigener Abschnitt mit allen Formularwerten. Benannt sei, was das heißt:
+  die **maßgebenden** Zahlen stehen ohnehin im Rechenweg (f_u, f_y, Schnittgrößen, a-Maß,
+  Nahtlänge); es fehlen nur die Parameter der Zusatzrechnungen (U, I, v, Preise), deren
+  **Ergebnisse** im Blatt stehen.
+- **Die Einzeldatei-Fassung** — zurückgestellt bis nach dem Launch-Checkpoint.
+- **Sprache und Design im lokalen Speicher.** 5.1-8 erlaubt beides; N12 legt dort nur die
+  drei Lizenzschlüssel ab. Bleibt offen, ist keine Lücke.
+
+**Erwarteter Beleg am Handy:**
+- Die Marke oben links trägt einen **Farbverlauf von Türkis nach Messing**.
+- **Vollversion, Erststart:** der Aktivierungsdialog erscheint. Nur den Namen eintragen →
+  ehrliche Meldung, Dialog bleibt offen. Beides eintragen → Dialog schließt, im Kopf steht
+  **„Vollversion · lizenziert für …"**. Sprache umschalten → die Zeile wandert mit.
+- **Drucken/PDF:** keine leere erste Seite mehr, keine halbierten Zeilen, oben Marke und
+  Programmstand, unten Haftungshinweis und Impressum.
+- **Word:** derselbe Kopf mit Lizenzzeile, am Schluss der Haftungshinweis.
+- **Zehn Sekunden auf die Marke:** die Aktivierung ist weg, der Dialog fragt erneut — und
+  Sprache, Design und die eingetragenen Werte stehen unverändert da.
+- **Testversion:** kein Aktivierungsdialog, keine Lizenzzeile, Testbalken wie gehabt.
 
 ---
 
@@ -3337,6 +3500,23 @@ was ohnehin da ist.
 neue Kennungen. Ihre Rechenwerte sind unverändert; der Wächter aus S43 hat
 jede einzelne eingefordert, und das ist der Beleg dafür.
 
+**Nachtrag N12 (2026-08-07) — 8 Dateien:** `style.css` (**ein** Druckbild statt
+zwei, Überlauf zurückgenommen, Umbruchregeln, Druckkopf/Druckfuß, Farbverlauf
+der Marke, `.lic-feld`) · **beide HTMLs** (Druckkopf, Druckfuß,
+Aktivierungsdialog) · `ui.js` (Druckkopf füllen, Registrierung, Lang-Druck,
+lokaler Speicher, `edition()` gibt die Lizenzzeile ab; Kennungen 0.18.0 /
+N12 / 2.69) · `report.js` (Lizenzfunktionen, Lizenzzeile in Bericht und
+Datei, Haftungshinweis und Impressum ins Word; 0.2.0-N12) ·
+`i18n_kern.js` (14 neue Texte dreisprachig; 0.9.0-N12) ·
+`test_naht.js` (**S50**, **S51**, ein Handwert in S49 durch eine Formprüfung
+ersetzt) · `dom_smoke_voll.js` (Druckkopf und Registrierung durchgeklickt,
+kleiner `localStorage`-Shim).
+**Nicht angefasst:** `solver.js`, `rechenweg.js`, `naht.js`, `profil.js`,
+`daten.js`, `optionen.js`, `validate.js`, `svglib.js`, `schaubild.js`,
+`symbol.js`, `skizze.js`, `thermik.js`, `kosten.js`, `assistent.js`,
+`i18n_hilfe.js`, `i18n_kerbfall.js`, `dom_smoke_test.js`.
+**Der gesamte Rechenkern blieb unberührt** — N12 fasst keine Rechengröße an.
+
 **Nachtrag N11-Nacharbeit 2 (2026-08-07) — 3 Dateien:** `report.js`
 (Hex-Daten mit 128 Zeichen je Zeile, weicher Textumbruch, ungerade Hex-Länge
 gibt kein Bild; Kennung 0.1.2-N11) · `ui.js` (**nur** die Kennungen:
@@ -3535,7 +3715,10 @@ Formsache, und der Basislinien-Abgleich aus Kickoff-Punkt 11 ebenso wenig.
 **Erste Handlung im neuen Chat:** Vollständigkeit gegen die Tabelle oben prüfen
 (**19 Module**, `style.css`, beide HTMLs, **alle drei** DEV-ONLY-Dateien, dazu Plandatei und
 `Schweißnaht-Historie.md`), Arbeitsordner herstellen, die drei Testläufe starten.
-Melden müssen sie **3303 / 988 / 988 · 0 Fehler**. Weicht etwas ab, erst das klären —
+Melden müssen sie **3414 / 1078 / 1039 · 0 Fehler**.
+⚠️ **Die beiden Smokes sind seit N12 verschieden lang** — der Aktivierungsdialog gibt es
+nur in der Vollversion, also prüft der Testlauf dort anderes und weniger. Das ist kein
+Fehler; beide Zahlen sind Basislinie und dürfen nur wachsen. Weicht etwas ab, erst das klären —
 nicht bauen.
 
 **Was N6b überschreiben wird** (zur Vorwarnung, nicht als Auftrag): neu `symbol.js`,
@@ -3584,8 +3767,10 @@ will. Also: Vorschriften und Wegweiser bleiben hier, die Erzählung wandert.
 - **Basislinie darf nur WACHSEN** — nie schrumpfen, nie gelockert werden. Fällt eine Zahl,
   ist das ein harter Halt (Kopfblock, 7).
 - **Die HTML startet immer im dunklen Design** (3.1) — bindende Vorgabe aus N5a.
-- **`ui.js` ruft genau drei Module auf** (`DTNSolver`, `DTNRechenweg`, `DTNSchaubild`) und
-  rechnet nichts selbst; verboten bleiben `DTNNaht`, `DTNProfil`, `DTNData` (4.10c).
+- **`ui.js` ruft genau VIER Module auf** (`DTNSolver`, `DTNRechenweg`, `DTNSchaubild`
+  und seit N11 `DTNReport`) und rechnet nichts selbst; verboten bleiben `DTNNaht`,
+  `DTNProfil`, `DTNData` (4.10c). *(Bis v2.69 stand hier noch „drei" — 4.10c war seit N11
+  auf vier, diese Zeile nicht. Gefunden beim Durchlesen vor N12.)*
   Die Assertion liest den Quelltext als **Zeichenkette samt Kommentaren** — die verbotenen
   Namen und `Math.` dürfen dort auch im Fließtext nicht vorkommen.
 - **Die zwei Häkchenarten nie vermischen** (4.9): Rechenprobe = das Programm rechnet
@@ -3791,6 +3976,38 @@ will. Also: Vorschriften und Wegweiser bleiben hier, die Erzählung wandert.
   wurde er erst, als Zeilenzahl und Zeilenlängen der gelieferten Datei
   gezählt wurden. **Wo ein Format Regeln hat, wird gegen die Regeln gemessen**
   — nicht gegen den Eindruck.
+- **Bevor an einer Ausgabe gebaut wird, wird das ERZEUGNIS auseinandergenommen**
+  (2026-08-07, N11): Das Nahtbild blieb am Handy unsichtbar. Der nächste Griff wäre
+  gewesen, den Bildblock umzubauen oder das Bild ganz wegzulassen. Stattdessen wurde
+  das PNG aus der gelieferten Datei **herausgelöst und angesehen** — es war
+  einwandfrei. Der Fehler lag im Betrachter. **Wer ohne Befund an einer Ausgabe
+  ändert, macht kaputt, was nachweislich funktioniert.**
+- **`overflow:hidden` gehört im Druck zurückgenommen** (2026-08-07, N12): Am Bildschirm
+  hält es runde Ecken sauber; im Druck **schneidet es jede Zeile ab, die über einen
+  Seitenumbruch läuft** — die obere Hälfte bleibt zerschnitten stehen, die ganze Zeile
+  erscheint noch einmal auf der Folgeseite. Sichtbar wurde es erst am gedruckten PDF.
+- **`break-inside:avoid` nur auf KLEINE Einheiten** (2026-08-07, N12): Steht es auf einem
+  Behälter, der höher ist als eine Seite, kann der Browser es nicht erfüllen und schiebt
+  ihn auf die nächste — die erste Seite bleibt leer. Zusammengehalten wird an Kacheln,
+  Feldzeilen und Rechenwegzeilen, nie an Karten.
+- **Was im Druck ausgeblendet wird, muss anderswo wieder auftauchen** (2026-08-07, N12):
+  Marke, Programmstand und Haftungshinweis stehen am Bildschirm in Kopfleiste, Info-Dialog
+  und Fußzeile — alle drei trägt das Papier nicht. Ohne eigenen Druckkopf trug das Blatt
+  **nichts davon**, obwohl 3.6 und 2.4 beides verlangen.
+- **Ein zweiter `@media print`-Block ist eine stille Doppelquelle** (2026-08-07, N12):
+  Zwei Druckbilder, und das zweite wusste nichts vom ersten. Eine Assertion zählt jetzt
+  nach, dass es genau eines gibt.
+- **Ein Platzhalter für einen künftigen Baustein muss beim Bau ABGELÖST werden**
+  (2026-08-07, N12): `edition()` leerte die Lizenzzeile bei jedem Aufruf, mit dem Kommentar
+  „setzt die Registrierung in N12". N12 setzte sie — und `edition()` löschte sie weiter.
+  **Wer einen Platzhalter setzt, benennt beim Ablösen auch den alten Besitzer.**
+- **Der Name ist eine Hemmschwelle, kein Schloss** (2026-08-07, N12, Plan 1): Am Schlüssel
+  wird **nichts** geprüft, und **„Später" ist erlaubt**. Ein Dialog, den man nicht
+  schließen kann, sperrt auch den aus, der gerade seinen Schlüssel sucht. Wer hier eine
+  Prüfung einbaut, verspricht eine Sicherheit, die es nicht gibt.
+- **Ein Reset nimmt nur weg, was er ankündigt** (2026-08-07, N12): Der lange Druck löscht
+  die Aktivierung — nicht Sprache, nicht Design, nicht die Eingaben. Drei Assertions
+  halten das fest.
 - **Token-Pause: 4 Stunden.**
 
 ---
@@ -3832,6 +4049,7 @@ Die Blöcke stehen dort in dieser Reihenfolge; jeder nennt Datum und Baustein:
 - Aus der Rückmeldung 2026-08-04 (N7 abgenommen)
 - Aus S39 (2026-08-04) — Verifikation gegen publizierte Rechenbeispiele
 - Aus N11 (2026-08-07) — Ausgaben, Dateiformat, Gating, Namensabgleich
+- Aus N12 (2026-08-07) — Druckbild, Registrierung, Lizenzzeile, Lang-Druck
 - Aus der Rückmeldung 2026-07-27 (N5a abgenommen)
 - Aus N5a (2026-07-26)
 - Aus der Rückmeldung 2026-07-26 (N2c abgenommen)
@@ -3848,51 +4066,6 @@ Changelog — **die vollständige Fassung ab v1.0 steht in `Schweißnaht-Histori
 
 Hier stehen nur die letzten drei Einträge. Wer wissen will, wie eine Entscheidung
 zustande kam, findet die Kette dort — lückenlos ab der Erstfassung vom 2026-07-23.
-
-**v2.65 (2026-08-07):** **Baustein N11 (Ausgaben) gebaut und geliefert — Abnahme
-offen.** Neu ist **`report.js`** (19 Module): `.dts` speichern und öffnen mit
-Versionsstempel nach 5.1-8, Drucken/PDF über ein eigenes Druckbild auf der lebenden
-Seite, Word (.rtf) mit Bildern, und das **Gating gebündelt hinter genau einer Tür** —
-`ui.js` fragt es an einer einzigen Stelle, eine Assertion zählt das nach.
-**Der tragende Schnitt: `report.js` ist DOM-frei** und baut nur Zeichenketten; Blob,
-Dateiwahl, Canvas und Drucken bleiben in `ui.js`. Deshalb sind **196 der 221 neuen
-Assertions** auf die Ausgaben gefallen, statt ungeprüft zu bleiben. Der einzige Schritt,
-den kein Node-Test erreicht — die Rasterung des SVG für Word —, bekommt einen
-**sichtbaren Rückfallweg**: fehlt das Bild, entsteht die Datei trotzdem und nennt den
-Grund. **Der Namensabgleich aus 3.6 ist erledigt** (`data → daten`, `options → optionen`,
-`kern/hilfe/kerbfall → i18n_*`); angefasst wurden nur die fünf Module, die abwichen.
-**Drei Gegenproben, und die dritte hat etwas gefunden:** ohne `leeren()` vor dem Laden
-blieb alles grün, obwohl 3.5 es hart verlangt — die Prüfung sah nur nach, ob die Werte
-der Datei ankommen, nicht ob die des vorigen Falls verschwinden. Daraus die neue Regel
-in 9.2. Ergebnis in **5.1-9**, Schnittstelle in **4.12**, fünf neue Festlegungen in 9.2.
-**Codestand 2.61 → 2.65 · ui 0.16.0 → 0.17.0 · Etappe N11.**
-**Basislinie 3053 → 3274 Assertions · Smokes 915/916 → 982/982 · i18n-Parität 0.**
-**Nächster Schritt: N11 am Handy prüfen, dann Baustein N12 (Edition, Registrierung,
-Impressum) — danach ist der Launch-Checkpoint erreicht. Einstieg: „weiter mit N12".**
-
-
-
-**v2.66 (2026-08-07):** **Baustein N11 ABGENOMMEN — und die fertige Datei hat zwei
-Fehler gezeigt, die alle drei Testläufe nicht sahen.** Alle vier Ausgaben liefen am
-Handy. **Die Canvas-Rasterung trägt:** die gelieferte `.rtf` enthielt das Nahtbild als
-`\pict\pngblip` mit 640×480 px — der Rückfallweg musste gar nicht greifen; am Handy war
-es nur nicht sichtbar, weil der dortige Betrachter eingebettete Bilder nicht anzeigt.
-**Zwei echte Fehler wurden nachgearbeitet:** Die Karten der Wärmeführung und der
-Kostenrechnung klebten Beschriftung und Wert zusammen („Mindest-Vorwärmtemperatur120 °C"),
-weil sie ihre Zeilen aus zwei schlichten `<span>` bauen statt aus `.tile-k`/`.tile-wert` —
-gelesen wird jetzt die **Struktur** statt der Klasse. Und **„Was NICHT geprüft wird" stand
-zweimal im Blatt**, weil der Rechenweg die Liste schon als Abschnitt führt. Ein dritter
-Befund ist **kein** Fehler und steht jetzt als Assertion fest: die springenden
-Schrittnummern sind Bestandsverhalten aus 9.1. **Die Lehre, in 9.2 aufgenommen:** eine
-Ausgabe ist erst geprüft, wenn jemand das **Erzeugnis** geöffnet hat — geprüft war, dass
-die Karten ankommen, nicht **wie** sie ankommen.
-**Codestand 2.65 → 2.66 · ui 0.17.0 → 0.17.1 · report 0.1.0 → 0.1.1-N11.**
-**Basislinie 3274 → 3283 Assertions · Smokes 982/982 → 988/988 · i18n-Parität 0.**
-**Damit sind acht von zehn Bausteinen bis zum Verkaufsstand fertig.**
-**Nächster Schritt: Baustein N12 (Edition, Registrierung, Impressum) — danach der
-Launch-Checkpoint. Einstieg: „weiter mit N12".**
-
-
 
 **v2.67 (2026-08-07):** **Word öffnete die Word-Datei nicht — und der Fehler war von
 der ersten Lieferung an da.** Die `.rtf` ließ sich am Handy lesen, aber Word blieb beim
@@ -3912,6 +4085,55 @@ Umbruch fallen drei Assertions.
 **Basislinie 3283 → 3303 Assertions · Smokes unverändert 988/988 · i18n-Parität 0.**
 **Nächster Schritt: die Word-Datei in Word gegenprüfen, dann Baustein N12
 (Edition, Registrierung, Impressum). Einstieg: „weiter mit N12".**
+
+
+
+**v2.68 (2026-08-07):** **N11 endgültig abgeschlossen — keine Codeänderung.** Word
+öffnet die Datei nach dem Zeilenumbruch. Das Nahtbild blieb am Handy trotzdem
+unsichtbar; statt zu raten wurde das **PNG aus der gelieferten `.rtf` herausgelöst und
+angesehen** — es ist genau das Nahtbild des Winkelprofils, 640×480, gültig bis zum IEND.
+Die Datei hat 452 Zeilen, die längste 201 Zeichen, keine über 255. Ein
+Programmierkollege hat bestätigt, dass das Bild **am PC erscheint**.
+**Benannte Einschränkung, keine Lücke der Rechnung:** Die **Word-App unter Android**
+zeigt in RTF eingebettete Bilder nicht an — Handy und Tablet gleichermaßen. Der Text ist
+dort vollständig. **Wer auf einem mobilen Gerät ein Dokument mit Bild braucht, nimmt
+„Drucken / PDF"**; dieser Weg trägt das Bild überall. **Am Bildblock wird nichts
+geändert** — eine Änderung ohne Befund würde kaputtmachen, was nachweislich funktioniert.
+Neue Festlegung in 9.2: **Bevor an einer Ausgabe gebaut wird, wird das Erzeugnis
+auseinandergenommen.** **Damit ist Baustein N11 vollständig abgeschlossen; acht von zehn
+Bausteinen bis zum Verkaufsstand sind fertig.**
+**Code unverändert, `Codestand` bleibt 2.67.**
+**Basislinie unverändert: 3303 Assertions · Smokes 988 / 988 · i18n-Parität 0.**
+**Nächster Schritt: Baustein N12 (Edition, Registrierung, Impressum) — danach der
+Launch-Checkpoint. Einstieg: „weiter mit N12".**
+
+
+
+**v2.69 (2026-08-07):** **Baustein N12 gebaut und geliefert — und das gedruckte PDF hat
+vier Befunde gezeigt, von denen drei meine waren.** Dieter meldete eine leere erste Seite,
+eine Seite über der nächsten und ein halbiertes Wort. Das PDF wurde **vermessen**: Seite 1
+mit 0 Byte, Seite 23 endete mit `Summe 200€`, Seite 24 begann mit `Summe 2,00 €`.
+Ursachen: **`overflow:hidden`** auf `.card`/`.acc` schneidet im Druck jede Zeile ab, die
+über einen Seitenumbruch läuft; **`break-inside:avoid`** auf Behältern, die höher sind als
+eine Seite, erzwingt die leere erste Seite; und es standen **zwei `@media print`-Blöcke**
+in der Datei, einer aus N5a und einer aus N11 danebengeschrieben — genau die Doppelquelle,
+die 3.4 verbietet. Der vierte Befund fiel erst beim Nachmessen auf: **Marke, Programmstand
+und Haftungshinweis kamen im ganzen PDF nicht vor**, weil alle drei am Bildschirm an
+Stellen stehen, die im Druck ausgeblendet sind. Neu sind deshalb **Druckkopf und Druckfuß**.
+**Dazu die Registrierung:** Name + Digistore-Schlüssel ohne jede Prüfung, „Später" erlaubt,
+die **Lizenzzeile in allen vier Ausgaben** aus **einer** Quelle, und der **Lang-Druck von
+zehn Sekunden**, der **nur** die Aktivierung zurücksetzt. In der Testversion gibt es die
+Zeile nie — auch nicht mit von Hand eingetragenem Namen. **Ein Fehler im Bestand kam mit
+heraus:** `edition()` leerte die Lizenzzeile bei jedem Aufruf, der Platzhalter aus N5a;
+zwei Besitzer für eine Zeile. Die Marke trägt jetzt den **Farbverlauf Türkis → Messing**
+wie im Schwesterprogramm. Sechs Gegenproben bestanden. Sieben neue Festlegungen in 9.2,
+Ergebnis in **5.1-10**, ui-Teil in **4.10f**.
+**Codestand 2.67 → 2.69 · ui 0.17.2 → 0.18.0 · report 0.1.2 → 0.2.0-N12 ·
+i18n_kern 0.8.0 → 0.9.0-N12.**
+**Basislinie 3303 → 3414 Assertions · Smokes 988/988 → 1078/1039 · i18n-Parität 0.**
+**Damit sind neun von zehn Bausteinen bis zum Verkaufsstand fertig und der
+LAUNCH-CHECKPOINT ist erreicht.**
+**Nächster Schritt: Baustein N13 (Ermüdung). Einstieg: „weiter mit N13".**
 
 
 ═══════════════════════════════════════════════════════════════════════════

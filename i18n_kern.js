@@ -12,7 +12,7 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.8.0-N11';
+  var VERSION = '0.9.0-N12';
   var SPRACHEN = ['de', 'en', 'pt'];
 
   var D = {
@@ -1161,6 +1161,22 @@
     rw_p_a_gewaehlt:        { de: 'Probe: das gewählte Maß liegt auf der Stufenreihe, über a_erf und weniger als eine Stufe darüber.', en: 'Cross-check: the selected size lies on the step series, above a_req and less than one step above it.', pt: 'Verificação: a medida escolhida está na série de degraus, acima de a_nec e menos de um degrau acima.' },
     rw_p_grenze:            { de: 'Probe: der Grenzwert wird gegen die eingesetzten Zahlen gehalten.', en: 'Cross-check: the limit value is checked against the figures used.', pt: 'Verificação: o valor-limite é confrontado com os números utilizados.' },
     rw_p_gesamt:            { de: 'Alle Rechenproben zusammengezählt. Ein einziges fehlendes Häkchen bedeutet einen Rechenfehler und nicht etwa einen nicht erfüllten Nachweis – beides wird getrennt ausgewiesen.', en: 'All cross-checks added up. A single missing tick means a calculation error, not an unsatisfied verification – the two are reported separately.', pt: 'Todas as verificações cruzadas somadas. Um único visto em falta significa um erro de cálculo e não uma verificação não cumprida – ambos são indicados em separado.' },
+
+    /* --- N12 Registrierung und Lizenz ------------------------------------ */
+    lic_titel:      { de: 'Aktivierung', en: 'Activation', pt: 'Ativação' },
+    lic_text:       { de: 'Bitte Namen und Lizenzschlüssel eintragen. Der Name erscheint danach in allen Ausgaben.', en: 'Please enter your name and licence key. The name then appears in every output.', pt: 'Introduza o seu nome e a chave de licença. O nome passa a constar em todas as saídas.' },
+    lic_name:       { de: 'Name', en: 'Name', pt: 'Nome' },
+    lic_name_ph:    { de: 'Ihr Name oder Firmenname', en: 'Your name or company name', pt: 'O seu nome ou o da empresa' },
+    lic_key:        { de: 'Lizenzschlüssel', en: 'Licence key', pt: 'Chave de licença' },
+    lic_key_ph:     { de: 'Schlüssel von Digistore24', en: 'Key from Digistore24', pt: 'Chave da Digistore24' },
+    lic_aktivieren: { de: 'Aktivieren', en: 'Activate', pt: 'Ativar' },
+    lic_spaeter:    { de: 'Später', en: 'Later', pt: 'Mais tarde' },
+    lic_fuer:       { de: 'lizenziert für', en: 'licensed to', pt: 'licenciado para' },
+    lic_ok:         { de: 'Aktiviert. Der Name erscheint ab jetzt in allen Ausgaben.', en: 'Activated. The name now appears in every output.', pt: 'Ativado. O nome passa a constar em todas as saídas.' },
+    lic_fehlt:      { de: 'Bitte Namen UND Lizenzschlüssel eintragen — geprüft wird nichts davon, aber beide gehören in die Ausgaben.', en: 'Please enter both name AND licence key — neither is verified, but both belong in the outputs.', pt: 'Introduza o nome E a chave — nenhum é verificado, mas ambos pertencem às saídas.' },
+    lic_spaeter_hinweis: { de: 'Ohne Aktivierung tragen die Ausgaben keinen Namen. Die Aktivierung lässt sich jederzeit nachholen: die Marke oben links zehn Sekunden gedrückt halten.', en: 'Without activation the outputs carry no name. You can activate at any time: press and hold the brand at the top left for ten seconds.', pt: 'Sem ativação as saídas não levam nome. Pode ativar a qualquer momento: mantenha premida a marca no canto superior esquerdo durante dez segundos.' },
+    lic_zurueckgesetzt: { de: 'Die Aktivierung wurde zurückgesetzt.', en: 'The activation has been reset.', pt: 'A ativação foi reposta.' },
+    lic_nicht_gespeichert: { de: 'Dieses Gerät erlaubt keinen lokalen Speicher — die Aktivierung gilt nur für diese Sitzung.', en: 'This device does not allow local storage — the activation applies to this session only.', pt: 'Este dispositivo não permite armazenamento local — a ativação vale apenas para esta sessão.' },
 
     /* --- N11 Ausgaben: Gating, Dateiformat, Word ------------------------- */
     msg_rep_gesperrt:          { de: 'In der Testversion sind alle Ausgaben gesperrt. Gerechnet werden darf alles – gespeichert, geöffnet, gedruckt und exportiert wird nur mit der Vollversion.', en: 'In the test edition all outputs are locked. Everything may be calculated – saving, opening, printing and exporting require the full edition.', pt: 'Na versão de teste todas as saídas estão bloqueadas. Pode calcular tudo – guardar, abrir, imprimir e exportar exigem a versão completa.' },

@@ -217,7 +217,22 @@ function lauf(edition) {
 
   /* ------------------------------------- 2) ALLE Module gemeinsam laden -- */
   var d = baueDom(html);
-  var win = { DT_EDITION: edition, alert: function (t) { win._letzterAlert = t; } };
+  /* Ein kleiner lokaler Speicher — sonst bliebe der ganze Speicherweg der
+     Registrierung ungetestet, und genau dort entscheidet sich, ob die
+     Aktivierung einen Neustart ueberlebt. Er verhaelt sich wie der echte:
+     Zeichenketten rein, Zeichenketten raus, `null` wenn nichts da ist. */
+  var _store = {};
+  var win = {
+    DT_EDITION: edition,
+    alert: function (t) { win._letzterAlert = t; },
+    localStorage: {
+      getItem: function (k) { return Object.prototype.hasOwnProperty.call(_store, k) ? _store[k] : null; },
+      setItem: function (k, v) { _store[k] = String(v); },
+      removeItem: function (k) { delete _store[k]; }
+    },
+    setTimeout: function (f, ms) { return { _f: f, _ms: ms }; },
+    clearTimeout: function () {}
+  };
   var namen = { 'i18n_kern.js': 'DTNI18nKern', 'i18n_hilfe.js': 'DTNI18nHilfe',
                 'i18n_kerbfall.js': 'DTNI18nKerb', 'daten.js': 'DTNData',
                 'optionen.js': 'DTNOptions', 'validate.js': 'DTNValidate',
@@ -1729,7 +1744,10 @@ function lauf(edition) {
   ok(n11P.eingaben.auswahl.welt === 'A', 'N11: die Auswahl des Beispiels steht in der Datei');
   ok(n11P.eingaben.werte.a > 0, 'N11: und die Feldwerte');
   ok(n11P.bezeichnung === 'Halle 3 · Lasche', 'N11: die Bezeichnung ebenfalls');
-  ok(n11P.geschrieben_mit.indexOf('N11') >= 0,
+  /* Gegen die QUELLE geprueft, nicht gegen eine abgeschriebene Zeichenkette:
+     der Stempel muss die Etappe nennen, die `ui.js` selbst meldet. */
+  ok(n11P.geschrieben_mit.indexOf(UI.ETAPPE) >= 0 &&
+     n11P.geschrieben_mit.indexOf(UI.PLAN) >= 0,
      'N11: der Versionsstempel nennt den Programmstand (' + n11P.geschrieben_mit + ')');
   ok(n11P.dokumentation.nicht_geprueft.length > 0,
      'N11: die Liste 2.4 liegt als Dokumentation bei (' + n11P.dokumentation.nicht_geprueft.length + ')');
@@ -1901,6 +1919,201 @@ function lauf(edition) {
     }(n11Spr[i]));
   }
   s.setSprache('de');
+
+  /* -------------------------------------- 12c) N12 · DER DRUCKKOPF -------
+     Marke, Programmstand und Haftungshinweis standen im gedruckten PDF gar
+     nicht — sie leben am Bildschirm in der Kopfleiste, im Info-Dialog und in
+     der Fusszeile, und alle drei sind im Druck ausgeblendet. Der Druckkopf
+     ist die einzige Stelle, an der sie aufs Blatt kommen. */
+  s.setSprache('de');
+  s.leeren();
+  s.beispielLaden('blech');
+  s.rechnen();
+  d.byId.dtLabel.value = 'Halle 3 · Lasche';
+  s.druckKopf();
+
+  ok(d.byId.printVersion.inhalt().indexOf(UI.ETAPPE) >= 0,
+     'N12: der Druckkopf nennt den Programmstand (' + d.byId.printVersion.inhalt() + ')');
+  ok(d.byId.printVersion.textContent === s.versionText(),
+     'N12: und zwar DIESELBE Zeile wie der Info-Dialog — eine Quelle');
+  ok(d.byId.printBezeichnung.textContent === 'Halle 3 · Lasche',
+     'N12: die Bezeichnung steht im Druckkopf');
+  ok(d.byId.printBezeichnung.hidden === false, 'N12: und ist sichtbar, weil sie gefuellt ist');
+
+  /* Ohne Bezeichnung darf keine leere Zeile stehenbleiben. */
+  d.byId.dtLabel.value = '';
+  s.druckKopf();
+  ok(d.byId.printBezeichnung.hidden === true,
+     'N12: ohne Bezeichnung verschwindet die Zeile, statt leer dazustehen');
+
+  /* Die Lizenzzeile bleibt weg, solange niemand registriert ist. */
+  ok(s.lizenz() === '', 'N12: ohne Registrierung gibt es keinen Lizenznamen');
+  ok(d.byId.printLizenz.hidden === true,
+     'N12: und damit auch keine leere Lizenzzeile im Ausdruck');
+
+  /* DER SPRACHWECHSEL MUSS DEN DRUCKKOPF MITNEHMEN — die Lehre aus N10c:
+     programmatisch gesetzte Texte wandern nicht von selbst mit. */
+  d.byId.dtLabel.value = 'Fall A';
+  var n12De = null, n12En = null;
+  s.setSprache('de'); n12De = d.byId.printVersion.textContent;
+  s.setSprache('en'); n12En = d.byId.printVersion.textContent;
+  ok(n12De !== n12En, 'N12: der Programmstand im Druckkopf folgt dem Sprachwechsel');
+  ok(n12En === s.versionText(), 'N12: und stimmt danach wieder mit der Quelle ueberein');
+  ok(d.byId.printBezeichnung.textContent === 'Fall A',
+     'N12: die Bezeichnung ueberlebt den Sprachwechsel');
+  s.setSprache('de');
+
+  /* Der Haftungshinweis steht zweimal in der HTML — in der Fusszeile fuer den
+     Bildschirm und im Druckfuss fuer das Blatt. BEIDE muessen uebersetzt
+     werden; eine halb uebersetzte Anzeige ist schlimmer als eine gar nicht
+     uebersetzte (9.2). */
+  var n12Spr = ['en', 'pt', 'de'];
+  for (i = 0; i < n12Spr.length; i++) {
+    (function (l) {
+      s.setSprache(l);
+      var haft = d.byId.printHaftung.textContent;
+      var imp = d.byId.printImpressum.textContent;
+      ok(haft.length > 30, 'N12: der Haftungshinweis steht im Druckfuss (' + l + ')');
+      ok(haft.indexOf('[') < 0, 'N12: uebersetzt, ohne Platzhalter (' + l + ')');
+      ok(haft === Kern.t('disclaimer', l),
+         'N12: und zwar wortgleich mit dem Woerterbuch (' + l + ')');
+      ok(imp.indexOf('Dieter Tepe') >= 0, 'N12: das Impressum steht darunter (' + l + ')');
+      /* Die Fusszeile am Bildschirm traegt DENSELBEN Satz — beide muessen
+         mitwandern, sonst ist eine von beiden halb uebersetzt (9.2). */
+      ok(d.byId.footNote.textContent === haft,
+         'N12: Bildschirm-Fusszeile und Druckfuss sagen dasselbe (' + l + ')');
+    }(n12Spr[i]));
+  }
+  s.setSprache('de');
+
+  /* Drucken klappt weiterhin alles auf UND setzt den Kopf. */
+  s.schalte('lasten', false);
+  s.drucken();
+  if (n11Voll) {
+    ok(s.istOffen('lasten') === true, 'N12: Drucken klappt weiterhin alles auf');
+  } else {
+    /* In der Testversion greift das Gating VOR dem Aufklappen — der Knopf
+       darf die Seite nicht einmal vorbereiten. */
+    ok(s.istOffen('lasten') === false, 'N12: in der Testversion klappt Drucken nichts auf');
+  }
+  ok(d.byId.printVersion.textContent.length > 0,
+     'N12: der Druckkopf ist in beiden Editionen gefuellt — gedruckt wird nur in der Vollversion');
+
+  /* ------------------------------ 12d) N12 · REGISTRIERUNG UND LIZENZ ----
+     Der Name in den Ausgaben ist die HEMMSCHWELLE zur Weitergabe (Plan 1) —
+     kein Kopierschutz. Geprueft wird deshalb nicht, ob ein Schluessel echt
+     ist, sondern ob der Name wirklich ueberall ankommt und ob niemand
+     ausgesperrt wird, der ihn gerade nicht hat. */
+  s.setSprache('de');
+
+  if (n11Voll) {
+    /* --- Vollversion: beim Erststart wird gefragt ---------------------- */
+    ok(s.lizenzName() === '', 'N12: beim Erststart ist niemand aktiviert');
+    ok(s.lizenz() === '', 'N12: und es gibt keine Lizenzzeile');
+    ok(d.byId.licenseLine.hidden === true, 'N12: die Kopfzeile bleibt leer statt "lizenziert fuer nichts"');
+    ok(s.erststartFragen() === true, 'N12: der Aktivierungsdialog erscheint');
+    ok(s.lizenzDialogOffen() === true, 'N12: und steht offen');
+
+    /* Halbe Eingabe wird abgewiesen — aber der Dialog bleibt stehen. */
+    d.byId.licName.value = 'Dieter Tepe';
+    d.byId.licKey.value = '';
+    ok(s.aktivieren() === false, 'N12: ohne Schluessel wird nicht aktiviert');
+    ok(s.lizenzDialogOffen() === true, 'N12: der Dialog bleibt offen statt kommentarlos zuzugehen');
+    ok(d.byId.licHinweis.textContent.length > 10, 'N12: und sagt, was fehlt');
+    d.byId.licName.value = '   ';
+    d.byId.licKey.value = 'ABC-123';
+    ok(s.aktivieren() === false, 'N12: ein Name aus Leerzeichen zaehlt nicht');
+
+    /* --- ES WIRD NICHTS GEPRUEFT (Plan 1) ------------------------------ */
+    d.byId.licName.value = '  Dieter   Tepe  ';
+    d.byId.licKey.value = 'x';
+    ok(s.aktivieren() === true, 'N12: ein einzelnes Zeichen als Schluessel genuegt — es wird nichts geprueft');
+    ok(s.lizenzDialogOffen() === false, 'N12: nach dem Aktivieren geht der Dialog zu');
+    ok(s.lizenzName() === 'Dieter Tepe', 'N12: der Name wird geglaettet, nicht abgewiesen');
+
+    /* --- DIE ZEILE STEHT AN ALLEN VIER ORTEN --------------------------- */
+    var n12Z = s.lizenz();
+    ok(n12Z.indexOf('Dieter Tepe') >= 0, 'N12: die Lizenzzeile nennt den Namen (' + n12Z + ')');
+    ok(n12Z.indexOf('Vollversion') >= 0, 'N12: und die Edition');
+    ok(d.byId.licenseLine.textContent === n12Z, 'N12: 1) sie steht in der Kopfzeile');
+    ok(d.byId.licenseLine.hidden === false, 'N12: und ist sichtbar');
+    s.druckKopf();
+    ok(d.byId.printLizenz.textContent === n12Z, 'N12: 2) sie steht im Druckkopf');
+    ok(d.byId.printLizenz.hidden === false, 'N12: und ist dort sichtbar');
+    s.leeren(); s.beispielLaden('blech'); s.rechnen();
+    var n12W = null, n12B = null;
+    s.wordText(function (r, b) { n12W = r; n12B = b; });
+    ok(n12B.lizenz === n12Z, 'N12: 3) sie steht im Word-Bericht');
+    ok(n12W.text.indexOf(require('./report.js').rtfText(n12Z)) > 0, 'N12: und wirklich im Blatt');
+    var n12D = s.dateiText();
+    ok(JSON.parse(n12D.text).lizenz === n12Z, 'N12: 4) sie steht in der .dts-Datei');
+    /* Aber sie ist keine EINGABE — sie gehoert zu dem, der die Datei
+       geschrieben hat, nicht zu dem, der sie oeffnet. */
+    ok(!('lizenz' in JSON.parse(n12D.text).eingaben), 'N12: und NICHT bei den Eingaben');
+
+    /* --- Der Sprachwechsel nimmt sie mit (Lehre aus N10c) -------------- */
+    var n12DeZ = s.lizenz();
+    s.setSprache('en');
+    ok(s.lizenz() !== n12DeZ, 'N12: die Lizenzzeile folgt dem Sprachwechsel');
+    ok(s.lizenz().indexOf('licensed to') >= 0, 'N12: auf Englisch heisst sie "licensed to"');
+    ok(d.byId.licenseLine.textContent === s.lizenz(), 'N12: und die Kopfzeile wandert mit');
+    s.setSprache('pt');
+    ok(s.lizenz().indexOf('licenciado para') >= 0, 'N12: auf Portugiesisch ebenso');
+    ok(s.lizenz().indexOf('Dieter Tepe') >= 0, 'N12: der Name bleibt in jeder Sprache derselbe');
+    s.setSprache('de');
+
+    /* --- SIE UEBERLEBT DEN NEUSTART ----------------------------------- */
+    ok(win.localStorage.getItem('dts_lizenz_name') === 'Dieter Tepe',
+       'N12: der Name liegt im lokalen Speicher');
+    ok(win.localStorage.getItem('dts_lizenz_key') === 'x', 'N12: der Schluessel ebenso');
+    ok(s.lizenzNeuLaden() === 'Dieter Tepe', 'N12: und wird beim Laden wiedergefunden');
+    ok(s.erststartFragen() === false, 'N12: ein Aktivierter wird nicht noch einmal gefragt');
+
+    /* --- ZURUECKSETZEN nimmt NUR die Aktivierung ----------------------- */
+    /* Ein Reset, der mehr wegnimmt als angekuendigt, ist eine Falle. */
+    s.beispielLaden('blech');
+    var n12VorTheme = s.theme(), n12VorSpr = s.sprache(), n12VorWelt = s.zustand().welt;
+    s.zuruecksetzen();
+    ok(s.lizenzName() === '', 'N12: der lange Druck loescht die Aktivierung');
+    ok(win.localStorage.getItem('dts_lizenz_name') === null, 'N12: auch im Speicher');
+    ok(s.lizenz() === '', 'N12: die Lizenzzeile ist weg');
+    ok(d.byId.licenseLine.hidden === true, 'N12: und die Kopfzeile wieder leer');
+    ok(s.theme() === n12VorTheme, 'N12: das Design bleibt unberuehrt');
+    ok(s.sprache() === n12VorSpr, 'N12: die Sprache bleibt unberuehrt');
+    ok(s.zustand().welt === n12VorWelt, 'N12: und die Eingaben bleiben stehen');
+    ok(s.lizenzDialogOffen() === true, 'N12: danach fragt der Dialog erneut');
+
+    /* --- "SPAETER" sperrt niemanden aus -------------------------------- */
+    ok(s.spaeter() === true, 'N12: "Spaeter" ist erlaubt');
+    ok(s.lizenzDialogOffen() === false, 'N12: der Dialog geht zu');
+    ok(s.erststartFragen() === false, 'N12: und fragt beim naechsten Start nicht wieder');
+    ok(win.localStorage.getItem('dts_lizenz_spaeter') === '1', 'N12: das merkt sich das Programm');
+    /* Ohne Aktivierung laeuft das Programm vollstaendig weiter. */
+    s.leeren(); s.beispielLaden('blech'); s.rechnen();
+    ok(s.ergebnis() && s.ergebnis().ok === true, 'N12: ohne Aktivierung wird trotzdem gerechnet');
+    ok(s.dateiText().ok === true, 'N12: und gespeichert — die Vollversion bleibt voll');
+    ok(JSON.parse(s.dateiText().text).lizenz === '', 'N12: die Ausgabe traegt dann nur keinen Namen');
+    /* Fuer die uebrigen Pruefungen wieder aktivieren. */
+    s.lizenzDialog(true);
+    d.byId.licName.value = 'Dieter Tepe'; d.byId.licKey.value = 'ABC-123';
+    s.aktivieren();
+  } else {
+    /* --- Testversion: hier gibt es nichts zu aktivieren ---------------- */
+    ok(s.erststartFragen() === false, 'N12: in der Testversion erscheint KEIN Aktivierungsdialog');
+    ok(s.lizenzDialogOffen() === false, 'N12: und er steht auch nicht offen');
+    ok(s.lizenz() === '', 'N12: es gibt keine Lizenzzeile');
+    ok(d.byId.licenseLine.hidden === true, 'N12: die Kopfzeile bleibt leer — der Testbalken sagt, woran man ist');
+    ok(d.byId.editionBar.hidden === false, 'N12: und der Testbalken steht da');
+    /* Selbst ein von Hand gesetzter Name erzeugt in der Testversion keine
+       Lizenzzeile — sonst koennte man sie sich hineinschreiben. */
+    win.localStorage.setItem('dts_lizenz_name', 'Fremder Name');
+    win.localStorage.setItem('dts_lizenz_key', 'x');
+    s.lizenzNeuLaden();
+    ok(s.lizenz() === '', 'N12: auch ein eingetragener Name macht aus der Testversion keine Vollversion');
+    ok(d.byId.licenseLine.hidden === true, 'N12: die Kopfzeile bleibt leer');
+  }
+  s.setSprache('de');
+  s.leeren(); s.beispielLaden('blech'); s.rechnen();
 
   /* --------------------------------- 13) i18n-Paritaet der UI-Schluessel - */
   var uiKeys = [];

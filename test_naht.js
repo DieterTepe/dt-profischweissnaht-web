@@ -4133,7 +4133,7 @@ function s43Summe(text) {
    ZWEI Etappen gilt die Regel dagegen streng: geaenderter Quelltext ohne
    Kennungswechsel ist rot. */
 var S43_STAND = [
-  { datei: 'i18n_kern.js', version: '0.8.0-N11', summe: '38e9e59c' },
+  { datei: 'i18n_kern.js', version: '0.9.0-N12', summe: '1e5ab9f0' },
   { datei: 'i18n_hilfe.js', version: '0.5.0-N11', summe: '8cc6c8aa' },
   { datei: 'i18n_kerbfall.js', version: '0.2.0-N11', summe: 'b986cce4' },
   { datei: 'daten.js', version: '0.2.0-N11', summe: '5e696f0e' },
@@ -4150,8 +4150,8 @@ var S43_STAND = [
   { datei: 'thermik.js', version: '0.3.0-N9c', summe: '1bf966a2' },
   { datei: 'skizze.js', version: '0.3.0-N9c', summe: '447c40cd' },
   { datei: 'assistent.js', version: '0.5.0-N10b', summe: '4c015b50' },
-  { datei: 'ui.js', version: '0.17.2', summe: '40b40c61' },
-  { datei: 'report.js', version: '0.1.2-N11', summe: '5c54cd3f' }
+  { datei: 'ui.js', version: '0.18.0', summe: '4acf028d' },
+  { datei: 'report.js', version: '0.2.0-N12', summe: '76851305' }
 ];
 
 var s43i, s43Fehl = [], s43Src, s43M, s43S;
@@ -5083,7 +5083,11 @@ var Rep = require('./report.js');
 
 /* --- 1) Das Modul selbst ------------------------------------------------ */
 eq(Rep.NAME, 'report', 'S49: report.js nennt sich beim Namen');
-ok(/^\d+\.\d+\.\d+-N11$/.test(Rep.VERSION), 'S49: und traegt eine N11-Kennung (' + Rep.VERSION + ')');
+/* KEIN HANDWERT: geprueft wird die FORM der Kennung, nicht die Etappe.
+   Ein festgeschriebenes "N11" wird beim naechsten Baustein rot, obwohl
+   nichts kaputt ist — und lenkt genau dann ab, wenn es darauf ankommt.
+   Den Stand fuehrt der Waechter in S43. */
+ok(/^\d+\.\d+\.\d+-N\w+$/.test(Rep.VERSION), 'S49: und traegt eine Etappenkennung (' + Rep.VERSION + ')');
 var s49Src = fsU.readFileSync(__dirname + '/report.js', 'utf8');
 ok(s49Src.indexOf('document') < 0, 'S49: report.js fasst kein document an');
 ok(s49Src.indexOf('window') < 0, 'S49: und kein window — es ist DOM-frei und damit hier pruefbar');
@@ -5652,6 +5656,238 @@ ok(s49RL.indexOf('Wort0Wort1') < 0 && s49RL.indexOf('Wort58Wort59') < 0,
    'S49: der Umbruch klebt keine Woerter zusammen');
 ok(s49RL.replace(/\n/g, ' ').indexOf('Wort58 Wort59') >= 0,
    'S49: und der Text bleibt vollstaendig lesbar');
+
+sek('S50 · N12 Druckbild, Druckkopf und Marke — die vier Befunde aus dem PDF');
+
+/* WOHER DIESE SEKTION KOMMT (Dieter, 2026-08-07): Das gedruckte PDF fing mit
+   einer LEEREN Seite an, mittendrin schob sich eine Seite ueber die naechste
+   und ein Wort stand zur Haelfte auf zwei Seiten. Statt zu raten wurde das
+   PDF vermessen: 25 Seiten, Seite 1 mit 0 Byte Inhalt, Seite 23 endete mit
+   "Summe 200€" und Seite 24 begann mit "Summe 2,00 €" — dieselbe Zeile
+   zweimal, einmal oben abgeschnitten.
+   Dazu kam ein vierter Befund, den erst das Nachmessen zeigte: die Woerter
+   "DT-ProfiSchweissnaht", "Programmstand" und "ohne Gewaehr" kamen im ganzen
+   PDF NICHT vor. */
+
+var s50Css = fsU.readFileSync(__dirname + '/style.css', 'utf8');
+
+/* --- 1) ES GIBT GENAU EIN DRUCKBILD ------------------------------------- */
+/* Bis N12 standen ZWEI `@media print`-Bloecke in der Datei: einer aus N5a,
+   einer aus N11 danebengeschrieben. Der erste blendete `.app-header` aus —
+   deshalb fehlten Marke und Titel im PDF, und weil die Versionszeile im
+   Info-Dialog steckt, fehlte auch der Programmstand. Genau die Doppelquelle,
+   die Plan 3.4 verbietet. */
+var s50N = (s50Css.match(/@media\s+print/g) || []).length;
+eq(s50N, 1, 'S50: style.css traegt GENAU EIN Druckbild (gefunden: ' + s50N + ')');
+var s50Druck = s50Css.substring(s50Css.indexOf('@media print'));
+
+/* --- 2) DER UEBERLAUF IST ZURUECKGENOMMEN ------------------------------- */
+/* `.card` und `.acc` tragen am Bildschirm `overflow:hidden` fuer die runden
+   Ecken. Im Druck schneidet das jede Zeile ab, die ueber einen Seitenumbruch
+   laeuft — das war die halbierte Zeile. */
+ok(/\.card[^{]*\{[^}]*overflow:hidden/.test(s50Css.replace(/\s+/g, '')) ||
+   s50Css.indexOf('overflow:hidden') > 0,
+   'S50: am Bildschirm gibt es den Ueberlauf, den das Druckbild zuruecknehmen muss');
+var s50Ueber = s50Druck.substring(s50Druck.indexOf('overflow:visible'));
+ok(s50Druck.indexOf('overflow:visible') > 0, 'S50: das Druckbild nimmt den Ueberlauf zurueck');
+var s50Muss = ['.card', '.acc', '.acc-body', '.erg-box', '.weg-box', '.rw-abschnitt'];
+var s50Zeile = s50Druck.substring(s50Druck.lastIndexOf('/*', s50Druck.indexOf('overflow:visible')),
+                                  s50Druck.indexOf('overflow:visible') + 20);
+for (var s50i = 0; s50i < s50Muss.length; s50i++) {
+  ok(s50Zeile.indexOf(s50Muss[s50i]) >= 0,
+     'S50: ' + s50Muss[s50i] + ' laeuft im Druck wieder ueber (kein Abschneiden)');
+}
+
+/* --- 3) GROSSE BEHAELTER DUERFEN UMBRECHEN ------------------------------ */
+/* Ursache der leeren ersten Seite: `break-inside:avoid` stand auf `.card` und
+   `.acc`, die beide hoeher sind als eine Seite. Der Browser kann das nicht
+   erfuellen und schiebt die erste Karte auf Seite 2. */
+ok(s50Druck.indexOf('break-inside:auto') > 0,
+   'S50: grosse Behaelter duerfen im Druck umbrechen');
+ok(s50Druck.indexOf('break-inside:avoid') > 0,
+   'S50: kleine Einheiten bleiben zusammen');
+var s50Auto = s50Druck.substring(s50Druck.lastIndexOf('/*', s50Druck.indexOf('break-inside:auto')),
+                                 s50Druck.indexOf('break-inside:auto'));
+ok(s50Auto.indexOf('.card') >= 0 && s50Auto.indexOf('.acc') >= 0,
+   'S50: und zwar ausdruecklich .card und .acc — sie sind hoeher als eine Seite');
+var s50AvPos = s50Druck.indexOf('break-inside:avoid');
+var s50Av = s50Druck.substring(s50Druck.lastIndexOf('}', s50AvPos), s50AvPos);
+ok(s50Av.indexOf('.tile') >= 0 || s50Druck.indexOf('.tile, .th-zeile') >= 0,
+   'S50: zusammengehalten wird an den kleinen Einheiten (.tile, .th-zeile, .feld-zeile)');
+
+/* --- 4) MARKE, PROGRAMMSTAND UND HAFTUNGSHINWEIS STEHEN AUF DEM BLATT --- */
+/* Alle drei stehen am Bildschirm an Stellen, die im Druck ausgeblendet sind:
+   Kopfleiste, Info-Dialog, Fusszeile. Ohne einen eigenen Druckkopf traegt das
+   Blatt keinen Namen, keinen Stand und keinen Haftungshinweis — Plan 3.6
+   verlangt die Versionszeile in JEDER Ausgabe, Plan 2.4 den Hinweis. */
+ok(s50Druck.indexOf('.print-only') > 0, 'S50: der Druckkopf erscheint nur im Druck');
+ok(s50Css.indexOf('.print-only{ display:none; }') > 0,
+   'S50: und am Bildschirm ist er unsichtbar');
+var s50Ui = require('./ui.js');
+var s50PrintIds = ['printKopf', 'printBezeichnung', 'printLizenz', 'printVersion', 'printFuss'];
+for (s50i = 0; s50i < s50PrintIds.length; s50i++) {
+  ok(s50Ui.IDS.indexOf(s50PrintIds[s50i]) >= 0,
+     'S50: ' + s50PrintIds[s50i] + ' ist Pflicht in beiden HTMLs');
+}
+/* Gegenprobe an der HTML selbst — die Id-Liste allein waere eine zweite
+   Wahrheit. */
+var s50H = [fsU.readFileSync(__dirname + '/DT-ProfiSchweissnaht.html', 'utf8'),
+            fsU.readFileSync(__dirname + '/DT-ProfiSchweissnaht_Test.html', 'utf8')];
+for (var s50e = 0; s50e < 2; s50e++) {
+  (function (h, wo) {
+    for (var j = 0; j < s50PrintIds.length; j++) {
+      ok(h.indexOf('id="' + s50PrintIds[j] + '"') > 0,
+         'S50 [' + wo + ']: ' + s50PrintIds[j] + ' steht wirklich in der HTML');
+    }
+    ok(h.indexOf('data-i18n="disclaimer"') > 0, 'S50 [' + wo + ']: der Haftungshinweis steht im Druckfuss');
+    ok((h.match(/data-i18n="disclaimer"/g) || []).length >= 2,
+       'S50 [' + wo + ']: er steht in Fusszeile UND Druckfuss — beide werden gebraucht');
+    ok(h.indexOf('data-i18n="appName"') > 0, 'S50 [' + wo + ']: die Marke steht im Druckkopf');
+  }(s50H[s50e], s50e === 0 ? 'voll' : 'test'));
+}
+
+/* --- 5) DER FARBVERLAUF DER MARKE (Dieter, 2026-08-07) ------------------ */
+/* Tuerkis nach Messing wie im Schwesterprogramm, in den Text geschnitten. */
+ok(/\.brand \.mark\{[\s\S]{0,200}linear-gradient\(135deg/.test(s50Css),
+   'S50: die Marke traegt den Farbverlauf');
+ok(s50Css.indexOf('--messing:#caa04a') > 0, 'S50: mit dem Messington des Schwesterprogramms');
+ok(s50Css.indexOf('--verlauf-a:#34c3d4') > 0, 'S50: und dessen Tuerkis');
+ok(s50Css.indexOf('background-clip:text') > 0, 'S50: der Verlauf wird in den Text geschnitten');
+/* ZWEI FALLEN, die ein Farbverlauf im Text mitbringt: */
+ok(s50Css.indexOf('@supports not') > 0,
+   'S50: kann der Browser das nicht, bleibt die Marke sichtbar statt zu verschwinden');
+ok(/\.print-mark[^}]*-webkit-text-fill-color:#000/.test(s50Druck),
+   'S50: und auf Papier ist sie schwarz — durchsichtiger Text waere leer gedruckt');
+
+/* --- 6) DER HAFTUNGSHINWEIS IM WORD-DOKUMENT ---------------------------- */
+/* Er fehlte dort ebenfalls. Jetzt kommt er aus dem Woerterbuch statt aus der
+   Oberflaeche — dann kann ihn kein Ausblenden verschlucken. */
+for (s50i = 0; s50i < 3; s50i++) {
+  (function (l) {
+    var ber = Rep.baueBericht({ rw: s49Rw, sprache: l, datum: '2026-08-07' });
+    ok(!!ber.haftung && ber.haftung.indexOf('[') < 0, 'S50: der Bericht traegt den Haftungshinweis in ' + l);
+    ok(!!ber.impressum && ber.impressum.indexOf('[') < 0, 'S50: und das Impressum in ' + l);
+    var r = Rep.baueRtf(ber);
+    ok(r.text.indexOf(Rep.rtfText(ber.haftung).substring(0, 25)) > 0,
+       'S50: und er steht wirklich im Blatt (' + l + ')');
+    ok(r.text.indexOf(Rep.rtfText(ber.impressum).substring(0, 20)) > 0,
+       'S50: das Impressum ebenso (' + l + ')');
+    /* Er gehoert ans ENDE, nicht mitten hinein. */
+    ok(r.text.indexOf(Rep.rtfText(ber.haftung).substring(0, 25)) >
+       r.text.indexOf(Rep.rtfText(s49Titel24)),
+       'S50: er steht hinter der Liste 2.4, nicht davor (' + l + ')');
+  }(['de', 'en', 'pt'][s50i]));
+}
+
+sek('S51 · N12 Registrierung — der Name als Hemmschwelle, nicht als Schloss');
+
+/* Plan 1: „Aktivierung beim Erststart: Name + Digistore-Schluessel, KEINE
+   Formatpruefung; Name erscheint in allen Ausgaben." Der Zweck ist die
+   Hemmschwelle zur Weitergabe. Wer hier eine Pruefung einbaut, verspricht
+   eine Sicherheit, die es nicht gibt — und sperrt den aus, dessen Schluessel
+   anders aussieht als erwartet. */
+
+/* --- 1) Der Name wird geglaettet, nicht abgewiesen ---------------------- */
+eq(Rep.lizenzName('  Dieter   Tepe  '), 'Dieter Tepe', 'S51: Leerraum wird zusammengezogen');
+eq(Rep.lizenzName('Dieter\tTepe\nGmbH'), 'Dieter Tepe GmbH', 'S51: auch Tabulator und Umbruch');
+eq(Rep.lizenzName('   '), '', 'S51: ein Name aus lauter Leerzeichen ist keiner');
+eq(Rep.lizenzName(null), '', 'S51: und nichts bleibt nichts');
+eq(Rep.lizenzName(new Array(200).join('x')).length, Rep.NAME_MAX,
+   'S51: sehr lange Namen werden gekuerzt (' + Rep.NAME_MAX + ')');
+eq(Rep.lizenzName('Müller & Söhne KG'), 'Müller & Söhne KG',
+   'S51: Umlaute und Zeichen bleiben — das ist ein Name, kein Dateiname');
+
+/* --- 2) ES WIRD NICHTS GEPRUEFT ---------------------------------------- */
+ok(Rep.istAktiviert('Dieter Tepe', 'x') === true,
+   'S51: ein einzelnes Zeichen genuegt als Schluessel — es wird nichts geprueft');
+ok(Rep.istAktiviert('Dieter Tepe', '!!!???') === true, 'S51: auch Sonderzeichen');
+ok(Rep.istAktiviert('Dieter Tepe', new Array(150).join('k')) === true, 'S51: auch ein sehr langer');
+/* Verlangt wird nur, dass BEIDES da ist. */
+ok(Rep.istAktiviert('Dieter Tepe', '') === false, 'S51: ohne Schluessel nicht aktiviert');
+ok(Rep.istAktiviert('', 'ABC') === false, 'S51: ohne Namen ebenso wenig');
+ok(Rep.istAktiviert('  ', ' ') === false, 'S51: und Leerzeichen zaehlen nicht als Eintrag');
+
+/* --- 3) DIE ZEILE — eine Quelle fuer vier Orte -------------------------- */
+var s51Spr = ['de', 'en', 'pt'], s51i, s51Z = {};
+for (s51i = 0; s51i < s51Spr.length; s51i++) {
+  (function (l) {
+    var z = Rep.lizenzZeile('full', 'Dieter Tepe', l);
+    s51Z[l] = z;
+    ok(z.indexOf('Dieter Tepe') >= 0, 'S51: die Zeile nennt den Namen in ' + l);
+    ok(z.indexOf('[') < 0, 'S51: und traegt keinen unuebersetzten Schluessel in ' + l);
+    ok(z.indexOf(Kern.t('uiEditionVoll', l)) >= 0, 'S51: sie nennt die Edition in ' + l);
+    ok(z.indexOf(Kern.t('lic_fuer', l)) >= 0, 'S51: und den Zusatz "lizenziert fuer" in ' + l);
+  }(s51Spr[s51i]));
+}
+ok(s51Z.de !== s51Z.en && s51Z.en !== s51Z.pt, 'S51: die drei Sprachen unterscheiden sich wirklich');
+
+/* --- 4) OHNE NAMEN GIBT ES KEINE ZEILE ---------------------------------- */
+/* Eine Lizenzzeile ohne Lizenz waere eine leere Behauptung. */
+eq(Rep.lizenzZeile('full', '', 'de'), '', 'S51: ohne Namen keine Zeile');
+eq(Rep.lizenzZeile('full', '   ', 'de'), '', 'S51: auch nicht mit Leerzeichen');
+eq(Rep.lizenzZeile('full', null, 'de'), '', 'S51: und nicht mit nichts');
+
+/* --- 5) IN DER TESTVERSION GIBT ES SIE NIE ------------------------------ */
+/* Sonst koennte man sich die Vollversion hineinschreiben. */
+eq(Rep.lizenzZeile('test', 'Dieter Tepe', 'de'), '',
+   'S51: die Testversion traegt KEINE Lizenzzeile, auch mit eingetragenem Namen');
+eq(Rep.lizenzZeile('', 'Dieter Tepe', 'de'), '', 'S51: eine leere Edition ebenso wenig');
+eq(Rep.lizenzZeile('demo', 'Dieter Tepe', 'de'), '', 'S51: und eine unbekannte auch nicht');
+/* Dieselbe sichere Seite wie beim Gating: alles ausser 'full' gibt nichts. */
+eq(Rep.guard('drucken', 'demo').erlaubt, false, 'S51: Gating und Lizenzzeile sind sich einig');
+
+/* --- 6) DIE DREI SPEICHERSCHLUESSEL ------------------------------------- */
+/* Im lokalen Speicher stehen NUR Programmbedingungen (5.1-8). */
+var s51K = [Rep.SPEICHER.name, Rep.SPEICHER.schluessel, Rep.SPEICHER.spaeter];
+for (s51i = 0; s51i < 3; s51i++) {
+  ok(/^dts_/.test(s51K[s51i]), 'S51: der Speicherschluessel ' + s51K[s51i] + ' traegt das Programmkuerzel');
+}
+eq(s51K.length, 3, 'S51: es sind genau drei');
+ok(s51K[0] !== s51K[1] && s51K[1] !== s51K[2] && s51K[0] !== s51K[2],
+   'S51: und alle drei verschieden');
+
+/* --- 7) DIE ZEILE IN DEN AUSGABEN --------------------------------------- */
+var s51ZL = Rep.lizenzZeile('full', 'Dieter Tepe', 'de');
+var s51Ber = Rep.baueBericht({ rw: s49Rw, sprache: 'de', datum: '2026-08-07', lizenz: s51ZL });
+eq(s51Ber.lizenz, s51ZL, 'S51: der Bericht traegt die Zeile');
+var s51R = Rep.baueRtf(s51Ber);
+ok(s51R.text.indexOf(Rep.rtfText(s51ZL)) > 0, 'S51: und sie steht wirklich im Word-Blatt');
+/* Sie steht im KOPF des Blattes, nicht irgendwo hinten. */
+ok(s51R.text.indexOf(Rep.rtfText(s51ZL)) < s51R.text.indexOf(Rep.rtfText(s49Titel24)),
+   'S51: und zwar oben, vor dem Rechenweg');
+var s51D = Rep.baueDatei({
+  auswahl: { welt: 'A' }, werte: { a: 5 }, lizenz: s51ZL,
+  etappe: 'N12', plan: '2.69', datum: '2026-08-07'
+});
+eq(JSON.parse(s51D.text).lizenz, s51ZL, 'S51: die .dts-Datei traegt sie ebenfalls');
+/* ABER NICHT ALS EINGABE — sie gehoert zu dem, der die Datei geschrieben hat. */
+ok(!('lizenz' in JSON.parse(s51D.text).eingaben), 'S51: nicht bei den Eingaben');
+var s51L = Rep.lieseDatei(s51D.text);
+eq(s51L.lizenz, s51ZL, 'S51: beim Oeffnen ist sie lesbar');
+ok(!('lizenz' in s51L.eingaben), 'S51: wird aber nicht als Eingabe herausgegeben');
+
+/* --- 8) DIE ANBINDUNG --------------------------------------------------- */
+var s51Ui = fsU.readFileSync(__dirname + '/ui.js', 'utf8');
+ok(s51Ui.indexOf('Report.lizenzZeile') > 0, 'S51: ui.js holt die Zeile bei report.js');
+eq((s51Ui.match(/Report\.lizenzZeile/g) || []).length, 1,
+   'S51: an genau EINER Stelle — sonst gaebe es zwei Saetze');
+ok(s51Ui.indexOf('localStorage') > 0, 'S51: die Aktivierung wird lokal verwahrt');
+/* Der lokale Speicher darf NIE Eingaben tragen (5.1-8). */
+var s51Verboten = ['zustand()', 'werte()', 'eingaben'];
+var s51Sp = s51Ui.substring(s51Ui.indexOf('function speicherSchreib'),
+                            s51Ui.indexOf('function lizenzText'));
+for (s51i = 0; s51i < s51Verboten.length; s51i++) {
+  ok(s51Sp.indexOf(s51Verboten[s51i]) < 0,
+     'S51: im lokalen Speicher landet keine Eingabe (' + s51Verboten[s51i] + ')');
+}
+/* Zehn Sekunden — die Zahl steht im Plan, nicht im Gefuehl. */
+ok(/LANG_DRUCK_MS *= *10000/.test(s51Ui), 'S51: der lange Druck dauert zehn Sekunden (Plan 1)');
+/* Das Zuruecksetzen darf NUR die Aktivierung anfassen. */
+var s51Rs = s51Ui.substring(s51Ui.indexOf('function lizenzZuruecksetzen'),
+                            s51Ui.indexOf('function langDruckVerdrahten'));
+ok(s51Rs.indexOf('leeren()') < 0, 'S51: das Zuruecksetzen leert NICHT das Formular');
+ok(s51Rs.indexOf('setSprache') < 0, 'S51: es fasst die Sprache nicht an');
+ok(s51Rs.indexOf('setTheme') < 0, 'S51: und das Design nicht');
 
 /* ========================================================================= */
 console.log('\n════════════════════════════════════════════');

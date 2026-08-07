@@ -40,6 +40,22 @@
   </div>
 </header>
 
+<!-- ===================================================================
+     DRUCKKOPF UND DRUCKFUSS — am Bildschirm unsichtbar (.print-only).
+     Sie sind im Ausdruck die EINZIGE Stelle, an der Marke, Bezeichnung,
+     Programmstand und Haftungshinweis stehen: die Kopfleiste, der
+     Info-Dialog und die Fusszeile sind im Druck ausgeblendet, weil sie
+     Bedienelemente tragen. Plan 3.6 verlangt die Versionszeile in JEDER
+     Ausgabe, Plan 2.4 den Haftungshinweis.
+     =================================================================== -->
+<div id="printKopf" class="print-only print-kopf">
+  <div class="print-mark" data-i18n="appName">DT-ProfiSchweissnaht</div>
+  <div class="print-tag" data-i18n="tagline">Schweißnahtberechnung – Stahlbau und Maschinenbau</div>
+  <div class="print-zeile" id="printBezeichnung"></div>
+  <div class="print-zeile" id="printLizenz"></div>
+  <div class="print-zeile" id="printVersion"></div>
+</div>
+
 <!-- Bedienleiste -->
 <div class="subbar">
   <div class="field-inline">
@@ -275,11 +291,49 @@
   </div>
 </main>
 
+
+<div id="printFuss" class="print-only print-fuss">
+  <div class="print-zeile" id="printHaftung" data-i18n="disclaimer">Berechnung ohne Gewähr, vor Produktivnutzung gegen die Originalnormen prüfen.</div>
+  <div class="print-zeile" id="printImpressum" data-i18n="impressum">Dieter Tepe · Mühlenstraße 2 · 48477 Dreierwalde · Dieter.Tepe@live.de · www.dt-profidreieck.de</div>
+  <div class="print-zeile norm">EN 1993-1-8 · EN 1993-1-4 · EN 1999-1-1 · EN 1011-2 · EN 1090 · ISO 5817 · ISO 2553</div>
+</div>
+
 <footer class="app-footer">
   <span class="norm">EN 1993-1-8 · EN 1993-1-4 · EN 1999-1-1 · EN 1011-2 · EN 1090 · ISO 5817 · ISO 2553</span><br>
   <span id="footNote" data-i18n="disclaimer">Berechnung ohne Gewähr, vor Produktivnutzung gegen die Originalnormen prüfen.</span><br>
   <span id="footImpressum" data-i18n="impressum">Dieter Tepe · Mühlenstraße 2 · 48477 Dreierwalde · Dieter.Tepe@live.de · www.dt-profidreieck.de</span>
 </footer>
+
+
+<!-- ===================================================================
+     N12 · AKTIVIERUNG. Erscheint beim ERSTSTART der Vollversion, nie in
+     der Testversion. Es wird NICHTS geprueft (Plan 1) — der Name ist die
+     Hemmschwelle zur Weitergabe, kein Kopierschutz. "Spaeter" ist
+     ausdruecklich erlaubt: ein Programm, das sich hinter einem Dialog
+     verriegelt, den man nicht schliessen kann, sperrt auch den aus, der
+     gerade seinen Schluessel sucht.
+     =================================================================== -->
+<div class="modal-overlay" id="licModal" role="dialog" aria-modal="true" aria-labelledby="licTitel" hidden>
+  <div class="modal">
+    <div class="modal-head"><h3 id="licTitel" data-i18n="lic_titel">Aktivierung</h3></div>
+    <div class="modal-body">
+      <p id="licText" data-i18n="lic_text"></p>
+      <label class="feld-zeile lic-feld">
+        <span id="licNameLbl" data-i18n="lic_name">Name</span>
+        <input type="text" class="feld" id="licName" maxlength="80" autocomplete="name" data-i18n-ph="lic_name_ph">
+      </label>
+      <label class="feld-zeile lic-feld">
+        <span id="licKeyLbl" data-i18n="lic_key">Lizenzschlüssel</span>
+        <input type="text" class="feld" id="licKey" maxlength="120" data-i18n-ph="lic_key_ph">
+      </label>
+      <p id="licHinweis" class="gap-note"></p>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn" id="licAktivieren" data-i18n="lic_aktivieren">Aktivieren</button>
+      <button type="button" class="btn" id="licSpaeter" data-i18n="lic_spaeter">Später</button>
+    </div>
+  </div>
+</div>
 
 <!-- Info-Dialog mit Impressum -->
 <div class="modal-overlay" id="infoModal" role="dialog" aria-modal="true" aria-labelledby="infoTitleH" hidden>

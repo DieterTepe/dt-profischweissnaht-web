@@ -49,7 +49,7 @@
   'use strict';
 
   var NAME = 'report';
-  var VERSION = '0.1.2-N11';
+  var VERSION = '0.2.0-N12';
 
   /* Der Programmname steht in der Datei, damit eine fremde .dts nicht
      stillschweigend als eigene gelesen wird. */
@@ -127,6 +127,55 @@
     return { erlaubt: true, aktion: aktion, code: null };
   }
 
+  /* ------------------------------------------------------- REGISTRIERUNG
+   * WARUM HIER UND NICHT IN EINEM EIGENEN MODUL: In diesem Modul sitzt
+   * bereits alles, was von der EDITION abhaengt — das Gating. Die
+   * Lizenzzeile ist dieselbe Sorte Sache, und sie muss in der Kopfzeile, im
+   * Ausdruck, im Word-Dokument und in der `.dts` WORTGLEICH stehen. Vier
+   * Stellen, die denselben Satz bauen, waeren vier Gelegenheiten, ihn
+   * verschieden zu bauen (Plan 3.4).
+   *
+   * ES WIRD NICHTS GEPRUEFT (Plan 1: „keine Formatpruefung"). Der Schluessel
+   * wird nicht auf Form, Laenge oder Gueltigkeit untersucht — er wird
+   * verwahrt. Der Zweck des Namens ist die HEMMSCHWELLE zur Weitergabe,
+   * nicht der Kopierschutz. Wer hier eine Pruefung einbaut, verspricht eine
+   * Sicherheit, die es nicht gibt.
+   * ==================================================================== */
+
+  /* Im lokalen Speicher stehen nur PROGRAMMBEDINGUNGEN (5.1-8) — nie die
+     letzten Eingaben. Diese drei Schluessel sind alles, was N12 dort ablegt. */
+  var SPEICHER = {
+    name:      'dts_lizenz_name',
+    schluessel:'dts_lizenz_key',
+    spaeter:   'dts_lizenz_spaeter'
+  };
+
+  var NAME_MAX = 80;
+
+  function lizenzName(name) {
+    if (!istText(name)) return '';
+    return name.replace(/\s+/g, ' ').replace(/^ +| +$/g, '').substring(0, NAME_MAX);
+  }
+
+  /* Aktiviert ist, wer BEIDES eingetragen hat. Mehr wird nicht verlangt. */
+  function istAktiviert(name, schluessel) {
+    return !!lizenzName(name) && !!lizenzName(schluessel);
+  }
+
+  function lizenzPhrase(name, lang) {
+    var n = lizenzName(name);
+    return n ? (T('lic_fuer', lang) + ' ' + n) : '';
+  }
+
+  /* Die eine Zeile, die ueberall steht. In der Testversion gibt es sie
+     NICHT — dort sagt der Testbalken, woran man ist, und eine Lizenzzeile
+     ohne Lizenz waere eine leere Behauptung. */
+  function lizenzZeile(edition, name, lang) {
+    if (edition !== 'full') return '';
+    var ph = lizenzPhrase(name, lang);
+    return ph ? (T('uiEditionVoll', lang) + ' \u00b7 ' + ph) : '';
+  }
+
   /* --------------------------------------------------------- VERSIONSSTEMPEL */
 
   function stempel(o) {
@@ -163,6 +212,7 @@
       geschrieben_mit: st.geschrieben_mit,
       datum: st.datum,
       bezeichnung: istText(e.bezeichnung) ? e.bezeichnung : '',
+      lizenz: istText(e.lizenz) ? e.lizenz : '',
       sprache: istText(e.sprache) ? e.sprache : 'de',
       eingaben: { auswahl: {}, werte: {} },
       /* AUSDRUECKLICH DOKUMENTATION, NIE ZUM ZURUECKLESEN (5.1-8).
@@ -281,6 +331,9 @@
 
     raus.ok = true;
     raus.bezeichnung = istText(d.bezeichnung) ? d.bezeichnung : '';
+    /* Die Lizenzzeile der FREMDEN Datei wird gelesen, aber nie uebernommen —
+       sie gehoert zu dem, der sie geschrieben hat. */
+    raus.lizenz = istText(d.lizenz) ? d.lizenz : '';
     raus.sprache = istText(d.sprache) ? d.sprache : null;
     raus.eingaben = { auswahl: ein.auswahl, werte: ein.werte };
     /* Die Dokumentation wird HERAUSGEGEBEN, aber sie ist ausdruecklich
@@ -456,6 +509,14 @@
       version: istText(e.version) ? e.version : '',
       module: [],
       anforderung: istText(e.anforderung) ? e.anforderung : '',
+      /* DER HAFTUNGSHINWEIS IST PFLICHT IN JEDER AUSGABE (Plan 2.4). Er
+         fehlte in Druck und Word, weil er am Bildschirm in der Fusszeile
+         steht und die im Druck ausgeblendet ist (Befund 2026-08-07). Er
+         kommt hier aus dem Woerterbuch, nicht aus der Oberflaeche — dann
+         kann ihn kein Ausblenden mehr verschlucken. */
+      lizenz: istText(e.lizenz) ? e.lizenz : '',
+      haftung: T('disclaimer', lang),
+      impressum: T('impressum', lang),
       karten: [], abschnitte: [], abschnitt_codes: [],
       luecken: [], warnungen: [], hinweise: [],
       bilder: [], fehler: []
@@ -580,6 +641,7 @@
     p('{\\b\\fs36 ' + rtfText(bericht.programm) + '}\\par');
     fett(bericht.titel);
     if (bericht.bezeichnung) zeile(bericht.bezeichnung);
+    if (bericht.lizenz) zeile(bericht.lizenz);
     if (bericht.datum) zeile(bericht.datum);
     if (bericht.version) zeile(bericht.version);
     p('\\par');
@@ -650,6 +712,12 @@
       zeile(bericht.module.join(' \u00b7 '));
     }
 
+    /* Der Haftungshinweis steht am Schluss des Blattes — ohne Ueberschrift,
+       damit er nicht wie ein weiterer Abschnitt aussieht, aber fett, damit
+       ihn niemand ueberliest. */
+    if (bericht.haftung) { p('\\par'); fett(bericht.haftung); }
+    if (bericht.impressum) zeile(bericht.impressum);
+
     p('}');
     raus.ok = true;
     raus.text = t.join('\n');
@@ -659,7 +727,9 @@
   return {
     NAME: NAME, VERSION: VERSION,
     PROGRAMM: PROGRAMM, FORMAT: FORMAT, ENDUNG: ENDUNG,
-    AKTIONEN: AKTIONEN, CODES: CODES,
+    AKTIONEN: AKTIONEN, CODES: CODES, SPEICHER: SPEICHER, NAME_MAX: NAME_MAX,
+    lizenzName: lizenzName, istAktiviert: istAktiviert,
+    lizenzPhrase: lizenzPhrase, lizenzZeile: lizenzZeile,
     MAX_TWIPS: MAX_TWIPS, TWIP_JE_PX: TWIP_JE_PX,
     guard: guard,
     stempel: stempel,

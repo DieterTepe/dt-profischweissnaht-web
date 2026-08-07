@@ -2687,3 +2687,141 @@ der Mini-DOM gar nicht erreicht.
 
 **Gegenprobe bestanden:** Ohne den Umbruch fallen drei Assertions.
 **Basislinie 3283 → 3303 Assertions · Smokes unverändert 988/988 · i18n-Parität 0.**
+
+---
+
+## Aus dem Abschluss von N11 (2026-08-07) — das Bild war immer da
+
+Nach dem Zeilenumbruch öffnete Word die Datei. Das Nahtbild blieb für Dieter trotzdem
+unsichtbar — am Handy und am Tablet, beide Male in der Word-App unter Android.
+
+**Der nächste Griff wäre der falsche gewesen.** Naheliegend war, den Bildblock umzubauen
+oder das Bild ganz wegzulassen; Dieter hatte Letzteres sogar angeboten. Stattdessen
+wurde das PNG aus der gelieferten `.rtf` **herausgelöst und angesehen**: 11.303 Bytes,
+640×480, gültige Signatur, sauber bis zum IEND — und inhaltlich genau das Nahtbild des
+Winkelprofils, dasselbe, das im PDF steht. Die Datei hat 452 Zeilen, die längste hat 201
+Zeichen, keine geht über 255. Ein Programmierkollege von Dieter bestätigte, dass das
+Bild am PC erscheint.
+
+**Es war also nie ein Programmfehler.** Die Word-App unter Android zeigt in RTF
+eingebettete Bilder nicht an. Der Text ist dort vollständig, nur die Darstellung fehlt.
+Das ist eine benannte Einschränkung des Betrachters und gehört als solche in den Plan —
+nicht als Lücke der Rechnung und schon gar nicht als Anlass, ein funktionierendes
+Format zu verbiegen.
+
+**Die praktische Antwort steht daneben:** Wer auf einem mobilen Gerät ein Dokument mit
+Bild braucht, nimmt „Drucken / PDF". Dieser Weg druckt die lebende Seite und trägt das
+Bild überall — Dieters PDF hat es an diesem Tag zweimal gezeigt.
+
+**Die Regel, die daraus wurde:** *Bevor an einer Ausgabe gebaut wird, wird das Erzeugnis
+auseinandergenommen.* Sie schließt die Reihe des Tages ab. Dreimal hatte die Prüfung in
+der Nähe der Sache gelegen statt auf ihr — beim vergessenen `leeren()`, bei den
+verklebten Karten, bei der Zeilenlänge. Beim vierten Mal lag der Fehler gar nicht im
+Programm, und genau da hätte ein Umbau am meisten geschadet: Er hätte kaputtgemacht, was
+nachweislich funktioniert.
+
+**Was Dieters PDF nebenbei belegt hat:** Der Ausdruck ist vollständig — alle drei
+Ergebniskarten, das Nahtbild, 34 Rechenwegschritte, die Liste 2.4. Und die beiden Fehler
+vom Vormittag sind darin nachweislich weg: „Abkühlzeit t8/5 · 13,3 s" steht sauber
+getrennt, und „Was NICHT geprüft wird" steht genau einmal.
+
+**Code unverändert, `Codestand` bleibt 2.67. Basislinie unverändert: 3303 · 988 · 988.**
+**Baustein N11 ist vollständig abgeschlossen; acht von zehn Bausteinen bis zum
+Verkaufsstand sind fertig.**
+
+---
+
+## Aus N12 (2026-08-07) — Druckbild, Registrierung, Lizenzzeile, Lang-Druck
+
+**Der abgestimmte Umfang.** Dieter wollte alles zusammen in N12 statt einer eigenen
+Nacharbeit, den Farbverlauf der Marke wie im Schwesterprogramm, das Word-Dokument
+unverändert bis auf Nutzernamen und Haftungshinweis — und die Einzeldatei-Fassung
+zurückgestellt: *„solange wir bauen, müsste die Einzeldatei nach jeder Änderung neu
+erzeugt werden, genau so kann ich zur Not wenn GitHub ausfällt von Hand alles
+zusammensetzen."*
+
+**VIER BEFUNDE AUS DEM GEDRUCKTEN PDF — und drei davon waren meine.**
+
+Dieters Meldung war präzise und hätte trotzdem zu einer falschen Reparatur führen können:
+leere erste Seite, eine Seite über der nächsten, ein Wort zur Hälfte auf zwei Seiten. Statt
+zu raten wurde das PDF vermessen. 25 Seiten, **Seite 1 mit 0 Byte Inhalt**. Seite 23 endete
+mit `Summe 200€`, Seite 24 begann mit `Summe 2,00 €` — dieselbe Zeile zweimal, einmal oben
+abgeschnitten. Damit war die Ursache eindeutig statt vermutet.
+
+*Erstens:* `.card` und `.acc` tragen seit N5a `overflow:hidden`, damit die runden Ecken
+sauber bleiben. Im Druck schneidet das **jede Zeile ab, die über einen Seitenumbruch
+läuft** — die obere Hälfte bleibt zerschnitten stehen, die ganze Zeile erscheint noch
+einmal auf der Folgeseite. Genau die „Überlappung" und das halbierte Wort.
+
+*Zweitens:* Mein `break-inside:avoid` aus N11 stand auf `.card` und `.acc`. Beide sind
+höher als eine Seite; der Browser kann die Regel nicht erfüllen und schiebt die erste Karte
+auf Seite 2. Zusammengehalten wird jetzt an den kleinen Einheiten — Kacheln, Feldzeilen,
+Rechenwegzeilen.
+
+*Drittens:* Es standen **zwei `@media print`-Blöcke** in `style.css` — einer aus N5a, einer
+aus N11 danebengeschrieben, ohne dass ich den ersten bemerkt hatte. Der erste blendete
+`.app-header` aus. Genau die Doppelquelle, die 3.4 verbietet, und sie war mir beim Bauen
+von N11 selbst untergekommen. Eine Assertion zählt jetzt nach, dass es genau ein Druckbild
+gibt.
+
+*Viertens*, und das fiel erst beim Nachmessen auf: Die Wörter **„DT-ProfiSchweissnaht",
+„Programmstand" und „ohne Gewähr" kamen im ganzen PDF nicht vor.** Alle drei stehen am
+Bildschirm an Stellen, die im Druck ausgeblendet sind — Kopfleiste, Info-Dialog, Fußzeile.
+Das Blatt trug also weder Namen noch Stand noch Haftungshinweis, obwohl 3.6 die
+Versionszeile in *jeder* Ausgabe verlangt und 2.4 den Hinweis. Neu sind deshalb Druckkopf
+und Druckfuß — am Bildschirm unsichtbar, im Druck die einzige Stelle, an der beides
+auftaucht.
+
+**DIE REGISTRIERUNG — Hemmschwelle, nicht Schloss.**
+
+Das Verhalten musste nicht erfunden werden: Das Schwesterprogramm hat den Dialog mit
+**„Aktivieren" und „Später"**. Damit war die einzige wirklich offene Frage beantwortet —
+die Aktivierung blockiert nicht. Ein Dialog, den man nicht schließen kann, sperrt auch den
+aus, der gerade seinen Schlüssel sucht.
+
+Geprüft wird **nichts** (Plan 1). Ein einzelnes Zeichen genügt als Schlüssel; verlangt wird
+nur, dass Name und Schlüssel dastehen. Wer hier eine Formprüfung einbaut, verspricht eine
+Sicherheit, die es nicht gibt. Der Zweck des Namens ist, dass er in allen Ausgaben steht.
+
+Die Lizenzzeile liegt in `report.js` — dort, wo schon das Gating sitzt, also alles
+Editionsabhängige. Sie hat **eine Quelle und vier Orte**: Kopfzeile, Druckkopf, Word-Blatt,
+`.dts`. In der Datei steht sie ausdrücklich **nicht bei den Eingaben**; sie gehört dem, der
+die Datei geschrieben hat. **In der Testversion gibt es sie nie**, auch nicht mit von Hand
+in den Speicher geschriebenem Namen — sonst könnte man sich die Vollversion hineinschreiben.
+Dieselbe sichere Seite wie beim Gating.
+
+**Der lange Druck setzt nur die Aktivierung zurück.** Nicht die Sprache, nicht das Design,
+nicht die Eingaben. Drei Assertions halten das fest, denn ein Reset, der mehr wegnimmt als
+angekündigt, ist eine Falle — und beim Bauen war die Versuchung da, gleich `leeren()`
+mitzurufen.
+
+**EIN FEHLER IM BESTAND KAM DABEI HERAUS, UND ER IST LEHRREICH.** Die Lizenzzeile
+verschwand nach jedem Sprachwechsel. Ursache: `edition()` leerte sie bei jedem Aufruf —
+mit dem Kommentar *„Die Lizenzzeile mit dem Namen setzt die Registrierung in N12."* Der
+Platzhalter aus N5a hatte brav gewartet; nur hat ihn beim Bauen von N12 niemand abgelöst,
+und `uebersetze()` ruft `edition()` mit. **Zwei Besitzer für eine Zeile, und der eine
+wusste nichts vom anderen.** Daraus die Regel in 9.2: Wer einen Platzhalter für einen
+künftigen Baustein setzt, benennt beim Ablösen auch den alten Besitzer.
+
+**SECHS GEGENPROBEN, alle bestanden.** Überlauf nicht zurückgenommen → 7 rot · große
+Behälter dürfen nicht umbrechen → 2 · Druckkopf wandert beim Sprachwechsel nicht mit → 3 ·
+Lizenzzeile in der Testversion → 6 · Aktivierung ohne Schlüssel → 5 · Reset leert das
+Formular mit → 3.
+
+**Zwei Kleinigkeiten am Rande.** In S49 stand wieder ein festgeschriebener Handwert
+(`-N11` in der Kennungsprüfung) — er wäre beim nächsten Baustein rot geworden, ohne dass
+etwas kaputt ist; geprüft wird jetzt die Form. Und im Plan widersprachen sich 4.10c und
+9.2: die eine Stelle sagte seit N11 „vier Module", die andere noch „drei". Beides beim
+Durchlesen vor dem Bauen gefunden.
+
+**Was bewusst nicht gebaut wurde.** Die Eingabewerte im Word-Dokument — angeboten war ein
+eigener Abschnitt, Dieter wollte es *„so wie es zuletzt war"*. Benannt sei, was das heißt:
+die maßgebenden Zahlen stehen ohnehin im Rechenweg; es fehlen nur die Parameter der
+Zusatzrechnungen, deren Ergebnisse im Blatt stehen. Dazu die Einzeldatei-Fassung und die
+Ablage von Sprache und Design im lokalen Speicher — beides zurückgestellt, keine Lücken.
+
+**Basislinie 3303 → 3414 Assertions · Smokes 988/988 → 1078/1039 · i18n-Parität 0.**
+Die beiden Smokes sind seit N12 **verschieden lang** — den Aktivierungsdialog gibt es nur
+in der Vollversion. Beide Zahlen sind Basislinie und dürfen nur wachsen.
+**Neun von zehn Bausteinen bis zum Verkaufsstand sind fertig; der Launch-Checkpoint ist
+erreicht.**

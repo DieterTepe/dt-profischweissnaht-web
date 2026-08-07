@@ -35,12 +35,12 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.17.2';
-  var ETAPPE = 'N11';
+  var VERSION = '0.18.0';
+  var ETAPPE = 'N12';
   /* Plan-Version, die zu diesem Stand gehoert. Sie ist die EINZIGE von Hand
      gepflegte Zahl der Versionszeile — alles andere kommt aus den geladenen
      Modulen selbst (Plan 3.6). */
-  var PLAN = '2.67';
+  var PLAN = '2.69';
   var SPRACHEN = ['de', 'en', 'pt'];
 
   /* Plan 3.1 (bindend): die Oberflaeche startet IMMER im dunklen Design —
@@ -175,7 +175,13 @@
     'hilfeModal', 'hilfeTitel', 'hilfeWasLbl', 'hilfeWas', 'hilfeBereichLbl',
     'hilfeBereich', 'hilfeTippLbl', 'hilfeTipp', 'hilfeClose',
     /* N5d */
-    'infoVersion', 'infoModule'
+    'infoVersion', 'infoModule',
+    /* N12 — Druckkopf und Druckfuss */
+    'printKopf', 'printBezeichnung', 'printLizenz', 'printVersion',
+    'printFuss', 'printHaftung', 'printImpressum',
+    /* N12 — Aktivierung */
+    'licModal', 'licTitel', 'licText', 'licNameLbl', 'licName',
+    'licKeyLbl', 'licKey', 'licHinweis', 'licAktivieren', 'licSpaeter'
   ];
 
   /* CSS-Klassen, die style.css tragen muss (leer erlaubt, vorhanden Pflicht). */
@@ -208,7 +214,10 @@
     'assist-wahl-bild',
     /* N9b */
     'th-kopf', 'th-weg', 'th-hinweise', 'th-wert', 'th-zeile', 'th-ampel',
-    'th-gruen', 'th-rot', 'th-grau', 'anhalt-note'
+    'th-gruen', 'th-rot', 'th-grau', 'anhalt-note',
+    /* N12 */
+    'print-only', 'print-kopf', 'print-fuss', 'print-mark', 'print-tag',
+    'print-zeile', 'license-line', 'lic-feld'
   ];
 
   /* Buttons, die bewusst noch nicht verdrahtet sind: Id -> ehrliche Meldung.
@@ -305,6 +314,9 @@
          hier nichts steht, gilt der Vorschlag; danach gilt seine Wahl. Genau
          die Bauform des "eigener Wert"-Hakens, nur fuer eine Auswahl. */
       manuell: {},
+      /* N12: die Registrierung. Leer heisst: nicht aktiviert — dann steht
+         in den Ausgaben KEINE Lizenzzeile statt einer leeren. */
+      lizenzName: '', lizenzKey: '', lizenzSpaeter: false,
       edition: (win.DT_EDITION === 'test') ? 'test' : 'full'
     };
 
@@ -2114,6 +2126,11 @@
     /* ---------------------------------------------------------- Sprache */
     function uebersetze() {
       var l = S.sprache, i, n, e;
+      /* Der Druckkopf traegt programmatisch gesetzte Zeilen (Programmstand,
+         Bezeichnung). Sie wandern beim Sprachwechsel NICHT von selbst mit —
+         die Lehre aus N10c. Deshalb steht der Aufruf hier und nicht nur beim
+         Drucken. */
+      lizenzZeigen();
 
       var lTexte = alle(doc, '[data-i18n]');
       for (i = 0; i < lTexte.length; i++) {
@@ -2192,19 +2209,22 @@
     function toggleTheme() { return setTheme(S.theme === 'dark' ? 'light' : 'dark'); }
 
     /* --------------------------------------------------------- Edition */
+    /* DIE LIZENZZEILE GEHOERT SEIT N12 NICHT MEHR HIERHER. Bis dahin stand
+       hier der Platzhalter aus N5a, der sie bei jedem Aufruf leerte — und
+       weil `uebersetze()` diese Funktion mitruft, hat er sie nach jedem
+       Sprachwechsel geloescht. Zwei Besitzer fuer eine Zeile, und der eine
+       wusste nichts vom anderen. Jetzt gibt es genau einen:
+       `lizenzZeigen()`. */
     function edition() {
-      var bar = el(doc, 'editionBar'), lic = el(doc, 'licenseLine'),
-          ie = el(doc, 'infoEdition');
+      var bar = el(doc, 'editionBar'), ie = el(doc, 'infoEdition');
       if (S.edition === 'test') {
         if (bar) { bar.hidden = false; bar.textContent = txt(win, 'editionTest', S.sprache); }
-        if (lic) { lic.hidden = true; lic.textContent = ''; }
         if (ie) ie.textContent = txt(win, 'editionTest', S.sprache);
       } else {
         if (bar) { bar.hidden = true; bar.textContent = ''; }
-        /* Die Lizenzzeile mit dem Namen setzt die Registrierung in N12. */
-        if (lic) { lic.hidden = true; lic.textContent = ''; }
         if (ie) ie.textContent = txt(win, 'uiEditionVoll', S.sprache);
       }
+      lizenzZeigen();
       return S.edition;
     }
 
@@ -2417,6 +2437,12 @@
         }(GERUEST_BUTTONS[i]));
       }
 
+      /* N12 · Aktivierung */
+      b = el(doc, 'licAktivieren');
+      if (b && b.addEventListener) b.addEventListener('click', function () { lizenzAktivieren(); });
+      b = el(doc, 'licSpaeter');
+      if (b && b.addEventListener) b.addEventListener('click', function () { lizenzSpaeter(); });
+
       /* N11 · die vier Ausgaben. Jede fragt zuerst das Gating. */
       b = el(doc, 'saveBtn');
       if (b && b.addEventListener) b.addEventListener('click', function () { speichern(); });
@@ -2459,6 +2485,169 @@
     bereicheStandard();
     verdrahte();
     uebersetze();
+
+    /* N12 — zuerst laden, dann anzeigen, dann erst fragen. Umgekehrt saehe
+       ein bereits Aktivierter beim Start kurz den Dialog. */
+    lizenzLaden();
+    langDruckVerdrahten();
+    lizenzErststart();
+
+    /* ======================================================================
+     * N12 — REGISTRIERUNG, LIZENZZEILE UND DER LANG-DRUCK
+     *
+     * DIE FACHLICHE ENTSCHEIDUNG LIEGT NICHT HIER. Ob jemand aktiviert ist
+     * und wie die Zeile lautet, sagt `report.js` — dieselbe Stelle, die auch
+     * das Gating traegt. Hier steht nur, wo der Dialog erscheint, was der
+     * Knopf tut und wohin die Zeile geschrieben wird.
+     *
+     * ES WIRD NICHTS GEPRUEFT (Plan 1). Der Name ist die Hemmschwelle zur
+     * Weitergabe, kein Kopierschutz.
+     * ==================================================================== */
+
+    /* Der lokale Speicher traegt NUR Programmbedingungen (5.1-8) — nie die
+       letzten Eingaben. Faellt er aus (privater Modus, alte Geraete), laeuft
+       das Programm weiter und sagt es; es bricht nichts ab. */
+    function speicherLies(schluessel) {
+      try {
+        if (!win.localStorage) return null;
+        return win.localStorage.getItem(schluessel);
+      } catch (ex) { return null; }
+    }
+
+    function speicherSchreib(schluessel, wert) {
+      try {
+        if (!win.localStorage) return false;
+        if (wert === null) win.localStorage.removeItem(schluessel);
+        else win.localStorage.setItem(schluessel, wert);
+        return true;
+      } catch (ex) { return false; }
+    }
+
+    function lizenzLaden() {
+      if (!Report) return;
+      S.lizenzName = speicherLies(Report.SPEICHER.name) || '';
+      S.lizenzKey = speicherLies(Report.SPEICHER.schluessel) || '';
+      S.lizenzSpaeter = speicherLies(Report.SPEICHER.spaeter) === '1';
+      lizenzZeigen();
+    }
+
+    /* DIE ZEILE HAT EINE QUELLE UND DREI ORTE: Kopfleiste, Druckkopf und
+       (ueber den Bericht) jede Ausgabe. Gebaut wird sie genau einmal. */
+    function lizenzText() {
+      if (!Report) return '';
+      return Report.lizenzZeile(S.edition, S.lizenzName, S.sprache);
+    }
+
+    function lizenzZeigen() {
+      var t = lizenzText();
+      var z = el(doc, 'licenseLine');
+      if (z) { z.textContent = t; z.hidden = !t; }
+      druckKopfSetzen();
+    }
+
+    function lizenzDialog(auf) {
+      var m = el(doc, 'licModal');
+      if (!m) return false;
+      m.hidden = !auf;
+      if (auf) {
+        var n = el(doc, 'licName'), k = el(doc, 'licKey');
+        if (n) n.value = S.lizenzName || '';
+        if (k) k.value = S.lizenzKey || '';
+        var h = el(doc, 'licHinweis');
+        if (h) h.textContent = '';
+      }
+      return true;
+    }
+
+    function lizenzAktivieren() {
+      var n = el(doc, 'licName'), k = el(doc, 'licKey'), h = el(doc, 'licHinweis');
+      var name = n ? String(n.value || '') : '';
+      var key = k ? String(k.value || '') : '';
+      /* GEPRUEFT WIRD NUR, DASS BEIDES DA IST — nicht, wie es aussieht. */
+      if (!Report || !Report.istAktiviert(name, key)) {
+        if (h) h.textContent = txt(win, 'lic_fehlt', S.sprache);
+        return false;
+      }
+      S.lizenzName = Report.lizenzName(name);
+      S.lizenzKey = Report.lizenzName(key);
+      S.lizenzSpaeter = false;
+      var ok1 = speicherSchreib(Report.SPEICHER.name, S.lizenzName);
+      speicherSchreib(Report.SPEICHER.schluessel, S.lizenzKey);
+      speicherSchreib(Report.SPEICHER.spaeter, null);
+      lizenzZeigen();
+      lizenzDialog(false);
+      /* Haelt das Geraet nichts fest, gilt die Aktivierung nur fuer diese
+         Sitzung — und das wird gesagt, statt es beim naechsten Start
+         stillschweigend zu vergessen. */
+      meldung(txt(win, 'lic_ok', S.sprache) +
+              (ok1 ? '' : ' ' + txt(win, 'lic_nicht_gespeichert', S.sprache)));
+      return true;
+    }
+
+    function lizenzSpaeter() {
+      S.lizenzSpaeter = true;
+      if (Report) speicherSchreib(Report.SPEICHER.spaeter, '1');
+      lizenzDialog(false);
+      meldung(txt(win, 'lic_spaeter_hinweis', S.sprache));
+      return true;
+    }
+
+    /* ZURUECKSETZEN: zehn Sekunden auf die Marke (Plan 1). Es loescht NUR die
+       Aktivierung — nicht die Sprache, nicht das Design und schon gar keine
+       Eingaben. Ein Reset, der mehr wegnimmt als angekuendigt, ist eine
+       Falle. */
+    var LANG_DRUCK_MS = 10000;
+
+    function lizenzZuruecksetzen() {
+      S.lizenzName = '';
+      S.lizenzKey = '';
+      S.lizenzSpaeter = false;
+      if (Report) {
+        speicherSchreib(Report.SPEICHER.name, null);
+        speicherSchreib(Report.SPEICHER.schluessel, null);
+        speicherSchreib(Report.SPEICHER.spaeter, null);
+      }
+      lizenzZeigen();
+      meldung(txt(win, 'lic_zurueckgesetzt', S.sprache));
+      if (S.edition === 'full') lizenzDialog(true);
+      return true;
+    }
+
+    function langDruckVerdrahten() {
+      var m = el(doc, 'brandMark');
+      if (!m || !m.addEventListener) return false;
+      var uhr = null;
+      function start() {
+        if (!win.setTimeout) return;
+        uhr = win.setTimeout(function () { uhr = null; lizenzZuruecksetzen(); }, LANG_DRUCK_MS);
+      }
+      function stopp() {
+        if (uhr && win.clearTimeout) { win.clearTimeout(uhr); }
+        uhr = null;
+      }
+      m.addEventListener('pointerdown', start);
+      m.addEventListener('pointerup', stopp);
+      m.addEventListener('pointercancel', stopp);
+      m.addEventListener('pointerleave', stopp);
+      m.addEventListener('touchstart', start);
+      m.addEventListener('touchend', stopp);
+      m.addEventListener('mousedown', start);
+      m.addEventListener('mouseup', stopp);
+      m.addEventListener('mouseleave', stopp);
+      return true;
+    }
+
+    /* Beim Erststart der VOLLVERSION fragen — einmal. Wer „Spaeter" gedrueckt
+       hat, wird nicht wieder gefragt; er holt es ueber den langen Druck nach.
+       In der Testversion erscheint der Dialog NIE: dort gibt es nichts zu
+       aktivieren, und der Testbalken sagt ohnehin, woran man ist. */
+    function lizenzErststart() {
+      if (S.edition !== 'full') return false;
+      if (!Report) return false;
+      if (Report.istAktiviert(S.lizenzName, S.lizenzKey)) return false;
+      if (S.lizenzSpaeter) return false;
+      return lizenzDialog(true);
+    }
 
     /* ======================================================================
      * N11 — DIE AUSGABEN (report.js liefert, ui.js reicht durch)
@@ -2657,6 +2846,7 @@
         version: versionText(),
         module: versionInfo().module,
         anforderung: anforderungText(),
+        lizenz: lizenzText(),
         karten: berichtKarten(),
         bilder: bilder || []
       });
@@ -2669,7 +2859,7 @@
       var vi = versionInfo();
       return Report.baueDatei({
         auswahl: zustand(), werte: werte(),
-        bezeichnung: bezeichnung(), sprache: S.sprache,
+        bezeichnung: bezeichnung(), lizenz: lizenzText(), sprache: S.sprache,
         etappe: vi.stand, plan: vi.plan, datum: heute(),
         nicht_geprueft: nichtGeprueftCodes(),
         module: vi.module
@@ -2736,6 +2926,25 @@
        zweite Darstellung, die auseinanderlaufen koennte. Vorher wird alles
        aufgeklappt, was zugeklappt ist: ein Nachweis mit halbem Rechenweg
        waere kein Nachweis. */
+    /* DER DRUCKKOPF WIRD PROGRAMMATISCH GEFUELLT — und deshalb bei JEDEM
+       Sprachwechsel neu (Lehre aus N10c: programmatisch gesetzte Texte
+       wandern nicht von selbst mit). Die festen Texte darin tragen
+       `data-i18n` und laufen ohnehin ueber `uebersetze()`. */
+    function druckKopfSetzen() {
+      var b = el(doc, 'printBezeichnung');
+      if (b) {
+        b.textContent = bezeichnung();
+        b.hidden = !bezeichnung();
+      }
+      var v = el(doc, 'printVersion');
+      if (v) v.textContent = versionText();
+      /* Die Lizenzzeile bleibt leer, bis die Registrierung sie fuellt.
+         Eine leere Zeile im Ausdruck waere ein stiller Platzhalter. */
+      var lz = lizenzText();
+      var l = el(doc, 'printLizenz');
+      if (l) { l.textContent = lz; l.hidden = !lz; }
+    }
+
     function druckAufklappen() {
       var i;
       for (i = 0; i < BEREICHE.length; i++) schalte(BEREICHE[i], true);
@@ -2754,6 +2963,7 @@
         return false;
       }
       druckAufklappen();
+      druckKopfSetzen();
       if (typeof win.print === 'function') { win.print(); return true; }
       return false;
     }
@@ -2855,6 +3065,17 @@
       /* N11 — die Ausgaben. Von aussen bedienbar, damit der DOM-Smoke sie
          durchklicken kann, ohne einen Dateidialog zu brauchen. */
       versionText: versionText,
+      druckKopf: function () { druckKopfSetzen(); return true; },
+      lizenz: lizenzText,
+      lizenzName: function () { return S.lizenzName; },
+      lizenzDialogOffen: function () { var m = el(doc, 'licModal'); return !!m && m.hidden === false; },
+      lizenzDialog: lizenzDialog,
+      lizenzNeuLaden: function () { lizenzLaden(); return S.lizenzName; },
+      erststartFragen: lizenzErststart,
+      aktivieren: lizenzAktivieren,
+      spaeter: lizenzSpaeter,
+      zuruecksetzen: lizenzZuruecksetzen,
+      LANG_DRUCK_MS: LANG_DRUCK_MS,
       speichern: speichern,
       oeffnen: oeffnen,
       drucken: drucken,
