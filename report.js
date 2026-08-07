@@ -49,7 +49,7 @@
   'use strict';
 
   var NAME = 'report';
-  var VERSION = '0.1.1-N11';
+  var VERSION = '0.1.2-N11';
 
   /* Der Programmname steht in der Datei, damit eine fremde .dts nicht
      stillschweigend als eigene gelesen wird. */
@@ -405,14 +405,36 @@
     return r;
   }
 
+  /* DIE HEX-DATEN MUESSEN UMBROCHEN WERDEN — sonst oeffnet Word die Datei
+     nicht (Befund 2026-08-07, an Dieters erster Ausgabe gemessen).
+     Ein 640x480-Nahtbild ergibt rund 11 kB PNG und damit ueber 22.000
+     Hex-Zeichen. Standen sie auf EINER Zeile, hat Word beim Laden
+     festgehangen; die Datei war formal richtig und trotzdem unbrauchbar.
+     Word selbst schreibt Bilddaten mit 128 Zeichen je Zeile — genau das
+     wird hier gemacht. Ein Zeilenumbruch zwischen zwei Hex-Ziffern ist fuer
+     jeden RTF-Leser bedeutungslos, fuer manchen aber der Unterschied
+     zwischen "oeffnet" und "oeffnet nicht". */
+  var HEX_JE_ZEILE = 128;
+
+  function hexUmbrechen(hex) {
+    var r = [], i;
+    for (i = 0; i < hex.length; i += HEX_JE_ZEILE) {
+      r.push(hex.substring(i, i + HEX_JE_ZEILE));
+    }
+    return r.join('\n');
+  }
+
   function bildBlock(png, masse) {
     if (!masse) return null;
     var hex = b64ZuHex(png);
     if (!hex) return null;
+    /* Eine ungerade Zahl Hex-Ziffern waere ein halbes Byte — daran scheitert
+       jeder Leser, und zwar still. Lieber gar kein Bild als ein kaputtes. */
+    if (hex.length % 2 !== 0) return null;
     return '{\\pict\\pngblip' +
            '\\picw' + masse.breite_px + '\\pich' + masse.hoehe_px +
            '\\picwgoal' + masse.breite_twips + '\\pichgoal' + masse.hoehe_twips +
-           '\n' + hex + '}';
+           '\n' + hexUmbrechen(hex) + '}';
   }
 
   /* ------------------------------------------------------------- DER BERICHT
@@ -523,7 +545,24 @@
     var t = [], i, j;
 
     function p(s) { t.push(s); }
-    function zeile(s) { p(rtfText(s) + '\\par'); }
+    /* Auch lange TEXTzeilen werden umbrochen. Ein Zeilenumbruch ist in RTF
+       bedeutungslos — das Leerzeichen bleibt am Zeilenende stehen, also
+       kleben keine Woerter zusammen. Umbrochen wird nur an Leerzeichen,
+       nie mitten in einer Folge wie \u252? — die enthaelt keine. */
+    function weich(t) {
+      if (t.length <= 200) return t;
+      var raus = [], rest = t, schnitt;
+      while (rest.length > 200) {
+        schnitt = rest.lastIndexOf(' ', 200);
+        if (schnitt <= 0) break;            /* ein einzelnes langes Wort */
+        raus.push(rest.substring(0, schnitt + 1));
+        rest = rest.substring(schnitt + 1);
+      }
+      raus.push(rest);
+      return raus.join('\n');
+    }
+
+    function zeile(s) { p(weich(rtfText(s)) + '\\par'); }
     function fett(s) { p('{\\b ' + rtfText(s) + '}\\par'); }
     /* Manche Beschriftungen tragen im Woerterbuch schon einen Doppelpunkt —
        als Ueberschrift sieht das falsch aus. */
@@ -631,6 +670,8 @@
     bildMasse: bildMasse,
     svgMitMassen: svgMitMassen,
     b64ZuHex: b64ZuHex,
+    hexUmbrechen: hexUmbrechen,
+    HEX_JE_ZEILE: HEX_JE_ZEILE,
     rtfText: rtfText,
     bildBlock: bildBlock,
     baueBericht: baueBericht,

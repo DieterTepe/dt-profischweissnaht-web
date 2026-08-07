@@ -2636,3 +2636,54 @@ DOM-Smoke rechnet dafür jetzt ein Beispiel mit **beiden** Zusatzbereichen durch
 
 **Basislinie 3274 → 3283 Assertions · Smokes 982/982 → 988/988 · i18n-Parität 0.**
 **Damit sind acht von zehn Bausteinen bis zum Verkaufsstand fertig.**
+
+---
+
+## Aus der zweiten Nacharbeit zu N11 (2026-08-07) — Word öffnete die Datei nicht
+
+**Dieters Meldung:** *„Jetzt öffnet Word das Dokument nicht mehr, es versucht zu laden,
+dann steht alles."*
+
+Das „nicht mehr" war irreführend — und zwar nicht durch seine Schuld. Die erste Datei
+hatte er am Handy geprüft, wo der RTF-Betrachter das Bild ohnehin überspringt. **Word
+hatte sie nie geöffnet.** Der Fehler war also von der ersten Lieferung an da und wurde
+erst sichtbar, als überhaupt zum ersten Mal ein richtiger RTF-Leser darauf sah.
+
+**Statt zu raten, wurde die Datei vermessen.** Sie hat 284 Zeilen. 282 davon sind
+unauffällig; die längste Textzeile hat 472 Zeichen. Eine Zeile hat **22.611 Zeichen** —
+die Hex-Daten des Bildes. Das PNG selbst ist einwandfrei: gültige Signatur, 11.303
+Bytes, 640×480 wie im `\pict` angegeben, sauber mit IEND abgeschlossen. Die Klammern
+sind ausgeglichen, die Maße stimmen. **Formal war alles richtig.**
+
+**Word schreibt Bilddaten selbst mit 128 Zeichen je Zeile.** Ein Zeilenumbruch zwischen
+zwei Hex-Ziffern ist für einen RTF-Leser bedeutungslos — und trotzdem der Unterschied
+zwischen „öffnet" und „öffnet nicht". Genau das wird jetzt gemacht, dazu ein weicher
+Umbruch langer Textzeilen an Leerzeichen (das Leerzeichen bleibt am Zeilenende stehen,
+also klebt nichts zusammen). Keine Zeile im Blatt geht mehr über 255 Zeichen.
+
+**Eine Kleinigkeit kam mit:** Eine ungerade Zahl Hex-Ziffern gibt jetzt gar kein Bild
+mehr. Ein halbes Byte wäre ein kaputtes Bild — und zwar ein stilles. Lieber der
+sichtbare Rückfallweg als eine Datei, die irgendwo mittendrin abbricht.
+
+**Die Lehre, und sie ist unbequem.** Alle drei Testläufe waren grün, das Erzeugnis war
+geöffnet worden, die Klammern waren gezählt, jeder Rechenwegschritt war nachgewiesen —
+und die Datei war trotzdem unbrauchbar. Geprüft worden war der **Inhalt**, nicht die
+**Form**. Ein Dateiformat hat aber Regeln, die nichts mit dem Inhalt zu tun haben, und
+die fallen keinem Auge auf: Zeilenlängen, gerade Byte-Zahlen, Klammerbilanz. Daraus die
+Regel in 9.2: **Wo ein Format Regeln hat, wird gegen die Regeln gemessen — nicht gegen
+den Eindruck.** Der Harness zählt jetzt Zeilenlängen in allen drei Sprachen, prüft, dass
+der Umbruch kein Zeichen verliert, dass keine Zeile mitten in einem Byte bricht, und
+dass der Textumbruch keine Wörter zusammenklebt.
+
+**Das ist innerhalb eines Tages das dritte Mal dasselbe Muster:** beim vergessenen
+`leeren()`, bei den verklebten Karten und jetzt bei der Zeilenlänge war die Prüfung
+jedes Mal *in der Nähe* der Sache, aber nicht *auf* ihr. Sie sah, dass die Datei
+entsteht — nicht, ob sie sich öffnen lässt. Sie sah, dass die Karten ankommen — nicht,
+wie. Sie sah, dass die Werte der Datei da sind — nicht, ob die alten weg sind.
+
+**Nacharbeit: 3 Dateien** — `report.js` (0.1.2-N11), `ui.js` (nur Kennungen, 0.17.2),
+`test_naht.js`. `dom_smoke_voll.js` blieb unverändert; der Befund liegt im Bildpfad, den
+der Mini-DOM gar nicht erreicht.
+
+**Gegenprobe bestanden:** Ohne den Umbruch fallen drei Assertions.
+**Basislinie 3283 → 3303 Assertions · Smokes unverändert 988/988 · i18n-Parität 0.**

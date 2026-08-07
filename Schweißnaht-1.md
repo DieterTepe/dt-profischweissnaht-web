@@ -19,8 +19,8 @@
 > in 4.11 und in der Historie. Im Projektordner liegt **keine Vorlaufdatei** mehr.
 
 ```
-Plan-Version : 2.66 · Stand 2026-08-07
-Codestand    : Plan 2.66 · ui 0.17.1 · N11
+Plan-Version : 2.67 · Stand 2026-08-07
+Codestand    : Plan 2.67 · ui 0.17.2 · N11
                (Die Planversion, gegen die der CODE gebaut ist. Sie steht auch
                in ui.js als PLAN und wird von einer Assertion damit verglichen.
                Sie wandert nur mit, wenn sich Code ändert — reine Plan- oder
@@ -109,7 +109,7 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                  4.11 (symbol.js), 4.12 (report.js).
                Große Bausteine (N5, N8, N13, N14) werden in ETAPPEN gebaut — Regel in
                Kickoff-Punkt 5c, Etappen in Abschnitt 5.2.
-Basislinie   : 3283 Assertions · DOM-Smokes 988 (voll) + 988 (test) · i18n-Parität 0 Abweichungen
+Basislinie   : 3303 Assertions · DOM-Smokes 988 (voll) + 988 (test) · i18n-Parität 0 Abweichungen
                (VERBINDLICH. Basislinie darf nur WACHSEN — nie schrumpfen, nie gelockert werden.)
 Dateistand   : siehe Abschnitt 8.1 — dort steht, was fertig ist und was noch fehlt.
 ⚠️ SYNC       : Am 2026-08-03 lag im Projektordner eine **elf Versionen alte**
@@ -198,7 +198,7 @@ Einstiegssatz von Dieter: **„weiter mit N12"**.
    schon zweimal Dateien verlorengegangen, beide Male hat diese Prüfung es gefunden.
 11. Arbeitsordner herstellen (Befehl unter Punkt 6 der Kickoff-Liste), dann
    `node test_naht.js`, `node dom_smoke_voll.js`, `node dom_smoke_test.js` laufen lassen
-   und die Basislinie aus dem Plan-Kopf bestätigen (**3283 / 988 / 988 · 0 Fehler**),
+   und die Basislinie aus dem Plan-Kopf bestätigen (**3303 / 988 / 988 · 0 Fehler**),
    **bevor** etwas gebaut wird. Weicht etwas ab, erst das klären.
    ⚠️ **Diese drei Läufe sind zugleich die Probe, ob Plandatei und Code zusammenpassen.**
    Steht im Kopfblock eine andere Basislinie als gemessen, ist eine der beiden Seiten alt —
@@ -2759,7 +2759,21 @@ ein altes.**
 > Absicht kaputt. S49 hält beides fest: dass die Nummern springen **und**
 > dass kein Schritt fehlt.
 >
-> **Basislinie 3274 → 3283 Assertions · Smokes 982/982 → 988/988.**
+> **DRITTER BEFUND, ZWEI TAGE ZU SPÄT ENTDECKT: Word öffnete die Datei gar
+> nicht.** Sie ließ sich am Handy lesen, aber Word blieb beim Laden hängen.
+> Die Datei war formal einwandfrei — gültiges PNG (11.303 Bytes, 640×480,
+> sauber mit IEND), ausgeglichene Klammern, richtige Maße. Der Fehler war die
+> **Zeilenlänge**: die 22.606 Hex-Ziffern des Bildes standen auf **einer
+> einzigen Zeile**. 282 der 284 Zeilen waren unauffällig, eine war 22.611
+> Zeichen lang. **Word schreibt Bilddaten selbst mit 128 Zeichen je Zeile** —
+> genau das wird jetzt gemacht, und lange Textzeilen werden an Leerzeichen
+> weich umbrochen. Keine Zeile im Blatt ist mehr länger als 255 Zeichen.
+> **Der Fehler war von der ERSTEN Lieferung an da** und wäre am Handy nie
+> aufgefallen, weil der dortige Betrachter das Bild ohnehin überspringt.
+> Gefunden wurde er erst, als die gelieferte Datei selbst **vermessen** wurde.
+> Gegenprobe bestanden: ohne den Umbruch fallen drei Assertions.
+>
+> **Basislinie 3274 → 3303 Assertions · Smokes 982/982 → 988/988.**
 
 
 **Der abgestimmte Umfang** *(Dieter, 2026-08-07)*: **einteilig komplett, aber mit vielen
@@ -3323,6 +3337,12 @@ was ohnehin da ist.
 neue Kennungen. Ihre Rechenwerte sind unverändert; der Wächter aus S43 hat
 jede einzelne eingefordert, und das ist der Beleg dafür.
 
+**Nachtrag N11-Nacharbeit 2 (2026-08-07) — 3 Dateien:** `report.js`
+(Hex-Daten mit 128 Zeichen je Zeile, weicher Textumbruch, ungerade Hex-Länge
+gibt kein Bild; Kennung 0.1.2-N11) · `ui.js` (**nur** die Kennungen:
+0.17.2 / N11 / 2.67) · `test_naht.js` (**S49** um den Word-Befund erweitert).
+**Kein anderes Modul angefasst, `dom_smoke_voll.js` unverändert.**
+
 **Nachtrag N11-Nacharbeit (2026-08-07) — 5 Dateien:** `ui.js` (`karteZeilen()`
 liest die Struktur statt der Klasse; Kennungen 0.17.1 / N11 / 2.66) ·
 `report.js` (Zeile ohne Wert ohne Doppelpunkt, Überschrift ohne zweiten
@@ -3515,7 +3535,7 @@ Formsache, und der Basislinien-Abgleich aus Kickoff-Punkt 11 ebenso wenig.
 **Erste Handlung im neuen Chat:** Vollständigkeit gegen die Tabelle oben prüfen
 (**19 Module**, `style.css`, beide HTMLs, **alle drei** DEV-ONLY-Dateien, dazu Plandatei und
 `Schweißnaht-Historie.md`), Arbeitsordner herstellen, die drei Testläufe starten.
-Melden müssen sie **3283 / 988 / 988 · 0 Fehler**. Weicht etwas ab, erst das klären —
+Melden müssen sie **3303 / 988 / 988 · 0 Fehler**. Weicht etwas ab, erst das klären —
 nicht bauen.
 
 **Was N6b überschreiben wird** (zur Vorwarnung, nicht als Auftrag): neu `symbol.js`,
@@ -3758,6 +3778,19 @@ will. Also: Vorschriften und Wegweiser bleiben hier, die Erzählung wandert.
   (2026-08-07, N11): Der RTF-Betrachter am Handy zeigt eingebettete PNG nicht
   an. Das ist eine Eigenschaft des Betrachters, kein Programmverhalten — bevor
   ein Rückfallweg beschuldigt wird, gehört in die Datei selbst geschaut.
+- **Bilddaten in RTF gehören umbrochen — 128 Zeichen je Zeile**
+  (2026-08-07, N11): Ein 640×480-Nahtbild ergibt über 22.000 Hex-Ziffern.
+  Standen sie auf einer Zeile, öffnete **Word die Datei nicht**, obwohl sie
+  formal einwandfrei war. Ein Umbruch zwischen zwei Hex-Ziffern ist
+  bedeutungslos — und trotzdem der Unterschied zwischen „öffnet" und „öffnet
+  nicht". Dasselbe gilt für lange Textzeilen; keine Zeile im Blatt geht über
+  255 Zeichen.
+- **Eine Ausgabe wird VERMESSEN, nicht nur angesehen** (2026-08-07, N11):
+  Der Word-Befund war an keinem Bildschirm zu sehen — am Handy zeigt der
+  Betrachter das Bild gar nicht, und in Word kam es nie so weit. Sichtbar
+  wurde er erst, als Zeilenzahl und Zeilenlängen der gelieferten Datei
+  gezählt wurden. **Wo ein Format Regeln hat, wird gegen die Regeln gemessen**
+  — nicht gegen den Eindruck.
 - **Token-Pause: 4 Stunden.**
 
 ---
@@ -3816,20 +3849,6 @@ Changelog — **die vollständige Fassung ab v1.0 steht in `Schweißnaht-Histori
 Hier stehen nur die letzten drei Einträge. Wer wissen will, wie eine Entscheidung
 zustande kam, findet die Kette dort — lückenlos ab der Erstfassung vom 2026-07-23.
 
-**v2.64 (2026-08-06):** **Zwei Schäden im Plan-Kopf behoben — keine
-Codeänderung.** Durch wiederholtes Ersetzen war der Aufzählungssatz der
-abgenommenen Bausteine **zerrissen**: Er endete mitten in „dazu N9c gebaut
-und" und ging dann in einen anderen Satz über. Zwei Zeilen tiefer stand noch
-der veraltete Einstiegssatz „weiter mit N8". Beides ist genau die Sorte Fehler,
-die einen neuen Chat auf die falsche Fährte bringt — der Kopf ist das Erste,
-was gelesen wird. **Neue Regel in 9.2: Der Plan-Kopf wird vor jeder
-Chat-Übergabe gelesen, nicht nur geschrieben.**
-**Code unverändert, `Codestand` bleibt 2.61.**
-**Basislinie unverändert: 3053 Assertions · Smokes 915 / 916 · i18n-Parität 0.**
-**Nächster Schritt: Baustein N11 (Ausgaben). Einstieg: „weiter mit N11".**
-
-
-
 **v2.65 (2026-08-07):** **Baustein N11 (Ausgaben) gebaut und geliefert — Abnahme
 offen.** Neu ist **`report.js`** (19 Module): `.dts` speichern und öffnen mit
 Versionsstempel nach 5.1-8, Drucken/PDF über ein eigenes Druckbild auf der lebenden
@@ -3872,6 +3891,27 @@ die Karten ankommen, nicht **wie** sie ankommen.
 **Damit sind acht von zehn Bausteinen bis zum Verkaufsstand fertig.**
 **Nächster Schritt: Baustein N12 (Edition, Registrierung, Impressum) — danach der
 Launch-Checkpoint. Einstieg: „weiter mit N12".**
+
+
+
+**v2.67 (2026-08-07):** **Word öffnete die Word-Datei nicht — und der Fehler war von
+der ersten Lieferung an da.** Die `.rtf` ließ sich am Handy lesen, aber Word blieb beim
+Laden hängen. Die Datei war formal einwandfrei: gültiges PNG (11.303 Bytes, 640×480,
+sauber mit IEND), ausgeglichene Klammern, richtige Maße. Der Fehler war die
+**Zeilenlänge** — die 22.606 Hex-Ziffern des Bildes standen auf **einer einzigen Zeile**.
+282 der 284 Zeilen waren unauffällig, eine war 22.611 Zeichen lang. Word schreibt
+Bilddaten selbst mit **128 Zeichen je Zeile**; genau das wird jetzt gemacht, dazu ein
+weicher Umbruch langer Textzeilen an Leerzeichen. **Keine Zeile im Blatt geht mehr über
+255 Zeichen.** Zusätzlich: eine ungerade Zahl Hex-Ziffern gibt gar kein Bild mehr —
+ein halbes Byte wäre ein stiller Fehler. **Gefunden wurde das nicht durch Hinsehen,
+sondern durch Nachmessen der gelieferten Datei** — am Handy überspringt der Betrachter
+das Bild, in Word kam es nie so weit. Daraus zwei Festlegungen in 9.2, unter anderem:
+**eine Ausgabe wird vermessen, nicht nur angesehen.** Gegenprobe bestanden — ohne den
+Umbruch fallen drei Assertions.
+**Codestand 2.66 → 2.67 · ui 0.17.1 → 0.17.2 · report 0.1.1 → 0.1.2-N11.**
+**Basislinie 3283 → 3303 Assertions · Smokes unverändert 988/988 · i18n-Parität 0.**
+**Nächster Schritt: die Word-Datei in Word gegenprüfen, dann Baustein N12
+(Edition, Registrierung, Impressum). Einstieg: „weiter mit N12".**
 
 
 ═══════════════════════════════════════════════════════════════════════════

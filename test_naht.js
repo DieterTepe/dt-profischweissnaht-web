@@ -4150,8 +4150,8 @@ var S43_STAND = [
   { datei: 'thermik.js', version: '0.3.0-N9c', summe: '1bf966a2' },
   { datei: 'skizze.js', version: '0.3.0-N9c', summe: '447c40cd' },
   { datei: 'assistent.js', version: '0.5.0-N10b', summe: '4c015b50' },
-  { datei: 'ui.js', version: '0.17.1', summe: '85d9afa3' },
-  { datei: 'report.js', version: '0.1.1-N11', summe: 'ef412ad3' }
+  { datei: 'ui.js', version: '0.17.2', summe: '40b40c61' },
+  { datei: 'report.js', version: '0.1.2-N11', summe: '5c54cd3f' }
 ];
 
 var s43i, s43Fehl = [], s43Src, s43M, s43S;
@@ -5370,7 +5370,10 @@ eq(s49RB.bilder_ein, 1, 'S49: das Bild ist eingebettet');
 eq(s49RB.bilder_aus, 0, 'S49: und keines fehlt');
 ok(s49RB.text.indexOf('\\pict\\pngblip') >= 0, 'S49: als PNG-Block nach RTF-Regel');
 ok(s49RB.text.indexOf('\\picwgoal9000') >= 0, 'S49: seitengerecht auf die Textbreite skaliert');
-ok(s49RB.text.indexOf(s49Png.toString('hex')) >= 0, 'S49: und die Bytes stehen unveraendert drin');
+/* Die Hex-Daten stehen seit dem Word-Befund UMBROCHEN im Blatt — verglichen
+   wird deshalb ohne die Umbrueche. Kein Byte darf dabei verlorengehen. */
+ok(s49RB.text.replace(/\n/g, '').indexOf(s49Png.toString('hex')) >= 0,
+   'S49: und die Bytes stehen unveraendert drin');
 /* Ein kaputtes PNG darf die Datei nicht sprengen — es faellt zurueck. */
 var s49RK = Rep.baueRtf(Rep.baueBericht({
   rw: s49Rw, sprache: 'de', datum: '2026-08-07',
@@ -5569,6 +5572,86 @@ for (s49i = 1; s49i < s49Nr.length; s49i++) if (s49Nr[s49i] < s49Nr[s49i - 1]) s
 ok(s49Sprung === true,
    'S49: die Schrittnummern springen — Bestandsverhalten aus Plan 9.1, kein Fehler der Ausgabe');
 eq(s49Nr.length, s49Rw.n_schritte, 'S49: aber es fehlt kein einziger Schritt im Blatt');
+
+/* --- 20) DER BEFUND, DER WORD DIE DATEI VERWEIGERN LIESS (2026-08-07) --- */
+/* Dieters erste Ausgabe liess sich am Handy lesen, aber Word blieb beim
+   Laden haengen. Die Datei war formal richtig: gueltiges PNG (11.303 Bytes,
+   640x480, sauber mit IEND), ausgeglichene Klammern, korrekte Masse.
+   Der Fehler war die ZEILENLAENGE: die 22.606 Hex-Zeichen des Bildes
+   standen auf EINER Zeile. Word schreibt Bilddaten selbst mit 128 Zeichen
+   je Zeile. Ein Umbruch zwischen zwei Hex-Ziffern ist bedeutungslos — und
+   trotzdem der Unterschied zwischen "oeffnet" und "oeffnet nicht".
+   AM HANDY WAR DAS NICHT ZU SEHEN, weil der dortige Betrachter das Bild
+   ohnehin ueberspringt. Gefunden wurde es erst, als die Datei selbst
+   vermessen wurde. */
+
+var s49PngGross = Buffer.alloc(11303);
+s49PngGross[0] = 0x89; s49PngGross[1] = 0x50;
+for (s49i = 2; s49i < s49PngGross.length; s49i++) s49PngGross[s49i] = (s49i * 31 + 5) & 255;
+var s49Mods = [];
+for (s49i = 0; s49i < 19; s49i++) s49Mods.push({ name: 'modulname' + s49i, version: '0.1.0-N11' });
+
+var s49Spr2 = ['de', 'en', 'pt'];
+for (s49i = 0; s49i < s49Spr2.length; s49i++) {
+  (function (l) {
+    var ber = Rep.baueBericht({
+      rw: s49Rw, sprache: l, datum: '2026-08-07', module: s49Mods,
+      anforderung: 'ISO 5817 B', karten: s49Karten,
+      bilder: [{ titel: 'Nahtbild', png: s49PngGross.toString('base64'),
+                 breite_px: 640, hoehe_px: 480 }]
+    });
+    var r = Rep.baueRtf(ber);
+    ok(r.ok === true && r.bilder_ein === 1, 'S49: das grosse Bild wird in ' + l + ' eingebettet');
+    var zeilen = r.text.split('\n'), lang = 0, max = 0, z;
+    for (var j = 0; j < zeilen.length; j++) {
+      z = zeilen[j].length;
+      if (z > max) max = z;
+      if (z > 255) lang++;
+    }
+    eq(lang, 0, 'S49: KEINE Zeile ueber 255 Zeichen in ' + l + ' (laengste ' + max + ')');
+    ok(zeilen.length > 150, 'S49: und die Datei hat wirklich viele Zeilen in ' + l);
+  }(s49Spr2[s49i]));
+}
+
+/* Die Hex-Daten selbst: 128 Zeichen je Zeile, und keine einzige Ziffer geht
+   dabei verloren. Ein verlorenes halbes Byte waere ein kaputtes Bild — und
+   zwar ein stilles. */
+var s49Hex = Rep.b64ZuHex(s49PngGross.toString('base64'));
+eq(s49Hex.length, s49PngGross.length * 2, 'S49: jedes Byte wird zu zwei Hex-Ziffern');
+var s49Umb = Rep.hexUmbrechen(s49Hex);
+eq(s49Umb.replace(/\n/g, ''), s49Hex, 'S49: der Umbruch verliert kein Zeichen');
+var s49HZ = s49Umb.split('\n'), s49ZuLang = 0, s49Ungerade = 0;
+for (s49i = 0; s49i < s49HZ.length; s49i++) {
+  if (s49HZ[s49i].length > Rep.HEX_JE_ZEILE) s49ZuLang++;
+  if (s49i < s49HZ.length - 1 && s49HZ[s49i].length % 2 !== 0) s49Ungerade++;
+}
+eq(s49ZuLang, 0, 'S49: keine Hex-Zeile ist laenger als ' + Rep.HEX_JE_ZEILE + ' Zeichen');
+eq(s49Ungerade, 0, 'S49: und keine Zeile bricht mitten in einem Byte');
+ok(s49HZ.length > 100, 'S49: aus einer Zeile sind ' + s49HZ.length + ' geworden');
+
+/* Der Bildblock ist als Ganzes noch gueltig: gerade Zahl Hex-Ziffern,
+   PNG-Signatur vorn, ausgeglichene Klammern. */
+var s49Blk = Rep.bildBlock(s49PngGross.toString('base64'), Rep.bildMasse(640, 480));
+ok(s49Blk.indexOf('{\\pict\\pngblip') === 0, 'S49: der Bildblock beginnt richtig');
+ok(s49Blk.charAt(s49Blk.length - 1) === '}', 'S49: und endet richtig');
+ok(s49Blk.indexOf('\n8950') > 0, 'S49: die PNG-Signatur steht am Anfang der Daten');
+/* Eine ungerade Zahl Hex-Ziffern gibt es nicht — und wenn doch, lieber gar
+   kein Bild als ein halbes Byte. */
+ok(Rep.bildBlock('!!!', Rep.bildMasse(640, 480)) === null, 'S49: kaputte Daten geben keinen Block');
+
+/* Der Textumbruch darf keine Woerter zusammenkleben — das Leerzeichen
+   bleibt am Zeilenende stehen. */
+var s49LangText = [];
+for (s49i = 0; s49i < 60; s49i++) s49LangText.push('Wort' + s49i);
+var s49BerL = Rep.baueBericht({
+  rw: s49Rw, sprache: 'de', datum: '2026-08-07',
+  karten: [{ titel: 'Lang', zeilen: [{ k: 'x', v: s49LangText.join(' ') }] }]
+});
+var s49RL = Rep.baueRtf(s49BerL).text;
+ok(s49RL.indexOf('Wort0Wort1') < 0 && s49RL.indexOf('Wort58Wort59') < 0,
+   'S49: der Umbruch klebt keine Woerter zusammen');
+ok(s49RL.replace(/\n/g, ' ').indexOf('Wort58 Wort59') >= 0,
+   'S49: und der Text bleibt vollstaendig lesbar');
 
 /* ========================================================================= */
 console.log('\n════════════════════════════════════════════');
