@@ -2086,8 +2086,21 @@ function lauf(edition) {
     /* --- "SPAETER" sperrt niemanden aus -------------------------------- */
     ok(s.spaeter() === true, 'N12: "Spaeter" ist erlaubt');
     ok(s.lizenzDialogOffen() === false, 'N12: der Dialog geht zu');
-    ok(s.erststartFragen() === false, 'N12: und fragt beim naechsten Start nicht wieder');
-    ok(win.localStorage.getItem('dts_lizenz_spaeter') === '1', 'N12: das merkt sich das Programm');
+    ok(s.erststartFragen() === false, 'N12: und stoert in DIESER Sitzung nicht mehr');
+    /* ABER: "SPAETER" GILT NUR FUER DIESE SITZUNG (Dieter, 2026-08-07).
+       Beim naechsten Start wird wieder gefragt, solange nicht aktiviert ist —
+       der Dialog ist die einzige Stelle, an der der Name entstehen kann. Wer
+       ihn einmal wegklickt und nie wieder sieht, hat ihn faktisch verloren.
+       `lizenzNeuLaden()` ist genau der Startvorgang. */
+    ok(win.localStorage.getItem('dts_lizenz_spaeter') === null,
+       'N12: "Spaeter" wird NICHT verwahrt');
+    ok(win.localStorage.getItem('dts_lizenz_name') === null,
+       'N12: und es liegt auch kein Name im Speicher');
+    s.lizenzNeuLaden();
+    ok(s.erststartFragen() === true,
+       'N12: beim NAECHSTEN Start fragt der Dialog wieder');
+    ok(s.lizenzDialogOffen() === true, 'N12: und steht dann offen');
+    s.spaeter();
     /* Ohne Aktivierung laeuft das Programm vollstaendig weiter. */
     s.leeren(); s.beispielLaden('blech'); s.rechnen();
     ok(s.ergebnis() && s.ergebnis().ok === true, 'N12: ohne Aktivierung wird trotzdem gerechnet');

@@ -4133,7 +4133,7 @@ function s43Summe(text) {
    ZWEI Etappen gilt die Regel dagegen streng: geaenderter Quelltext ohne
    Kennungswechsel ist rot. */
 var S43_STAND = [
-  { datei: 'i18n_kern.js', version: '0.9.0-N12', summe: '1e5ab9f0' },
+  { datei: 'i18n_kern.js', version: '0.9.1-N12', summe: '60a6e2a4' },
   { datei: 'i18n_hilfe.js', version: '0.5.0-N11', summe: '8cc6c8aa' },
   { datei: 'i18n_kerbfall.js', version: '0.2.0-N11', summe: 'b986cce4' },
   { datei: 'daten.js', version: '0.2.0-N11', summe: '5e696f0e' },
@@ -4150,8 +4150,8 @@ var S43_STAND = [
   { datei: 'thermik.js', version: '0.3.0-N9c', summe: '1bf966a2' },
   { datei: 'skizze.js', version: '0.3.0-N9c', summe: '447c40cd' },
   { datei: 'assistent.js', version: '0.5.0-N10b', summe: '4c015b50' },
-  { datei: 'ui.js', version: '0.18.0', summe: '4acf028d' },
-  { datei: 'report.js', version: '0.2.0-N12', summe: '76851305' }
+  { datei: 'ui.js', version: '0.18.1', summe: 'a84a9cce' },
+  { datei: 'report.js', version: '0.2.1-N12', summe: '67292ecb' }
 ];
 
 var s43i, s43Fehl = [], s43Src, s43M, s43S;
@@ -5838,13 +5838,26 @@ eq(Rep.guard('drucken', 'demo').erlaubt, false, 'S51: Gating und Lizenzzeile sin
 
 /* --- 6) DIE DREI SPEICHERSCHLUESSEL ------------------------------------- */
 /* Im lokalen Speicher stehen NUR Programmbedingungen (5.1-8). */
-var s51K = [Rep.SPEICHER.name, Rep.SPEICHER.schluessel, Rep.SPEICHER.spaeter];
-for (s51i = 0; s51i < 3; s51i++) {
+var s51K = [Rep.SPEICHER.name, Rep.SPEICHER.schluessel];
+for (s51i = 0; s51i < s51K.length; s51i++) {
   ok(/^dts_/.test(s51K[s51i]), 'S51: der Speicherschluessel ' + s51K[s51i] + ' traegt das Programmkuerzel');
 }
-eq(s51K.length, 3, 'S51: es sind genau drei');
-ok(s51K[0] !== s51K[1] && s51K[1] !== s51K[2] && s51K[0] !== s51K[2],
-   'S51: und alle drei verschieden');
+eq(s51K.length, 2, 'S51: es sind genau zwei');
+ok(s51K[0] !== s51K[1], 'S51: und beide verschieden');
+/* ES GIBT KEINEN SCHLUESSEL FUER „SPAETER" (Dieter, 2026-08-07). Wuerde er
+   verwahrt, wuerde nie wieder gefragt — und der Dialog ist die einzige
+   Stelle, an der ein Name ueberhaupt entstehen kann. */
+ok(Rep.SPEICHER.spaeter === undefined, 'S51: "Spaeter" hat KEINEN Speicherschluessel');
+var s51UiQ = fsU.readFileSync(__dirname + '/ui.js', 'utf8');
+ok(s51UiQ.indexOf('SPEICHER.spaeter') < 0, 'S51: und ui.js schreibt auch keinen');
+var s51Sp2 = s51UiQ.substring(s51UiQ.indexOf('function lizenzSpaeter'),
+                              s51UiQ.indexOf('function lizenzZuruecksetzen'));
+ok(s51Sp2.indexOf('speicherSchreib') < 0,
+   'S51: "Spaeter" legt nichts ab — es gilt nur fuer diese Sitzung');
+var s51Ld = s51UiQ.substring(s51UiQ.indexOf('function lizenzLaden'),
+                             s51UiQ.indexOf('function lizenzText'));
+ok(/S\.lizenzSpaeter *= *false/.test(s51Ld),
+   'S51: jeder Start beginnt ohne den Merker — also wird wieder gefragt');
 
 /* --- 7) DIE ZEILE IN DEN AUSGABEN --------------------------------------- */
 var s51ZL = Rep.lizenzZeile('full', 'Dieter Tepe', 'de');

@@ -35,12 +35,12 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.18.0';
+  var VERSION = '0.18.1';
   var ETAPPE = 'N12';
   /* Plan-Version, die zu diesem Stand gehoert. Sie ist die EINZIGE von Hand
      gepflegte Zahl der Versionszeile — alles andere kommt aus den geladenen
      Modulen selbst (Plan 3.6). */
-  var PLAN = '2.69';
+  var PLAN = '2.70';
   var SPRACHEN = ['de', 'en', 'pt'];
 
   /* Plan 3.1 (bindend): die Oberflaeche startet IMMER im dunklen Design —
@@ -2527,7 +2527,10 @@
       if (!Report) return;
       S.lizenzName = speicherLies(Report.SPEICHER.name) || '';
       S.lizenzKey = speicherLies(Report.SPEICHER.schluessel) || '';
-      S.lizenzSpaeter = speicherLies(Report.SPEICHER.spaeter) === '1';
+      /* „Spaeter" wird NICHT verwahrt (Dieter 2026-08-07). Jeder Start
+         beginnt ohne diesen Merker — also wird wieder gefragt, solange nicht
+         aktiviert ist. */
+      S.lizenzSpaeter = false;
       lizenzZeigen();
     }
 
@@ -2573,7 +2576,6 @@
       S.lizenzSpaeter = false;
       var ok1 = speicherSchreib(Report.SPEICHER.name, S.lizenzName);
       speicherSchreib(Report.SPEICHER.schluessel, S.lizenzKey);
-      speicherSchreib(Report.SPEICHER.spaeter, null);
       lizenzZeigen();
       lizenzDialog(false);
       /* Haelt das Geraet nichts fest, gilt die Aktivierung nur fuer diese
@@ -2584,9 +2586,10 @@
       return true;
     }
 
+    /* NUR FUER DIESE SITZUNG. Nichts wird verwahrt — beim naechsten Start
+       fragt der Dialog wieder. */
     function lizenzSpaeter() {
       S.lizenzSpaeter = true;
-      if (Report) speicherSchreib(Report.SPEICHER.spaeter, '1');
       lizenzDialog(false);
       meldung(txt(win, 'lic_spaeter_hinweis', S.sprache));
       return true;
@@ -2605,7 +2608,6 @@
       if (Report) {
         speicherSchreib(Report.SPEICHER.name, null);
         speicherSchreib(Report.SPEICHER.schluessel, null);
-        speicherSchreib(Report.SPEICHER.spaeter, null);
       }
       lizenzZeigen();
       meldung(txt(win, 'lic_zurueckgesetzt', S.sprache));

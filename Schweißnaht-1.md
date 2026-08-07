@@ -20,8 +20,8 @@
 > in 4.11 und in der Historie. Im Projektordner liegt **keine Vorlaufdatei** mehr.
 
 ```
-Plan-Version : 2.69 · Stand 2026-08-07
-Codestand    : Plan 2.69 · ui 0.18.0 · N12
+Plan-Version : 2.70 · Stand 2026-08-07
+Codestand    : Plan 2.70 · ui 0.18.1 · N12
                (Die Planversion, gegen die der CODE gebaut ist. Sie steht auch
                in ui.js als PLAN und wird von einer Assertion damit verglichen.
                Sie wandert nur mit, wenn sich Code ändert — reine Plan- oder
@@ -103,8 +103,9 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                Dateinamen. Ergebnis in **5.1-9**, Schnittstelle in **4.12**.
                Damit sind **acht von zehn Bausteinen bis zum Verkaufsstand**
                fertig.
-               **Baustein N12 ist GEBAUT und GELIEFERT (2026-08-07)** —
-               Abnahme steht aus. Er bringt die **Registrierung** (Name +
+               **Baustein N12 ist von Dieter am Handy geprüft und
+               ABGENOMMEN (2026-08-07)** — mit einer Nacharbeit: „Später"
+               darf sich nicht merken lassen (5.1-10). Er bringt die **Registrierung** (Name +
                Digistore-Schlüssel, ohne jede Prüfung), die **Lizenzzeile in
                allen vier Ausgaben**, den **Lang-Druck zum Zurücksetzen** und
                die Reparatur des **Druckbilds** samt eigenem Druckkopf und
@@ -129,7 +130,7 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                  4.11 (symbol.js), 4.12 (report.js).
                Große Bausteine (N5, N8, N13, N14) werden in ETAPPEN gebaut — Regel in
                Kickoff-Punkt 5c, Etappen in Abschnitt 5.2.
-Basislinie   : 3414 Assertions · DOM-Smokes 1078 (voll) + 1039 (test) · i18n-Parität 0 Abweichungen
+Basislinie   : 3417 Assertions · DOM-Smokes 1081 (voll) + 1039 (test) · i18n-Parität 0 Abweichungen
                (VERBINDLICH. Basislinie darf nur WACHSEN — nie schrumpfen, nie gelockert werden.)
 Dateistand   : siehe Abschnitt 8.1 — dort steht, was fertig ist und was noch fehlt.
 ⚠️ SYNC       : Am 2026-08-03 lag im Projektordner eine **elf Versionen alte**
@@ -218,7 +219,7 @@ Einstiegssatz von Dieter: **„weiter mit N13"**.
    schon zweimal Dateien verlorengegangen, beide Male hat diese Prüfung es gefunden.
 11. Arbeitsordner herstellen (Befehl unter Punkt 6 der Kickoff-Liste), dann
    `node test_naht.js`, `node dom_smoke_voll.js`, `node dom_smoke_test.js` laufen lassen
-   und die Basislinie aus dem Plan-Kopf bestätigen (**3414 / 1078 / 1039 · 0 Fehler**),
+   und die Basislinie aus dem Plan-Kopf bestätigen (**3417 / 1081 / 1039 · 0 Fehler**),
    **bevor** etwas gebaut wird. Weicht etwas ab, erst das klären.
    ⚠️ **Diese drei Läufe sind zugleich die Probe, ob Plandatei und Code zusammenpassen.**
    Steht im Kopfblock eine andere Basislinie als gemessen, ist eine der beiden Seiten alt —
@@ -2972,9 +2973,20 @@ mit **0 Byte** Inhalt, Seite 23 endete mit `Summe 200€` und Seite 24 begann mi
 **DIE REGISTRIERUNG — Hemmschwelle, nicht Schloss.** Name + Digistore-Schlüssel,
 **nichts wird geprüft** (Plan 1). Ein einzelnes Zeichen genügt als Schlüssel; verlangt wird
 nur, dass beides dasteht. **„Später" ist erlaubt** — ein Dialog, den man nicht schließen
-kann, sperrt auch den aus, der gerade seinen Schlüssel sucht. Wer später drückt, wird nicht
-wieder gefragt und holt es über den langen Druck nach; das Programm läuft vollständig
-weiter, die Ausgaben tragen dann nur keinen Namen.
+kann, sperrt auch den aus, der gerade seinen Schlüssel sucht. Das Programm läuft
+vollständig weiter, die Ausgaben tragen dann nur keinen Namen.
+
+> ⚠️ **NACHGEARBEITET NACH DER ABNAHME (Dieter, 2026-08-07): „Später" gilt NUR für die
+> laufende Sitzung.** Zuerst war es verwahrt worden — wer einmal „Später" drückte, wurde
+> **nie wieder** gefragt. Dieters Einwand: *„wenn ich den Button Später drücke und das
+> Programm beende und wieder starte, muss wieder die Eingabe kommen — solange bis ein
+> Nutzer und eine Nummer eingegeben wurde und der Button bestätigt."*
+> **Er hat recht, und der Grund ist bauartbedingt:** der Dialog ist die **einzige** Stelle,
+> an der ein Name überhaupt entstehen kann. Wer ihn einmal wegklickt und nie wieder sieht,
+> hat die Aktivierung faktisch verloren — der lange Druck hilft nur dem, der von ihm weiß.
+> Der Speicherschlüssel `dts_lizenz_spaeter` ist **ersatzlos entfallen**; es sind jetzt
+> **zwei** statt drei. Jeder Start beginnt ohne den Merker. Gegenprobe: verwahrt man
+> „Später" wieder, fallen 6 Assertions und 3 Smoke-Zeilen.
 
 **Die Lizenzzeile hat eine Quelle und vier Orte:** Kopfzeile, Druckkopf, Word-Blatt und
 `.dts`. In der Datei steht sie **nicht bei den Eingaben** — sie gehört dem, der die Datei
@@ -2994,7 +3006,7 @@ Behälter dürfen nicht umbrechen → 2 · Druckkopf wandert beim Sprachwechsel 
 Lizenzzeile in der Testversion → 6 · Aktivierung ohne Schlüssel → 5 · Reset leert das
 Formular mit → 3.
 
-**Basislinie 3303 → 3414 Assertions · Smokes 988/988 → 1078/1039 · i18n-Parität 0.**
+**Basislinie 3303 → 3417 Assertions · Smokes 988/988 → 1081/1039 · i18n-Parität 0.**
 Neue Sektionen **S50** (Druckbild) und **S51** (Registrierung).
 ⚠️ **Die beiden Smokes sind seit N12 verschieden lang** — den Aktivierungsdialog gibt es
 nur in der Vollversion. Beide Zahlen sind Basislinie und dürfen nur wachsen.
@@ -3500,6 +3512,13 @@ was ohnehin da ist.
 neue Kennungen. Ihre Rechenwerte sind unverändert; der Wächter aus S43 hat
 jede einzelne eingefordert, und das ist der Beleg dafür.
 
+**Nachtrag N12-Nacharbeit (2026-08-07) — 5 Dateien:** `report.js` (Schlüssel
+`dts_lizenz_spaeter` entfällt, jetzt zwei statt drei; 0.2.1-N12) · `ui.js`
+(„Später" legt nichts mehr ab, jeder Start beginnt ohne den Merker;
+0.18.1 / N12 / 2.70) · `i18n_kern.js` (der Hinweistext sagt jetzt, dass beim
+nächsten Start wieder gefragt wird; 0.9.1-N12) · `test_naht.js` (**S51**
+umgestellt) · `dom_smoke_voll.js` (Neustart nach „Später" durchgeklickt).
+
 **Nachtrag N12 (2026-08-07) — 8 Dateien:** `style.css` (**ein** Druckbild statt
 zwei, Überlauf zurückgenommen, Umbruchregeln, Druckkopf/Druckfuß, Farbverlauf
 der Marke, `.lic-feld`) · **beide HTMLs** (Druckkopf, Druckfuß,
@@ -3715,7 +3734,7 @@ Formsache, und der Basislinien-Abgleich aus Kickoff-Punkt 11 ebenso wenig.
 **Erste Handlung im neuen Chat:** Vollständigkeit gegen die Tabelle oben prüfen
 (**19 Module**, `style.css`, beide HTMLs, **alle drei** DEV-ONLY-Dateien, dazu Plandatei und
 `Schweißnaht-Historie.md`), Arbeitsordner herstellen, die drei Testläufe starten.
-Melden müssen sie **3414 / 1078 / 1039 · 0 Fehler**.
+Melden müssen sie **3417 / 1081 / 1039 · 0 Fehler**.
 ⚠️ **Die beiden Smokes sind seit N12 verschieden lang** — der Aktivierungsdialog gibt es
 nur in der Vollversion, also prüft der Testlauf dort anderes und weniger. Das ist kein
 Fehler; beide Zahlen sind Basislinie und dürfen nur wachsen. Weicht etwas ab, erst das klären —
@@ -4008,6 +4027,12 @@ will. Also: Vorschriften und Wegweiser bleiben hier, die Erzählung wandert.
 - **Ein Reset nimmt nur weg, was er ankündigt** (2026-08-07, N12): Der lange Druck löscht
   die Aktivierung — nicht Sprache, nicht Design, nicht die Eingaben. Drei Assertions
   halten das fest.
+- **Ein „Später" darf sich nicht merken lassen, wenn der Dialog der einzige Weg ist**
+  (2026-08-07, N12, Dieter): Die Aktivierung kann **nur** über diesen Dialog entstehen.
+  Wird „Später" verwahrt, wird nie wieder gefragt — und wer den langen Druck nicht kennt,
+  hat die Aktivierung verloren, ohne es zu merken. „Später" gilt deshalb nur für die
+  laufende Sitzung. **Merke dir ein Wegklicken nur dann dauerhaft, wenn es einen zweiten,
+  auffindbaren Weg zurück gibt.**
 - **Token-Pause: 4 Stunden.**
 
 ---
@@ -4067,27 +4092,6 @@ Changelog — **die vollständige Fassung ab v1.0 steht in `Schweißnaht-Histori
 Hier stehen nur die letzten drei Einträge. Wer wissen will, wie eine Entscheidung
 zustande kam, findet die Kette dort — lückenlos ab der Erstfassung vom 2026-07-23.
 
-**v2.67 (2026-08-07):** **Word öffnete die Word-Datei nicht — und der Fehler war von
-der ersten Lieferung an da.** Die `.rtf` ließ sich am Handy lesen, aber Word blieb beim
-Laden hängen. Die Datei war formal einwandfrei: gültiges PNG (11.303 Bytes, 640×480,
-sauber mit IEND), ausgeglichene Klammern, richtige Maße. Der Fehler war die
-**Zeilenlänge** — die 22.606 Hex-Ziffern des Bildes standen auf **einer einzigen Zeile**.
-282 der 284 Zeilen waren unauffällig, eine war 22.611 Zeichen lang. Word schreibt
-Bilddaten selbst mit **128 Zeichen je Zeile**; genau das wird jetzt gemacht, dazu ein
-weicher Umbruch langer Textzeilen an Leerzeichen. **Keine Zeile im Blatt geht mehr über
-255 Zeichen.** Zusätzlich: eine ungerade Zahl Hex-Ziffern gibt gar kein Bild mehr —
-ein halbes Byte wäre ein stiller Fehler. **Gefunden wurde das nicht durch Hinsehen,
-sondern durch Nachmessen der gelieferten Datei** — am Handy überspringt der Betrachter
-das Bild, in Word kam es nie so weit. Daraus zwei Festlegungen in 9.2, unter anderem:
-**eine Ausgabe wird vermessen, nicht nur angesehen.** Gegenprobe bestanden — ohne den
-Umbruch fallen drei Assertions.
-**Codestand 2.66 → 2.67 · ui 0.17.1 → 0.17.2 · report 0.1.1 → 0.1.2-N11.**
-**Basislinie 3283 → 3303 Assertions · Smokes unverändert 988/988 · i18n-Parität 0.**
-**Nächster Schritt: die Word-Datei in Word gegenprüfen, dann Baustein N12
-(Edition, Registrierung, Impressum). Einstieg: „weiter mit N12".**
-
-
-
 **v2.68 (2026-08-07):** **N11 endgültig abgeschlossen — keine Codeänderung.** Word
 öffnet die Datei nach dem Zeilenumbruch. Das Nahtbild blieb am Handy trotzdem
 unsichtbar; statt zu raten wurde das **PNG aus der gelieferten `.rtf` herausgelöst und
@@ -4133,6 +4137,25 @@ i18n_kern 0.8.0 → 0.9.0-N12.**
 **Basislinie 3303 → 3414 Assertions · Smokes 988/988 → 1078/1039 · i18n-Parität 0.**
 **Damit sind neun von zehn Bausteinen bis zum Verkaufsstand fertig und der
 LAUNCH-CHECKPOINT ist erreicht.**
+**Nächster Schritt: Baustein N13 (Ermüdung). Einstieg: „weiter mit N13".**
+
+
+
+**v2.70 (2026-08-07):** **N12 ABGENOMMEN — mit einer Nacharbeit, die Dieter gefunden hat.**
+Alle sechs Prüfpunkte am Handy in Ordnung: Farbverlauf, Aktivierungsdialog, Lizenzzeile
+beim Sprachwechsel, Druck/PDF ohne leere Seite und ohne halbierte Zeilen, Word mit
+Lizenzzeile und Haftungshinweis, Lang-Druck. **Ein Verhalten war falsch:** „Später" wurde
+verwahrt — wer es einmal drückte, wurde **nie wieder** gefragt. Dieters Einwand trifft
+einen bauartbedingten Punkt: der Dialog ist die **einzige** Stelle, an der ein Name
+entstehen kann; wer ihn wegklickt und nie wieder sieht, hat die Aktivierung faktisch
+verloren, und der lange Druck hilft nur dem, der von ihm weiß. **„Später" gilt jetzt nur
+für die laufende Sitzung**, der Speicherschlüssel ist ersatzlos entfallen (zwei statt
+drei). Daraus die Regel in 9.2: **Merke dir ein Wegklicken nur dann dauerhaft, wenn es
+einen zweiten, auffindbaren Weg zurück gibt.** Gegenprobe bestanden — verwahrt man
+„Später" wieder, fallen 6 Assertions und 3 Smoke-Zeilen.
+**Codestand 2.69 → 2.70 · ui 0.18.0 → 0.18.1 · report 0.2.0 → 0.2.1-N12 ·
+i18n_kern 0.9.0 → 0.9.1-N12.**
+**Basislinie 3414 → 3417 Assertions · Smokes 1078/1039 → 1081/1039 · i18n-Parität 0.**
 **Nächster Schritt: Baustein N13 (Ermüdung). Einstieg: „weiter mit N13".**
 
 

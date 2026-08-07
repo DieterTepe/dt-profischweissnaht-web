@@ -12,7 +12,7 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.9.0-N12';
+  var VERSION = '0.9.1-N12';
   var SPRACHEN = ['de', 'en', 'pt'];
 
   var D = {
@@ -1174,7 +1174,7 @@
     lic_fuer:       { de: 'lizenziert für', en: 'licensed to', pt: 'licenciado para' },
     lic_ok:         { de: 'Aktiviert. Der Name erscheint ab jetzt in allen Ausgaben.', en: 'Activated. The name now appears in every output.', pt: 'Ativado. O nome passa a constar em todas as saídas.' },
     lic_fehlt:      { de: 'Bitte Namen UND Lizenzschlüssel eintragen — geprüft wird nichts davon, aber beide gehören in die Ausgaben.', en: 'Please enter both name AND licence key — neither is verified, but both belong in the outputs.', pt: 'Introduza o nome E a chave — nenhum é verificado, mas ambos pertencem às saídas.' },
-    lic_spaeter_hinweis: { de: 'Ohne Aktivierung tragen die Ausgaben keinen Namen. Die Aktivierung lässt sich jederzeit nachholen: die Marke oben links zehn Sekunden gedrückt halten.', en: 'Without activation the outputs carry no name. You can activate at any time: press and hold the brand at the top left for ten seconds.', pt: 'Sem ativação as saídas não levam nome. Pode ativar a qualquer momento: mantenha premida a marca no canto superior esquerdo durante dez segundos.' },
+    lic_spaeter_hinweis: { de: 'Ohne Aktivierung tragen die Ausgaben keinen Namen. Beim nächsten Start wird wieder gefragt; innerhalb dieser Sitzung holen Sie die Aktivierung nach, indem Sie die Marke oben links zehn Sekunden gedrückt halten.', en: 'Without activation the outputs carry no name. You will be asked again at the next start; within this session you can activate by pressing and holding the brand at the top left for ten seconds.', pt: 'Sem ativação as saídas não levam nome. Voltará a ser perguntado no próximo arranque; nesta sessão pode ativar mantendo premida a marca no canto superior esquerdo durante dez segundos.' },
     lic_zurueckgesetzt: { de: 'Die Aktivierung wurde zurückgesetzt.', en: 'The activation has been reset.', pt: 'A ativação foi reposta.' },
     lic_nicht_gespeichert: { de: 'Dieses Gerät erlaubt keinen lokalen Speicher — die Aktivierung gilt nur für diese Sitzung.', en: 'This device does not allow local storage — the activation applies to this session only.', pt: 'Este dispositivo não permite armazenamento local — a ativação vale apenas para esta sessão.' },
 

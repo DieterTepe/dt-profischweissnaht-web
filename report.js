@@ -49,7 +49,7 @@
   'use strict';
 
   var NAME = 'report';
-  var VERSION = '0.2.0-N12';
+  var VERSION = '0.2.1-N12';
 
   /* Der Programmname steht in der Datei, damit eine fremde .dts nicht
      stillschweigend als eigene gelesen wird. */
@@ -144,10 +144,16 @@
 
   /* Im lokalen Speicher stehen nur PROGRAMMBEDINGUNGEN (5.1-8) — nie die
      letzten Eingaben. Diese drei Schluessel sind alles, was N12 dort ablegt. */
+  /* ZWEI SCHLUESSEL, NICHT DREI. Bis 2026-08-07 wurde auch gemerkt, dass
+     jemand „Spaeter" gedrueckt hat — damit wurde nie wieder gefragt.
+     Dieters Entscheidung: **„Spaeter" gilt nur fuer die laufende Sitzung.**
+     Bei jedem Neustart wird wieder gefragt, solange Name und Schluessel
+     nicht eingetragen und bestaetigt sind. Der Dialog ist die einzige
+     Stelle, an der der Name ueberhaupt entstehen kann — wer ihn einmal
+     wegklickt und nie wieder sieht, hat ihn faktisch verloren. */
   var SPEICHER = {
     name:      'dts_lizenz_name',
-    schluessel:'dts_lizenz_key',
-    spaeter:   'dts_lizenz_spaeter'
+    schluessel:'dts_lizenz_key'
   };
 
   var NAME_MAX = 80;

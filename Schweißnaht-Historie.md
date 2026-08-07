@@ -2825,3 +2825,42 @@ Die beiden Smokes sind seit N12 **verschieden lang** — den Aktivierungsdialog 
 in der Vollversion. Beide Zahlen sind Basislinie und dürfen nur wachsen.
 **Neun von zehn Bausteinen bis zum Verkaufsstand sind fertig; der Launch-Checkpoint ist
 erreicht.**
+
+---
+
+## Aus der Abnahme von N12 (2026-08-07) — „Später" darf sich nicht merken lassen
+
+Alle sechs Prüfpunkte liefen am Handy: Farbverlauf der Marke, Aktivierungsdialog mit der
+ehrlichen Meldung bei halber Eingabe, die Lizenzzeile beim Sprachwechsel, Druck und PDF
+ohne leere erste Seite und ohne halbierte Zeilen, das Word-Dokument mit Lizenzzeile und
+Haftungshinweis, und der Lang-Druck.
+
+**Ein Verhalten war trotzdem falsch, und Dieter hat es gefunden:** *„wenn ich den Button
+Später drücke und das Programm beende und wieder starte, muss wieder die Eingabe für
+Nutzer und Nummer kommen. Solange bis ein Nutzer und eine Nummer eingegeben wurde und der
+Button bestätigt."*
+
+Ich hatte „Später" im lokalen Speicher verwahrt — in der Absicht, niemanden zu belästigen,
+der sich einmal entschieden hat. Der Gedanke war falsch, und zwar aus einem bauartbedingten
+Grund: **Der Dialog ist die einzige Stelle, an der ein Name überhaupt entstehen kann.**
+Wer ihn einmal wegklickt und nie wieder sieht, hat die Aktivierung faktisch verloren. Der
+lange Druck auf die Marke wäre der Weg zurück — aber er hilft nur dem, der von ihm weiß,
+und das steht nirgends auf dem Bildschirm.
+
+Der Speicherschlüssel `dts_lizenz_spaeter` ist **ersatzlos entfallen**; es sind jetzt zwei
+statt drei. Jeder Start beginnt ohne den Merker, also wird gefragt, solange Name und
+Schlüssel nicht eingetragen und bestätigt sind. Der Hinweistext nach „Später" sagt das
+jetzt auch ausdrücklich, in allen drei Sprachen.
+
+**Die Regel dahinter, jetzt in 9.2:** *Merke dir ein Wegklicken nur dann dauerhaft, wenn es
+einen zweiten, auffindbaren Weg zurück gibt.* Ein „nicht mehr fragen" ist nur dann
+freundlich, wenn der Anwender die Frage auch wiederfinden kann.
+
+**Gegenprobe bestanden:** verwahrt man „Später" wieder, fallen 6 Assertions und 3
+Smoke-Zeilen. Der DOM-Smoke klickt jetzt den ganzen Weg durch — „Später" drücken, neu
+laden, Dialog muss wieder da sein.
+
+**Nacharbeit: 5 Dateien** — `report.js` (0.2.1-N12), `ui.js` (0.18.1), `i18n_kern.js`
+(0.9.1-N12), `test_naht.js`, `dom_smoke_voll.js`.
+**Basislinie 3414 → 3417 Assertions · Smokes 1078/1039 → 1081/1039 · i18n-Parität 0.**
+**Baustein N12 ist damit abgenommen; der Launch-Checkpoint ist erreicht.**
