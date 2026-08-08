@@ -3009,3 +3009,67 @@ Deshalb wurden Textblöcke mit genauer Einbaustelle geliefert statt ganzer Datei
 hat.
 
 **Nur Plandatei und Landingpage-Dateien, kein Code. Basislinie unverändert: 3417 · 1081 · 1039.**
+
+---
+
+## Aus P0 (2026-08-08) — die Editionsweiche war falsch herum
+
+Dieter meldete aus dem Hotel: *„wenn full oben im HTML-Kopf steht, kommt ja die
+Vollversion, aber hier ist es so, dass auch wenn nichts drinsteht oder ungültiges, die
+Vollversion da ist."*
+
+Er hatte recht. In `ui.js` stand seit N5a:
+
+```js
+edition: (win.DT_EDITION === 'test') ? 'test' : 'full'
+```
+
+**Alles, was nicht exakt `'test'` war, wurde zur Vollversion.** Eine leere Zeichenkette,
+eine gelöschte Zeile, ein Tippfehler, `'FULL'`, `'voll'`, `'Vollversion'`. Bei einem
+Programm, das über Digistore24 verkauft werden soll, ist das kein Schönheitsfehler — es
+ist der Unterschied zwischen einem Produkt und einem Geschenk.
+
+**Das Bittere daran ist nicht der Fehler, sondern wo er stand.** Das Gating in `report.js`
+war die ganze Zeit richtig herum: `if (edition !== 'full')` sperren. Und S49 prüft seit
+N11 ausdrücklich, dass eine **leere** und eine **unbekannte** Edition nichts freigeben.
+Ich hatte also genau die richtige Frage gestellt — nur an der falschen Stelle. **Geprüft
+war das Tor; nie die Hand, die den Schlüssel hineinlegt.**
+
+Das ist innerhalb einer Woche das vierte Mal dasselbe Muster. Beim vergessenen `leeren()`
+prüfte der Test, ob die Werte der Datei ankommen, nicht ob die alten verschwinden. Bei den
+verklebten Karten prüfte er, ob sie ankommen, nicht wie. Bei der Zeilenlänge prüfte er,
+ob die Datei entsteht, nicht ob sie sich öffnen lässt. Und jetzt prüfte er das Tor statt
+den Schlüssel. **Die Prüfung lag jedes Mal in der Nähe der Sache statt auf ihr.**
+
+**Die Entscheidung liegt jetzt in `report.js`**, bei allem anderen Editionsabhängigen —
+und damit in Node prüfbar. Sie lautet: **nur exakt `'full'`**. Kein Trimmen, keine Groß-
+und Kleinschreibung, keine Freundlichkeit. Wer die Vollversion ausliefert, schreibt sie
+richtig. `ui.js` liest `DT_EDITION` an genau einer Stelle; fehlt `report.js`, bleibt es bei
+der Testversion.
+
+**Ein Nebenfund aus der Gegenprobe wurde zur wichtigsten Regel des Tages.** Beim ersten
+Anlauf holte sich der DOM-Smoke die erwartete Edition aus `Report.editionAus()` — also
+aus dem, was er prüfen sollte. Als ich zur Kontrolle die Weiche wieder falsch herum
+stellte, blieb er **grün**: Die Erwartung drehte sich mit dem Fehler mit. Erst als die
+Regel unabhängig im Smoke steht (`edition === 'full'`), meldet die Gegenprobe 16 rote
+Zeilen. **Wer die Erwartung aus dem Prüfling holt, prüft nichts.** Das ist eine Falle, die
+sich nur beim Gegenprüfen zeigt — und sie hätte ohne die Gewohnheit, jeden Fix testweise
+wieder herauszunehmen, unbemerkt bestanden.
+
+**Der DOM-Smoke der Vollversion läuft seit P0 zweimal.** Der zweite Lauf nimmt dieselbe
+Vollversions-HTML, schreibt Unsinn in den Kopf und klickt alles durch: Testbalken muss
+erscheinen, alle vier Ausgaben gesperrt, der Info-Dialog nennt die Testversion. Damit ist
+der gefährliche Fall nicht nur an der Funktion belegt, sondern an der echten Oberfläche.
+
+**Und eine Kleinigkeit, die zum dritten Mal auffiel:** Zehn Assertions prüften
+Modulkennungen gegen das Muster `-N\w+`. Sie wurden rot, als die erste Etappe „P0" hieß —
+obwohl nichts kaputt war. Ein Handwert im Muster ist derselbe Fehler wie ein Handwert im
+Wert. Alle zehn prüfen jetzt allgemein.
+
+**Zu Dieters Auslieferungsplan.** Beim Bau der Einzeldatei entfernt er den erklärenden
+Kommentar über der Editionszeile, damit niemand Fremdes Bescheid weiß. Das ist geprüft und
+unschädlich — es hilft aber nur wenig, denn `window.DT_EDITION = 'full'` steht ohnehin
+lesbar da. **Was wirklich schützt, ist die richtige Vorgabe:** wer die Zeile verändert,
+landet in der Testversion.
+
+**Basislinie 3417 → 3432 Assertions · Smokes 1081 / 1039 / 1039 (dritter Lauf neu).**

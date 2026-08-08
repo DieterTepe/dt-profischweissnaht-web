@@ -186,14 +186,31 @@ function lauf(edition) {
     if (!bed) { FAIL.push(txt); console.log('  ✗ ' + txt); }
   }
 
+  /* WELCHE EDITION KOMMT WIRKLICH HERAUS?
+     ⚠️ HIER STEHT DIE ERWARTUNG UNABHAENGIG, NICHT `Report.editionAus()`.
+     Beim ersten Versuch wurde sie von dort geholt — dann bewegt sich die
+     Pruefung mit dem Fehler mit: dreht man die Weiche im Modul um, dreht
+     sich die Erwartung gleich mit und der Smoke bleibt gruen. Genau das ist
+     in der Gegenprobe am 08.08. passiert (0 rot statt vieler).
+     **Eine Pruefung muss ihre Erwartung selbst kennen.** Die Regel lautet:
+     nur exakt 'full' gibt die Vollversion. */
+  var istVoll = (edition === 'full');
+  var sollEdition = istVoll ? 'full' : 'test';
+
   var datei = (edition === 'test') ? 'DT-ProfiSchweissnaht_Test.html' : 'DT-ProfiSchweissnaht.html';
   var htmlPfad = path.join(__dirname, datei);
   var html = fs.readFileSync(htmlPfad, 'utf8');
+  /* KAPUTTE EDITION: dieselbe Vollversions-HTML, aber der Wert im Kopf ist
+     Unsinn — genau der Fall, den Dieter am 08.08. gemeldet hat. Bis dahin kam
+     dabei die VOLLVERSION heraus. */
+  if (edition !== 'full' && edition !== 'test') {
+    html = html.replace(/window\.DT_EDITION\s*=\s*'[^']*'/, "window.DT_EDITION = '" + edition + "'");
+  }
 
-  console.log('\n— DOM-Smoke ' + (edition === 'test' ? 'TESTVERSION' : 'VOLLVERSION') + ' (' + datei + ') —');
+  console.log('\n— DOM-Smoke ' + (istVoll ? 'VOLLVERSION' : (edition === 'test' ? 'TESTVERSION' : 'KAPUTTE EDITION "' + edition + '"')) + ' (' + datei + ') —');
 
   /* ---------------------------------------------- 1) Rahmen der HTML ---- */
-  var mEd = html.match(/window\.DT_EDITION\s*=\s*'(full|test)'/);
+  var mEd = html.match(/window\.DT_EDITION\s*=\s*'([^']*)'/);
   ok(!!mEd, 'Editionsweiche in der HTML gefunden');
   ok(mEd && mEd[1] === edition, 'Editionsweiche steht auf "' + edition + '"');
   ok(/<html lang="de" translate="no" data-theme="dark">/.test(html),
@@ -294,10 +311,11 @@ function lauf(edition) {
   ok(d.docEl.getAttribute('data-theme') === 'dark', 'data-theme steht nach dem Start auf dark');
   ok(d.docEl.getAttribute('lang') === 'de', 'Dokumentsprache steht auf de');
   ok(/DT-ProfiSchweissnaht/.test(d.document.title), 'Seitentitel traegt den Produktnamen');
-  ok(s.edition() === edition, 'Oberflaeche kennt die Edition "' + edition + '"');
+  ok(s.edition() === sollEdition,
+     'Oberflaeche kennt die Edition: "' + edition + '" ergibt "' + sollEdition + '"');
 
   /* ------------------------------------------------ 4) Editionsverhalten - */
-  if (edition === 'test') {
+  if (!istVoll) {
     ok(d.byId.editionBar.hidden === false, 'Testbalken ist sichtbar');
     ok(/Testversion/i.test(d.byId.editionBar.inhalt()), 'Testbalken traegt den Testversion-Text');
     ok(/gesperrt/i.test(d.byId.editionBar.inhalt()), 'Testbalken sagt ehrlich, dass die Ausgaben gesperrt sind');
@@ -1622,7 +1640,7 @@ function lauf(edition) {
   ok(/EN 1993-1-8/.test(d.byId.infoNormen.inhalt()), 'der Dialog nennt die Regelwerke');
   ok(/ohne Gew/.test(d.byId.infoDisclaimer.inhalt()), 'der Dialog nennt den Disclaimer');
   ok(d.byId.infoEdition.inhalt().replace(/\s/g, '').length > 4, 'der Dialog nennt die Edition');
-  if (edition === 'test') {
+  if (!istVoll) {
     ok(/gesperrt/i.test(d.byId.infoEdition.inhalt()), 'Testversion: der Dialog nennt die gesperrten Ausgaben');
   } else {
     ok(/Vollversion/.test(d.byId.infoEdition.inhalt()), 'Vollversion: der Dialog nennt die Vollversion');
@@ -1716,7 +1734,10 @@ function lauf(edition) {
      bewusst nichts ausser zu sagen, warum. Beides wird hier durchgeklickt,
      denn genau daran haengt das Geschaeftsmodell (Plan 1). */
   s.setSprache('de');
-  var n11Voll = (edition !== 'test');
+  /* NICHT "alles ausser test" — genau der Fehler, den Dieter am 08.08. in
+     ui.js gefunden hat. Hergeleitet wird nach derselben Regel wie im
+     Programm, damit dieser Lauf auch mit einer KAPUTTEN Edition stimmt. */
+  var n11Voll = istVoll;
 
   /* --- Gating an der echten Oberflaeche ---------------------------------- */
   var n11Akt = ['speichern', 'oeffnen', 'drucken', 'word'];
@@ -2147,5 +2168,15 @@ module.exports = { lauf: lauf };
 if (require.main === module) {
   var r = lauf('full');
   console.log('\n  Smoke Vollversion: ' + r.N + ' Prüfungen · ' + r.FAIL.length + ' Fehler');
-  process.exit(r.FAIL.length ? 1 : 0);
+
+  /* DER GEFAEHRLICHE FALL, an der ECHTEN Oberflaeche (Dieter, 2026-08-08):
+     dieselbe VOLLVERSIONS-HTML, aber im Kopf steht Unsinn. Bis zum 08.08.
+     kam dabei die Vollversion heraus — wer die Zeile veraenderte oder
+     loeschte, hatte alle Ausgaben frei. Der ganze Lauf wird deshalb ein
+     zweites Mal durchgeklickt und muss sich wie die TESTVERSION verhalten. */
+  var k = lauf('kaputt');
+  console.log('  Smoke kaputte Edition: ' + k.N + ' Prüfungen · ' + k.FAIL.length + ' Fehler');
+
+  var alle = r.FAIL.length + k.FAIL.length;
+  process.exit(alle ? 1 : 0);
 }

@@ -49,7 +49,7 @@
   'use strict';
 
   var NAME = 'report';
-  var VERSION = '0.2.1-N12';
+  var VERSION = '0.3.0-P0';
 
   /* Der Programmname steht in der Datei, damit eine fremde .dts nicht
      stillschweigend als eigene gelesen wird. */
@@ -116,6 +116,22 @@
   /* ---------------------------------------------------------------- GATING
    * Plan 1: In der Testversion ist der volle Funktionsumfang beim RECHNEN
    * da und JEDE Ausgabe gesperrt. Genau eine Stelle im Programm weiss das. */
+
+  /* WOHER DIE EDITION KOMMT — und warum die Frage hier steht.
+     Bis 2026-08-08 entschied `ui.js` das selbst, und zwar falsch herum:
+     `(DT_EDITION === 'test') ? 'test' : 'full'`. Alles, was nicht exakt
+     'test' war, wurde zur VOLLVERSION — leer, geloescht, vertippt, 'FULL'.
+     Wer die Zeile im HTML-Kopf entfernte, hatte die Vollversion.
+     Das Gating hier drunter war die ganze Zeit richtig herum, und es gibt
+     sogar Assertions darauf, dass eine unbekannte Edition nichts freigibt.
+     Geprueft war also das Tor — nie die Hand, die den Schluessel hineinlegt.
+     Jetzt entscheidet EINE Stelle, und sie entscheidet auf die sichere
+     Seite: **nur exakt 'full' gibt die Vollversion.** Alles andere ist
+     Testversion. Kein Trimmen, keine Gross-/Kleinschreibung, keine
+     Freundlichkeit — wer die Vollversion ausliefert, schreibt sie richtig. */
+  function editionAus(wert) {
+    return (wert === 'full') ? 'full' : 'test';
+  }
 
   function guard(aktion, edition) {
     if (AKTIONEN.indexOf(aktion) < 0) {
@@ -737,6 +753,7 @@
     lizenzName: lizenzName, istAktiviert: istAktiviert,
     lizenzPhrase: lizenzPhrase, lizenzZeile: lizenzZeile,
     MAX_TWIPS: MAX_TWIPS, TWIP_JE_PX: TWIP_JE_PX,
+    editionAus: editionAus,
     guard: guard,
     stempel: stempel,
     baueDatei: baueDatei,

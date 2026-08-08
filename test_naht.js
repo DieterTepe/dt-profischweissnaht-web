@@ -2538,11 +2538,11 @@ eq(s34OhneVersion.length, 0,
    (s34OhneVersion.length ? ' (offen: ' + s34OhneVersion.join(', ') + ')' : ''));
 /* NICHT gegen eine feste Zeichenkette — der Waechter aus S43 fuehrt den
    Stand. Hier wird nur noch geprueft, DASS eine Kennung da ist. */
-ok(/^\d+\.\d+\.\d+-N\w+$/.test(Kern.VERSION), 'N5d: i18n_kern.js traegt eine Kennung (' + Kern.VERSION + ')');
-ok(/^\d+\.\d+\.\d+-N\w+$/.test(Hilfe.VERSION), 'N5d: i18n_hilfe.js traegt eine Kennung (' + Hilfe.VERSION + ')');
+ok(/^\d+\.\d+\.\d+-[A-Za-z]\w*$/.test(Kern.VERSION), 'N5d: i18n_kern.js traegt eine Kennung (' + Kern.VERSION + ')');
+ok(/^\d+\.\d+\.\d+-[A-Za-z]\w*$/.test(Hilfe.VERSION), 'N5d: i18n_hilfe.js traegt eine Kennung (' + Hilfe.VERSION + ')');
 /* KEIN HANDWERT (Lehre aus v2.36 und N7): geprueft wird die FORM, den Stand
    fuehrt der Waechter in S43. */
-ok(/^\d+\.\d+\.\d+-N\w+$/.test(Kerb.VERSION), 'N5d: i18n_kerbfall.js traegt eine Kennung (' + Kerb.VERSION + ')');
+ok(/^\d+\.\d+\.\d+-[A-Za-z]\w*$/.test(Kerb.VERSION), 'N5d: i18n_kerbfall.js traegt eine Kennung (' + Kerb.VERSION + ')');
 /* --- DER FUND VOM 2026-08-04 -------------------------------------------
    Die Versionszeile liest die Module selbst aus — aber Etappe und
    Planversion sind von Hand gepflegt, und genau die blieben nach N6b auf
@@ -3580,7 +3580,7 @@ var s40i, s40j, s40k;
 /* --- 1) Aufbau und Grenzen des Moduls ---------------------------------- */
 ok(typeof Assi === 'object' && Assi !== null, 'S40: assistent.js laedt');
 eq(Assi.NAME, 'assistent', 'S40: es nennt sich beim Namen');
-ok(/^\d+\.\d+\.\d+-N\w+$/.test(Assi.VERSION), 'S40: und traegt eine Kennung (' + Assi.VERSION + ')');
+ok(/^\d+\.\d+\.\d+-[A-Za-z]\w*$/.test(Assi.VERSION), 'S40: und traegt eine Kennung (' + Assi.VERSION + ')');
 var s40Fn = ['starte', 'schritt', 'schritte', 'anzahl', 'antworte', 'zurueck',
              'springe', 'ueberspringe', 'fertig', 'ergebnis', 'offen', 'fortschritt'];
 for (s40i = 0; s40i < s40Fn.length; s40i++) {
@@ -3845,7 +3845,7 @@ sek('S41 · N8b-1 Dialogskizzen — zeichnen, was erklaert');
 var s41i, s41j;
 
 eq(Skizze.NAME, 'skizze', 'S41: skizze.js nennt sich beim Namen');
-ok(/^\d+\.\d+\.\d+-N\w+$/.test(Skizze.VERSION), 'S41: und traegt eine Kennung (' + Skizze.VERSION + ')');
+ok(/^\d+\.\d+\.\d+-[A-Za-z]\w*$/.test(Skizze.VERSION), 'S41: und traegt eine Kennung (' + Skizze.VERSION + ')');
 
 /* --- 1) Jede Option jeder bedienten Gruppe wird gezeichnet -------------- */
 var s41Fehl = [], s41N = 0;
@@ -4150,8 +4150,8 @@ var S43_STAND = [
   { datei: 'thermik.js', version: '0.3.0-N9c', summe: '1bf966a2' },
   { datei: 'skizze.js', version: '0.3.0-N9c', summe: '447c40cd' },
   { datei: 'assistent.js', version: '0.5.0-N10b', summe: '4c015b50' },
-  { datei: 'ui.js', version: '0.18.1', summe: 'a84a9cce' },
-  { datei: 'report.js', version: '0.2.1-N12', summe: '67292ecb' }
+  { datei: 'ui.js', version: '0.19.0', summe: 'af80cf1f' },
+  { datei: 'report.js', version: '0.3.0-P0', summe: '40ae3912' }
 ];
 
 var s43i, s43Fehl = [], s43Src, s43M, s43S;
@@ -4195,10 +4195,10 @@ ok(s43Summe('') === s43Summe(''), 'S43: und ist bestimmt');
 
 /* DIE VIER KORRIGIERTEN KENNUNGEN — festgehalten, damit der Rueckfall
    auffiele. Sie waren der Anlass fuer diese Sektion. */
-ok(/-N\w+$/.test(require('./solver.js').VERSION), 'S43: solver.js traegt eine Etappenkennung');
-ok(/-N\w+$/.test(require('./rechenweg.js').VERSION), 'S43: rechenweg.js ebenso');
-ok(/-N\w+$/.test(require('./validate.js').VERSION), 'S43: validate.js ebenso');
-ok(/-N\w+$/.test(require('./assistent.js').VERSION), 'S43: assistent.js ebenso');
+ok(/-[A-Za-z]\w*$/.test(require('./solver.js').VERSION), 'S43: solver.js traegt eine Etappenkennung');
+ok(/-[A-Za-z]\w*$/.test(require('./rechenweg.js').VERSION), 'S43: rechenweg.js ebenso');
+ok(/-[A-Za-z]\w*$/.test(require('./validate.js').VERSION), 'S43: validate.js ebenso');
+ok(/-[A-Za-z]\w*$/.test(require('./assistent.js').VERSION), 'S43: assistent.js ebenso');
 
 sek('S44 · N9a Waermefuehrung — Vorwaermung und Abkuehlzeit nach EN 1011-2');
 
@@ -5087,7 +5087,10 @@ eq(Rep.NAME, 'report', 'S49: report.js nennt sich beim Namen');
    Ein festgeschriebenes "N11" wird beim naechsten Baustein rot, obwohl
    nichts kaputt ist — und lenkt genau dann ab, wenn es darauf ankommt.
    Den Stand fuehrt der Waechter in S43. */
-ok(/^\d+\.\d+\.\d+-N\w+$/.test(Rep.VERSION), 'S49: und traegt eine Etappenkennung (' + Rep.VERSION + ')');
+/* Das Muster nennt KEINEN Buchstaben mehr. Es hiess bis 2026-08-08 "-N…" —
+   und wurde rot, als die erste Etappe "P1" hiess, obwohl nichts kaputt war.
+   Ein Handwert im Muster ist derselbe Fehler wie ein Handwert im Wert. */
+ok(/^\d+\.\d+\.\d+-[A-Za-z]\w*$/.test(Rep.VERSION), 'S49: und traegt eine Etappenkennung (' + Rep.VERSION + ')');
 var s49Src = fsU.readFileSync(__dirname + '/report.js', 'utf8');
 ok(s49Src.indexOf('document') < 0, 'S49: report.js fasst kein document an');
 ok(s49Src.indexOf('window') < 0, 'S49: und kein window — es ist DOM-frei und damit hier pruefbar');
@@ -5901,6 +5904,97 @@ var s51Rs = s51Ui.substring(s51Ui.indexOf('function lizenzZuruecksetzen'),
 ok(s51Rs.indexOf('leeren()') < 0, 'S51: das Zuruecksetzen leert NICHT das Formular');
 ok(s51Rs.indexOf('setSprache') < 0, 'S51: es fasst die Sprache nicht an');
 ok(s51Rs.indexOf('setTheme') < 0, 'S51: und das Design nicht');
+
+sek('S52 · Woher die Edition kommt — nur exakt "full" gibt die Vollversion');
+
+/* DIETERS FUND (2026-08-08). Bis dahin stand in ui.js:
+     edition: (win.DT_EDITION === 'test') ? 'test' : 'full'
+   Alles, was nicht exakt 'test' war, wurde zur VOLLVERSION — leer, geloescht,
+   vertippt, 'FULL', 'voll'. Wer die Zeile im HTML-Kopf entfernte oder
+   irgendetwas hineinschrieb, hatte die Vollversion.
+   DAS GATING WAR DIE GANZE ZEIT RICHTIG HERUM, und S49 prueft sogar, dass
+   eine leere oder unbekannte Edition NICHTS freigibt. Geprueft war also das
+   Tor — nie die Hand, die den Schluessel hineinlegt.
+   Diese Sektion prueft die Hand. */
+
+/* --- 1) NUR EXAKT 'full' ------------------------------------------------ */
+eq(Rep.editionAus('full'), 'full', 'S52: exakt "full" gibt die Vollversion');
+eq(Rep.editionAus('test'), 'test', 'S52: "test" gibt die Testversion');
+
+/* Alles andere ist Testversion. Kein Trimmen, keine Gross-/Kleinschreibung,
+   keine Freundlichkeit — wer die Vollversion ausliefert, schreibt sie
+   richtig. */
+var s52Fremd = ['', ' ', 'FULL', 'Full', 'fUll', ' full', 'full ', ' full ',
+                'full;', "'full'", 'voll', 'Vollversion', 'demo', 'pro', '1',
+                'true', 'test ', 'TEST', 'x'];
+var s52i, s52Durch = [];
+for (s52i = 0; s52i < s52Fremd.length; s52i++) {
+  if (Rep.editionAus(s52Fremd[s52i]) !== 'test') s52Durch.push(s52Fremd[s52i]);
+}
+eq(s52Durch.length, 0,
+   'S52: KEINE der ' + s52Fremd.length + ' falschen Schreibweisen gibt die Vollversion (' +
+   s52Durch.join(' | ') + ')');
+
+/* Auch was gar keine Zeichenkette ist. Wer die Zeile loescht, bekommt
+   `undefined` — und genau dieser Fall war der gefaehrlichste. */
+var s52Nichts = [null, undefined, 0, 1, true, false, {}, [], ['full'], NaN];
+var s52Durch2 = [];
+for (s52i = 0; s52i < s52Nichts.length; s52i++) {
+  if (Rep.editionAus(s52Nichts[s52i]) !== 'test') s52Durch2.push(String(s52Nichts[s52i]));
+}
+eq(s52Durch2.length, 0,
+   'S52: und nichts davon ebenso wenig (' + s52Durch2.join(' | ') + ')');
+eq(Rep.editionAus(), 'test', 'S52: ohne jede Angabe — Testversion');
+
+/* --- 2) DIE ENTSCHEIDUNG STEHT AN EINER STELLE -------------------------- */
+var s52Ui = fsU.readFileSync(__dirname + '/ui.js', 'utf8');
+eq((s52Ui.match(/DT_EDITION/g) || []).length, 1,
+   'S52: ui.js liest DT_EDITION an genau EINER Stelle');
+ok(s52Ui.indexOf('Report.editionAus(win.DT_EDITION)') > 0,
+   'S52: und fragt damit report.js, statt selbst zu entscheiden');
+/* Die alte, falsche Form darf nirgends mehr stehen. */
+ok(!/DT_EDITION\s*===\s*'test'/.test(s52Ui),
+   'S52: die alte Form (alles ausser "test" ist voll) ist verschwunden');
+/* Fehlt report.js ganz, bleibt es bei der Testversion. */
+ok(/Report \? Report\.editionAus\(win\.DT_EDITION\) : 'test'/.test(s52Ui),
+   'S52: ohne report.js bleibt es bei der Testversion — sichere Seite');
+
+/* --- 3) DAS GATING BLEIBT EINIG MIT DER WEICHE -------------------------- */
+/* Beide Stellen muessen dieselbe Antwort geben, sonst haette man wieder zwei
+   Wahrheiten: die eine sagt "Vollversion", die andere sperrt trotzdem. */
+var s52Alle = s52Fremd.concat(['full', 'test']);
+var s52Un = [];
+for (s52i = 0; s52i < s52Alle.length; s52i++) {
+  (function (w) {
+    var ed = Rep.editionAus(w);
+    var frei = Rep.guard('drucken', ed).erlaubt;
+    if (frei !== (w === 'full')) s52Un.push(JSON.stringify(w));
+  }(s52Alle[s52i]));
+}
+eq(s52Un.length, 0,
+   'S52: Weiche und Gating kommen bei jedem Wert zum selben Ergebnis (' + s52Un.join(',') + ')');
+
+/* --- 4) DIE HTML-DATEIEN TRAGEN DIE RICHTIGEN WERTE --------------------- */
+/* Gegen die Dateien geprueft, nicht gegen eine Liste. */
+var s52HV = fsU.readFileSync(__dirname + '/DT-ProfiSchweissnaht.html', 'utf8');
+var s52HT = fsU.readFileSync(__dirname + '/DT-ProfiSchweissnaht_Test.html', 'utf8');
+var s52MV = s52HV.match(/window\.DT_EDITION\s*=\s*'([^']*)'/);
+var s52MT = s52HT.match(/window\.DT_EDITION\s*=\s*'([^']*)'/);
+ok(!!s52MV && !!s52MT, 'S52: beide HTMLs setzen die Edition');
+eq(Rep.editionAus(s52MV[1]), 'full', 'S52: die Voll-HTML ergibt wirklich die Vollversion');
+eq(Rep.editionAus(s52MT[1]), 'test', 'S52: die Test-HTML die Testversion');
+
+/* DER AUSLIEFERUNGSFALL (Dieter, 2026-08-08): Beim Bau der Einzeldatei wird
+   der erklaerende Kommentar entfernt, damit niemand Fremdes Bescheid weiss.
+   Das darf nichts kaputt machen — und noch wichtiger: waere versehentlich
+   die ganze Zeile weg, muss die TESTVERSION herauskommen. */
+var s52OhneKommentar = s52HV.replace(/<!--[\s\S]*?EDITION[\s\S]*?-->/g, '');
+ok(/window\.DT_EDITION\s*=\s*'full'/.test(s52OhneKommentar),
+   'S52: ohne den erklaerenden Kommentar bleibt die Einstellung erhalten');
+var s52OhneZeile = s52HV.replace(/<script>window\.DT_EDITION[^<]*<\/script>/, '');
+var s52M3 = s52OhneZeile.match(/window\.DT_EDITION\s*=\s*'([^']*)'/);
+eq(Rep.editionAus(s52M3 ? s52M3[1] : undefined), 'test',
+   'S52: waere die ganze Zeile weg, kaeme die TESTVERSION heraus');
 
 /* ========================================================================= */
 console.log('\n════════════════════════════════════════════');

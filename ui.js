@@ -35,12 +35,12 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.18.1';
-  var ETAPPE = 'N12';
+  var VERSION = '0.19.0';
+  var ETAPPE = 'P0';
   /* Plan-Version, die zu diesem Stand gehoert. Sie ist die EINZIGE von Hand
      gepflegte Zahl der Versionszeile — alles andere kommt aus den geladenen
      Modulen selbst (Plan 3.6). */
-  var PLAN = '2.70';
+  var PLAN = '2.74';
   var SPRACHEN = ['de', 'en', 'pt'];
 
   /* Plan 3.1 (bindend): die Oberflaeche startet IMMER im dunklen Design —
@@ -317,7 +317,11 @@
       /* N12: die Registrierung. Leer heisst: nicht aktiviert — dann steht
          in den Ausgaben KEINE Lizenzzeile statt einer leeren. */
       lizenzName: '', lizenzKey: '', lizenzSpaeter: false,
-      edition: (win.DT_EDITION === 'test') ? 'test' : 'full'
+      /* NUR EXAKT 'full' GIBT DIE VOLLVERSION (Dieters Fund, 2026-08-08).
+         Entschieden wird das in `report.js` — an derselben Stelle wie das
+         Gating und die Lizenzzeile. Fehlt report.js ganz, bleibt es bei der
+         Testversion: im Zweifel die sichere Seite. */
+      edition: Report ? Report.editionAus(win.DT_EDITION) : 'test'
     };
 
     /* --------------------------------------------------------- Erzeugen */

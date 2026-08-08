@@ -20,8 +20,8 @@
 > in 4.11 und in der Historie. Im Projektordner liegt **keine Vorlaufdatei** mehr.
 
 ```
-Plan-Version : 2.73 · Stand 2026-08-08
-Codestand    : Plan 2.70 · ui 0.18.1 · N12
+Plan-Version : 2.74 · Stand 2026-08-08
+Codestand    : Plan 2.74 · ui 0.19.0 · P0
                (Die Planversion, gegen die der CODE gebaut ist. Sie steht auch
                in ui.js als PLAN und wird von einer Assertion damit verglichen.
                Sie wandert nur mit, wenn sich Code ändert — reine Plan- oder
@@ -117,6 +117,12 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                **P1 (Hinweis „folgt in einem Update")** und **P2 (Neuordnung
                von Plandatei und Historie)** — beide in **5.3**, dazu die
                Verkaufsentscheidungen in **1a**.
+               ⚠️ **P0 (2026-08-08): DIE EDITIONSWEICHE WAR FALSCH HERUM.**
+               `ui.js` fragte `(DT_EDITION === 'test') ? 'test' : 'full'` —
+               alles, was nicht exakt `'test'` war, wurde zur **Vollversion**.
+               Wer die Zeile im HTML-Kopf löschte oder vertippte, hatte alle
+               Ausgaben frei. Von Dieter gefunden, behoben und geliefert;
+               Ergebnis in **5.4**.
                → NÄCHSTER SCHRITT: **P1**, dann **P2**, dann Baustein
                  **N13 (Ermüdung)** — Einstieg „weiter mit P1";
                  **Umfang vor dem Bau abstimmen**;
@@ -136,7 +142,8 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                  4.11 (symbol.js), 4.12 (report.js).
                Große Bausteine (N5, N8, N13, N14) werden in ETAPPEN gebaut — Regel in
                Kickoff-Punkt 5c, Etappen in Abschnitt 5.2.
-Basislinie   : 3417 Assertions · DOM-Smokes 1081 (voll) + 1039 (test) · i18n-Parität 0 Abweichungen
+Basislinie   : 3432 Assertions · DOM-Smokes 1081 (voll) + 1039 (test)
+               + 1039 (kaputte Edition) · i18n-Parität 0 Abweichungen
                (VERBINDLICH. Basislinie darf nur WACHSEN — nie schrumpfen, nie gelockert werden.)
 Dateistand   : siehe Abschnitt 8.1 — dort steht, was fertig ist und was noch fehlt.
 ⚠️ SYNC       : Am 2026-08-03 lag im Projektordner eine **elf Versionen alte**
@@ -225,7 +232,7 @@ Einstiegssatz von Dieter: **„weiter mit P1"**.
    schon zweimal Dateien verlorengegangen, beide Male hat diese Prüfung es gefunden.
 11. Arbeitsordner herstellen (Befehl unter Punkt 6 der Kickoff-Liste), dann
    `node test_naht.js`, `node dom_smoke_voll.js`, `node dom_smoke_test.js` laufen lassen
-   und die Basislinie aus dem Plan-Kopf bestätigen (**3417 / 1081 / 1039 · 0 Fehler**),
+   und die Basislinie aus dem Plan-Kopf bestätigen (**3432 / 1081 / 1039 / 1039 · 0 Fehler**),
    **bevor** etwas gebaut wird. Weicht etwas ab, erst das klären.
    ⚠️ **Diese drei Läufe sind zugleich die Probe, ob Plandatei und Code zusammenpassen.**
    Steht im Kopfblock eine andere Basislinie als gemessen, ist eine der beiden Seiten alt —
@@ -1772,6 +1779,7 @@ nicht die Datei.**
 | **N11** ✅ | **Ausgaben** *(ABGENOMMEN 2026-08-07 — Ergebnis in 5.1-9)* | `report.js`: `.dts` speichern/öffnen (**erst leeren, dann laden**, **Versionsstempel nach 5.1-8**, **nur Eingaben**, Lückenliste als Dokumentation), Druck/PDF, Word (.rtf), `guard()`-Gating. Aktionsleiste **oben**, Dateiname trägt Bezeichnung + Datum. **Jede Ausgabe trägt die Versionszeile** (3.6) — **dabei die Modulnamen an die Dateinamen angleichen UND die Modulkennungen mitwachsen lassen**, beide Merkposten in 3.6. |
 | **N12** ✅ | **Edition/Registrierung/Impressum** *(gebaut und geliefert 2026-08-07, Abnahme offen — Ergebnis in 5.1-10)* | Testbalken, Aktivierungsdialog beim Erststart (Name + Schlüssel, **keine Formatprüfung**), „Vollversion · lizenziert für <Name>", **10-s-Long-Press** = Reset, Info-ⓘ mit Impressum. |
 | **★** | **LAUNCH-CHECKPOINT** | **Ab hier verkaufsfähig.** Dieter entscheidet: weiterbauen oder veröffentlichen. |
+| **P0** ✅ | **Editionsweiche berichtigt** *(geliefert 2026-08-08 — 5.4)* |
 | **P1** ⬅ | **Hinweis „folgt in einem Update“** *(nächster Bau — siehe 5.3)* |
 | **P2** | **Neuordnung von Plandatei und Historie** *(5.3)* |
 | **N13** | **Ermüdung — Rechenkern** | `ermuedung.js`: Wöhlerlinie m=3/5, γ_Mf, Miner, Kollektive + Rechenweg. **Hier Dieter nach seinen Praxis-Kerbfällen fragen.** |
@@ -3583,6 +3591,74 @@ sie jetzt zu ordnen ist billiger als nach drei weiteren Bausteinen.
 
 ---
 
+### 5.4 P0 · Die Editionsweiche — **GELIEFERT 2026-08-08**
+
+**Dieters Fund, und er ist gravierend.** In `ui.js` stand seit N5a:
+
+```js
+edition: (win.DT_EDITION === 'test') ? 'test' : 'full'
+```
+
+**Alles, was nicht exakt `'test'` war, wurde zur Vollversion** — eine leere Zeichenkette,
+eine gelöschte Zeile, ein Tippfehler, `'FULL'`, `'voll'`, `'Vollversion'`. Wer die Zeile
+im HTML-Kopf entfernte oder irgendetwas hineinschrieb, hatte **alle Ausgaben frei**.
+Bei einem Programm, das über Digistore24 verkauft werden soll, ist das kein
+Schönheitsfehler.
+
+> ⚠️ **DAS BITTERE DARAN: DAS GATING WAR DIE GANZE ZEIT RICHTIG HERUM.**
+> `report.js` entscheidet seit N11 `if (edition !== 'full')` sperren, und **S49 prüft
+> ausdrücklich, dass eine leere oder unbekannte Edition nichts freigibt.** Geprüft war
+> also das **Tor** — nie die **Hand, die den Schlüssel hineinlegt**. Dasselbe Muster wie
+> beim vergessenen `leeren()`, bei den verklebten Karten und bei der Zeilenlänge: die
+> Prüfung lag *neben* der Sache statt *auf* ihr.
+
+**Die Entscheidung liegt jetzt in `report.js`** — bei allem anderen Editionsabhängigen,
+und damit in Node prüfbar:
+
+```js
+function editionAus(wert) { return (wert === 'full') ? 'full' : 'test'; }
+```
+
+**Kein Trimmen, keine Groß-/Kleinschreibung, keine Freundlichkeit.** Wer die Vollversion
+ausliefert, schreibt sie richtig. `ui.js` liest `DT_EDITION` an genau einer Stelle und
+fragt damit `report.js`; fehlt `report.js` ganz, bleibt es bei der Testversion.
+
+**Geprüft in Sektion S52:** 19 falsche Schreibweisen (`''`, `' '`, `'FULL'`, `' full'`,
+`'full '`, `"'full'"`, `'voll'`, `'demo'`, `'1'`, `'TEST'` …) und 10 Nicht-Zeichenketten
+(`null`, `undefined`, `0`, `true`, `{}`, `['full']`, `NaN` …) — **keine davon** gibt die
+Vollversion. Dazu: Weiche und Gating kommen bei jedem Wert zum selben Ergebnis; die alte
+Form steht nirgends mehr im Quelltext; und wäre die Skriptzeile ganz weg, käme die
+Testversion heraus.
+
+**DER DOM-SMOKE DER VOLLVERSION LÄUFT SEIT P0 ZWEIMAL.** Der zweite Lauf nimmt dieselbe
+**Vollversions-HTML**, schreibt aber Unsinn in den Kopf — und klickt alles durch: Der
+Testbalken muss erscheinen, die vier Ausgaben müssen gesperrt sein, der Info-Dialog muss
+die Testversion nennen. Damit ist der gefährliche Fall nicht nur an der Funktion belegt,
+sondern an der echten Oberfläche.
+
+> **EINE PRÜFUNG MUSS IHRE ERWARTUNG SELBST KENNEN (neue Regel, 9.2).**
+> Im ersten Anlauf holte sich der Smoke die Erwartung aus `Report.editionAus()` — also
+> aus dem, was er prüfen sollte. In der Gegenprobe blieb er dann **grün**, obwohl die
+> Weiche wieder falsch herum stand: die Erwartung drehte sich mit. Jetzt steht die Regel
+> unabhängig im Smoke (`edition === 'full'`), und die Gegenprobe meldet **16 rote
+> Zeilen**.
+
+**Zur Auslieferung** *(Dieter, 2026-08-08)*: Beim Bau der Einzeldatei wird der erklärende
+Kommentar über der Editionszeile entfernt, damit niemand Fremdes Bescheid weiß. **Das ist
+geprüft und unschädlich** (S52). Es hilft aber nur wenig — `window.DT_EDITION = 'full'`
+steht ohnehin lesbar da. **Was wirklich schützt, ist die richtige Vorgabe:** wer die Zeile
+verändert, landet in der Testversion.
+
+**Basislinie 3417 → 3432 Assertions · Smokes 1081 / 1039 / **1039 (kaputte Edition, neu)**.**
+**Betroffen:** `report.js` (0.3.0-P0), `ui.js` (0.19.0), `test_naht.js` (**S52**),
+`dom_smoke_voll.js` (zweiter Lauf). Kein anderes Modul, kein Rechenkern.
+
+**Am Gerät zu prüfen:** In der Vollversions-HTML `'full'` durch `'voll'` ersetzen und
+laden — es **muss** der Testbalken erscheinen und jede Ausgabe gesperrt sein. Danach
+wieder auf `'full'` setzen.
+
+---
+
 ## 6. Normfundament — Kurzreferenz
 
 > ⚠ **Die Detailwerte stehen in den fünf Recherchedateien (Abschnitt 8) — dort sind sie
@@ -3975,7 +4051,9 @@ Formsache, und der Basislinien-Abgleich aus Kickoff-Punkt 11 ebenso wenig.
 **Erste Handlung im neuen Chat:** Vollständigkeit gegen die Tabelle oben prüfen
 (**19 Module**, `style.css`, beide HTMLs, **alle drei** DEV-ONLY-Dateien, dazu Plandatei und
 `Schweißnaht-Historie.md`), Arbeitsordner herstellen, die drei Testläufe starten.
-Melden müssen sie **3417 / 1081 / 1039 · 0 Fehler**.
+Melden müssen sie **3432 / 1081 / 1039 / 1039 · 0 Fehler** — der DOM-Smoke der
+Vollversion läuft seit P0 **zweimal**: einmal regulär und einmal mit einer kaputten
+Edition im HTML-Kopf, die sich wie die Testversion verhalten muss.
 ⚠️ **Die beiden Smokes sind seit N12 verschieden lang** — der Aktivierungsdialog gibt es
 nur in der Vollversion, also prüft der Testlauf dort anderes und weniger. Das ist kein
 Fehler; beide Zahlen sind Basislinie und dürfen nur wachsen. Weicht etwas ab, erst das klären —
@@ -4298,6 +4376,21 @@ will. Also: Vorschriften und Wegweiser bleiben hier, die Erzählung wandert.
   § 309 Nr. 7 BGB. Nicht „keinerlei Haftung", sondern die Sachaussage — keine Zusicherung
   eines Ergebnisses, Prüfpflicht gegen Originalnormen und eigene Abnahme, Verantwortung
   beim Fachkundigen. **Claude ist kein Jurist und sagt das auch.**
+- **EINE PRÜFUNG MUSS IHRE ERWARTUNG SELBST KENNEN** (2026-08-08, P0): Der DOM-Smoke
+  holte sich die erwartete Edition aus `Report.editionAus()` — also aus dem, was er prüfen
+  sollte. In der Gegenprobe blieb er **grün**, obwohl die Weiche falsch herum stand: die
+  Erwartung drehte sich mit dem Fehler mit. **Wer die Erwartung aus dem Prüfling holt,
+  prüft nichts.** Danach: 16 rote Zeilen.
+- **Bei Schaltern gilt die sichere Seite, und die wird POSITIV formuliert**
+  (2026-08-08, P0): Nicht „alles außer `test` ist voll", sondern „**nur exakt `full` ist
+  voll**". Die erste Form gibt bei jedem Tippfehler, jeder gelöschten Zeile und jedem
+  leeren Wert das Mehr frei; die zweite das Weniger. Kein Trimmen, keine Groß-/
+  Kleinschreibung, keine Freundlichkeit — wer die Vollversion ausliefert, schreibt sie
+  richtig.
+- **Ein Handwert im MUSTER ist derselbe Fehler wie ein Handwert im WERT**
+  (2026-08-08, P0): Zehn Assertions prüften Kennungen gegen `-N\w+`. Sie wurden rot, als
+  die erste Etappe „P0" hieß — obwohl nichts kaputt war. Alle zehn prüfen jetzt
+  `-[A-Za-z]\w*`.
 - **Token-Pause: 4 Stunden.**
 
 ---
@@ -4357,24 +4450,6 @@ Changelog — **die vollständige Fassung ab v1.0 steht in `Schweißnaht-Histori
 Hier stehen nur die letzten drei Einträge. Wer wissen will, wie eine Entscheidung
 zustande kam, findet die Kette dort — lückenlos ab der Erstfassung vom 2026-07-23.
 
-**v2.71 (2026-08-07):** **Der Verkaufsstand geht in den Verkauf — und daraus folgen zwei
-kleine Aufträge vor N13.** Nur Plandatei, kein Code; `Codestand` bleibt 2.70.
-Dieters Entscheidung, jetzt zu veröffentlichen, ist durch diesen Tag belegt: die drei
-echten Fehler des 07.08. hat **keine der 3417 Assertions** gefunden, sondern echte
-Benutzung. Neu ist **1a (Verkauf und Verbreitung)** mit den Festlegungen dazu — die
-Verkaufsseite darf nur versprechen, was drin ist; das Update wird kostenpflichtig, deshalb
-nirgends „kostenlos" im Programmtext; **der Vertriebsweg ist die TESTVERSION, nicht die
-Raubkopie** — sie verbreitet Bekanntheit und schafft den Kaufgrund, statt ihn wegzunehmen;
-und die Warnung, dass die Rechnung bei hunderten Käufern kippt und der Server dann fällig
-wird. Neu ist außerdem **5.3** mit **P1** (Hinweis „folgt in einem Update" — Beschriftung
-zuerst, Fenster einmal je Bereich und Sitzung, keine internen Bausteinnamen) und **P2**
-(Neuordnung von Plandatei und Historie, mit drei Bedingungen: nichts Bindendes wandert,
-es wird gemessen statt gehofft, eigene Etappe ohne Code). Drei neue Festlegungen in 9.2.
-**Basislinie unverändert: 3417 Assertions · Smokes 1081 / 1039 · i18n-Parität 0.**
-**Nächster Schritt: P1, dann P2, dann N13. Einstieg: „weiter mit P1".**
-
-
-
 **v2.72 (2026-08-08):** **Die Rechtstexte wandern auf die Landingpage — P1 wächst um die
 Kontaktangaben.** Nur Plandatei, kein Code; `Codestand` bleibt 2.70.
 Dieters Beobachtung von unterwegs: Im Programm steht die volle Anschrift, auf der
@@ -4412,6 +4487,29 @@ Zugleich ist jetzt in 1a festgehalten, dass die drei Landingpage-Dateien **nicht
 Projektordner dieses Programms gehören: sie dort zu kopieren wäre genau die Doppelquelle,
 die zu vermeiden der Anlass war.
 **Basislinie unverändert: 3417 Assertions · Smokes 1081 / 1039 · i18n-Parität 0.**
+**Nächster Schritt: P1, dann P2, dann N13. Einstieg: „weiter mit P1".**
+
+
+
+**v2.74 (2026-08-08):** **P0 — DIE EDITIONSWEICHE WAR FALSCH HERUM, von Dieter gefunden.**
+In `ui.js` stand `(DT_EDITION === 'test') ? 'test' : 'full'`: alles, was nicht exakt
+`'test'` war, wurde zur **Vollversion** — eine leere Zeichenkette, eine gelöschte Zeile,
+ein Tippfehler, `'FULL'`, `'voll'`. Wer die Zeile im HTML-Kopf veränderte, hatte alle
+Ausgaben frei. **Das Gating in `report.js` war die ganze Zeit richtig herum, und S49
+prüft sogar, dass eine unbekannte Edition nichts freigibt** — geprüft war also das Tor,
+nie die Hand, die den Schlüssel hineinlegt. Dasselbe Muster wie schon dreimal in dieser
+Woche. Die Entscheidung liegt jetzt in `report.js` bei allem anderen Editionsabhängigen:
+**nur exakt `'full'`**, kein Trimmen, keine Groß-/Kleinschreibung. Neue Sektion **S52**
+mit 19 falschen Schreibweisen und 10 Nicht-Zeichenketten; **der DOM-Smoke der Vollversion
+läuft seit P0 zweimal** — der zweite Lauf schreibt Unsinn in den Kopf derselben
+Vollversions-HTML und klickt alles durch. **Ein Nebenfund aus der Gegenprobe wurde zur
+Regel:** Der Smoke holte seine Erwartung anfangs aus `Report.editionAus()` und blieb
+deshalb grün, obwohl die Weiche falsch stand — die Erwartung drehte sich mit. Jetzt steht
+sie unabhängig, und die Gegenprobe meldet 16 rote Zeilen. Außerdem prüften zehn
+Assertions Kennungen gegen `-N\w+` und wurden rot, als die Etappe „P0" hieß; alle zehn
+prüfen jetzt allgemein. Drei neue Festlegungen in 9.2, Ergebnis in **5.4**.
+**Codestand 2.70 → 2.74 · ui 0.18.1 → 0.19.0 · report 0.2.1 → 0.3.0-P0 · Etappe P0.**
+**Basislinie 3417 → 3432 Assertions · Smokes 1081 / 1039 / 1039 (dritter Lauf neu).**
 **Nächster Schritt: P1, dann P2, dann N13. Einstieg: „weiter mit P1".**
 
 
