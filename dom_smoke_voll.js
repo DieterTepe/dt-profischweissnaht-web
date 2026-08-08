@@ -2240,6 +2240,34 @@ function lauf(edition) {
   s.setSprache('de');
   s.leeren();
 
+  /* --- P1c: KEIN WORT STEHT ZWEIMAL IN DERSELBEN ZEILE ------------------
+     Im Word-Blatt stand "Zielfenster fuer t8/5:  Zielfenster 10 bis 20 s"
+     (Dieters Fund, 2026-08-08). Kein Rechenfehler, aber unsauber — und es
+     faellt am Bildschirm kaum auf, weil Beschriftung und Wert dort in zwei
+     Spalten stehen. Erst im Ausdruck ruecken sie zusammen.
+     Geprueft wird allgemein: das erste Wort des Wertes darf nicht das erste
+     Wort der Beschriftung wiederholen. */
+  s.leeren();
+  s.beispielLaden('winkel_v');
+  s.rechnen();
+  var p1cKarten = s.berichtKarten(), p1cDopp = [];
+  for (i = 0; i < p1cKarten.length; i++) {
+    for (var p1cj = 0; p1cj < p1cKarten[i].zeilen.length; p1cj++) {
+      (function (z) {
+        if (!z.v) return;
+        var wk = String(z.k).replace(/^\s+/, '').split(/[\s:]+/)[0];
+        var wv = String(z.v).replace(/^\s+/, '').split(/[\s:]+/)[0];
+        if (wk && wv && wk.length > 3 && wk === wv) p1cDopp.push(z.k + ' | ' + z.v);
+      }(p1cKarten[i].zeilen[p1cj]));
+    }
+  }
+  ok(p1cDopp.length === 0,
+     'P1c: kein Wert wiederholt das erste Wort seiner Beschriftung (' + p1cDopp.join(' / ') + ')');
+  ok(p1cKarten.length >= 3, 'P1c: und es wurden wirklich alle Karten geprueft (' + p1cKarten.length + ')');
+  s.leeren();
+  s.beispielLaden('blech');
+  s.rechnen();
+
   /* --------------------------------- 13) i18n-Paritaet der UI-Schluessel - */
   var uiKeys = [];
   var kRe = /data-i18n(?:-title|-ph)?="([a-zA-Z0-9_]+)"/g, km;

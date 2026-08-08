@@ -12,7 +12,7 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.11.0-P1';
+  var VERSION = '0.11.1-P1';
   var SPRACHEN = ['de', 'en', 'pt'];
 
   var D = {
@@ -430,7 +430,11 @@
     th_tp:            { de: 'Mindest-Vorwärmtemperatur', en: 'Minimum preheat temperature', pt: 'Temperatura mínima de pré-aquecimento' },
     th_t85:           { de: 'Abkühlzeit t8/5', en: 'Cooling time t8/5', pt: 'Tempo de arrefecimento t8/5' },
     th_keine_vorw:    { de: 'keine Vorwärmung erforderlich', en: 'no preheating required', pt: 'sem pré-aquecimento necessário' },
-    th_fenster_von_bis:{ de: 'Zielfenster {0} bis {1} s', en: 'Target window {0} to {1} s', pt: 'Janela alvo {0} a {1} s' },
+    /* OHNE das Wort "Zielfenster" — die Beschriftung der Zeile heisst bereits
+       "Zielfenster fuer t8/5". Im Ausdruck stand sonst "Zielfenster fuer
+       t8/5: Zielfenster 10 bis 20 s" (Dieters Fund am Word-Blatt,
+       2026-08-08). */
+    th_fenster_von_bis:{ de: '{0} bis {1} s', en: '{0} to {1} s', pt: '{0} a {1} s' },
     th_fenster_kurz:  { de: 'Fenster', en: 'Window', pt: 'Janela' },
     th_fenster_eigen: { de: 'Eigene Vorgabe — nicht die Vorbelegung des Programms.', en: 'Your own limits — not the program default.', pt: 'Limites próprios — não a predefinição do programa.' },
     th_fenster_offen: { de: 'kein belegtes Zielfenster', en: 'no documented target window', pt: 'sem janela alvo documentada' },

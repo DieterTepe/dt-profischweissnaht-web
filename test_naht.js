@@ -4136,7 +4136,7 @@ function s43Summe(text) {
    ZWEI Etappen gilt die Regel dagegen streng: geaenderter Quelltext ohne
    Kennungswechsel ist rot. */
 var S43_STAND = [
-  { datei: 'i18n_kern.js', version: '0.11.0-P1', summe: '7dedfe1f' },
+  { datei: 'i18n_kern.js', version: '0.11.1-P1', summe: '30a6f724' },
   { datei: 'i18n_hilfe.js', version: '0.5.0-N11', summe: '8cc6c8aa' },
   { datei: 'i18n_kerbfall.js', version: '0.2.0-N11', summe: 'b986cce4' },
   { datei: 'daten.js', version: '0.2.0-N11', summe: '5e696f0e' },
@@ -4153,7 +4153,7 @@ var S43_STAND = [
   { datei: 'thermik.js', version: '0.3.0-N9c', summe: '1bf966a2' },
   { datei: 'skizze.js', version: '0.3.0-N9c', summe: '447c40cd' },
   { datei: 'assistent.js', version: '0.5.0-N10b', summe: '4c015b50' },
-  { datei: 'ui.js', version: '0.20.1', summe: '7dfe3765' },
+  { datei: 'ui.js', version: '0.20.2', summe: 'f65473c9' },
   { datei: 'report.js', version: '0.4.0-P1', summe: '80ac0a6a' }
 ];
 

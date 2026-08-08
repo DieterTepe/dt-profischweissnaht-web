@@ -3179,3 +3179,40 @@ Erste, was ein Käufer sieht.
 zurück in die Liste → rot.
 
 **Basislinie 3469 → 3488 Assertions. Smokes unverändert 1119 / 1077 / 1077.**
+
+---
+
+## P1b und P1c (2026-08-08) — was drei Bildschirmfotos gezeigt haben
+
+Dieter schickte drei Bilder von seinem Tablet: den Zusatzbereich mit dem neuen
+Hinweisfenster und zwei Seiten des Word-Dokuments. Alles funktionierte — und trotzdem
+kamen zwei Befunde heraus.
+
+**P1b: Das Programm versprach, was es nicht kann.** Das Info-Fenster nannte
+„statischer Nachweis, **Ermüdung**, Wärmeführung, Kosten und **Verzug**" und listete unter
+Regelwerken EN 1993-1-9 und EN 1999-1-3. Zwei Zeilen weiter unten stand „folgt in einem
+Update". Der Text beschrieb den **Plan**, nicht den **Stand**, und war nie nachgezogen
+worden. Auch die Meta-Beschreibung beider HTML-Dateien war betroffen — und die ist das
+Erste, was eine Suchmaschine liest. Ausführlich im eigenen Abschnitt oben.
+
+**P1c: Eine Wortdopplung, die nur im Ausdruck auffällt.** Im Word-Blatt stand
+„Zielfenster für t8/5:  **Zielfenster** 10 bis 20 s". Die Beschriftung trug das Wort, und
+der Wert wiederholte es. Kein Rechenfehler — aber die Ursache ist lehrreich: **Am
+Bildschirm stehen Beschriftung und Wert in zwei Spalten, und die Dopplung fällt kaum auf.
+Erst im Ausdruck rücken sie zusammen.** Der Wert lautet jetzt schlicht „10 bis 20 s".
+
+Daraus wurde eine **allgemeine** Prüfung im DOM-Smoke: In keiner Kartenzeile darf das
+erste Wort des Wertes das erste Wort der Beschriftung wiederholen — geprüft an einem
+Beispiel mit allen drei Karten. So etwas kann jetzt nirgends mehr entstehen, nicht nur an
+dieser einen Stelle.
+
+**Die Regel dahinter, jetzt in 9.2:** *Was zweispaltig gebaut wird, muss auch einspaltig
+lesbar sein.* Der Bildschirm verzeiht Redundanz, die das Papier bloßstellt.
+
+**Was die Bilder außerdem belegt haben:** Die Lizenzzeile aus N12 steht im Word-Kopf
+(„Vollversion · lizenziert für Dieter"). Die Karten der Wärmeführung zeigen saubere
+Zeilen statt der verklebten Fassung vom Vortag. „Kohlenstoffäquivalente aus der Analyse"
+steht als Zwischenüberschrift ohne angehängten Doppelpunkt. Und am Schluss der
+Haftungshinweis mit dem neuen Impressumsverweis statt der Anschrift.
+
+**Basislinie: 3488 Assertions · Smokes 1121 / 1079 / 1079.**
