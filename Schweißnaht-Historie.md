@@ -2925,3 +2925,87 @@ werden. Deshalb die drei Bedingungen in 5.3: nichts Bindendes wandert · es wird
 statt gehofft · eigene Etappe ohne Code, mit identischen Zahlen vorher und nachher.
 
 **Nur Plandatei, kein Code. Basislinie unverändert: 3417 · 1081 · 1039.**
+
+---
+
+## Aus dem Hotel (2026-08-08) — Rechtstexte, Kontaktangaben und ein Widerspruch
+
+Dieter meldete sich unterwegs mit fünf Beobachtungen. Vier davon wurden übernommen, bei
+einer habe ich widersprochen.
+
+**Die Anschrift gehört nicht ins Programm.** Bis N12 stand sie fest verdrahtet in
+`i18n_kern.js` — in der Fußzeile, im Info-Fenster, im Druckfuß und im Word-Dokument. Auf
+der Landingpage wird das Impressum ohnehin gepflegt und an neue Rechtslage angepasst.
+**Das ist dieselbe Doppelquelle, vor der Plan 3.4 warnt, nur mit Rechtstexten statt mit
+Code:** zieht die Website nach, ist das Programm veraltet, und niemand merkt es. Ein
+Verweis kann nicht veralten. Künftig steht dort nur noch „Vollständiges Impressum und
+Datenschutzerklärung online unter: dt-profidreieck.de".
+
+**Die Adressen gehören in den HTML-Kopf.** Dieters Begründung ist praktischer Natur und
+überzeugend: Nach dem Zusammenkopieren zur Einzeldatei und der Verschlüsselung läge eine
+Adresse mitten im Skript — sie zu ändern wäre eine Arbeit von Minuten statt von Sekunden.
+Im Kopf genügt ein Editor, dann neu zippen. Wichtig war dabei ein Detail, das er nicht
+wissen konnte: Der Harness prüft, dass es **genau ein** Inline-Skript gibt. Beide Angaben
+kommen deshalb in denselben Block wie die Editionsweiche — dann bleibt auch der
+Unterschied zwischen Voll- und Testversion genau eine Zeile.
+
+**Anklickbar ja, aber nicht überall.** In der Anwendung werden Adresse und E-Mail echte
+Links. Im Word-Dokument bleiben sie Klartext: RTF-Hyperlinks sind zusätzliche Struktur in
+einer Datei, die in derselben Woche zweimal an Struktur gescheitert ist — erst am nicht
+umbrochenen Bildblock, dann an der doppelten Lückenliste. Der Text ist lesbar; mehr braucht
+es nicht.
+
+**WIDERSPROCHEN habe ich beim Haftungsausschluss.** Dieter wollte ihn „verschärfen". Der
+Wunsch ist verständlich und der Weg wäre falsch gewesen: Ein pauschaler Ausschluss ist
+nach § 309 Nr. 7 BGB **unwirksam** — für Leben, Körper, Gesundheit und für grobe
+Fahrlässigkeit — und ein überzogener Text kann selbst angreifbar sein. Er hätte also nichts
+gebracht und womöglich geschadet.
+
+Was trägt, ist die **Sachaussage**: keine Zusicherung, dass ein Ergebnis für einen
+bestimmten Fall zutrifft · Prüfpflicht gegen die Originalnormen und die eigene Abnahme ·
+die fachliche Verantwortung bleibt beim Anwender · und die Liste der dreizehn nicht
+geprüften Punkte ist ausdrücklich **Bestandteil des Ergebnisses**. Das ist stark und
+wirksam zugleich — und es passt zu einem Programm, das seine Lücken ohnehin beim Namen
+nennt. Dazu der Satz, der dazugehört: **ich bin kein Jurist, und das steht auch in der
+gelieferten Datei.**
+
+**Für das Landingpage-Projekt entstanden zwei Dateien.** `Werbung.md` beschreibt, was das
+Programm kann — mit Fragen und Antworten und, was mir wichtiger war, mit einer Liste von
+**Formulierungen, die nicht verwendet werden dürfen**: „normkonform", „geprüft", „sicher",
+„ersetzt den Statiker", „kostenloses Update" und jede Andeutung von Ermüdung oder Verzug.
+Die Regel aus 1a gilt auch für die Werbung: Die Verkaufsseite darf nur versprechen, was
+drin ist. Ein Programm, das an dreizehn Stellen seine Grenzen nennt, darf sie auf der
+Seite davor nicht verschweigen.
+
+Für Impressum und Datenschutz entstanden zunächst nur Textblöcke mit genauer
+Einbaustelle — die Seiten waren nur gerendert abrufbar, und Markup zu raten wäre
+leichtsinnig gewesen, wo Dieter ausdrücklich verlangt hatte, dass alle Links unverändert
+bleiben. **Nicht raten, wo man messen kann** hieß hier: nicht liefern, was man nicht
+gesehen hat. Dieter reichte daraufhin den Quelltext nach, und beide Seiten wurden als
+**fertige HTML-Dateien** geändert; alle Links wurden byteweise gegen die Originale
+gehalten, fünf je Seite, keiner verändert.
+
+Ergänzt wurde die Produktliste an drei Stellen, ein Abschnitt „Haftung für die
+Berechnungsprogramme" — und ein Absatz, der nicht auf Dieters Zettel stand: **die
+Datenschutzerklärung behauptete pauschal, es fielen keine Daten an.** Das stimmte seit N12
+nicht mehr, denn DT-ProfiSchweissnaht ist das erste der Programme, das etwas lokal ablegt:
+Name und Lizenzschlüssel aus der Aktivierung. Der neue Absatz nennt, was gespeichert wird,
+dass es das Gerät nie verlässt, und **wie man es löscht** — die Auskunft, die nach
+Art. 15 DSGVO verlangt werden kann.
+
+**Ein Nachklapper mit eigener Lehre.** Nachdem die fertigen Seiten geliefert waren, war
+die Zwischendatei mit den Textblöcken überholt — **der Plan verwies aber weiter auf sie.**
+Ein Verweis auf eine Datei, deren Inhalt längst erledigt ist, schickt den nächsten Leser
+auf die Suche nach Arbeit, die es nicht mehr gibt. Er wurde ersetzt, und zugleich steht
+jetzt in 1a, dass die drei Landingpage-Dateien **nicht** in den Projektordner dieses
+Programms gehören — sie dort zu kopieren wäre genau die Doppelquelle, die zu vermeiden
+der Anlass war.
+
+**Eine Einschränkung, die benannt gehört:** Die beiden Rechtsseiten waren nur *gerendert*
+abrufbar, nicht im Quelltext. Vollständige HTML-Dateien hätten bedeutet, das Markup zu
+raten — und Dieter hatte ausdrücklich verlangt, dass alle Links unverändert bleiben.
+Deshalb wurden Textblöcke mit genauer Einbaustelle geliefert statt ganzer Dateien.
+**Nicht raten, wo man messen kann** — hier hieß das: nicht liefern, was man nicht gesehen
+hat.
+
+**Nur Plandatei und Landingpage-Dateien, kein Code. Basislinie unverändert: 3417 · 1081 · 1039.**

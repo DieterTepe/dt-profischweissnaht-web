@@ -20,7 +20,7 @@
 > in 4.11 und in der Historie. Im Projektordner liegt **keine Vorlaufdatei** mehr.
 
 ```
-Plan-Version : 2.71 · Stand 2026-08-07
+Plan-Version : 2.73 · Stand 2026-08-08
 Codestand    : Plan 2.70 · ui 0.18.1 · N12
                (Die Planversion, gegen die der CODE gebaut ist. Sie steht auch
                in ui.js als PLAN und wird von einer Assertion damit verglichen.
@@ -370,6 +370,50 @@ erzeugt ihn.**
 > Bei dutzenden Käufern stimmt die Rechnung, bei hunderten kippt sie — dann ersetzen
 > Kopien Käufer, statt sie zu gewinnen. **Der Umschlagpunkt ist erkennbar:** wenn
 > Support-Anfragen von Leuten kommen, die nicht in der Digistore-Liste stehen.
+
+**DIE RECHTSTEXTE WERDEN AUF DER LANDINGPAGE GEPFLEGT, NICHT IM PROGRAMM**
+*(Dieter, 2026-08-08)*. Bis N12 stand die volle Anschrift fest verdrahtet in
+`i18n_kern.js` — in der Fußzeile, im Info-Fenster, im Druckfuß und im Word-Dokument.
+**Das ist dieselbe Doppelquelle wie im Code (3.4), nur mit Rechtstexten:** zieht die
+Landingpage nach, ist das Programm veraltet und niemand merkt es. Künftig steht dort nur
+noch der Verweis **„Vollständiges Impressum und Datenschutzerklärung online unter:
+dt-profidreieck.de"**. Ein Verweis kann nicht veralten.
+
+**Die Seiten** (Stand 2026-08-08): Landingpage
+`https://dietertepe.github.io/dt-profidreieck-web/index.html`, gesteuert über eine
+`config.js`, die fast alle Links trägt · Impressum `…/impressum.html` ·
+Datenschutz `…/datenschutz.html`.
+
+✅ **Impressum und Datenschutzerklärung sind ergänzt und geliefert (2026-08-08)** — als
+fertige HTML-Dateien, nicht als Textvorschläge: Dieter hat den Quelltext nachgereicht,
+und was man messen kann, wird nicht geraten. **Alle Links wurden byteweise gegen die
+Originale gehalten** — fünf je Seite, keiner verändert; Struktur und `<style>`-Block
+unberührt. Impressum jetzt v1.1.0.
+
+**Was dort ergänzt wurde:** die Produktliste an drei Stellen · ein neuer Abschnitt
+**„Haftung für die Berechnungsprogramme"** · und im Datenschutz ein **neuer Absatz zur
+lokalen Speicherung** — DT-ProfiSchweissnaht ist das erste der Programme, das etwas
+ablegt (Name und Lizenzschlüssel aus der Aktivierung). Abschnitt 2 behauptete bis dahin
+pauschal, es fielen keine Daten an; das stimmte nicht mehr. Der Absatz nennt, was
+gespeichert wird, dass es das Gerät nie verlässt, und **wie man es löscht** — die Auskunft,
+die nach Art. 15 DSGVO verlangt werden kann.
+
+**`Werbung.md`** liegt als Rohmaterial für die Seitentexte im Landingpage-Projekt —
+Kurzbeschreibung, die fünf Alleinstellungen, Fragen und Antworten, und eine Liste von
+**Formulierungen, die nicht verwendet werden dürfen**.
+
+> **Diese drei Dateien gehören NICHT in den Projektordner dieses Programms.** Sie werden
+> im Landingpage-Projekt gepflegt — sie hier zu kopieren wäre genau die Doppelquelle, die
+> zu vermeiden der Anlass war.
+
+> ⚠️ **ZUM HAFTUNGSAUSSCHLUSS — hier wurde Dieter widersprochen (2026-08-08).**
+> Der Wunsch war, ihn zu „verschärfen". Ein pauschaler Ausschluss ist nach
+> **§ 309 Nr. 7 BGB unwirksam** (Leben, Körper, Gesundheit; grobe Fahrlässigkeit) und
+> kann selbst angreifbar sein. **Was trägt, ist die Sachaussage:** keine Zusicherung
+> eines Ergebnisses · Prüfpflicht gegen Originalnormen und eigene Abnahme · Verantwortung
+> beim Fachkundigen · die Liste 2.4 ist Bestandteil des Ergebnisses. Das ist stark und
+> wirksam zugleich — und es passt zu einem Programm, das seine Lücken ohnehin benennt.
+> **Claude ist kein Jurist; die Texte gehören vor dem Verkaufsstart fachkundig geprüft.**
 
 **Rückmeldungen aus dem Verkauf werden gesammelt** — zwischen zwei Sitzungen geht sonst
 verloren, was ein Käufer nebenbei erwähnt. Sie kommen beim Sitzungsstart auf den Tisch.
@@ -3429,6 +3473,53 @@ kostenpflichtig. **„Folgt in einem späteren Update"** trägt beide Wege.
 
 **Betrifft:** `ui.js` (ZUSATZ-Tabelle), `i18n_kern.js` (Texte dreisprachig), beide HTMLs
 (Fenster), `style.css`, dazu Assertions und DOM-Smoke.
+
+---
+
+**P1 TRÄGT AUSSERDEM DIE KONTAKTANGABEN** *(Dieter, 2026-08-08)* — dieselben Dateien,
+dieselbe Art Prüfung; zwei getrennte Etappen hießen zweimal hochladen und zweimal testen.
+
+**a) Anschrift raus, Verweis rein.** Statt der vollen Adresse steht künftig überall
+(Fußzeile, Info-Fenster, Druckfuß, Word-Dokument):
+„Vollständiges Impressum und Datenschutzerklärung online unter: **dt-profidreieck.de**".
+Begründung in 1a.
+
+**b) Anklickbar.** In der Anwendung wird die Adresse ein echter Link
+(`target="_blank" rel="noopener"`), die E-Mail ein `mailto:`-Link.
+**Im Word-Dokument bleibt beides KLARTEXT** — RTF-Hyperlinks sind zusätzliche Struktur in
+einer Datei, die diese Woche zweimal an Struktur gescheitert ist (5.1-9, v2.67). Der Text
+ist lesbar; das genügt.
+
+**c) BEIDE ANGABEN STEHEN IM KOPF DER HTML und sind mit einem Editor änderbar.**
+Hintergrund: Nach dem Zusammenkopieren zur Einzeldatei und der Verschlüsselung wäre eine
+Adresse mitten im Skript nur mit erheblichem Aufwand zu ändern. So genügt der Kopf, dann
+neu zippen und an Digistore geben.
+
+```html
+<script>
+/* ==== HIER ÄNDERN, wenn Adresse oder E-Mail wechseln ==== */
+window.DT_WEB  = 'dt-profidreieck.de';
+window.DT_MAIL = 'Dieter.Tepe@live.de';
+window.DT_EDITION = 'full';
+</script>
+```
+
+> ⚠️ **BEIDE ANGABEN GEHÖREN IN DENSELBEN INLINE-BLOCK.** Der Harness prüft, dass es
+> **genau ein** Inline-Skript gibt (S29). Nur so bleibt außerdem der Unterschied zwischen
+> Voll- und Testversion **genau eine Zeile**.
+>
+> **RÜCKFALLWEG:** Fehlt oder verrutscht eine Angabe, nimmt das Programm den eingebauten
+> Wert — eine leere Zeile im Ausdruck wäre schlimmer als ein alter Wert. Geprüft wird
+> nichts (wie beim Lizenzschlüssel), aber es entsteht nie eine Lücke.
+>
+> **EINE QUELLE:** Druck, Word und Anzeige holen die Angaben von derselben Stelle. Vier
+> Orte, die denselben Satz bauen, wären vier Gelegenheiten, ihn verschieden zu bauen.
+
+**Zusätzlich zu prüfen:** die Angaben aus dem HTML-Kopf erscheinen in Fußzeile,
+Info-Fenster, Druckfuß und Word · geänderte Werte im Kopf schlagen überall durch ·
+fehlende Werte fallen auf den eingebauten Wert zurück · die volle Anschrift steht
+**nirgends** mehr im Programmtext · **Gegenprobe:** Adresse wieder fest verdrahten, dann
+muss eine Prüfung rot werden.
 **Zu prüfen:** Beschriftung in allen drei Sprachen · Fenster erscheint beim ersten Haken ·
 beim zweiten Haken desselben Bereichs **nicht** mehr · nach Sprachwechsel bleibt der Merker
 · kein Bausteinname und kein „kostenlos" im Text · **Gegenprobe:** ohne Merker erscheint es
@@ -4194,6 +4285,19 @@ will. Also: Vorschriften und Wegweiser bleiben hier, die Erzählung wandert.
   „wird in Baustein N13 gerechnet" ist für uns präzise und für einen Käufer bedeutungslos.
   Nach außen heißt es **„folgt in einem späteren Update"** — nie „kostenlos", nie „gratis",
   weil das Update kostenpflichtig wird (1a).
+- **Rechtstexte gehören an EINE Stelle, und die ist die Landingpage**
+  (2026-08-08, aus 1a): Eine im Programm fest verdrahtete Anschrift ist dieselbe
+  Doppelquelle wie doppelter Code (3.4) — zieht die Website nach, ist das Programm
+  veraltet und niemand merkt es. Im Programm steht nur der **Verweis**.
+- **Was der Verkäufer nachträglich ändern können muss, gehört in den HTML-Kopf**
+  (2026-08-08, aus P1): Adresse und E-Mail stehen im selben Inline-Block wie die
+  Editionsweiche. Nach dem Zusammenkopieren zur Einzeldatei wäre ein Wert mitten im
+  Skript nur mit erheblichem Aufwand zu ändern. **Mit Rückfall auf den eingebauten Wert** —
+  eine leere Zeile im Ausdruck wäre schlimmer als ein alter Wert.
+- **Ein Haftungsausschluss, der zu weit geht, ist unwirksam** (2026-08-08, aus 1a):
+  § 309 Nr. 7 BGB. Nicht „keinerlei Haftung", sondern die Sachaussage — keine Zusicherung
+  eines Ergebnisses, Prüfpflicht gegen Originalnormen und eigene Abnahme, Verantwortung
+  beim Fachkundigen. **Claude ist kein Jurist und sagt das auch.**
 - **Token-Pause: 4 Stunden.**
 
 ---
@@ -4253,53 +4357,6 @@ Changelog — **die vollständige Fassung ab v1.0 steht in `Schweißnaht-Histori
 Hier stehen nur die letzten drei Einträge. Wer wissen will, wie eine Entscheidung
 zustande kam, findet die Kette dort — lückenlos ab der Erstfassung vom 2026-07-23.
 
-**v2.69 (2026-08-07):** **Baustein N12 gebaut und geliefert — und das gedruckte PDF hat
-vier Befunde gezeigt, von denen drei meine waren.** Dieter meldete eine leere erste Seite,
-eine Seite über der nächsten und ein halbiertes Wort. Das PDF wurde **vermessen**: Seite 1
-mit 0 Byte, Seite 23 endete mit `Summe 200€`, Seite 24 begann mit `Summe 2,00 €`.
-Ursachen: **`overflow:hidden`** auf `.card`/`.acc` schneidet im Druck jede Zeile ab, die
-über einen Seitenumbruch läuft; **`break-inside:avoid`** auf Behältern, die höher sind als
-eine Seite, erzwingt die leere erste Seite; und es standen **zwei `@media print`-Blöcke**
-in der Datei, einer aus N5a und einer aus N11 danebengeschrieben — genau die Doppelquelle,
-die 3.4 verbietet. Der vierte Befund fiel erst beim Nachmessen auf: **Marke, Programmstand
-und Haftungshinweis kamen im ganzen PDF nicht vor**, weil alle drei am Bildschirm an
-Stellen stehen, die im Druck ausgeblendet sind. Neu sind deshalb **Druckkopf und Druckfuß**.
-**Dazu die Registrierung:** Name + Digistore-Schlüssel ohne jede Prüfung, „Später" erlaubt,
-die **Lizenzzeile in allen vier Ausgaben** aus **einer** Quelle, und der **Lang-Druck von
-zehn Sekunden**, der **nur** die Aktivierung zurücksetzt. In der Testversion gibt es die
-Zeile nie — auch nicht mit von Hand eingetragenem Namen. **Ein Fehler im Bestand kam mit
-heraus:** `edition()` leerte die Lizenzzeile bei jedem Aufruf, der Platzhalter aus N5a;
-zwei Besitzer für eine Zeile. Die Marke trägt jetzt den **Farbverlauf Türkis → Messing**
-wie im Schwesterprogramm. Sechs Gegenproben bestanden. Sieben neue Festlegungen in 9.2,
-Ergebnis in **5.1-10**, ui-Teil in **4.10f**.
-**Codestand 2.67 → 2.69 · ui 0.17.2 → 0.18.0 · report 0.1.2 → 0.2.0-N12 ·
-i18n_kern 0.8.0 → 0.9.0-N12.**
-**Basislinie 3303 → 3414 Assertions · Smokes 988/988 → 1078/1039 · i18n-Parität 0.**
-**Damit sind neun von zehn Bausteinen bis zum Verkaufsstand fertig und der
-LAUNCH-CHECKPOINT ist erreicht.**
-**Nächster Schritt: Baustein N13 (Ermüdung). Einstieg: „weiter mit N13".**
-
-
-
-**v2.70 (2026-08-07):** **N12 ABGENOMMEN — mit einer Nacharbeit, die Dieter gefunden hat.**
-Alle sechs Prüfpunkte am Handy in Ordnung: Farbverlauf, Aktivierungsdialog, Lizenzzeile
-beim Sprachwechsel, Druck/PDF ohne leere Seite und ohne halbierte Zeilen, Word mit
-Lizenzzeile und Haftungshinweis, Lang-Druck. **Ein Verhalten war falsch:** „Später" wurde
-verwahrt — wer es einmal drückte, wurde **nie wieder** gefragt. Dieters Einwand trifft
-einen bauartbedingten Punkt: der Dialog ist die **einzige** Stelle, an der ein Name
-entstehen kann; wer ihn wegklickt und nie wieder sieht, hat die Aktivierung faktisch
-verloren, und der lange Druck hilft nur dem, der von ihm weiß. **„Später" gilt jetzt nur
-für die laufende Sitzung**, der Speicherschlüssel ist ersatzlos entfallen (zwei statt
-drei). Daraus die Regel in 9.2: **Merke dir ein Wegklicken nur dann dauerhaft, wenn es
-einen zweiten, auffindbaren Weg zurück gibt.** Gegenprobe bestanden — verwahrt man
-„Später" wieder, fallen 6 Assertions und 3 Smoke-Zeilen.
-**Codestand 2.69 → 2.70 · ui 0.18.0 → 0.18.1 · report 0.2.0 → 0.2.1-N12 ·
-i18n_kern 0.9.0 → 0.9.1-N12.**
-**Basislinie 3414 → 3417 Assertions · Smokes 1078/1039 → 1081/1039 · i18n-Parität 0.**
-**Nächster Schritt: Baustein N13 (Ermüdung). Einstieg: „weiter mit N13".**
-
-
-
 **v2.71 (2026-08-07):** **Der Verkaufsstand geht in den Verkauf — und daraus folgen zwei
 kleine Aufträge vor N13.** Nur Plandatei, kein Code; `Codestand` bleibt 2.70.
 Dieters Entscheidung, jetzt zu veröffentlichen, ist durch diesen Tag belegt: die drei
@@ -4313,6 +4370,47 @@ wird. Neu ist außerdem **5.3** mit **P1** (Hinweis „folgt in einem Update" �
 zuerst, Fenster einmal je Bereich und Sitzung, keine internen Bausteinnamen) und **P2**
 (Neuordnung von Plandatei und Historie, mit drei Bedingungen: nichts Bindendes wandert,
 es wird gemessen statt gehofft, eigene Etappe ohne Code). Drei neue Festlegungen in 9.2.
+**Basislinie unverändert: 3417 Assertions · Smokes 1081 / 1039 · i18n-Parität 0.**
+**Nächster Schritt: P1, dann P2, dann N13. Einstieg: „weiter mit P1".**
+
+
+
+**v2.72 (2026-08-08):** **Die Rechtstexte wandern auf die Landingpage — P1 wächst um die
+Kontaktangaben.** Nur Plandatei, kein Code; `Codestand` bleibt 2.70.
+Dieters Beobachtung von unterwegs: Im Programm steht die volle Anschrift, auf der
+Landingpage wird das Impressum ohnehin gepflegt. **Das ist dieselbe Doppelquelle wie
+doppelter Code (3.4), nur mit Rechtstexten** — zieht die Website nach, ist das Programm
+veraltet. Künftig steht im Programm nur der Verweis auf `dt-profidreieck.de`, anklickbar,
+und **Adresse wie E-Mail stehen im Kopf beider HTML-Dateien**, damit sie nach dem
+Zusammenkopieren zur Einzeldatei ohne Eingriff ins Skript änderbar bleiben — im selben
+Inline-Block wie die Editionsweiche, damit der Unterschied der beiden Editionen weiterhin
+genau eine Zeile ist. All das ist **in P1 aufgenommen** statt als eigene Etappe: dieselben
+Dateien, dieselbe Art Prüfung. **Widersprochen wurde beim Haftungsausschluss:** Dieter
+wollte ihn „verschärfen"; ein pauschaler Ausschluss ist nach § 309 Nr. 7 BGB unwirksam und
+selbst angreifbar. Was trägt, ist die Sachaussage — keine Zusicherung eines Ergebnisses,
+Prüfpflicht gegen Originalnormen und eigene Abnahme, Verantwortung beim Fachkundigen.
+Für das Landingpage-Projekt entstanden zwei Dateien: **`Werbung.md`** (Rohmaterial für
+Seitentexte samt Fragen-und-Antworten und einer Liste von Formulierungen, die nicht
+verwendet werden dürfen) und die **Ergänzungstexte** für Impressum und Datenschutz.
+Drei neue Festlegungen in 9.2.
+**Basislinie unverändert: 3417 Assertions · Smokes 1081 / 1039 · i18n-Parität 0.**
+**Nächster Schritt: P1, dann P2, dann N13. Einstieg: „weiter mit P1".**
+
+
+
+**v2.73 (2026-08-08):** **Impressum und Datenschutzerklärung fertig geliefert — und ein
+Verweis im Plan berichtigt.** Nur Plandatei, kein Code; `Codestand` bleibt 2.70.
+Dieter hat den Quelltext beider Rechtsseiten nachgereicht, daraufhin wurden sie als
+**fertige HTML-Dateien** geändert statt als Textvorschläge: Produktliste an drei Stellen,
+neuer Abschnitt „Haftung für die Berechnungsprogramme", neuer Datenschutzabsatz zur
+lokalen Speicherung, Stand auf August 2026. **Alle Links wurden byteweise gegen die
+Originale gehalten** — fünf je Seite, keiner verändert. Damit war die Zwischendatei
+`Rechtstexte_Ergaenzung_Schweissnaht.md` überholt; **der Plan verwies aber weiter auf
+sie.** Ein Verweis auf eine Datei, deren Inhalt längst erledigt ist, schickt den nächsten
+Leser auf eine Suche nach Arbeit, die es nicht mehr gibt — deshalb ist er ersetzt.
+Zugleich ist jetzt in 1a festgehalten, dass die drei Landingpage-Dateien **nicht** in den
+Projektordner dieses Programms gehören: sie dort zu kopieren wäre genau die Doppelquelle,
+die zu vermeiden der Anlass war.
 **Basislinie unverändert: 3417 Assertions · Smokes 1081 / 1039 · i18n-Parität 0.**
 **Nächster Schritt: P1, dann P2, dann N13. Einstieg: „weiter mit P1".**
 
