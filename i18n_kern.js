@@ -12,7 +12,7 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.10.0-P1';
+  var VERSION = '0.11.0-P1';
   var SPRACHEN = ['de', 'en', 'pt'];
 
   var D = {
@@ -62,12 +62,17 @@
     pathIdle:     { de: 'Der selbstprüfende Rechenweg erscheint hier nach der Berechnung – mit Formel, eingesetzten Zahlen und Häkchen.',
                     en: 'The self-checking calculation path appears here after the calculation – with formula, figures used and ticks.',
                     pt: 'A memória de cálculo autoverificável aparece aqui após o cálculo – com fórmula, números usados e vistos.' },
-    infoProdukt:  { de: 'Schweißnahtberechnung für Stahlbau und Maschinenbau: statischer Nachweis, Ermüdung, Wärmeführung, Kosten und Verzug. Läuft vollständig offline.',
-                    en: 'Weld design for structural and mechanical engineering: static verification, fatigue, heat control, cost and distortion. Runs fully offline.',
-                    pt: 'Cálculo de soldas para construção metálica e engenharia mecânica: verificação estática, fadiga, controlo térmico, custos e distorção. Funciona totalmente offline.' },
-    infoNormen:   { de: 'Regelwerke: EN 1993-1-8 · EN 1993-1-4 · EN 1999-1-1 · EN 1993-1-9 · EN 1999-1-3 · EN 1011-2 · EN 1090 · ISO 5817 · ISO 2553 · Roloff/Matek und Decker.',
-                    en: 'Standards: EN 1993-1-8 · EN 1993-1-4 · EN 1999-1-1 · EN 1993-1-9 · EN 1999-1-3 · EN 1011-2 · EN 1090 · ISO 5817 · ISO 2553 · Roloff/Matek and Decker.',
-                    pt: 'Normas: EN 1993-1-8 · EN 1993-1-4 · EN 1999-1-1 · EN 1993-1-9 · EN 1999-1-3 · EN 1011-2 · EN 1090 · ISO 5817 · ISO 2553 · Roloff/Matek e Decker.' },
+    /* ⚠️ DIESER TEXT BESCHREIBT DEN STAND, NICHT DEN PLAN (P1b, 2026-08-08).
+       Bis dahin versprach er Ermüdung und Verzug — beides ist nicht gebaut,
+       und zwei Zeilen weiter unten sagt dasselbe Fenster "folgt in einem
+       Update". Ein Programm, das an dreizehn Stellen seine Grenzen nennt,
+       darf sich nicht selbst mehr zuschreiben, als es kann (Plan 1a). */
+    infoProdukt:  { de: 'Schweißnahtberechnung für Stahlbau und Maschinenbau: statischer Nachweis, Wärmeführung und Vorwärmung, Kosten und Zeit, Zeichnungssymbole. Läuft vollständig offline. Ermüdung und Verzug folgen in einem späteren Update.',
+                    en: 'Weld design for structural and mechanical engineering: static verification, heat control and preheating, cost and time, drawing symbols. Runs fully offline. Fatigue and distortion will follow in a later update.',
+                    pt: 'Cálculo de soldas para construção metálica e engenharia mecânica: verificação estática, controlo térmico e pré-aquecimento, custos e tempo, símbolos de desenho. Funciona totalmente offline. A fadiga e a distorção seguirão numa atualização posterior.' },
+    infoNormen:   { de: 'Regelwerke: EN 1993-1-8 · EN 1993-1-4 · EN 1999-1-1 · EN 1011-2 · EN 1090 · ISO 5817 · ISO 2553 · Roloff/Matek und Decker.',
+                    en: 'Standards: EN 1993-1-8 · EN 1993-1-4 · EN 1999-1-1 · EN 1011-2 · EN 1090 · ISO 5817 · ISO 2553 · Roloff/Matek and Decker.',
+                    pt: 'Normas: EN 1993-1-8 · EN 1993-1-4 · EN 1999-1-1 · EN 1011-2 · EN 1090 · ISO 5817 · ISO 2553 · Roloff/Matek e Decker.' },
     /* DIE VOLLE ANSCHRIFT IST HIER ENTFALLEN (P1, 2026-08-08). Sie wird auf
        der Website gepflegt; im Programm wuerde sie veralten, ohne dass es
        jemand merkt. An ihre Stelle tritt `imp_verweis`. */

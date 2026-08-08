@@ -35,12 +35,12 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.20.0';
+  var VERSION = '0.20.1';
   var ETAPPE = 'P1';
   /* Plan-Version, die zu diesem Stand gehoert. Sie ist die EINZIGE von Hand
      gepflegte Zahl der Versionszeile — alles andere kommt aus den geladenen
      Modulen selbst (Plan 3.6). */
-  var PLAN = '2.76';
+  var PLAN = '2.77';
   var SPRACHEN = ['de', 'en', 'pt'];
 
   /* Plan 3.1 (bindend): die Oberflaeche startet IMMER im dunklen Design —
@@ -143,10 +143,15 @@
      Hinweisfenster. `thermik` und `kosten` sind gebaut und tragen beides
      nicht. */
   var ZUSATZ = [
-    { code: 'ermuedung', label: 'zb_ermuedung', folgt: 'uiFolgtN13', offen: true },
+    { code: 'ermuedung', label: 'zb_ermuedung', folgt: 'uiFolgtN13', offen: true,
+      /* Die Normen eines noch nicht gebauten Bereichs duerfen in der
+         Selbstbeschreibung NICHT auftauchen (P1b). Sie stehen hier, damit
+         die Pruefung sie aus der Quelle nimmt statt aus einer Handliste. */
+      normen: ['EN 1993-1-9', 'EN 1999-1-3'] },
     { code: 'thermik',   label: 'zb_thermik',   folgt: 'uiFolgtN9' },
     { code: 'kosten',    label: 'zb_kosten',    folgt: 'uiFolgtN10' },
-    { code: 'verzug',    label: 'zb_verzug',    folgt: 'uiFolgtN15', offen: true }
+    { code: 'verzug',    label: 'zb_verzug',    folgt: 'uiFolgtN15', offen: true,
+      normen: [] }
   ];
 
   /* Pflicht-Elemente. Der Harness prueft, dass jede Id in BEIDEN HTMLs steht. */

@@ -3133,3 +3133,49 @@ eingebauten Wert → 5 · Hinweisfenster ohne Merker → 2 · Beschriftungszusat
 Anschrift wieder fest verdrahtet → 5.
 
 **Basislinie 3432 → 3469 Assertions · Smokes 1081/1039/1039 → 1119/1077/1077.**
+
+---
+
+## P1b (2026-08-08) — das Programm versprach, was es nicht kann
+
+Direkt nach der Lieferung von P1 schickte Dieter, was das Info-Fenster anzeigt. Die erste
+Zeile lautete:
+
+> „Schweißnahtberechnung für Stahlbau und Maschinenbau: statischer Nachweis, **Ermüdung**,
+> Wärmeführung, Kosten und **Verzug**. Läuft vollständig offline."
+
+Und darunter unter *Regelwerke* **EN 1993-1-9** und **EN 1999-1-3** — die beiden
+Ermüdungsnormen. Zwei Zeilen weiter unten stand „folgt in einem Update".
+
+**Der Text stammte aus der Zeit, als der Plan beschrieben wurde, nicht der Stand.** Er war
+nie falsch gemeint; er war einfach nie nachgezogen worden. Aber er widersprach direkt der
+Regel, die wir am Tag zuvor in 1a geschrieben hatten: *Die Verkaufsseite darf nur
+versprechen, was drin ist.* Dass dieselbe Regel für das Programm selbst gilt, stand
+nirgends — jetzt schon.
+
+**Und wieder lag meine Prüfung neben der Sache.** S53 durchsuchte die **Hinweistexte** auf
+interne Bausteinnamen und das ganze Wörterbuch auf „kostenlos" — aber nie die
+**Selbstbeschreibung** auf Versprechen. Ich hatte geprüft, dass wir nichts Falsches über
+das *Fehlen* sagen, nicht dass wir nichts Falsches über das *Können* sagen. Das ist
+innerhalb von zwei Tagen das sechste Mal dasselbe Muster.
+
+**Die neue Prüfung nimmt ihre Begriffe aus der Quelle.** Für jeden Bereich, der in der
+ZUSATZ-Tabelle als `offen` markiert ist, wird die Beschriftung in allen drei Sprachen
+zerlegt — aus „Ermüdung / Betriebsfestigkeit" wird „Ermüdung", aus „Verzug & Schrumpfung"
+wird „Verzug". Dazu kommen die Normen des Bereichs, die neu in derselben Tabelle stehen:
+`normen: ['EN 1993-1-9', 'EN 1999-1-3']`. Keine Handliste, die beim nächsten Baustein
+vergessen wird.
+
+**Geprüft wird satzweise**, und das war beim ersten Anlauf falsch: Ich teilte den Text vor
+der Ankündigung und prüfte nur, was davor stand. Die Wörter stehen dort aber gerade davor —
+„Ermüdung und Verzug folgen in einem späteren Update". Die richtige Regel ist einfacher:
+**Ein Satz, der einen ungebauten Bereich nennt, muss auch vom Update sprechen.**
+
+Mitgeprüft wird jetzt auch die **Meta-Beschreibung beider HTML-Dateien**. Sie enthielt
+denselben Satz und ist das Erste, was eine Suchmaschine liest — und damit womöglich das
+Erste, was ein Käufer sieht.
+
+**Zwei Gegenproben bestanden:** Ermüdung zurück in die Beschreibung → rot; Ermüdungsnorm
+zurück in die Liste → rot.
+
+**Basislinie 3469 → 3488 Assertions. Smokes unverändert 1119 / 1077 / 1077.**

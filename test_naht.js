@@ -4136,7 +4136,7 @@ function s43Summe(text) {
    ZWEI Etappen gilt die Regel dagegen streng: geaenderter Quelltext ohne
    Kennungswechsel ist rot. */
 var S43_STAND = [
-  { datei: 'i18n_kern.js', version: '0.10.0-P1', summe: '4bf832fd' },
+  { datei: 'i18n_kern.js', version: '0.11.0-P1', summe: '7dedfe1f' },
   { datei: 'i18n_hilfe.js', version: '0.5.0-N11', summe: '8cc6c8aa' },
   { datei: 'i18n_kerbfall.js', version: '0.2.0-N11', summe: 'b986cce4' },
   { datei: 'daten.js', version: '0.2.0-N11', summe: '5e696f0e' },
@@ -4153,7 +4153,7 @@ var S43_STAND = [
   { datei: 'thermik.js', version: '0.3.0-N9c', summe: '1bf966a2' },
   { datei: 'skizze.js', version: '0.3.0-N9c', summe: '447c40cd' },
   { datei: 'assistent.js', version: '0.5.0-N10b', summe: '4c015b50' },
-  { datei: 'ui.js', version: '0.20.0', summe: '682d0478' },
+  { datei: 'ui.js', version: '0.20.1', summe: '7dfe3765' },
   { datei: 'report.js', version: '0.4.0-P1', summe: '80ac0a6a' }
 ];
 
@@ -6125,6 +6125,101 @@ var s53Upd = s53UiQ.substring(s53UiQ.indexOf('function updHinweis'),
 ok(s53Upd.indexOf('speicherSchreib') < 0 && s53Upd.indexOf('localStorage') < 0,
    'S53: und wird NICHT im lokalen Speicher abgelegt');
 eq(Rep.SPEICHER.upd, undefined, 'S53: es gibt keinen Speicherschluessel dafuer');
+
+/* --- 7) DIE SELBSTBESCHREIBUNG SAGT DEN STAND, NICHT DEN PLAN ----------- */
+/* DIETERS FUND (2026-08-08, P1b): Das Info-Fenster versprach
+   "statischer Nachweis, ERMUEDUNG, Waermefuehrung, Kosten und VERZUG" und
+   listete unter Regelwerken EN 1993-1-9 und EN 1999-1-3 — waehrend zwei
+   Zeilen weiter unten "folgt in einem Update" stand. Der Text stammte aus
+   der Zeit, als der PLAN beschrieben wurde, nicht der STAND.
+   S53 durchsuchte bis dahin die HINWEIStexte auf Bausteinnamen — nie die
+   SELBSTBESCHREIBUNG auf Versprechen. Wieder die Pruefung neben der Sache. */
+
+/* Die verbotenen Woerter kommen aus der Quelle: es sind die Beschriftungen
+   der Bereiche, die als `offen` markiert sind — keine Handliste. */
+var s53Verbot = [];
+for (s53i = 0; s53i < s53Ui.ZUSATZ.length; s53i++) {
+  (function (z) {
+    if (!z.offen) return;
+    for (var j = 0; j < 3; j++) {
+      var lab = Kern.t(z.label, s53Spr[j]);
+      /* Aus "Ermuedung / Betriebsfestigkeit" wird "Ermuedung"; aus
+         "Verzug & Schrumpfung" wird "Verzug". Das erste Wort genuegt. */
+      var wort = lab.split(/[\/&,]/)[0].replace(/^\s+|\s+$/g, '');
+      if (wort && s53Verbot.indexOf(wort) < 0) s53Verbot.push(wort);
+    }
+    for (var k = 0; k < (z.normen || []).length; k++) {
+      if (s53Verbot.indexOf(z.normen[k]) < 0) s53Verbot.push(z.normen[k]);
+    }
+  }(s53Ui.ZUSATZ[s53i]));
+}
+ok(s53Verbot.length >= 6,
+   'S53: die verbotenen Begriffe kommen aus der ZUSATZ-Tabelle (' + s53Verbot.length + ')');
+ok(s53Verbot.indexOf('EN 1993-1-9') >= 0, 'S53: darunter die Ermuedungsnorm');
+
+/* Sie duerfen in KEINER Selbstbeschreibung stehen — weder im Info-Fenster,
+   noch in der Normenliste, noch in der Meta-Beschreibung der Seite. */
+var s53Selbst = ['infoProdukt', 'infoNormen', 'tagline'];
+var s53Bruch = [];
+for (s53i = 0; s53i < s53Selbst.length; s53i++) {
+  for (s53j = 0; s53j < 3; s53j++) {
+    (function (key, l) {
+      var t = Kern.t(key, l);
+      /* Die ANKUENDIGUNG darf die Woerter sehr wohl nennen — sie ist der
+         ehrliche Teil. Geprueft wird deshalb SATZWEISE: ein Satz, der einen
+         ungebauten Bereich nennt, muss auch vom Update sprechen.
+         (Erster Versuch teilte VOR der Ankuendigung — die Woerter stehen dort
+          aber davor: "Ermuedung und Verzug folgen in einem Update".) */
+      var saetze = t.split(/[.!?]\s+/);
+      for (var sa = 0; sa < saetze.length; sa++) {
+        var istAnkuendigung = /update|atualiza/i.test(saetze[sa]);
+        if (istAnkuendigung) continue;
+        for (var v = 0; v < s53Verbot.length; v++) {
+          if (saetze[sa].indexOf(s53Verbot[v]) >= 0) {
+            s53Bruch.push(key + '/' + l + ': ' + s53Verbot[v]);
+          }
+        }
+      }
+    }(s53Selbst[s53i], s53Spr[s53j]));
+  }
+}
+eq(s53Bruch.length, 0,
+   'S53: die Selbstbeschreibung verspricht KEINEN ungebauten Bereich (' + s53Bruch.join(' | ') + ')');
+
+/* Und die Meta-Beschreibung beider HTMLs ebenso wenig. */
+var s53Meta = [];
+for (s53i = 0; s53i < 2; s53i++) {
+  (function (datei) {
+    var h = fsU.readFileSync(__dirname + '/' + datei, 'utf8');
+    var m = h.match(/<meta name="description" content="([^"]*)"/);
+    ok(!!m, 'S53 [' + datei + ']: die Seite hat eine Beschreibung');
+    if (!m) return;
+    for (var v = 0; v < s53Verbot.length; v++) {
+      if (m[1].indexOf(s53Verbot[v]) >= 0) s53Meta.push(datei + ': ' + s53Verbot[v]);
+    }
+  }(['DT-ProfiSchweissnaht.html', 'DT-ProfiSchweissnaht_Test.html'][s53i]));
+}
+eq(s53Meta.length, 0,
+   'S53: auch die Meta-Beschreibung verspricht nichts Ungebautes (' + s53Meta.join(' | ') + ')');
+
+/* GEGENPROBE ZUR PRUEFUNG SELBST: sie muss einen Verstoss auch finden. */
+var s53Probe = 'Nachweis, ' + s53Verbot[0] + ' und mehr';
+var s53Fand = false;
+for (s53i = 0; s53i < s53Verbot.length; s53i++) {
+  if (s53Probe.indexOf(s53Verbot[s53i]) >= 0) s53Fand = true;
+}
+ok(s53Fand === true, 'S53: die Pruefung wuerde einen Verstoss auch bemerken');
+
+/* Die Normenliste nennt nur, wonach wirklich gerechnet wird. */
+for (s53j = 0; s53j < 3; s53j++) {
+  (function (l) {
+    var n = Kern.t('infoNormen', l);
+    ok(n.indexOf('EN 1993-1-8') >= 0, 'S53: die Normenliste nennt die tragende Norm in ' + l);
+    ok(n.indexOf('EN 1011-2') >= 0, 'S53: und die der Waermefuehrung in ' + l);
+    ok(n.indexOf('EN 1993-1-9') < 0, 'S53: aber NICHT die Ermuedungsnorm in ' + l);
+    ok(n.indexOf('EN 1999-1-3') < 0, 'S53: und nicht die fuer Aluminium-Ermuedung in ' + l);
+  }(s53Spr[s53j]));
+}
 
 /* ========================================================================= */
 console.log('\n════════════════════════════════════════════');

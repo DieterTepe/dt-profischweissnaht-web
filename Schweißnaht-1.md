@@ -20,8 +20,8 @@
 > in 4.11 und in der Historie. Im Projektordner liegt **keine Vorlaufdatei** mehr.
 
 ```
-Plan-Version : 2.76 · Stand 2026-08-08
-Codestand    : Plan 2.76 · ui 0.20.0 · P1
+Plan-Version : 2.77 · Stand 2026-08-08
+Codestand    : Plan 2.77 · ui 0.20.1 · P1
                (Die Planversion, gegen die der CODE gebaut ist. Sie steht auch
                in ui.js als PLAN und wird von einer Assertion damit verglichen.
                Sie wandert nur mit, wenn sich Code ändert — reine Plan- oder
@@ -146,7 +146,7 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                  4.11 (symbol.js), 4.12 (report.js).
                Große Bausteine (N5, N8, N13, N14) werden in ETAPPEN gebaut — Regel in
                Kickoff-Punkt 5c, Etappen in Abschnitt 5.2.
-Basislinie   : 3469 Assertions · DOM-Smokes 1119 (voll) + 1077 (test)
+Basislinie   : 3488 Assertions · DOM-Smokes 1119 (voll) + 1077 (test)
                + 1077 (kaputte Edition) · i18n-Parität 0 Abweichungen
                (VERBINDLICH. Basislinie darf nur WACHSEN — nie schrumpfen, nie gelockert werden.)
 Dateistand   : siehe Abschnitt 8.1 — dort steht, was fertig ist und was noch fehlt.
@@ -236,7 +236,7 @@ Einstiegssatz von Dieter: **„weiter mit P2"**.
    schon zweimal Dateien verlorengegangen, beide Male hat diese Prüfung es gefunden.
 11. Arbeitsordner herstellen (Befehl unter Punkt 6 der Kickoff-Liste), dann
    `node test_naht.js`, `node dom_smoke_voll.js`, `node dom_smoke_test.js` laufen lassen
-   und die Basislinie aus dem Plan-Kopf bestätigen (**3469 / 1119 / 1077 / 1077 · 0 Fehler**),
+   und die Basislinie aus dem Plan-Kopf bestätigen (**3488 / 1119 / 1077 / 1077 · 0 Fehler**),
    **bevor** etwas gebaut wird. Weicht etwas ab, erst das klären.
    ⚠️ **Diese drei Läufe sind zugleich die Probe, ob Plandatei und Code zusammenpassen.**
    Steht im Kopfblock eine andere Basislinie als gemessen, ist eine der beiden Seiten alt —
@@ -3479,7 +3479,29 @@ Lieferung ist teurer als eine zusätzliche.
 > *Eine Prüfung auf „das erste Mal“ gehört an die Stelle, an der es wirklich das erste
 > Mal ist.*
 >
-> **Basislinie 3432 → 3469 Assertions · Smokes 1081/1039/1039 → 1119/1077/1077.**
+> ---
+>
+> **P1b · NACHTRAG (Dieters Fund direkt nach der Lieferung, 2026-08-08):**
+> **Das Info-Fenster versprach Ermüdung und Verzug.** Wörtlich stand dort
+> „statischer Nachweis, **Ermüdung**, Wärmeführung, Kosten und **Verzug**“, und die
+> Normenliste führte **EN 1993-1-9** und **EN 1999-1-3** — die beiden Ermüdungsnormen.
+> Zwei Zeilen weiter unten sagte dasselbe Fenster „folgt in einem Update“.
+> **Der Text stammte aus der Zeit, als der PLAN beschrieben wurde, nicht der STAND** —
+> und er widersprach direkt der Regel aus 1a. Auch die Meta-Beschreibung beider HTMLs war
+> betroffen.
+>
+> ⚠️ **UND WIEDER LAG DIE PRÜFUNG NEBEN DER SACHE.** S53 durchsuchte die **Hinweis**texte
+> auf Bausteinnamen — nie die **Selbstbeschreibung** auf Versprechen. Jetzt prüft sie
+> beides, und die verbotenen Begriffe kommen **aus der Quelle**: aus den Beschriftungen
+> der als `offen` markierten Bereiche und aus deren Normen, die dazu neu in der
+> ZUSATZ-Tabelle stehen. Geprüft wird **satzweise** — ein Satz, der einen ungebauten
+> Bereich nennt, muss auch vom Update sprechen. *(Der erste Versuch teilte den Text VOR
+> der Ankündigung; die Wörter stehen dort aber davor: „Ermüdung und Verzug folgen in
+> einem Update“.)*
+> Zwei weitere Gegenproben bestanden: Ermüdung zurück in die Beschreibung → rot;
+> Ermüdungsnorm zurück in die Liste → rot.
+>
+> **Basislinie 3432 → 3488 Assertions · Smokes 1081/1039/1039 → 1119/1077/1077.**
 > Neue Sektion **S53**. Betroffen: `i18n_kern.js` (0.10.0-P1), `report.js` (0.4.0-P1),
 > `ui.js` (0.20.0), `style.css`, beide HTMLs, `test_naht.js`, `dom_smoke_voll.js`.
 >
@@ -4089,7 +4111,7 @@ Formsache, und der Basislinien-Abgleich aus Kickoff-Punkt 11 ebenso wenig.
 **Erste Handlung im neuen Chat:** Vollständigkeit gegen die Tabelle oben prüfen
 (**19 Module**, `style.css`, beide HTMLs, **alle drei** DEV-ONLY-Dateien, dazu Plandatei und
 `Schweißnaht-Historie.md`), Arbeitsordner herstellen, die drei Testläufe starten.
-Melden müssen sie **3469 / 1119 / 1077 / 1077 · 0 Fehler** — der DOM-Smoke der
+Melden müssen sie **3488 / 1119 / 1077 / 1077 · 0 Fehler** — der DOM-Smoke der
 Vollversion läuft seit P0 **zweimal**: einmal regulär und einmal mit einer kaputten
 Edition im HTML-Kopf, die sich wie die Testversion verhalten muss.
 ⚠️ **Die beiden Smokes sind seit N12 verschieden lang** — der Aktivierungsdialog gibt es
@@ -4437,6 +4459,13 @@ will. Also: Vorschriften und Wegweiser bleiben hier, die Erzählung wandert.
 - **Ein Wortfilter braucht die BEDEUTUNG, nicht das Wort** (2026-08-08, P1): Die Suche
   nach „kostenlos“ fing auch das englische „free“ in *„no free weld end“* — vier
   Fehlalarme. Ein Filter, der zu viel fängt, wird abgeschaltet und fängt dann gar nichts.
+- **DIE SELBSTBESCHREIBUNG SAGT DEN STAND, NICHT DEN PLAN** (2026-08-08, P1b):
+  Das Info-Fenster versprach Ermüdung und Verzug und listete deren Normen — während
+  zwei Zeilen weiter „folgt in einem Update“ stand. **Ein Programm, das an dreizehn
+  Stellen seine Grenzen nennt, darf sich nicht selbst mehr zuschreiben, als es kann.**
+  Geprüft wird satzweise, und die verbotenen Begriffe kommen aus der ZUSATZ-Tabelle,
+  nicht aus einer Handliste. **Das gilt auch für die Meta-Beschreibung der Seite** —
+  sie ist das Erste, was eine Suchmaschine liest.
 - **Token-Pause: 4 Stunden.**
 
 ---
