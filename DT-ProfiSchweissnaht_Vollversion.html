@@ -5,11 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="google" content="notranslate">
 <title>DT-ProfiSchweissnaht – Schweißnahtberechnung Stahlbau &amp; Maschinenbau</title>
-<meta name="description" content="Schweißnahtberechnung nach EN 1993-1-8, EN 1993-1-4, EN 1999-1-1 und klassischem Maschinenbau – statischer Nachweis, Ermüdung, Wärmeführung, Kosten, Verzug. Offline, dreisprachig.">
+<meta name="description" content="Schweißnahtberechnung nach EN 1993-1-8, EN 1993-1-4, EN 1999-1-1 und klassischem Maschinenbau – statischer Nachweis, Wärmeführung, Kosten, Zeichnungssymbole. Offline, dreisprachig.">
 <!-- ===================================================================== -->
-<!--  EDITION beim Build setzen:  'full' = Vollversion  ·  'test' = Testversion -->
-<script>window.DT_EDITION = 'full';</script>
+<script>
+/* ============================================================
+   HIER AENDERN, wenn Adresse oder E-Mail wechseln.
+   Fehlt oder verrutscht eine Angabe, gilt der eingebaute Wert.
+   ============================================================ */
+window.DT_WEB  = 'dt-profidreieck.de';
+window.DT_MAIL = 'Dieter.Tepe@live.de';
+window.DT_EDITION = 'full';</script>
 <!-- ===================================================================== -->
+
 <style>
 /* ============================================================================
    DT-ProfiSchweissnaht · style.css
@@ -431,6 +438,17 @@ input.feld,select.feld{display:block; width:100%; margin:0}
 .lic-feld{ display:flex; flex-direction:column; gap:4px; margin:0 0 10px; }
 .lic-feld > span{ font-size:var(--f0); color:var(--muted); }
 
+/* P1 — Der Zusatz an der Beschriftung eines noch nicht enthaltenen Bereichs.
+   Er soll auffallen, ohne wie ein Fehler auszusehen: gedaempft, kleiner,
+   aber unuebersehbar neben dem Haken. */
+.zusatz-offen{
+  margin-left:6px; font-size:var(--f0); color:var(--muted);
+  border:1px solid var(--line); border-radius:999px; padding:1px 7px;
+  white-space:nowrap;
+}
+.zusatz-offen::before{ content:"\2014\00a0"; }
+.upd-bereich{ font-weight:700; margin:0 0 6px; }
+
 /* ============================================================================
  * DAS DRUCKBILD — EINE EINZIGE QUELLE (N12)
  *
@@ -513,7 +531,6 @@ input.feld,select.feld{display:block; width:100%; margin:0}
 
 </style>
 
-<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -797,14 +814,14 @@ input.feld,select.feld{display:block; width:100%; margin:0}
 
 <div id="printFuss" class="print-only print-fuss">
   <div class="print-zeile" id="printHaftung" data-i18n="disclaimer">Berechnung ohne Gewähr, vor Produktivnutzung gegen die Originalnormen prüfen.</div>
-  <div class="print-zeile" id="printImpressum" data-i18n="impressum">Dieter Tepe · Mühlenstraße 2 · 48477 Dreierwalde · Dieter.Tepe@live.de · www.dt-profidreieck.de</div>
+  <div class="print-zeile" id="printImpressum"></div>
   <div class="print-zeile norm">EN 1993-1-8 · EN 1993-1-4 · EN 1999-1-1 · EN 1011-2 · EN 1090 · ISO 5817 · ISO 2553</div>
 </div>
 
 <footer class="app-footer">
   <span class="norm">EN 1993-1-8 · EN 1993-1-4 · EN 1999-1-1 · EN 1011-2 · EN 1090 · ISO 5817 · ISO 2553</span><br>
   <span id="footNote" data-i18n="disclaimer">Berechnung ohne Gewähr, vor Produktivnutzung gegen die Originalnormen prüfen.</span><br>
-  <span id="footImpressum" data-i18n="impressum">Dieter Tepe · Mühlenstraße 2 · 48477 Dreierwalde · Dieter.Tepe@live.de · www.dt-profidreieck.de</span>
+  <span id="footImpressum"></span>
 </footer>
 
 
@@ -816,6 +833,28 @@ input.feld,select.feld{display:block; width:100%; margin:0}
      verriegelt, den man nicht schliessen kann, sperrt auch den aus, der
      gerade seinen Schluessel sucht.
      =================================================================== -->
+
+<!-- ===================================================================
+     P1 · Hinweis auf einen noch nicht enthaltenen Bereich. Erscheint
+     HOECHSTENS EINMAL JE BEREICH UND SITZUNG: kaeme er bei jedem Haken,
+     wuerde er nach dem dritten Mal reflexhaft weggeklickt, ohne gelesen
+     zu werden — dann haette er das Gegenteil erreicht. Der Merker wird
+     NICHT im lokalen Speicher abgelegt (dieselbe Ueberlegung wie beim
+     "Spaeter" der Aktivierung).
+     =================================================================== -->
+<div class="modal-overlay" id="updModal" role="dialog" aria-modal="true" aria-labelledby="updTitel" hidden>
+  <div class="modal">
+    <div class="modal-head"><h3 id="updTitel" data-i18n="upd_titel">Folgt in einem Update</h3></div>
+    <div class="modal-body">
+      <p id="updBereich" class="upd-bereich"></p>
+      <p id="updText"></p>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn" id="updOk" data-i18n="upd_ok">Verstanden</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="licModal" role="dialog" aria-modal="true" aria-labelledby="licTitel" hidden>
   <div class="modal">
     <div class="modal-head"><h3 id="licTitel" data-i18n="lic_titel">Aktivierung</h3></div>
@@ -852,7 +891,7 @@ input.feld,select.feld{display:block; width:100%; margin:0}
       <p id="infoModule" class="info-module"></p>
       <p id="infoDisclaimer" data-i18n="disclaimer"></p>
       <p id="infoNormen" data-i18n="infoNormen"></p>
-      <p id="infoImpressum" class="impressum" data-i18n="impressum">Dieter Tepe · Mühlenstraße 2 · 48477 Dreierwalde · Dieter.Tepe@live.de · www.dt-profidreieck.de</p>
+      <p id="infoImpressum" class="impressum"></p>
     </div>
     <div class="modal-actions">
       <button type="button" class="btn btn-primary" id="infoClose" data-i18n="close">Schließen</button>
@@ -925,7 +964,7 @@ input.feld,select.feld{display:block; width:100%; margin:0}
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.9.1-N12';
+  var VERSION = '0.11.1-P1';
   var SPRACHEN = ['de', 'en', 'pt'];
 
   var D = {
@@ -975,15 +1014,20 @@ input.feld,select.feld{display:block; width:100%; margin:0}
     pathIdle:     { de: 'Der selbstprüfende Rechenweg erscheint hier nach der Berechnung – mit Formel, eingesetzten Zahlen und Häkchen.',
                     en: 'The self-checking calculation path appears here after the calculation – with formula, figures used and ticks.',
                     pt: 'A memória de cálculo autoverificável aparece aqui após o cálculo – com fórmula, números usados e vistos.' },
-    infoProdukt:  { de: 'Schweißnahtberechnung für Stahlbau und Maschinenbau: statischer Nachweis, Ermüdung, Wärmeführung, Kosten und Verzug. Läuft vollständig offline.',
-                    en: 'Weld design for structural and mechanical engineering: static verification, fatigue, heat control, cost and distortion. Runs fully offline.',
-                    pt: 'Cálculo de soldas para construção metálica e engenharia mecânica: verificação estática, fadiga, controlo térmico, custos e distorção. Funciona totalmente offline.' },
-    infoNormen:   { de: 'Regelwerke: EN 1993-1-8 · EN 1993-1-4 · EN 1999-1-1 · EN 1993-1-9 · EN 1999-1-3 · EN 1011-2 · EN 1090 · ISO 5817 · ISO 2553 · Roloff/Matek und Decker.',
-                    en: 'Standards: EN 1993-1-8 · EN 1993-1-4 · EN 1999-1-1 · EN 1993-1-9 · EN 1999-1-3 · EN 1011-2 · EN 1090 · ISO 5817 · ISO 2553 · Roloff/Matek and Decker.',
-                    pt: 'Normas: EN 1993-1-8 · EN 1993-1-4 · EN 1999-1-1 · EN 1993-1-9 · EN 1999-1-3 · EN 1011-2 · EN 1090 · ISO 5817 · ISO 2553 · Roloff/Matek e Decker.' },
-    impressum:    { de: 'Dieter Tepe · Mühlenstraße 2 · 48477 Dreierwalde · Dieter.Tepe@live.de · www.dt-profidreieck.de',
-                    en: 'Dieter Tepe · Mühlenstraße 2 · 48477 Dreierwalde · Germany · Dieter.Tepe@live.de · www.dt-profidreieck.de',
-                    pt: 'Dieter Tepe · Mühlenstraße 2 · 48477 Dreierwalde · Alemanha · Dieter.Tepe@live.de · www.dt-profidreieck.de' },
+    /* ⚠️ DIESER TEXT BESCHREIBT DEN STAND, NICHT DEN PLAN (P1b, 2026-08-08).
+       Bis dahin versprach er Ermüdung und Verzug — beides ist nicht gebaut,
+       und zwei Zeilen weiter unten sagt dasselbe Fenster "folgt in einem
+       Update". Ein Programm, das an dreizehn Stellen seine Grenzen nennt,
+       darf sich nicht selbst mehr zuschreiben, als es kann (Plan 1a). */
+    infoProdukt:  { de: 'Schweißnahtberechnung für Stahlbau und Maschinenbau: statischer Nachweis, Wärmeführung und Vorwärmung, Kosten und Zeit, Zeichnungssymbole. Läuft vollständig offline. Ermüdung und Verzug folgen in einem späteren Update.',
+                    en: 'Weld design for structural and mechanical engineering: static verification, heat control and preheating, cost and time, drawing symbols. Runs fully offline. Fatigue and distortion will follow in a later update.',
+                    pt: 'Cálculo de soldas para construção metálica e engenharia mecânica: verificação estática, controlo térmico e pré-aquecimento, custos e tempo, símbolos de desenho. Funciona totalmente offline. A fadiga e a distorção seguirão numa atualização posterior.' },
+    infoNormen:   { de: 'Regelwerke: EN 1993-1-8 · EN 1993-1-4 · EN 1999-1-1 · EN 1011-2 · EN 1090 · ISO 5817 · ISO 2553 · Roloff/Matek und Decker.',
+                    en: 'Standards: EN 1993-1-8 · EN 1993-1-4 · EN 1999-1-1 · EN 1011-2 · EN 1090 · ISO 5817 · ISO 2553 · Roloff/Matek and Decker.',
+                    pt: 'Normas: EN 1993-1-8 · EN 1993-1-4 · EN 1999-1-1 · EN 1011-2 · EN 1090 · ISO 5817 · ISO 2553 · Roloff/Matek e Decker.' },
+    /* DIE VOLLE ANSCHRIFT IST HIER ENTFALLEN (P1, 2026-08-08). Sie wird auf
+       der Website gepflegt; im Programm wuerde sie veralten, ohne dass es
+       jemand merkt. An ihre Stelle tritt `imp_verweis`. */
     uiEditionVoll:{ de: 'Vollversion', en: 'Full version', pt: 'Versão completa' },
     uiGeleert:    { de: 'Alle Felder geleert – nichts bleibt stehen.',
                     en: 'All fields cleared – nothing is left behind.',
@@ -1104,12 +1148,16 @@ input.feld,select.feld{display:block; width:100%; margin:0}
     uiFolgtN10:   { de: 'Zugeschaltet. Zeit, Draht- und Gasbedarf und Kosten werden in Baustein N10 gerechnet.',
                     en: 'Switched on. Time, wire and gas demand and cost are calculated in module N10.',
                     pt: 'Ativado. Tempo, consumo de fio e gás e custos são calculados no módulo N10.' },
-    uiFolgtN13:   { de: 'Zugeschaltet. Der Ermüdungsnachweis wird in Baustein N13 gerechnet.',
-                    en: 'Switched on. The fatigue verification is calculated in module N13.',
-                    pt: 'Ativado. A verificação à fadiga é calculada no módulo N13.' },
-    uiFolgtN15:   { de: 'Zugeschaltet. Verzug und Schrumpfung werden in Baustein N15 abgeschätzt.',
-                    en: 'Switched on. Distortion and shrinkage are estimated in module N15.',
-                    pt: 'Ativado. A distorção e a contração são estimadas no módulo N15.' },
+    /* KEINE INTERNEN BAUSTEINNAMEN NACH AUSSEN (P1, 2026-08-08): "Baustein N13"
+       ist für uns präzise und für einen Käufer bedeutungslos — er liest einen
+       internen Bauplan und weiß nicht, ob das nächste Woche kommt oder nie.
+       Und nirgends "kostenlos": das Update wird kostenpflichtig (1a). */
+    uiFolgtN13:   { de: 'Der Ermüdungsnachweis nach EN 1993-1-9 ist in dieser Fassung noch nicht enthalten und folgt in einem späteren Update. Alles Übrige rechnet unverändert weiter.',
+                    en: 'The fatigue verification to EN 1993-1-9 is not yet included in this version and will follow in a later update. Everything else continues to calculate as before.',
+                    pt: 'A verificação à fadiga segundo a EN 1993-1-9 ainda não está incluída nesta versão e será disponibilizada numa atualização posterior. Tudo o resto continua a ser calculado normalmente.' },
+    uiFolgtN15:   { de: 'Die Abschätzung von Verzug und Schrumpfung ist in dieser Fassung noch nicht enthalten und folgt in einem späteren Update. Alles Übrige rechnet unverändert weiter.',
+                    en: 'The estimation of distortion and shrinkage is not yet included in this version and will follow in a later update. Everything else continues to calculate as before.',
+                    pt: 'A estimativa de distorção e contração ainda não está incluída nesta versão e será disponibilizada numa atualização posterior. Tudo o resto continua a ser calculado normalmente.' },
 
     /* ---------- Oberflaeche N5b: Eingabeseite ---------- */
     uiBitteWaehlen: { de: '– bitte wählen –', en: '– please select –', pt: '– selecionar –' },
@@ -1334,7 +1382,11 @@ input.feld,select.feld{display:block; width:100%; margin:0}
     th_tp:            { de: 'Mindest-Vorwärmtemperatur', en: 'Minimum preheat temperature', pt: 'Temperatura mínima de pré-aquecimento' },
     th_t85:           { de: 'Abkühlzeit t8/5', en: 'Cooling time t8/5', pt: 'Tempo de arrefecimento t8/5' },
     th_keine_vorw:    { de: 'keine Vorwärmung erforderlich', en: 'no preheating required', pt: 'sem pré-aquecimento necessário' },
-    th_fenster_von_bis:{ de: 'Zielfenster {0} bis {1} s', en: 'Target window {0} to {1} s', pt: 'Janela alvo {0} a {1} s' },
+    /* OHNE das Wort "Zielfenster" — die Beschriftung der Zeile heisst bereits
+       "Zielfenster fuer t8/5". Im Ausdruck stand sonst "Zielfenster fuer
+       t8/5: Zielfenster 10 bis 20 s" (Dieters Fund am Word-Blatt,
+       2026-08-08). */
+    th_fenster_von_bis:{ de: '{0} bis {1} s', en: '{0} to {1} s', pt: '{0} a {1} s' },
     th_fenster_kurz:  { de: 'Fenster', en: 'Window', pt: 'Janela' },
     th_fenster_eigen: { de: 'Eigene Vorgabe — nicht die Vorbelegung des Programms.', en: 'Your own limits — not the program default.', pt: 'Limites próprios — não a predefinição do programa.' },
     th_fenster_offen: { de: 'kein belegtes Zielfenster', en: 'no documented target window', pt: 'sem janela alvo documentada' },
@@ -2074,6 +2126,19 @@ input.feld,select.feld{display:block; width:100%; margin:0}
     rw_p_a_gewaehlt:        { de: 'Probe: das gewählte Maß liegt auf der Stufenreihe, über a_erf und weniger als eine Stufe darüber.', en: 'Cross-check: the selected size lies on the step series, above a_req and less than one step above it.', pt: 'Verificação: a medida escolhida está na série de degraus, acima de a_nec e menos de um degrau acima.' },
     rw_p_grenze:            { de: 'Probe: der Grenzwert wird gegen die eingesetzten Zahlen gehalten.', en: 'Cross-check: the limit value is checked against the figures used.', pt: 'Verificação: o valor-limite é confrontado com os números utilizados.' },
     rw_p_gesamt:            { de: 'Alle Rechenproben zusammengezählt. Ein einziges fehlendes Häkchen bedeutet einen Rechenfehler und nicht etwa einen nicht erfüllten Nachweis – beides wird getrennt ausgewiesen.', en: 'All cross-checks added up. A single missing tick means a calculation error, not an unsatisfied verification – the two are reported separately.', pt: 'Todas as verificações cruzadas somadas. Um único visto em falta significa um erro de cálculo e não uma verificação não cumprida – ambos são indicados em separado.' },
+
+    /* --- P1 · noch nicht enthaltene Bereiche und der Impressumsverweis --- */
+    /* Die Beschriftung sagt es VORHER — ein Fenster erklärt eine Enttäuschung,
+       die Beschriftung verhindert sie. */
+    zb_folgt_kurz:  { de: 'folgt in einem Update', en: 'coming in an update', pt: 'numa atualização futura' },
+    upd_titel:      { de: 'Folgt in einem Update', en: 'Coming in an update', pt: 'Numa atualização futura' },
+    upd_ok:         { de: 'Verstanden', en: 'Understood', pt: 'Entendido' },
+    /* Der Verweis statt der vollen Anschrift: das Impressum wird auf der
+       Website gepflegt, im Programm würde es veralten (1a). {0} = Adresse. */
+    imp_verweis:    { de: 'Vollständiges Impressum und Datenschutzerklärung online unter: {0}',
+                      en: 'Full legal notice and privacy policy online at: {0}',
+                      pt: 'Aviso legal e política de privacidade completos em: {0}' },
+    imp_kontakt:    { de: 'Kontakt', en: 'Contact', pt: 'Contacto' },
 
     /* --- N12 Registrierung und Lizenz ------------------------------------ */
     lic_titel:      { de: 'Aktivierung', en: 'Activation', pt: 'Ativação' },
@@ -11806,7 +11871,7 @@ input.feld,select.feld{display:block; width:100%; margin:0}
   'use strict';
 
   var NAME = 'report';
-  var VERSION = '0.2.1-N12';
+  var VERSION = '0.4.0-P1';
 
   /* Der Programmname steht in der Datei, damit eine fremde .dts nicht
      stillschweigend als eigene gelesen wird. */
@@ -11874,6 +11939,22 @@ input.feld,select.feld{display:block; width:100%; margin:0}
    * Plan 1: In der Testversion ist der volle Funktionsumfang beim RECHNEN
    * da und JEDE Ausgabe gesperrt. Genau eine Stelle im Programm weiss das. */
 
+  /* WOHER DIE EDITION KOMMT — und warum die Frage hier steht.
+     Bis 2026-08-08 entschied `ui.js` das selbst, und zwar falsch herum:
+     `(DT_EDITION === 'test') ? 'test' : 'full'`. Alles, was nicht exakt
+     'test' war, wurde zur VOLLVERSION — leer, geloescht, vertippt, 'FULL'.
+     Wer die Zeile im HTML-Kopf entfernte, hatte die Vollversion.
+     Das Gating hier drunter war die ganze Zeit richtig herum, und es gibt
+     sogar Assertions darauf, dass eine unbekannte Edition nichts freigibt.
+     Geprueft war also das Tor — nie die Hand, die den Schluessel hineinlegt.
+     Jetzt entscheidet EINE Stelle, und sie entscheidet auf die sichere
+     Seite: **nur exakt 'full' gibt die Vollversion.** Alles andere ist
+     Testversion. Kein Trimmen, keine Gross-/Kleinschreibung, keine
+     Freundlichkeit — wer die Vollversion ausliefert, schreibt sie richtig. */
+  function editionAus(wert) {
+    return (wert === 'full') ? 'full' : 'test';
+  }
+
   function guard(aktion, edition) {
     if (AKTIONEN.indexOf(aktion) < 0) {
       return { erlaubt: false, aktion: aktion || null, code: CODES.aktion_unbekannt };
@@ -11914,6 +11995,42 @@ input.feld,select.feld{display:block; width:100%; margin:0}
   };
 
   var NAME_MAX = 80;
+
+  /* ------------------------------------------------------- KONTAKTANGABEN
+   * Das Impressum wird auf der Website gepflegt, nicht hier (Plan 1a). Im
+   * Programm steht deshalb nur der VERWEIS — eine fest verdrahtete Anschrift
+   * ist dieselbe Doppelquelle wie doppelter Code: zieht die Website nach,
+   * ist das Programm veraltet und niemand merkt es.
+   *
+   * Adresse und E-Mail kommen aus dem HTML-Kopf, damit sie nach dem
+   * Zusammenkopieren zur Einzeldatei mit einem Editor änderbar bleiben.
+   * FEHLT ODER VERRUTSCHT EINE ANGABE, gilt der eingebaute Wert — eine leere
+   * Zeile im Ausdruck wäre schlimmer als ein alter Wert. Geprüft wird nichts
+   * (wie beim Lizenzschlüssel), aber es entsteht nie eine Lücke.
+   * ==================================================================== */
+  var KONTAKT_STANDARD = { web: 'dt-profidreieck.de', mail: 'Dieter.Tepe@live.de' };
+
+  function kontakt(web, mail) {
+    var w = istText(web) ? web.replace(/^\s+|\s+$/g, '') : '';
+    var m = istText(mail) ? mail.replace(/^\s+|\s+$/g, '') : '';
+    return {
+      web:  w || KONTAKT_STANDARD.web,
+      mail: m || KONTAKT_STANDARD.mail
+    };
+  }
+
+  /* Aus der Adresse wird der Link. Ohne Schema baut der Browser sonst einen
+     Verweis auf eine Unterseite der eigenen Datei. */
+  function webLink(web) {
+    var w = kontakt(web, null).web;
+    return (/^https?:\/\//.test(w)) ? w : ('https://' + w);
+  }
+
+  /* DIE EINE ZEILE FUER ALLE AUSGABEN. */
+  function impressumZeile(web, lang) {
+    var v = T('imp_verweis', lang);
+    return v.replace('{0}', kontakt(web, null).web);
+  }
 
   function lizenzName(name) {
     if (!istText(name)) return '';
@@ -12279,7 +12396,9 @@ input.feld,select.feld{display:block; width:100%; margin:0}
          kann ihn kein Ausblenden mehr verschlucken. */
       lizenz: istText(e.lizenz) ? e.lizenz : '',
       haftung: T('disclaimer', lang),
-      impressum: T('impressum', lang),
+      /* DER VERWEIS, NICHT DIE ANSCHRIFT (P1). Auch ohne Zutun der
+         Oberflaeche — dann mit dem eingebauten Wert. */
+      impressum: impressumZeile(e.web, lang),
       karten: [], abschnitte: [], abschnitt_codes: [],
       luecken: [], warnungen: [], hinweise: [],
       bilder: [], fehler: []
@@ -12491,9 +12610,12 @@ input.feld,select.feld{display:block; width:100%; margin:0}
     NAME: NAME, VERSION: VERSION,
     PROGRAMM: PROGRAMM, FORMAT: FORMAT, ENDUNG: ENDUNG,
     AKTIONEN: AKTIONEN, CODES: CODES, SPEICHER: SPEICHER, NAME_MAX: NAME_MAX,
+    KONTAKT_STANDARD: KONTAKT_STANDARD,
+    kontakt: kontakt, webLink: webLink, impressumZeile: impressumZeile,
     lizenzName: lizenzName, istAktiviert: istAktiviert,
     lizenzPhrase: lizenzPhrase, lizenzZeile: lizenzZeile,
     MAX_TWIPS: MAX_TWIPS, TWIP_JE_PX: TWIP_JE_PX,
+    editionAus: editionAus,
     guard: guard,
     stempel: stempel,
     baueDatei: baueDatei,
@@ -12549,12 +12671,12 @@ input.feld,select.feld{display:block; width:100%; margin:0}
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.18.1';
-  var ETAPPE = 'N12';
+  var VERSION = '0.20.2';
+  var ETAPPE = 'P1';
   /* Plan-Version, die zu diesem Stand gehoert. Sie ist die EINZIGE von Hand
      gepflegte Zahl der Versionszeile — alles andere kommt aus den geladenen
      Modulen selbst (Plan 3.6). */
-  var PLAN = '2.70';
+  var PLAN = '2.78';
   var SPRACHEN = ['de', 'en', 'pt'];
 
   /* Plan 3.1 (bindend): die Oberflaeche startet IMMER im dunklen Design —
@@ -12652,11 +12774,20 @@ input.feld,select.feld{display:block; width:100%; margin:0}
 
   /* Die vier zuschaltbaren Zusatzbereiche (Plan 2.6) — Haken hier, Inhalt
      spaeter. Der Rechenkern liest den Haken als "<code>_aktiv" (validate.js). */
+  /* `offen: true` heisst: dieser Bereich ist NOCH NICHT ENTHALTEN. Er
+     bekommt den Zusatz an der Beschriftung und beim ersten Anhaken ein
+     Hinweisfenster. `thermik` und `kosten` sind gebaut und tragen beides
+     nicht. */
   var ZUSATZ = [
-    { code: 'ermuedung', label: 'zb_ermuedung', folgt: 'uiFolgtN13' },
+    { code: 'ermuedung', label: 'zb_ermuedung', folgt: 'uiFolgtN13', offen: true,
+      /* Die Normen eines noch nicht gebauten Bereichs duerfen in der
+         Selbstbeschreibung NICHT auftauchen (P1b). Sie stehen hier, damit
+         die Pruefung sie aus der Quelle nimmt statt aus einer Handliste. */
+      normen: ['EN 1993-1-9', 'EN 1999-1-3'] },
     { code: 'thermik',   label: 'zb_thermik',   folgt: 'uiFolgtN9' },
     { code: 'kosten',    label: 'zb_kosten',    folgt: 'uiFolgtN10' },
-    { code: 'verzug',    label: 'zb_verzug',    folgt: 'uiFolgtN15' }
+    { code: 'verzug',    label: 'zb_verzug',    folgt: 'uiFolgtN15', offen: true,
+      normen: [] }
   ];
 
   /* Pflicht-Elemente. Der Harness prueft, dass jede Id in BEIDEN HTMLs steht. */
@@ -12695,7 +12826,9 @@ input.feld,select.feld{display:block; width:100%; margin:0}
     'printFuss', 'printHaftung', 'printImpressum',
     /* N12 — Aktivierung */
     'licModal', 'licTitel', 'licText', 'licNameLbl', 'licName',
-    'licKeyLbl', 'licKey', 'licHinweis', 'licAktivieren', 'licSpaeter'
+    'licKeyLbl', 'licKey', 'licHinweis', 'licAktivieren', 'licSpaeter',
+    /* P1 */
+    'updModal', 'updTitel', 'updBereich', 'updText', 'updOk'
   ];
 
   /* CSS-Klassen, die style.css tragen muss (leer erlaubt, vorhanden Pflicht). */
@@ -12731,7 +12864,7 @@ input.feld,select.feld{display:block; width:100%; margin:0}
     'th-gruen', 'th-rot', 'th-grau', 'anhalt-note',
     /* N12 */
     'print-only', 'print-kopf', 'print-fuss', 'print-mark', 'print-tag',
-    'print-zeile', 'license-line', 'lic-feld'
+    'print-zeile', 'license-line', 'lic-feld', 'zusatz-offen', 'upd-bereich'
   ];
 
   /* Buttons, die bewusst noch nicht verdrahtet sind: Id -> ehrliche Meldung.
@@ -12831,7 +12964,14 @@ input.feld,select.feld{display:block; width:100%; margin:0}
       /* N12: die Registrierung. Leer heisst: nicht aktiviert — dann steht
          in den Ausgaben KEINE Lizenzzeile statt einer leeren. */
       lizenzName: '', lizenzKey: '', lizenzSpaeter: false,
-      edition: (win.DT_EDITION === 'test') ? 'test' : 'full'
+      /* P1: welcher Bereich hat seinen Hinweis in DIESER Sitzung schon
+         gezeigt? Wird nicht verwahrt. */
+      updGezeigt: {},
+      /* NUR EXAKT 'full' GIBT DIE VOLLVERSION (Dieters Fund, 2026-08-08).
+         Entschieden wird das in `report.js` — an derselben Stelle wie das
+         Gating und die Lizenzzeile. Fehlt report.js ganz, bleibt es bei der
+         Testversion: im Zweifel die sichere Seite. */
+      edition: Report ? Report.editionAus(win.DT_EDITION) : 'test'
     };
 
     /* --------------------------------------------------------- Erzeugen */
@@ -13045,6 +13185,14 @@ input.feld,select.feld{display:block; width:100%; margin:0}
           var t = neu('span', null, null);
           beschrifte(t, z.label);
           lab.appendChild(t);
+          /* DIE BESCHRIFTUNG SAGT ES VORHER (P1). Ein Fenster erklaert eine
+             Enttaeuschung, die Beschriftung verhindert sie — deshalb ist sie
+             die wichtigere der beiden Stufen. */
+          if (z.offen) {
+            var zus = neu('span', 'zusatz-offen', 'zuso_' + z.code);
+            beschrifte(zus, 'zb_folgt_kurz');
+            lab.appendChild(zus);
+          }
           host.appendChild(lab);
 
           var note = neu('div', 'zusatz-note', 'zusn_' + z.code);
@@ -13055,6 +13203,7 @@ input.feld,select.feld{display:block; width:100%; margin:0}
           box.addEventListener('change', function () {
             note.hidden = !box.checked;
             meldung('');
+            if (box.checked) updHinweis(z);
           });
         }(ZUSATZ[i]));
       }
@@ -14645,6 +14794,7 @@ input.feld,select.feld{display:block; width:100%; margin:0}
          die Lehre aus N10c. Deshalb steht der Aufruf hier und nicht nur beim
          Drucken. */
       lizenzZeigen();
+      impressumZeigen();
 
       var lTexte = alle(doc, '[data-i18n]');
       for (i = 0; i < lTexte.length; i++) {
@@ -14951,6 +15101,10 @@ input.feld,select.feld{display:block; width:100%; margin:0}
         }(GERUEST_BUTTONS[i]));
       }
 
+      /* P1 · Hinweisfenster */
+      b = el(doc, 'updOk');
+      if (b && b.addEventListener) b.addEventListener('click', function () { updSchliessen(); });
+
       /* N12 · Aktivierung */
       b = el(doc, 'licAktivieren');
       if (b && b.addEventListener) b.addEventListener('click', function () { lizenzAktivieren(); });
@@ -15005,6 +15159,112 @@ input.feld,select.feld{display:block; width:100%; margin:0}
     lizenzLaden();
     langDruckVerdrahten();
     lizenzErststart();
+
+    /* ======================================================================
+     * P1 — HINWEIS AUF EINEN NOCH NICHT ENTHALTENEN BEREICH
+     *
+     * HOECHSTENS EINMAL JE BEREICH UND SITZUNG. Kaeme das Fenster bei jedem
+     * Haken, wuerde es nach dem dritten Mal reflexhaft weggeklickt, ohne
+     * gelesen zu werden — dann haette es das Gegenteil erreicht.
+     *
+     * DER MERKER WIRD NICHT VERWAHRT. Er gilt nur fuer diese Sitzung; im
+     * lokalen Speicher stehen ausschliesslich die zwei Lizenzschluessel
+     * (5.1-8). Beim naechsten Start erscheint der Hinweis wieder — und das
+     * ist richtig, denn die Beschriftung am Haken traegt die Auskunft
+     * ohnehin dauerhaft.
+     *
+     * DAS FENSTER ZEIGT DENSELBEN SATZ WIE DIE NOTIZ unter dem Haken. Zwei
+     * Formulierungen fuer dieselbe Sache waeren zwei Gelegenheiten, sie
+     * verschieden zu sagen (3.4).
+     * ==================================================================== */
+
+    function updHinweis(z) {
+      if (!z || !z.offen) return false;
+      if (S.updGezeigt[z.code]) return false;
+      var m = el(doc, 'updModal');
+      if (!m) return false;
+      S.updGezeigt[z.code] = true;
+      var b = el(doc, 'updBereich');
+      if (b) b.textContent = txt(win, z.label, S.sprache);
+      var t = el(doc, 'updText');
+      if (t) t.textContent = txt(win, z.folgt, S.sprache);
+      m.hidden = false;
+      return true;
+    }
+
+    function updSchliessen() {
+      var m = el(doc, 'updModal');
+      if (m) m.hidden = true;
+      return true;
+    }
+
+    /* ======================================================================
+     * P1 — DIE KONTAKTANGABEN
+     *
+     * Sie kommen aus dem HTML-Kopf (`DT_WEB`, `DT_MAIL`), damit sie nach dem
+     * Zusammenkopieren zur Einzeldatei mit einem Editor aenderbar bleiben.
+     * Gebaut wird der Satz in `report.js` — eine Quelle fuer Fusszeile,
+     * Info-Fenster, Druckfuss und Word-Dokument.
+     * ==================================================================== */
+
+    function kontakt() {
+      if (!Report) return { web: '', mail: '' };
+      return Report.kontakt(win.DT_WEB, win.DT_MAIL);
+    }
+
+    function impressumZeile() {
+      if (!Report) return '';
+      return Report.impressumZeile(win.DT_WEB, S.sprache);
+    }
+
+    /* Ein Element bekommt den Verweis — die Adresse als echter Link, damit
+       ein Antippen wirklich dorthin fuehrt. Wo kein `a` moeglich ist, bleibt
+       es Klartext; die Zeile ist dann immer noch lesbar. */
+    function impressumSetzen(id, mitMail) {
+      var e = el(doc, id);
+      if (!e) return false;
+      var k = kontakt(), zeile = impressumZeile();
+      e.innerHTML = '';
+      var vor = zeile.indexOf(k.web);
+      if (vor < 0) { e.textContent = zeile; return true; }
+
+      var s1 = neu('span', null, null);
+      s1.textContent = zeile.substring(0, vor);
+      e.appendChild(s1);
+
+      /* Die Links tragen eigene Ids — was angezeigt wird, ist pruefbar
+         (Regel aus N5a). */
+      var a = neu('a', null, id + 'Web');
+      a.setAttribute('href', Report.webLink(win.DT_WEB));
+      a.setAttribute('target', '_blank');
+      a.setAttribute('rel', 'noopener');
+      a.textContent = k.web;
+      e.appendChild(a);
+
+      var s2 = neu('span', null, null);
+      s2.textContent = zeile.substring(vor + k.web.length);
+      e.appendChild(s2);
+
+      if (mitMail) {
+        var s3 = neu('span', null, null);
+        s3.textContent = ' \u00b7 ';
+        e.appendChild(s3);
+        var am = neu('a', null, id + 'Mail');
+        am.setAttribute('href', 'mailto:' + k.mail);
+        am.textContent = k.mail;
+        e.appendChild(am);
+      }
+      return true;
+    }
+
+    function impressumZeigen() {
+      impressumSetzen('footImpressum', false);
+      impressumSetzen('printImpressum', false);
+      /* Im Info-Fenster steht zusaetzlich die E-Mail — dort sucht jemand
+         Kontakt, in der Fusszeile nicht. */
+      impressumSetzen('infoImpressum', true);
+      return true;
+    }
 
     /* ======================================================================
      * N12 — REGISTRIERUNG, LIZENZZEILE UND DER LANG-DRUCK
@@ -15363,6 +15623,7 @@ input.feld,select.feld{display:block; width:100%; margin:0}
         module: versionInfo().module,
         anforderung: anforderungText(),
         lizenz: lizenzText(),
+        web: win.DT_WEB,
         karten: berichtKarten(),
         bilder: bilder || []
       });
@@ -15582,6 +15843,14 @@ input.feld,select.feld{display:block; width:100%; margin:0}
          durchklicken kann, ohne einen Dateidialog zu brauchen. */
       versionText: versionText,
       druckKopf: function () { druckKopfSetzen(); return true; },
+      kontakt: kontakt,
+      impressumZeile: impressumZeile,
+      updHinweis: function (code) {
+        for (var i = 0; i < ZUSATZ.length; i++) if (ZUSATZ[i].code === code) return updHinweis(ZUSATZ[i]);
+        return false;
+      },
+      updOffen: function () { var m = el(doc, 'updModal'); return !!m && m.hidden === false; },
+      updSchliessen: updSchliessen,
       lizenz: lizenzText,
       lizenzName: function () { return S.lizenzName; },
       lizenzDialogOffen: function () { var m = el(doc, 'licModal'); return !!m && m.hidden === false; },
