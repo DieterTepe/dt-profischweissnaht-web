@@ -35,12 +35,12 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.19.0';
-  var ETAPPE = 'P0';
+  var VERSION = '0.20.0';
+  var ETAPPE = 'P1';
   /* Plan-Version, die zu diesem Stand gehoert. Sie ist die EINZIGE von Hand
      gepflegte Zahl der Versionszeile — alles andere kommt aus den geladenen
      Modulen selbst (Plan 3.6). */
-  var PLAN = '2.74';
+  var PLAN = '2.76';
   var SPRACHEN = ['de', 'en', 'pt'];
 
   /* Plan 3.1 (bindend): die Oberflaeche startet IMMER im dunklen Design —
@@ -138,11 +138,15 @@
 
   /* Die vier zuschaltbaren Zusatzbereiche (Plan 2.6) — Haken hier, Inhalt
      spaeter. Der Rechenkern liest den Haken als "<code>_aktiv" (validate.js). */
+  /* `offen: true` heisst: dieser Bereich ist NOCH NICHT ENTHALTEN. Er
+     bekommt den Zusatz an der Beschriftung und beim ersten Anhaken ein
+     Hinweisfenster. `thermik` und `kosten` sind gebaut und tragen beides
+     nicht. */
   var ZUSATZ = [
-    { code: 'ermuedung', label: 'zb_ermuedung', folgt: 'uiFolgtN13' },
+    { code: 'ermuedung', label: 'zb_ermuedung', folgt: 'uiFolgtN13', offen: true },
     { code: 'thermik',   label: 'zb_thermik',   folgt: 'uiFolgtN9' },
     { code: 'kosten',    label: 'zb_kosten',    folgt: 'uiFolgtN10' },
-    { code: 'verzug',    label: 'zb_verzug',    folgt: 'uiFolgtN15' }
+    { code: 'verzug',    label: 'zb_verzug',    folgt: 'uiFolgtN15', offen: true }
   ];
 
   /* Pflicht-Elemente. Der Harness prueft, dass jede Id in BEIDEN HTMLs steht. */
@@ -181,7 +185,9 @@
     'printFuss', 'printHaftung', 'printImpressum',
     /* N12 — Aktivierung */
     'licModal', 'licTitel', 'licText', 'licNameLbl', 'licName',
-    'licKeyLbl', 'licKey', 'licHinweis', 'licAktivieren', 'licSpaeter'
+    'licKeyLbl', 'licKey', 'licHinweis', 'licAktivieren', 'licSpaeter',
+    /* P1 */
+    'updModal', 'updTitel', 'updBereich', 'updText', 'updOk'
   ];
 
   /* CSS-Klassen, die style.css tragen muss (leer erlaubt, vorhanden Pflicht). */
@@ -217,7 +223,7 @@
     'th-gruen', 'th-rot', 'th-grau', 'anhalt-note',
     /* N12 */
     'print-only', 'print-kopf', 'print-fuss', 'print-mark', 'print-tag',
-    'print-zeile', 'license-line', 'lic-feld'
+    'print-zeile', 'license-line', 'lic-feld', 'zusatz-offen', 'upd-bereich'
   ];
 
   /* Buttons, die bewusst noch nicht verdrahtet sind: Id -> ehrliche Meldung.
@@ -317,6 +323,9 @@
       /* N12: die Registrierung. Leer heisst: nicht aktiviert — dann steht
          in den Ausgaben KEINE Lizenzzeile statt einer leeren. */
       lizenzName: '', lizenzKey: '', lizenzSpaeter: false,
+      /* P1: welcher Bereich hat seinen Hinweis in DIESER Sitzung schon
+         gezeigt? Wird nicht verwahrt. */
+      updGezeigt: {},
       /* NUR EXAKT 'full' GIBT DIE VOLLVERSION (Dieters Fund, 2026-08-08).
          Entschieden wird das in `report.js` — an derselben Stelle wie das
          Gating und die Lizenzzeile. Fehlt report.js ganz, bleibt es bei der
@@ -535,6 +544,14 @@
           var t = neu('span', null, null);
           beschrifte(t, z.label);
           lab.appendChild(t);
+          /* DIE BESCHRIFTUNG SAGT ES VORHER (P1). Ein Fenster erklaert eine
+             Enttaeuschung, die Beschriftung verhindert sie — deshalb ist sie
+             die wichtigere der beiden Stufen. */
+          if (z.offen) {
+            var zus = neu('span', 'zusatz-offen', 'zuso_' + z.code);
+            beschrifte(zus, 'zb_folgt_kurz');
+            lab.appendChild(zus);
+          }
           host.appendChild(lab);
 
           var note = neu('div', 'zusatz-note', 'zusn_' + z.code);
@@ -545,6 +562,7 @@
           box.addEventListener('change', function () {
             note.hidden = !box.checked;
             meldung('');
+            if (box.checked) updHinweis(z);
           });
         }(ZUSATZ[i]));
       }
@@ -2135,6 +2153,7 @@
          die Lehre aus N10c. Deshalb steht der Aufruf hier und nicht nur beim
          Drucken. */
       lizenzZeigen();
+      impressumZeigen();
 
       var lTexte = alle(doc, '[data-i18n]');
       for (i = 0; i < lTexte.length; i++) {
@@ -2441,6 +2460,10 @@
         }(GERUEST_BUTTONS[i]));
       }
 
+      /* P1 · Hinweisfenster */
+      b = el(doc, 'updOk');
+      if (b && b.addEventListener) b.addEventListener('click', function () { updSchliessen(); });
+
       /* N12 · Aktivierung */
       b = el(doc, 'licAktivieren');
       if (b && b.addEventListener) b.addEventListener('click', function () { lizenzAktivieren(); });
@@ -2495,6 +2518,112 @@
     lizenzLaden();
     langDruckVerdrahten();
     lizenzErststart();
+
+    /* ======================================================================
+     * P1 — HINWEIS AUF EINEN NOCH NICHT ENTHALTENEN BEREICH
+     *
+     * HOECHSTENS EINMAL JE BEREICH UND SITZUNG. Kaeme das Fenster bei jedem
+     * Haken, wuerde es nach dem dritten Mal reflexhaft weggeklickt, ohne
+     * gelesen zu werden — dann haette es das Gegenteil erreicht.
+     *
+     * DER MERKER WIRD NICHT VERWAHRT. Er gilt nur fuer diese Sitzung; im
+     * lokalen Speicher stehen ausschliesslich die zwei Lizenzschluessel
+     * (5.1-8). Beim naechsten Start erscheint der Hinweis wieder — und das
+     * ist richtig, denn die Beschriftung am Haken traegt die Auskunft
+     * ohnehin dauerhaft.
+     *
+     * DAS FENSTER ZEIGT DENSELBEN SATZ WIE DIE NOTIZ unter dem Haken. Zwei
+     * Formulierungen fuer dieselbe Sache waeren zwei Gelegenheiten, sie
+     * verschieden zu sagen (3.4).
+     * ==================================================================== */
+
+    function updHinweis(z) {
+      if (!z || !z.offen) return false;
+      if (S.updGezeigt[z.code]) return false;
+      var m = el(doc, 'updModal');
+      if (!m) return false;
+      S.updGezeigt[z.code] = true;
+      var b = el(doc, 'updBereich');
+      if (b) b.textContent = txt(win, z.label, S.sprache);
+      var t = el(doc, 'updText');
+      if (t) t.textContent = txt(win, z.folgt, S.sprache);
+      m.hidden = false;
+      return true;
+    }
+
+    function updSchliessen() {
+      var m = el(doc, 'updModal');
+      if (m) m.hidden = true;
+      return true;
+    }
+
+    /* ======================================================================
+     * P1 — DIE KONTAKTANGABEN
+     *
+     * Sie kommen aus dem HTML-Kopf (`DT_WEB`, `DT_MAIL`), damit sie nach dem
+     * Zusammenkopieren zur Einzeldatei mit einem Editor aenderbar bleiben.
+     * Gebaut wird der Satz in `report.js` — eine Quelle fuer Fusszeile,
+     * Info-Fenster, Druckfuss und Word-Dokument.
+     * ==================================================================== */
+
+    function kontakt() {
+      if (!Report) return { web: '', mail: '' };
+      return Report.kontakt(win.DT_WEB, win.DT_MAIL);
+    }
+
+    function impressumZeile() {
+      if (!Report) return '';
+      return Report.impressumZeile(win.DT_WEB, S.sprache);
+    }
+
+    /* Ein Element bekommt den Verweis — die Adresse als echter Link, damit
+       ein Antippen wirklich dorthin fuehrt. Wo kein `a` moeglich ist, bleibt
+       es Klartext; die Zeile ist dann immer noch lesbar. */
+    function impressumSetzen(id, mitMail) {
+      var e = el(doc, id);
+      if (!e) return false;
+      var k = kontakt(), zeile = impressumZeile();
+      e.innerHTML = '';
+      var vor = zeile.indexOf(k.web);
+      if (vor < 0) { e.textContent = zeile; return true; }
+
+      var s1 = neu('span', null, null);
+      s1.textContent = zeile.substring(0, vor);
+      e.appendChild(s1);
+
+      /* Die Links tragen eigene Ids — was angezeigt wird, ist pruefbar
+         (Regel aus N5a). */
+      var a = neu('a', null, id + 'Web');
+      a.setAttribute('href', Report.webLink(win.DT_WEB));
+      a.setAttribute('target', '_blank');
+      a.setAttribute('rel', 'noopener');
+      a.textContent = k.web;
+      e.appendChild(a);
+
+      var s2 = neu('span', null, null);
+      s2.textContent = zeile.substring(vor + k.web.length);
+      e.appendChild(s2);
+
+      if (mitMail) {
+        var s3 = neu('span', null, null);
+        s3.textContent = ' \u00b7 ';
+        e.appendChild(s3);
+        var am = neu('a', null, id + 'Mail');
+        am.setAttribute('href', 'mailto:' + k.mail);
+        am.textContent = k.mail;
+        e.appendChild(am);
+      }
+      return true;
+    }
+
+    function impressumZeigen() {
+      impressumSetzen('footImpressum', false);
+      impressumSetzen('printImpressum', false);
+      /* Im Info-Fenster steht zusaetzlich die E-Mail — dort sucht jemand
+         Kontakt, in der Fusszeile nicht. */
+      impressumSetzen('infoImpressum', true);
+      return true;
+    }
 
     /* ======================================================================
      * N12 — REGISTRIERUNG, LIZENZZEILE UND DER LANG-DRUCK
@@ -2853,6 +2982,7 @@
         module: versionInfo().module,
         anforderung: anforderungText(),
         lizenz: lizenzText(),
+        web: win.DT_WEB,
         karten: berichtKarten(),
         bilder: bilder || []
       });
@@ -3072,6 +3202,14 @@
          durchklicken kann, ohne einen Dateidialog zu brauchen. */
       versionText: versionText,
       druckKopf: function () { druckKopfSetzen(); return true; },
+      kontakt: kontakt,
+      impressumZeile: impressumZeile,
+      updHinweis: function (code) {
+        for (var i = 0; i < ZUSATZ.length; i++) if (ZUSATZ[i].code === code) return updHinweis(ZUSATZ[i]);
+        return false;
+      },
+      updOffen: function () { var m = el(doc, 'updModal'); return !!m && m.hidden === false; },
+      updSchliessen: updSchliessen,
       lizenz: lizenzText,
       lizenzName: function () { return S.lizenzName; },
       lizenzDialogOffen: function () { var m = el(doc, 'licModal'); return !!m && m.hidden === false; },

@@ -12,7 +12,7 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = '0.9.1-N12';
+  var VERSION = '0.10.0-P1';
   var SPRACHEN = ['de', 'en', 'pt'];
 
   var D = {
@@ -68,9 +68,9 @@
     infoNormen:   { de: 'Regelwerke: EN 1993-1-8 · EN 1993-1-4 · EN 1999-1-1 · EN 1993-1-9 · EN 1999-1-3 · EN 1011-2 · EN 1090 · ISO 5817 · ISO 2553 · Roloff/Matek und Decker.',
                     en: 'Standards: EN 1993-1-8 · EN 1993-1-4 · EN 1999-1-1 · EN 1993-1-9 · EN 1999-1-3 · EN 1011-2 · EN 1090 · ISO 5817 · ISO 2553 · Roloff/Matek and Decker.',
                     pt: 'Normas: EN 1993-1-8 · EN 1993-1-4 · EN 1999-1-1 · EN 1993-1-9 · EN 1999-1-3 · EN 1011-2 · EN 1090 · ISO 5817 · ISO 2553 · Roloff/Matek e Decker.' },
-    impressum:    { de: 'Dieter Tepe · Mühlenstraße 2 · 48477 Dreierwalde · Dieter.Tepe@live.de · www.dt-profidreieck.de',
-                    en: 'Dieter Tepe · Mühlenstraße 2 · 48477 Dreierwalde · Germany · Dieter.Tepe@live.de · www.dt-profidreieck.de',
-                    pt: 'Dieter Tepe · Mühlenstraße 2 · 48477 Dreierwalde · Alemanha · Dieter.Tepe@live.de · www.dt-profidreieck.de' },
+    /* DIE VOLLE ANSCHRIFT IST HIER ENTFALLEN (P1, 2026-08-08). Sie wird auf
+       der Website gepflegt; im Programm wuerde sie veralten, ohne dass es
+       jemand merkt. An ihre Stelle tritt `imp_verweis`. */
     uiEditionVoll:{ de: 'Vollversion', en: 'Full version', pt: 'Versão completa' },
     uiGeleert:    { de: 'Alle Felder geleert – nichts bleibt stehen.',
                     en: 'All fields cleared – nothing is left behind.',
@@ -191,12 +191,16 @@
     uiFolgtN10:   { de: 'Zugeschaltet. Zeit, Draht- und Gasbedarf und Kosten werden in Baustein N10 gerechnet.',
                     en: 'Switched on. Time, wire and gas demand and cost are calculated in module N10.',
                     pt: 'Ativado. Tempo, consumo de fio e gás e custos são calculados no módulo N10.' },
-    uiFolgtN13:   { de: 'Zugeschaltet. Der Ermüdungsnachweis wird in Baustein N13 gerechnet.',
-                    en: 'Switched on. The fatigue verification is calculated in module N13.',
-                    pt: 'Ativado. A verificação à fadiga é calculada no módulo N13.' },
-    uiFolgtN15:   { de: 'Zugeschaltet. Verzug und Schrumpfung werden in Baustein N15 abgeschätzt.',
-                    en: 'Switched on. Distortion and shrinkage are estimated in module N15.',
-                    pt: 'Ativado. A distorção e a contração são estimadas no módulo N15.' },
+    /* KEINE INTERNEN BAUSTEINNAMEN NACH AUSSEN (P1, 2026-08-08): "Baustein N13"
+       ist für uns präzise und für einen Käufer bedeutungslos — er liest einen
+       internen Bauplan und weiß nicht, ob das nächste Woche kommt oder nie.
+       Und nirgends "kostenlos": das Update wird kostenpflichtig (1a). */
+    uiFolgtN13:   { de: 'Der Ermüdungsnachweis nach EN 1993-1-9 ist in dieser Fassung noch nicht enthalten und folgt in einem späteren Update. Alles Übrige rechnet unverändert weiter.',
+                    en: 'The fatigue verification to EN 1993-1-9 is not yet included in this version and will follow in a later update. Everything else continues to calculate as before.',
+                    pt: 'A verificação à fadiga segundo a EN 1993-1-9 ainda não está incluída nesta versão e será disponibilizada numa atualização posterior. Tudo o resto continua a ser calculado normalmente.' },
+    uiFolgtN15:   { de: 'Die Abschätzung von Verzug und Schrumpfung ist in dieser Fassung noch nicht enthalten und folgt in einem späteren Update. Alles Übrige rechnet unverändert weiter.',
+                    en: 'The estimation of distortion and shrinkage is not yet included in this version and will follow in a later update. Everything else continues to calculate as before.',
+                    pt: 'A estimativa de distorção e contração ainda não está incluída nesta versão e será disponibilizada numa atualização posterior. Tudo o resto continua a ser calculado normalmente.' },
 
     /* ---------- Oberflaeche N5b: Eingabeseite ---------- */
     uiBitteWaehlen: { de: '– bitte wählen –', en: '– please select –', pt: '– selecionar –' },
@@ -1161,6 +1165,19 @@
     rw_p_a_gewaehlt:        { de: 'Probe: das gewählte Maß liegt auf der Stufenreihe, über a_erf und weniger als eine Stufe darüber.', en: 'Cross-check: the selected size lies on the step series, above a_req and less than one step above it.', pt: 'Verificação: a medida escolhida está na série de degraus, acima de a_nec e menos de um degrau acima.' },
     rw_p_grenze:            { de: 'Probe: der Grenzwert wird gegen die eingesetzten Zahlen gehalten.', en: 'Cross-check: the limit value is checked against the figures used.', pt: 'Verificação: o valor-limite é confrontado com os números utilizados.' },
     rw_p_gesamt:            { de: 'Alle Rechenproben zusammengezählt. Ein einziges fehlendes Häkchen bedeutet einen Rechenfehler und nicht etwa einen nicht erfüllten Nachweis – beides wird getrennt ausgewiesen.', en: 'All cross-checks added up. A single missing tick means a calculation error, not an unsatisfied verification – the two are reported separately.', pt: 'Todas as verificações cruzadas somadas. Um único visto em falta significa um erro de cálculo e não uma verificação não cumprida – ambos são indicados em separado.' },
+
+    /* --- P1 · noch nicht enthaltene Bereiche und der Impressumsverweis --- */
+    /* Die Beschriftung sagt es VORHER — ein Fenster erklärt eine Enttäuschung,
+       die Beschriftung verhindert sie. */
+    zb_folgt_kurz:  { de: 'folgt in einem Update', en: 'coming in an update', pt: 'numa atualização futura' },
+    upd_titel:      { de: 'Folgt in einem Update', en: 'Coming in an update', pt: 'Numa atualização futura' },
+    upd_ok:         { de: 'Verstanden', en: 'Understood', pt: 'Entendido' },
+    /* Der Verweis statt der vollen Anschrift: das Impressum wird auf der
+       Website gepflegt, im Programm würde es veralten (1a). {0} = Adresse. */
+    imp_verweis:    { de: 'Vollständiges Impressum und Datenschutzerklärung online unter: {0}',
+                      en: 'Full legal notice and privacy policy online at: {0}',
+                      pt: 'Aviso legal e política de privacidade completos em: {0}' },
+    imp_kontakt:    { de: 'Kontakt', en: 'Contact', pt: 'Contacto' },
 
     /* --- N12 Registrierung und Lizenz ------------------------------------ */
     lic_titel:      { de: 'Aktivierung', en: 'Activation', pt: 'Ativação' },

@@ -3073,3 +3073,63 @@ lesbar da. **Was wirklich schützt, ist die richtige Vorgabe:** wer die Zeile ve
 landet in der Testversion.
 
 **Basislinie 3417 → 3432 Assertions · Smokes 1081 / 1039 / 1039 (dritter Lauf neu).**
+
+---
+
+## Aus P1 (2026-08-08) — „folgt in einem Update" und die Kontaktangaben
+
+**Drei Stufen, und die Reihenfolge war die eigentliche Erkenntnis.** Dieter hatte ein
+Hinweisfenster vorgeschlagen; richtig ist es, aber es ist die *zweite* Stufe. Ein Fenster
+erklärt eine Enttäuschung — die **Beschriftung verhindert sie**. Deshalb steht jetzt schon
+am Haken „Ermüdung / Betriebsfestigkeit — **folgt in einem Update**", und der Anwender
+erfährt es, *bevor* er klickt. Das Fenster kommt danach, einmal je Bereich und Sitzung.
+
+**Der Merker wird nicht verwahrt.** Dieselbe Überlegung wie beim „Später" der Aktivierung,
+nur umgekehrt begründet: Dort musste der Merker weg, weil der Dialog der einzige Weg zur
+Aktivierung war. Hier darf er weg, weil die Beschriftung die Auskunft ohnehin dauerhaft
+trägt — beim nächsten Start erscheint der Hinweis wieder, und das schadet nicht.
+
+**Interne Bausteinnamen sind aus dem Programmtext verschwunden.** „Der Ermüdungsnachweis
+wird in Baustein N13 gerechnet" war für uns präzise und für einen Käufer bedeutungslos —
+er las einen internen Bauplan und wusste nicht, ob das nächste Woche kommt oder nie. Eine
+Assertion durchsucht jetzt alle nach außen sichtbaren Texte nach `N13`, `P1`, „Baustein"
+und Verwandten.
+
+**Und eine, die weiter reicht:** Eine zweite Assertion durchsucht das **ganze Wörterbuch**
+in allen drei Sprachen nach „kostenlos", „gratis", „free of charge". Das Update wird
+kostenpflichtig (1a); ein „gratis" im Programmtext wäre ein Versprechen, das später
+zurückgenommen werden müsste.
+
+**Die volle Anschrift ist aus dem Programm verschwunden.** Sie stand fest verdrahtet im
+Wörterbuch — in der Fußzeile, im Info-Fenster, im Druckfuß und im Word-Dokument. An ihre
+Stelle tritt der Verweis auf `dt-profidreieck.de`, gebaut in `report.js` aus **einer**
+Quelle für alle vier Orte. Die Adresse ist ein echter Link, im Info-Fenster steht
+zusätzlich die E-Mail als `mailto` — dort sucht jemand Kontakt, in der Fußzeile nicht.
+Eine Assertion sucht die Anschrift in allen fünf Programmdateien und darf sie nirgends
+finden.
+
+**Adresse und E-Mail stehen im HTML-Kopf**, im selben Inline-Block wie die Editionsweiche —
+damit der Unterschied der beiden Editionen weiterhin genau eine Zeile ist und der Harness
+weiterhin genau ein Inline-Skript findet. **Mit Rückfall auf den eingebauten Wert**: Fehlt
+oder verrutscht eine Angabe, steht der alte Wert da statt einer leeren Zeile. Geprüft wird
+nichts — wie beim Lizenzschlüssel —, aber es entsteht nie eine Lücke.
+
+**ZWEI NEBENFUNDE, und beide betreffen die Prüfungen selbst.**
+
+*Erstens:* Der Wortfilter auf „kostenlos" fing auch das englische **„free"** — in
+*„there is no free weld end"*. Vier Fehlalarme. Gemeint ist nur der **Preis**; das Muster
+nennt jetzt ausdrücklich `free of charge`, `for free`, `gratis` und Verwandte. **Ein
+Filter, der zu viel fängt, wird abgeschaltet und fängt dann gar nichts.**
+
+*Zweitens, und das ist die feinere Falle:* Der Merker des Hinweisfensters ließ sich nicht
+gegenprüfen. Nahm ich ihn heraus, blieb alles grün. Der Grund: Meine Prüfung stand an
+einer Stelle, an der der Ermüdungshaken im Ablauf längst berührt worden war — sie sah nur
+noch den Wiederholungsfall, nie das erste Mal. Die Erstanzeige wird jetzt dort geprüft, wo
+der Haken zum **ersten Mal im ganzen Lauf** angefasst wird. **Wo im Ablauf eine Prüfung
+steht, ist Teil der Prüfung.**
+
+**Fünf Gegenproben bestanden:** Bausteinname im Text → 2 rot · kein Rückfall auf den
+eingebauten Wert → 5 · Hinweisfenster ohne Merker → 2 · Beschriftungszusatz entfernt → 2 ·
+Anschrift wieder fest verdrahtet → 5.
+
+**Basislinie 3432 → 3469 Assertions · Smokes 1081/1039/1039 → 1119/1077/1077.**

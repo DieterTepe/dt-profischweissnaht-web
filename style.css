@@ -418,6 +418,17 @@ input.feld,select.feld{display:block; width:100%; margin:0}
 .lic-feld{ display:flex; flex-direction:column; gap:4px; margin:0 0 10px; }
 .lic-feld > span{ font-size:var(--f0); color:var(--muted); }
 
+/* P1 — Der Zusatz an der Beschriftung eines noch nicht enthaltenen Bereichs.
+   Er soll auffallen, ohne wie ein Fehler auszusehen: gedaempft, kleiner,
+   aber unuebersehbar neben dem Haken. */
+.zusatz-offen{
+  margin-left:6px; font-size:var(--f0); color:var(--muted);
+  border:1px solid var(--line); border-radius:999px; padding:1px 7px;
+  white-space:nowrap;
+}
+.zusatz-offen::before{ content:"\2014\00a0"; }
+.upd-bereich{ font-weight:700; margin:0 0 6px; }
+
 /* ============================================================================
  * DAS DRUCKBILD — EINE EINZIGE QUELLE (N12)
  *

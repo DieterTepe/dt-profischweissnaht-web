@@ -1827,7 +1827,10 @@ eq(uiKurz, 0, 'jede Bereichserklaerung ist wirklich eine Erklaerung, kein Stichw
 var uiSchluessel = ['appName', 'tagline', 'calc', 'reset', 'loadExample', 'assistant',
   'outSave', 'outLoad', 'outPrint', 'outRtf', 'outDesign', 'themeTitle', 'infoTitle',
   'inputTitle', 'resultTitle', 'pathTitle', 'vizTitle', 'close', 'disclaimer',
-  'impressum', 'infoProdukt', 'infoNormen', 'editionTest', 'uiEditionVoll',
+  /* `impressum` ist mit P1 ENTFALLEN — die volle Anschrift stand fest
+     verdrahtet im Woerterbuch und waere veraltet, sobald die Website
+     nachzieht. An ihre Stelle tritt der Verweis `imp_verweis`. */
+  'imp_verweis', 'imp_kontakt', 'infoProdukt', 'infoNormen', 'editionTest', 'uiEditionVoll',
   'uiGeruest', 'uiGeleert', 'uiFolgtN5b', 'uiFolgtN5c', 'uiFolgtN7', 'uiFolgtN8',
   'uiFolgtN11', 'resultIdle', 'vizIdle', 'pathIdle'];
 var uiFehltK = 0;
@@ -4133,7 +4136,7 @@ function s43Summe(text) {
    ZWEI Etappen gilt die Regel dagegen streng: geaenderter Quelltext ohne
    Kennungswechsel ist rot. */
 var S43_STAND = [
-  { datei: 'i18n_kern.js', version: '0.9.1-N12', summe: '60a6e2a4' },
+  { datei: 'i18n_kern.js', version: '0.10.0-P1', summe: '4bf832fd' },
   { datei: 'i18n_hilfe.js', version: '0.5.0-N11', summe: '8cc6c8aa' },
   { datei: 'i18n_kerbfall.js', version: '0.2.0-N11', summe: 'b986cce4' },
   { datei: 'daten.js', version: '0.2.0-N11', summe: '5e696f0e' },
@@ -4150,8 +4153,8 @@ var S43_STAND = [
   { datei: 'thermik.js', version: '0.3.0-N9c', summe: '1bf966a2' },
   { datei: 'skizze.js', version: '0.3.0-N9c', summe: '447c40cd' },
   { datei: 'assistent.js', version: '0.5.0-N10b', summe: '4c015b50' },
-  { datei: 'ui.js', version: '0.19.0', summe: 'af80cf1f' },
-  { datei: 'report.js', version: '0.3.0-P0', summe: '40ae3912' }
+  { datei: 'ui.js', version: '0.20.0', summe: '682d0478' },
+  { datei: 'report.js', version: '0.4.0-P1', summe: '80ac0a6a' }
 ];
 
 var s43i, s43Fehl = [], s43Src, s43M, s43S;
@@ -5991,10 +5994,137 @@ eq(Rep.editionAus(s52MT[1]), 'test', 'S52: die Test-HTML die Testversion');
 var s52OhneKommentar = s52HV.replace(/<!--[\s\S]*?EDITION[\s\S]*?-->/g, '');
 ok(/window\.DT_EDITION\s*=\s*'full'/.test(s52OhneKommentar),
    'S52: ohne den erklaerenden Kommentar bleibt die Einstellung erhalten');
-var s52OhneZeile = s52HV.replace(/<script>window\.DT_EDITION[^<]*<\/script>/, '');
+/* Der Kopfblock ist seit P1 mehrzeilig (er traegt auch Adresse und
+   E-Mail). Entfernt wird deshalb der ganze Block. */
+var s52OhneZeile = s52HV.replace(/<script>[\s\S]*?<\/script>/, '');
 var s52M3 = s52OhneZeile.match(/window\.DT_EDITION\s*=\s*'([^']*)'/);
 eq(Rep.editionAus(s52M3 ? s52M3[1] : undefined), 'test',
    'S52: waere die ganze Zeile weg, kaeme die TESTVERSION heraus');
+
+sek('S53 · P1 — "folgt in einem Update" und die Kontaktangaben');
+
+/* --- 1) KEINE INTERNEN BAUSTEINNAMEN NACH AUSSEN ------------------------ */
+/* "Der Ermuedungsnachweis wird in Baustein N13 gerechnet" ist fuer uns
+   praezise und fuer einen Kaeufer bedeutungslos — er liest einen internen
+   Bauplan und weiss nicht, ob das naechste Woche kommt oder nie. */
+var s53Spr = ['de', 'en', 'pt'], s53i, s53j;
+var s53Aussen = ['uiFolgtN13', 'uiFolgtN15', 'zb_folgt_kurz', 'upd_titel'];
+var s53Bau = /\b[NP]\d+[a-z]?\b|Baustein|module N\d|módulo N\d/;
+var s53Treffer = [];
+for (s53i = 0; s53i < s53Aussen.length; s53i++) {
+  for (s53j = 0; s53j < 3; s53j++) {
+    var s53T = Kern.t(s53Aussen[s53i], s53Spr[s53j]);
+    if (s53Bau.test(s53T)) s53Treffer.push(s53Aussen[s53i] + '/' + s53Spr[s53j]);
+  }
+}
+eq(s53Treffer.length, 0,
+   'S53: kein interner Bausteinname im Text nach aussen (' + s53Treffer.join(' | ') + ')');
+
+/* --- 2) UND NIRGENDS "KOSTENLOS" ---------------------------------------- */
+/* Das Update wird kostenpflichtig (Plan 1a). Ein "gratis" im Programmtext
+   waere ein Versprechen, das spaeter zurueckgenommen werden muesste. */
+/* NICHT einfach "free" — das steht zu Recht in "no free weld end". Gemeint
+   ist nur der PREIS. */
+var s53Frei = /kostenlos|kostenfrei|gratis|gr[aá]tis|gratuit|free of charge|for free|no cost|sem custo/i;
+var s53FreiTreffer = [];
+var s53Alle = Kern.keys ? Kern.keys() : [];
+for (s53i = 0; s53i < s53Alle.length; s53i++) {
+  for (s53j = 0; s53j < 3; s53j++) {
+    var s53V = Kern.t(s53Alle[s53i], s53Spr[s53j]);
+    if (typeof s53V === 'string' && s53Frei.test(s53V)) s53FreiTreffer.push(s53Alle[s53i] + '/' + s53Spr[s53j]);
+  }
+}
+eq(s53FreiTreffer.length, 0,
+   'S53: nirgends "kostenlos" im ganzen Woerterbuch (' + s53FreiTreffer.join(' | ') + ')');
+
+/* --- 3) DIE BESCHRIFTUNG SAGT ES VORHER --------------------------------- */
+/* Ein Fenster erklaert eine Enttaeuschung; die Beschriftung verhindert sie.
+   Deshalb ist sie die wichtigere der beiden Stufen. */
+var s53Ui = require('./ui.js');
+var s53Offen = [], s53Fertig = [];
+for (s53i = 0; s53i < s53Ui.ZUSATZ.length; s53i++) {
+  if (s53Ui.ZUSATZ[s53i].offen) s53Offen.push(s53Ui.ZUSATZ[s53i].code);
+  else s53Fertig.push(s53Ui.ZUSATZ[s53i].code);
+}
+eq(s53Offen.join(','), 'ermuedung,verzug', 'S53: genau zwei Bereiche sind noch nicht enthalten');
+eq(s53Fertig.join(','), 'thermik,kosten', 'S53: die beiden gebauten tragen den Zusatz NICHT');
+for (s53j = 0; s53j < 3; s53j++) {
+  (function (l) {
+    var k = Kern.t('zb_folgt_kurz', l);
+    ok(!!k && k.charAt(0) !== '[', 'S53: der Zusatz an der Beschriftung ist in ' + l + ' belegt');
+    ok(k.length < 40, 'S53: und kurz genug fuer eine Beschriftung in ' + l + ' (' + k.length + ')');
+  }(s53Spr[s53j]));
+}
+
+/* --- 4) DIE KONTAKTANGABEN KOMMEN AUS DEM HTML-KOPF --------------------- */
+var s53UiQ = fsU.readFileSync(__dirname + '/ui.js', 'utf8');
+ok(s53UiQ.indexOf('win.DT_WEB') > 0 && s53UiQ.indexOf('win.DT_MAIL') > 0,
+   'S53: ui.js liest Adresse und E-Mail aus dem HTML-Kopf');
+ok(s53UiQ.indexOf('Report.kontakt(win.DT_WEB, win.DT_MAIL)') > 0,
+   'S53: und laesst report.js daraus die Angaben bauen');
+
+/* DER RUECKFALL: fehlt oder verrutscht eine Angabe, gilt der eingebaute
+   Wert. Eine leere Zeile im Ausdruck waere schlimmer als ein alter Wert. */
+var s53Muell = [null, undefined, '', '   ', 0, {}, [], false, NaN];
+var s53Leer = [];
+for (s53i = 0; s53i < s53Muell.length; s53i++) {
+  var s53K = Rep.kontakt(s53Muell[s53i], s53Muell[s53i]);
+  if (!s53K.web || !s53K.mail) s53Leer.push(String(s53Muell[s53i]));
+  if (s53K.web !== Rep.KONTAKT_STANDARD.web) s53Leer.push('web:' + String(s53Muell[s53i]));
+}
+eq(s53Leer.length, 0, 'S53: keine Angabe bleibt leer — es faellt auf den eingebauten Wert zurueck');
+eq(Rep.kontakt('  meine-seite.de  ', ' a@b.de ').web, 'meine-seite.de',
+   'S53: eine eigene Adresse wird uebernommen und geglaettet');
+eq(Rep.kontakt(null, 'a@b.de').mail, 'a@b.de', 'S53: die E-Mail ebenso');
+
+/* Der Link braucht ein Schema, sonst baut der Browser einen Verweis auf eine
+   Unterseite der eigenen Datei. */
+ok(/^https:\/\//.test(Rep.webLink('dt-profidreieck.de')), 'S53: die Adresse wird zu einem echten Link');
+eq(Rep.webLink('https://x.de'), 'https://x.de', 'S53: ein vorhandenes Schema bleibt stehen');
+ok(/^https:\/\//.test(Rep.webLink(null)), 'S53: und der Rueckfall ebenso');
+
+/* --- 5) DER VERWEIS STATT DER ANSCHRIFT --------------------------------- */
+/* Das Impressum wird auf der Website gepflegt; eine fest verdrahtete
+   Anschrift ist dieselbe Doppelquelle wie doppelter Code (Plan 1a). */
+var s53Adr = /M[uü]hlenstra|Dreierwalde|48477/;
+var s53Dateien = ['i18n_kern.js', 'ui.js', 'report.js',
+                  'DT-ProfiSchweissnaht.html', 'DT-ProfiSchweissnaht_Test.html'];
+var s53Rest = [];
+for (s53i = 0; s53i < s53Dateien.length; s53i++) {
+  if (s53Adr.test(fsU.readFileSync(__dirname + '/' + s53Dateien[s53i], 'utf8'))) {
+    s53Rest.push(s53Dateien[s53i]);
+  }
+}
+eq(s53Rest.length, 0,
+   'S53: die volle Anschrift steht in KEINER Programmdatei mehr (' + s53Rest.join(',') + ')');
+for (s53j = 0; s53j < 3; s53j++) {
+  (function (l) {
+    var z = Rep.impressumZeile(null, l);
+    ok(z.indexOf('dt-profidreieck.de') >= 0, 'S53: der Verweis nennt die Adresse in ' + l);
+    ok(z.indexOf('{0}') < 0, 'S53: der Platzhalter ist ersetzt in ' + l);
+    ok(z.indexOf('[') < 0, 'S53: und der Text ist uebersetzt in ' + l);
+    ok(!s53Adr.test(z), 'S53: keine Anschrift in ' + l);
+  }(s53Spr[s53j]));
+}
+
+/* Und er steht auch im Word-Dokument. */
+var s53Ber = Rep.baueBericht({ rw: s49Rw, sprache: 'de', datum: '2026-08-08' });
+eq(s53Ber.impressum, Rep.impressumZeile(null, 'de'), 'S53: der Bericht traegt den Verweis');
+ok(Rep.baueRtf(s53Ber).text.indexOf(Rep.rtfText(s53Ber.impressum)) > 0,
+   'S53: und er steht wirklich im Word-Blatt');
+eq(Rep.baueBericht({ rw: s49Rw, sprache: 'de', web: 'andere-seite.de' }).impressum.indexOf('andere-seite.de') >= 0,
+   true, 'S53: eine geaenderte Adresse schlaegt bis ins Word-Blatt durch');
+
+/* --- 6) DER MERKER DES HINWEISFENSTERS WIRD NICHT VERWAHRT -------------- */
+/* Nur fuer diese Sitzung. Beim naechsten Start erscheint der Hinweis wieder —
+   und das ist richtig, denn die Beschriftung traegt die Auskunft ohnehin
+   dauerhaft. Verwahrt gehoert nur, was einen auffindbaren Weg zurueck hat. */
+ok(s53UiQ.indexOf('S.updGezeigt') > 0, 'S53: der Merker liegt im Sitzungszustand');
+var s53Upd = s53UiQ.substring(s53UiQ.indexOf('function updHinweis'),
+                              s53UiQ.indexOf('function updSchliessen'));
+ok(s53Upd.indexOf('speicherSchreib') < 0 && s53Upd.indexOf('localStorage') < 0,
+   'S53: und wird NICHT im lokalen Speicher abgelegt');
+eq(Rep.SPEICHER.upd, undefined, 'S53: es gibt keinen Speicherschluessel dafuer');
 
 /* ========================================================================= */
 console.log('\n════════════════════════════════════════════');

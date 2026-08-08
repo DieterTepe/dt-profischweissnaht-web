@@ -340,7 +340,15 @@ function lauf(edition) {
   ok(/Hell/.test(d.byId.themeBtn.getAttribute('title') || ''), 'DE: Theme-Knopf hat einen Titel');
   ok(/Info/.test(d.byId.infoBtn.getAttribute('title') || ''), 'DE: Info-Knopf hat einen Titel');
   ok(/ohne Gew/.test(d.byId.footNote.inhalt()), 'DE: der Produkt-Disclaimer steht in der Fusszeile');
-  ok(/Dreierwalde/.test(d.byId.footImpressum.inhalt()), 'das Impressum steht in der Fusszeile');
+  /* P1: Statt der Anschrift steht der VERWEIS auf die Website — das
+     Impressum wird dort gepflegt und kann im Programm nicht veralten (1a).
+     Die Adresse ist ein echter Link mit eigener Id. */
+  ok(d.byId.footImpressumWeb.textContent === 'dt-profidreieck.de',
+     'die Fusszeile verweist auf die Website');
+  ok(/^https:\/\//.test(d.byId.footImpressumWeb.getAttribute('href') || ''),
+     'und die Adresse ist ein anklickbarer Link');
+  ok(!/Dreierwalde|Mühlenstra/.test(d.byId.footImpressum.inhalt()),
+     'die volle Anschrift steht NICHT mehr im Programm');
   ok(/N5d/.test(d.byId.geruestNote.inhalt()),
      'die Karte sagt ehrlich, was noch fehlt: der Block Ausfuehrung folgt in N5d');
   ok(/Rechenweg/.test(d.byId.geruestNote.inhalt()),
@@ -545,8 +553,19 @@ function lauf(edition) {
     ok(d.byId['zus_' + zc].checked === false, 'N5b: Zusatzbereich startet AUS: ' + zc);
     ok(d.byId['zusn_' + zc].hidden === true, 'N5b: sein Hinweis ist zunaechst verborgen: ' + zc);
   }
+  /* P1: DIES IST DIE ERSTE BERUEHRUNG des Ermuedungshakens im ganzen Lauf —
+     also die Stelle, an der das Hinweisfenster zum ersten Mal erscheinen
+     muss. Alles Weitere dazu steht in Abschnitt 12e. */
+  ok(s.updOffen() === false, 'P1: vor dem ersten Haken steht kein Hinweisfenster offen');
   d.byId.zus_ermuedung.checked = true;
   d.byId.zus_ermuedung.change();
+  ok(s.updOffen() === true, 'P1: beim ERSTEN Anhaken erscheint der Hinweis');
+  ok(d.byId.updBereich.textContent === Kern.t('zb_ermuedung', 'de'), 'P1: er nennt den Bereich');
+  ok(d.byId.updText.textContent === Kern.t('uiFolgtN13', 'de'),
+     'P1: und zeigt DENSELBEN Satz wie die Notiz unter dem Haken');
+  ok(!/[NP]\d/.test(d.byId.updText.textContent), 'P1: ohne internen Bausteinnamen');
+  d.byId.updOk.click();
+  ok(s.updOffen() === false, 'P1: "Verstanden" schliesst ihn');
   ok(d.byId.zusn_ermuedung.hidden === false,
      'N5b: der Haken schaltet den Zusatzbereich sichtbar frei');
   ok(s.zustand().ermuedung_aktiv === true,
@@ -1636,7 +1655,13 @@ function lauf(edition) {
   /* --------------------------------------------------- 10) Info-Dialog -- */
   d.byId.infoBtn.click();
   ok(d.byId.infoModal.hidden === false, 'Info-Knopf oeffnet den Dialog');
-  ok(/Dreierwalde/.test(d.byId.infoImpressum.inhalt()), 'der Dialog zeigt das Impressum');
+  ok(d.byId.infoImpressumWeb.textContent === 'dt-profidreieck.de',
+     'der Dialog verweist auf die Website');
+  /* Im Info-Fenster steht zusaetzlich die E-Mail — dort sucht jemand Kontakt,
+     in der Fusszeile nicht. */
+  ok(/^mailto:/.test(d.byId.infoImpressumMail.getAttribute('href') || ''),
+     'und die E-Mail ist ein mailto-Link');
+  ok(d.byId.infoImpressumMail.textContent.indexOf('@') > 0, 'die E-Mail ist lesbar');
   ok(/EN 1993-1-8/.test(d.byId.infoNormen.inhalt()), 'der Dialog nennt die Regelwerke');
   ok(/ohne Gew/.test(d.byId.infoDisclaimer.inhalt()), 'der Dialog nennt den Disclaimer');
   ok(d.byId.infoEdition.inhalt().replace(/\s/g, '').length > 4, 'der Dialog nennt die Edition');
@@ -1993,12 +2018,18 @@ function lauf(edition) {
     (function (l) {
       s.setSprache(l);
       var haft = d.byId.printHaftung.textContent;
-      var imp = d.byId.printImpressum.textContent;
+      /* Der Druckfuss traegt jetzt Kindelemente (Text + Link), und der
+         Mini-DOM fuehrt einen flachen Bestand — der Elterntext ist deshalb
+         leer. Geprueft wird der Link, der die Auskunft traegt. */
+      var imp = d.byId.printImpressumWeb.textContent;
       ok(haft.length > 30, 'N12: der Haftungshinweis steht im Druckfuss (' + l + ')');
       ok(haft.indexOf('[') < 0, 'N12: uebersetzt, ohne Platzhalter (' + l + ')');
       ok(haft === Kern.t('disclaimer', l),
          'N12: und zwar wortgleich mit dem Woerterbuch (' + l + ')');
-      ok(imp.indexOf('Dieter Tepe') >= 0, 'N12: das Impressum steht darunter (' + l + ')');
+      ok(imp === require('./report.js').kontakt(win.DT_WEB, null).web,
+         'N12: der Impressumsverweis steht im Druckfuss (' + l + ')');
+      ok(s.impressumZeile() === Kern.t('imp_verweis', l).replace('{0}', imp),
+         'N12: und der Satz ist in ' + l + ' uebersetzt');
       /* Die Fusszeile am Bildschirm traegt DENSELBEN Satz — beide muessen
          mitwandern, sonst ist eine von beiden halb uebersetzt (9.2). */
       ok(d.byId.footNote.textContent === haft,
@@ -2148,6 +2179,66 @@ function lauf(edition) {
   }
   s.setSprache('de');
   s.leeren(); s.beispielLaden('blech'); s.rechnen();
+
+  /* ------------------------- 12e) P1 · "folgt in einem Update" ----------
+     Zwei Stufen: die BESCHRIFTUNG sagt es vorher, das FENSTER sagt es einmal
+     deutlich. Die Beschriftung ist die wichtigere — ein Fenster erklaert eine
+     Enttaeuschung, die Beschriftung verhindert sie. */
+  s.setSprache('de');
+
+  /* --- Die Beschriftung --- */
+  ok(!!d.byId.zuso_ermuedung, 'P1: die Ermuedung traegt den Zusatz an der Beschriftung');
+  ok(!!d.byId.zuso_verzug, 'P1: der Verzug ebenso');
+  ok(!d.byId.zuso_thermik, 'P1: die gebaute Waermefuehrung traegt ihn NICHT');
+  ok(!d.byId.zuso_kosten, 'P1: die gebaute Kostenrechnung ebenso wenig');
+  ok(d.byId.zuso_ermuedung.textContent === Kern.t('zb_folgt_kurz', 'de'),
+     'P1: und der Zusatz ist uebersetzt (' + d.byId.zuso_ermuedung.textContent + ')');
+
+  /* --- NUR EINMAL JE BEREICH UND SITZUNG ---
+     Die ERSTanzeige ist oben belegt, an der ersten Beruehrung des Hakens.
+     Hier geht es darum, dass er NICHT wiederkommt. */
+  s.updSchliessen();
+  /* Kaeme er bei jedem Haken, wuerde er nach dem dritten Mal reflexhaft
+     weggeklickt, ohne gelesen zu werden — dann haette er das Gegenteil
+     erreicht. */
+  d.byId.zus_ermuedung.checked = false;
+  d.byId.zus_ermuedung.change();
+  d.byId.zus_ermuedung.checked = true;
+  d.byId.zus_ermuedung.change();
+  ok(s.updOffen() === false, 'P1: beim zweiten Mal erscheint er NICHT wieder');
+  ok(d.byId.zusn_ermuedung.hidden === false,
+     'P1: aber die Notiz unter dem Haken steht weiterhin da');
+
+  /* --- Jeder Bereich hat seinen eigenen Merker --- */
+  d.byId.zus_verzug.checked = true;
+  d.byId.zus_verzug.change();
+  ok(s.updOffen() === true, 'P1: der zweite offene Bereich hat seinen eigenen Hinweis');
+  ok(d.byId.updBereich.textContent === Kern.t('zb_verzug', 'de'), 'P1: und nennt IHN');
+  s.updSchliessen();
+
+  /* --- Die gebauten Bereiche zeigen keinen Hinweis --- */
+  d.byId.zus_thermik.checked = true;
+  d.byId.zus_thermik.change();
+  ok(s.updOffen() === false, 'P1: die Waermefuehrung zeigt keinen Hinweis — sie ist gebaut');
+  d.byId.zus_kosten.checked = true;
+  d.byId.zus_kosten.change();
+  ok(s.updOffen() === false, 'P1: die Kostenrechnung ebenso wenig');
+
+  /* --- Dreisprachig --- */
+  var p1Spr = ['en', 'pt', 'de'];
+  for (i = 0; i < p1Spr.length; i++) {
+    (function (l) {
+      s.setSprache(l);
+      ok(d.byId.zuso_ermuedung.textContent === Kern.t('zb_folgt_kurz', l),
+         'P1: der Zusatz an der Beschriftung folgt der Sprache ' + l);
+      ok(d.byId.zuso_ermuedung.textContent.indexOf('[') < 0,
+         'P1: und traegt keinen Platzhalter in ' + l);
+      ok(!/[NP]\d|Baustein/.test(Kern.t('uiFolgtN15', l)),
+         'P1: der Verzugstext nennt keinen Bausteinnamen in ' + l);
+    }(p1Spr[i]));
+  }
+  s.setSprache('de');
+  s.leeren();
 
   /* --------------------------------- 13) i18n-Paritaet der UI-Schluessel - */
   var uiKeys = [];

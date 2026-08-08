@@ -8,7 +8,14 @@
 <meta name="description" content="Schweißnahtberechnung nach EN 1993-1-8, EN 1993-1-4, EN 1999-1-1 und klassischem Maschinenbau – statischer Nachweis, Ermüdung, Wärmeführung, Kosten, Verzug. Offline, dreisprachig.">
 <!-- ===================================================================== -->
 <!--  EDITION beim Build setzen:  'full' = Vollversion  ·  'test' = Testversion -->
-<script>window.DT_EDITION = 'test';</script>
+<script>
+/* ============================================================
+   HIER AENDERN, wenn Adresse oder E-Mail wechseln.
+   Fehlt oder verrutscht eine Angabe, gilt der eingebaute Wert.
+   ============================================================ */
+window.DT_WEB  = 'dt-profidreieck.de';
+window.DT_MAIL = 'Dieter.Tepe@live.de';
+window.DT_EDITION = 'test';</script>
 <!-- ===================================================================== -->
 <link rel="stylesheet" href="style.css">
 </head>
@@ -294,14 +301,14 @@
 
 <div id="printFuss" class="print-only print-fuss">
   <div class="print-zeile" id="printHaftung" data-i18n="disclaimer">Berechnung ohne Gewähr, vor Produktivnutzung gegen die Originalnormen prüfen.</div>
-  <div class="print-zeile" id="printImpressum" data-i18n="impressum">Dieter Tepe · Mühlenstraße 2 · 48477 Dreierwalde · Dieter.Tepe@live.de · www.dt-profidreieck.de</div>
+  <div class="print-zeile" id="printImpressum"></div>
   <div class="print-zeile norm">EN 1993-1-8 · EN 1993-1-4 · EN 1999-1-1 · EN 1011-2 · EN 1090 · ISO 5817 · ISO 2553</div>
 </div>
 
 <footer class="app-footer">
   <span class="norm">EN 1993-1-8 · EN 1993-1-4 · EN 1999-1-1 · EN 1011-2 · EN 1090 · ISO 5817 · ISO 2553</span><br>
   <span id="footNote" data-i18n="disclaimer">Berechnung ohne Gewähr, vor Produktivnutzung gegen die Originalnormen prüfen.</span><br>
-  <span id="footImpressum" data-i18n="impressum">Dieter Tepe · Mühlenstraße 2 · 48477 Dreierwalde · Dieter.Tepe@live.de · www.dt-profidreieck.de</span>
+  <span id="footImpressum"></span>
 </footer>
 
 
@@ -313,6 +320,28 @@
      verriegelt, den man nicht schliessen kann, sperrt auch den aus, der
      gerade seinen Schluessel sucht.
      =================================================================== -->
+
+<!-- ===================================================================
+     P1 · Hinweis auf einen noch nicht enthaltenen Bereich. Erscheint
+     HOECHSTENS EINMAL JE BEREICH UND SITZUNG: kaeme er bei jedem Haken,
+     wuerde er nach dem dritten Mal reflexhaft weggeklickt, ohne gelesen
+     zu werden — dann haette er das Gegenteil erreicht. Der Merker wird
+     NICHT im lokalen Speicher abgelegt (dieselbe Ueberlegung wie beim
+     "Spaeter" der Aktivierung).
+     =================================================================== -->
+<div class="modal-overlay" id="updModal" role="dialog" aria-modal="true" aria-labelledby="updTitel" hidden>
+  <div class="modal">
+    <div class="modal-head"><h3 id="updTitel" data-i18n="upd_titel">Folgt in einem Update</h3></div>
+    <div class="modal-body">
+      <p id="updBereich" class="upd-bereich"></p>
+      <p id="updText"></p>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn" id="updOk" data-i18n="upd_ok">Verstanden</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="licModal" role="dialog" aria-modal="true" aria-labelledby="licTitel" hidden>
   <div class="modal">
     <div class="modal-head"><h3 id="licTitel" data-i18n="lic_titel">Aktivierung</h3></div>
@@ -349,7 +378,7 @@
       <p id="infoModule" class="info-module"></p>
       <p id="infoDisclaimer" data-i18n="disclaimer"></p>
       <p id="infoNormen" data-i18n="infoNormen"></p>
-      <p id="infoImpressum" class="impressum" data-i18n="impressum">Dieter Tepe · Mühlenstraße 2 · 48477 Dreierwalde · Dieter.Tepe@live.de · www.dt-profidreieck.de</p>
+      <p id="infoImpressum" class="impressum"></p>
     </div>
     <div class="modal-actions">
       <button type="button" class="btn btn-primary" id="infoClose" data-i18n="close">Schließen</button>

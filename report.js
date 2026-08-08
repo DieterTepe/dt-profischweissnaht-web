@@ -49,7 +49,7 @@
   'use strict';
 
   var NAME = 'report';
-  var VERSION = '0.3.0-P0';
+  var VERSION = '0.4.0-P1';
 
   /* Der Programmname steht in der Datei, damit eine fremde .dts nicht
      stillschweigend als eigene gelesen wird. */
@@ -173,6 +173,42 @@
   };
 
   var NAME_MAX = 80;
+
+  /* ------------------------------------------------------- KONTAKTANGABEN
+   * Das Impressum wird auf der Website gepflegt, nicht hier (Plan 1a). Im
+   * Programm steht deshalb nur der VERWEIS — eine fest verdrahtete Anschrift
+   * ist dieselbe Doppelquelle wie doppelter Code: zieht die Website nach,
+   * ist das Programm veraltet und niemand merkt es.
+   *
+   * Adresse und E-Mail kommen aus dem HTML-Kopf, damit sie nach dem
+   * Zusammenkopieren zur Einzeldatei mit einem Editor änderbar bleiben.
+   * FEHLT ODER VERRUTSCHT EINE ANGABE, gilt der eingebaute Wert — eine leere
+   * Zeile im Ausdruck wäre schlimmer als ein alter Wert. Geprüft wird nichts
+   * (wie beim Lizenzschlüssel), aber es entsteht nie eine Lücke.
+   * ==================================================================== */
+  var KONTAKT_STANDARD = { web: 'dt-profidreieck.de', mail: 'Dieter.Tepe@live.de' };
+
+  function kontakt(web, mail) {
+    var w = istText(web) ? web.replace(/^\s+|\s+$/g, '') : '';
+    var m = istText(mail) ? mail.replace(/^\s+|\s+$/g, '') : '';
+    return {
+      web:  w || KONTAKT_STANDARD.web,
+      mail: m || KONTAKT_STANDARD.mail
+    };
+  }
+
+  /* Aus der Adresse wird der Link. Ohne Schema baut der Browser sonst einen
+     Verweis auf eine Unterseite der eigenen Datei. */
+  function webLink(web) {
+    var w = kontakt(web, null).web;
+    return (/^https?:\/\//.test(w)) ? w : ('https://' + w);
+  }
+
+  /* DIE EINE ZEILE FUER ALLE AUSGABEN. */
+  function impressumZeile(web, lang) {
+    var v = T('imp_verweis', lang);
+    return v.replace('{0}', kontakt(web, null).web);
+  }
 
   function lizenzName(name) {
     if (!istText(name)) return '';
@@ -538,7 +574,9 @@
          kann ihn kein Ausblenden mehr verschlucken. */
       lizenz: istText(e.lizenz) ? e.lizenz : '',
       haftung: T('disclaimer', lang),
-      impressum: T('impressum', lang),
+      /* DER VERWEIS, NICHT DIE ANSCHRIFT (P1). Auch ohne Zutun der
+         Oberflaeche — dann mit dem eingebauten Wert. */
+      impressum: impressumZeile(e.web, lang),
       karten: [], abschnitte: [], abschnitt_codes: [],
       luecken: [], warnungen: [], hinweise: [],
       bilder: [], fehler: []
@@ -750,6 +788,8 @@
     NAME: NAME, VERSION: VERSION,
     PROGRAMM: PROGRAMM, FORMAT: FORMAT, ENDUNG: ENDUNG,
     AKTIONEN: AKTIONEN, CODES: CODES, SPEICHER: SPEICHER, NAME_MAX: NAME_MAX,
+    KONTAKT_STANDARD: KONTAKT_STANDARD,
+    kontakt: kontakt, webLink: webLink, impressumZeile: impressumZeile,
     lizenzName: lizenzName, istAktiviert: istAktiviert,
     lizenzPhrase: lizenzPhrase, lizenzZeile: lizenzZeile,
     MAX_TWIPS: MAX_TWIPS, TWIP_JE_PX: TWIP_JE_PX,

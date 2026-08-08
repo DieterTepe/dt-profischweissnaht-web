@@ -15,13 +15,13 @@
 > Sie ist so geschrieben, dass ein **neuer Chat ohne Vorwissen** damit weiterarbeiten kann.
 > **Das WARUM steht in `Schweißnaht-Historie.md`** (Entscheidungslog + Changelog im
 > Volltext) — dort nachschlagen, bevor etwas geändert wird, das falsch aussieht.
-> Einstieg: **„weiter mit P1"** — davor der Reihenfolge in Kickoff-Punkt 5b folgen.
+> Einstieg: **„weiter mit P2"** — davor der Reihenfolge in Kickoff-Punkt 5b folgen.
 > `N6b_Vorlauf-Messwerte.md` ist nach der Abnahme **gelöscht worden** — der Inhalt steht
 > in 4.11 und in der Historie. Im Projektordner liegt **keine Vorlaufdatei** mehr.
 
 ```
-Plan-Version : 2.74 · Stand 2026-08-08
-Codestand    : Plan 2.74 · ui 0.19.0 · P0
+Plan-Version : 2.76 · Stand 2026-08-08
+Codestand    : Plan 2.76 · ui 0.20.0 · P1
                (Die Planversion, gegen die der CODE gebaut ist. Sie steht auch
                in ui.js als PLAN und wird von einer Assertion damit verglichen.
                Sie wandert nur mit, wenn sich Code ändert — reine Plan- oder
@@ -117,14 +117,18 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                **P1 (Hinweis „folgt in einem Update")** und **P2 (Neuordnung
                von Plandatei und Historie)** — beide in **5.3**, dazu die
                Verkaufsentscheidungen in **1a**.
+               ✅ **P0 ist am Gerät geprüft und ABGENOMMEN (2026-08-08)** —
+               mit `'voll'` im Kopf erscheint der Testbalken und alles ist
+               gesperrt. **P1 ist GEBAUT und GELIEFERT (2026-08-08)**,
+               Abnahme steht aus — Ergebnis in **5.3**.
                ⚠️ **P0 (2026-08-08): DIE EDITIONSWEICHE WAR FALSCH HERUM.**
                `ui.js` fragte `(DT_EDITION === 'test') ? 'test' : 'full'` —
                alles, was nicht exakt `'test'` war, wurde zur **Vollversion**.
                Wer die Zeile im HTML-Kopf löschte oder vertippte, hatte alle
                Ausgaben frei. Von Dieter gefunden, behoben und geliefert;
                Ergebnis in **5.4**.
-               → NÄCHSTER SCHRITT: **P1**, dann **P2**, dann Baustein
-                 **N13 (Ermüdung)** — Einstieg „weiter mit P1";
+               → NÄCHSTER SCHRITT: **P2**, dann Baustein
+                 **N13 (Ermüdung)** — Einstieg „weiter mit P2";
                  **Umfang vor dem Bau abstimmen**;
                  Etappen und Festlegungen stehen in 5.2. Die **offene Frage
                  vor N13a** (woher die Spannungsschwingbreite kommt) ist dort
@@ -142,8 +146,8 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                  4.11 (symbol.js), 4.12 (report.js).
                Große Bausteine (N5, N8, N13, N14) werden in ETAPPEN gebaut — Regel in
                Kickoff-Punkt 5c, Etappen in Abschnitt 5.2.
-Basislinie   : 3432 Assertions · DOM-Smokes 1081 (voll) + 1039 (test)
-               + 1039 (kaputte Edition) · i18n-Parität 0 Abweichungen
+Basislinie   : 3469 Assertions · DOM-Smokes 1119 (voll) + 1077 (test)
+               + 1077 (kaputte Edition) · i18n-Parität 0 Abweichungen
                (VERBINDLICH. Basislinie darf nur WACHSEN — nie schrumpfen, nie gelockert werden.)
 Dateistand   : siehe Abschnitt 8.1 — dort steht, was fertig ist und was noch fehlt.
 ⚠️ SYNC       : Am 2026-08-03 lag im Projektordner eine **elf Versionen alte**
@@ -201,7 +205,7 @@ welche Dateien zu überschreiben sind** → Dieter bestätigt am Handy → erst 
 Schritt. Danach Plan-Kopf (Version/Status/Basislinie) + Changelog pflegen.
 
 **5b) WIEDEREINSTIEG IN EINEM NEUEN CHAT — genau diese Reihenfolge:**
-Einstiegssatz von Dieter: **„weiter mit P1"**.
+Einstiegssatz von Dieter: **„weiter mit P2"**.
 1. Diese Datei komplett lesen (`Schweißnaht-1.md`, sie ist die alleinige Grundlage
    für das Bauen).
    **`Schweißnaht-Historie.md` NICHT vorab lesen** — sie enthält Entscheidungslog und
@@ -232,7 +236,7 @@ Einstiegssatz von Dieter: **„weiter mit P1"**.
    schon zweimal Dateien verlorengegangen, beide Male hat diese Prüfung es gefunden.
 11. Arbeitsordner herstellen (Befehl unter Punkt 6 der Kickoff-Liste), dann
    `node test_naht.js`, `node dom_smoke_voll.js`, `node dom_smoke_test.js` laufen lassen
-   und die Basislinie aus dem Plan-Kopf bestätigen (**3432 / 1081 / 1039 / 1039 · 0 Fehler**),
+   und die Basislinie aus dem Plan-Kopf bestätigen (**3469 / 1119 / 1077 / 1077 · 0 Fehler**),
    **bevor** etwas gebaut wird. Weicht etwas ab, erst das klären.
    ⚠️ **Diese drei Läufe sind zugleich die Probe, ob Plandatei und Code zusammenpassen.**
    Steht im Kopfblock eine andere Basislinie als gemessen, ist eine der beiden Seiten alt —
@@ -1780,8 +1784,8 @@ nicht die Datei.**
 | **N12** ✅ | **Edition/Registrierung/Impressum** *(gebaut und geliefert 2026-08-07, Abnahme offen — Ergebnis in 5.1-10)* | Testbalken, Aktivierungsdialog beim Erststart (Name + Schlüssel, **keine Formatprüfung**), „Vollversion · lizenziert für <Name>", **10-s-Long-Press** = Reset, Info-ⓘ mit Impressum. |
 | **★** | **LAUNCH-CHECKPOINT** | **Ab hier verkaufsfähig.** Dieter entscheidet: weiterbauen oder veröffentlichen. |
 | **P0** ✅ | **Editionsweiche berichtigt** *(geliefert 2026-08-08 — 5.4)* |
-| **P1** ⬅ | **Hinweis „folgt in einem Update“** *(nächster Bau — siehe 5.3)* |
-| **P2** | **Neuordnung von Plandatei und Historie** *(5.3)* |
+| **P1** ✅ | **Hinweis „folgt in einem Update“ + Kontaktangaben** *(geliefert 2026-08-08 — 5.3)* |
+| **P2** ⬅ | **Neuordnung von Plandatei und Historie** *(nächster Bau — 5.3)* |
 | **N13** | **Ermüdung — Rechenkern** | `ermuedung.js`: Wöhlerlinie m=3/5, γ_Mf, Miner, Kollektive + Rechenweg. **Hier Dieter nach seinen Praxis-Kerbfällen fragen.** |
 | **N14** | **Kerbfallkatalog** | `kerbfall.js` + SVG-Skizzen + Auswahl-UI mit Filter. Struktur vollständig, Füllung gestaffelt (Start 25–35 Details, je 2 Quellen), **ehrliche Lücken sichtbar**. Mehrere Etappen. |
 | **N15** | **Verzug & Schrumpfung** | `verzug.js` + Panel, klar als **Abschätzung** gekennzeichnet. |
@@ -3455,7 +3459,41 @@ Lieferung ist teurer als eine zusätzliche.
 
 ---
 
-#### P1 · Hinweis „folgt in einem Update" — **NÄCHSTER BAU**
+#### P1 · Hinweis „folgt in einem Update" + Kontaktangaben — **GELIEFERT 2026-08-08**
+
+> ✅ **GEBAUT UND GELIEFERT.** Alle drei Stufen umgesetzt, dazu die Kontaktangaben.
+> **Die volle Anschrift steht in KEINER Programmdatei mehr** — eine Assertion sucht sie
+> in `i18n_kern.js`, `ui.js`, `report.js` und beiden HTMLs und darf sie nirgends finden.
+>
+> **Fünf Gegenproben bestanden:** Bausteinname im Text → 2 rot · kein Rückfall auf den
+> eingebauten Wert → 5 · Hinweisfenster ohne Merker → 2 · Beschriftungszusatz entfernt
+> → 2 · Anschrift wieder fest verdrahtet → 5.
+>
+> **Zwei Dinge fielen beim Bauen auf und wurden mitgenommen:**
+> Die Prüfung auf „kostenlos“ fing zunächst auch das englische **„free“** in
+> *„no free weld end“* — vier Fehlalarme. Gemeint ist nur der **Preis**; das Muster nennt
+> jetzt ausdrücklich `free of charge`, `for free`, `gratis` und Verwandte.
+> Und der **Merker des Hinweisfensters ließ sich zunächst nicht gegenprüfen**, weil die
+> Prüfung an einer Stelle stand, an der der Haken längst berührt war. Die **Erstanzeige**
+> wird jetzt dort geprüft, wo der Haken zum ersten Mal im ganzen Lauf angefasst wird.
+> *Eine Prüfung auf „das erste Mal“ gehört an die Stelle, an der es wirklich das erste
+> Mal ist.*
+>
+> **Basislinie 3432 → 3469 Assertions · Smokes 1081/1039/1039 → 1119/1077/1077.**
+> Neue Sektion **S53**. Betroffen: `i18n_kern.js` (0.10.0-P1), `report.js` (0.4.0-P1),
+> `ui.js` (0.20.0), `style.css`, beide HTMLs, `test_naht.js`, `dom_smoke_voll.js`.
+>
+> **Am Gerät zu prüfen:** Neben *Ermüdung* und *Verzug* steht **„— folgt in einem
+> Update“**; beim ersten Anhaken kommt ein Fenster, beim zweiten nicht mehr.
+> *Wärmeführung* und *Kosten* zeigen nichts davon. In Fußzeile, Info-Fenster, Ausdruck und
+> Word steht **„Vollständiges Impressum und Datenschutzerklärung online unter:
+> dt-profidreieck.de“** — anklickbar, im Info-Fenster zusätzlich die E-Mail als `mailto`.
+> Und: `DT_WEB` im HTML-Kopf ändern → die neue Adresse muss überall durchschlagen;
+> leeren → der eingebaute Wert steht da.
+
+---
+
+#### P1 · der ursprüngliche Auftrag *(zur Begründung)*
 
 **Der Anlass.** Schaltet ein Käufer den Bereich *Ermüdung* ein, steht dort heute:
 „Zugeschaltet. Der Ermüdungsnachweis wird in **Baustein N13** gerechnet." Dasselbe beim
@@ -4051,7 +4089,7 @@ Formsache, und der Basislinien-Abgleich aus Kickoff-Punkt 11 ebenso wenig.
 **Erste Handlung im neuen Chat:** Vollständigkeit gegen die Tabelle oben prüfen
 (**19 Module**, `style.css`, beide HTMLs, **alle drei** DEV-ONLY-Dateien, dazu Plandatei und
 `Schweißnaht-Historie.md`), Arbeitsordner herstellen, die drei Testläufe starten.
-Melden müssen sie **3432 / 1081 / 1039 / 1039 · 0 Fehler** — der DOM-Smoke der
+Melden müssen sie **3469 / 1119 / 1077 / 1077 · 0 Fehler** — der DOM-Smoke der
 Vollversion läuft seit P0 **zweimal**: einmal regulär und einmal mit einer kaputten
 Edition im HTML-Kopf, die sich wie die Testversion verhalten muss.
 ⚠️ **Die beiden Smokes sind seit N12 verschieden lang** — der Aktivierungsdialog gibt es
@@ -4391,6 +4429,14 @@ will. Also: Vorschriften und Wegweiser bleiben hier, die Erzählung wandert.
   (2026-08-08, P0): Zehn Assertions prüften Kennungen gegen `-N\w+`. Sie wurden rot, als
   die erste Etappe „P0" hieß — obwohl nichts kaputt war. Alle zehn prüfen jetzt
   `-[A-Za-z]\w*`.
+- **Eine Prüfung auf „das erste Mal“ gehört an die Stelle, an der es wirklich das
+  erste Mal ist** (2026-08-08, P1): Der Merker des Hinweisfensters ließ sich nicht
+  gegenprüfen, weil die Prüfung dort stand, wo der Haken längst berührt war — sie sah
+  nur noch den Wiederholungsfall. **Wo im Ablauf eine Prüfung steht, ist Teil der
+  Prüfung.**
+- **Ein Wortfilter braucht die BEDEUTUNG, nicht das Wort** (2026-08-08, P1): Die Suche
+  nach „kostenlos“ fing auch das englische „free“ in *„no free weld end“* — vier
+  Fehlalarme. Ein Filter, der zu viel fängt, wird abgeschaltet und fängt dann gar nichts.
 - **Token-Pause: 4 Stunden.**
 
 ---
@@ -4450,29 +4496,6 @@ Changelog — **die vollständige Fassung ab v1.0 steht in `Schweißnaht-Histori
 Hier stehen nur die letzten drei Einträge. Wer wissen will, wie eine Entscheidung
 zustande kam, findet die Kette dort — lückenlos ab der Erstfassung vom 2026-07-23.
 
-**v2.72 (2026-08-08):** **Die Rechtstexte wandern auf die Landingpage — P1 wächst um die
-Kontaktangaben.** Nur Plandatei, kein Code; `Codestand` bleibt 2.70.
-Dieters Beobachtung von unterwegs: Im Programm steht die volle Anschrift, auf der
-Landingpage wird das Impressum ohnehin gepflegt. **Das ist dieselbe Doppelquelle wie
-doppelter Code (3.4), nur mit Rechtstexten** — zieht die Website nach, ist das Programm
-veraltet. Künftig steht im Programm nur der Verweis auf `dt-profidreieck.de`, anklickbar,
-und **Adresse wie E-Mail stehen im Kopf beider HTML-Dateien**, damit sie nach dem
-Zusammenkopieren zur Einzeldatei ohne Eingriff ins Skript änderbar bleiben — im selben
-Inline-Block wie die Editionsweiche, damit der Unterschied der beiden Editionen weiterhin
-genau eine Zeile ist. All das ist **in P1 aufgenommen** statt als eigene Etappe: dieselben
-Dateien, dieselbe Art Prüfung. **Widersprochen wurde beim Haftungsausschluss:** Dieter
-wollte ihn „verschärfen"; ein pauschaler Ausschluss ist nach § 309 Nr. 7 BGB unwirksam und
-selbst angreifbar. Was trägt, ist die Sachaussage — keine Zusicherung eines Ergebnisses,
-Prüfpflicht gegen Originalnormen und eigene Abnahme, Verantwortung beim Fachkundigen.
-Für das Landingpage-Projekt entstanden zwei Dateien: **`Werbung.md`** (Rohmaterial für
-Seitentexte samt Fragen-und-Antworten und einer Liste von Formulierungen, die nicht
-verwendet werden dürfen) und die **Ergänzungstexte** für Impressum und Datenschutz.
-Drei neue Festlegungen in 9.2.
-**Basislinie unverändert: 3417 Assertions · Smokes 1081 / 1039 · i18n-Parität 0.**
-**Nächster Schritt: P1, dann P2, dann N13. Einstieg: „weiter mit P1".**
-
-
-
 **v2.73 (2026-08-08):** **Impressum und Datenschutzerklärung fertig geliefert — und ein
 Verweis im Plan berichtigt.** Nur Plandatei, kein Code; `Codestand` bleibt 2.70.
 Dieter hat den Quelltext beider Rechtsseiten nachgereicht, daraufhin wurden sie als
@@ -4487,7 +4510,7 @@ Zugleich ist jetzt in 1a festgehalten, dass die drei Landingpage-Dateien **nicht
 Projektordner dieses Programms gehören: sie dort zu kopieren wäre genau die Doppelquelle,
 die zu vermeiden der Anlass war.
 **Basislinie unverändert: 3417 Assertions · Smokes 1081 / 1039 · i18n-Parität 0.**
-**Nächster Schritt: P1, dann P2, dann N13. Einstieg: „weiter mit P1".**
+**Nächster Schritt: P2, dann N13. Einstieg: „weiter mit P2".**
 
 
 
@@ -4510,9 +4533,33 @@ Assertions Kennungen gegen `-N\w+` und wurden rot, als die Etappe „P0" hieß; 
 prüfen jetzt allgemein. Drei neue Festlegungen in 9.2, Ergebnis in **5.4**.
 **Codestand 2.70 → 2.74 · ui 0.18.1 → 0.19.0 · report 0.2.1 → 0.3.0-P0 · Etappe P0.**
 **Basislinie 3417 → 3432 Assertions · Smokes 1081 / 1039 / 1039 (dritter Lauf neu).**
-**Nächster Schritt: P1, dann P2, dann N13. Einstieg: „weiter mit P1".**
+**Nächster Schritt: P2, dann N13. Einstieg: „weiter mit P2".**
 
 
-═══════════════════════════════════════════════════════════════════════════
+═══════════════════════════════════════════════════════
+
+**v2.76 (2026-08-08):** **P0 abgenommen, P1 gebaut und geliefert.** P0 ist am Gerät
+geprüft: mit `'voll'` im HTML-Kopf erscheint der Testbalken und alles ist gesperrt.
+**P1 bringt drei Stufen und die Kontaktangaben.** Neben *Ermüdung* und *Verzug* steht
+jetzt **„— folgt in einem Update“** an der Beschriftung — sie ist die wichtigere der
+Stufen, denn ein Fenster erklärt eine Enttäuschung, die Beschriftung verhindert sie.
+Das **Hinweisfenster erscheint höchstens einmal je Bereich und Sitzung**; der Merker wird
+nicht verwahrt. **Interne Bausteinnamen stehen nirgends mehr im Programmtext**, und eine
+Assertion durchsucht das ganze Wörterbuch nach „kostenlos“ und Verwandten — das Update
+wird kostenpflichtig (1a). **Die volle Anschrift ist aus dem Programm verschwunden:**
+an ihre Stelle tritt der Verweis auf `dt-profidreieck.de`, anklickbar, im Info-Fenster
+zusätzlich die E-Mail als `mailto`. **Adresse und E-Mail stehen im HTML-Kopf** im selben
+Block wie die Editionsweiche — mit Rückfall auf den eingebauten Wert, damit nie eine
+leere Zeile entsteht. **Zwei Nebenfunde:** Der Wortfilter fing zunächst das englische
+„free“ in „no free weld end“ (vier Fehlalarme), und der Merker des Hinweisfensters ließ
+sich nicht gegenprüfen, weil die Prüfung dort stand, wo der Haken längst berührt war —
+daraus zwei Festlegungen in 9.2. Fünf Gegenproben bestanden. Ergebnis in **5.3**.
+**Codestand 2.74 → 2.76 · ui 0.19.0 → 0.20.0 · report 0.3.0 → 0.4.0-P1 ·
+i18n_kern 0.9.1 → 0.10.0-P1.**
+**Basislinie 3432 → 3469 Assertions · Smokes 1081/1039/1039 → 1119/1077/1077.**
+**Nächster Schritt: P2 (Neuordnung), dann N13. Einstieg: „weiter mit P2“.**
+
+
+════════════════════
 Ende Schweißnaht-1.md · DT-ProfiSchweissnaht
 ═══════════════════════════════════════════════════════════════════════════
