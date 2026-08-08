@@ -20,7 +20,7 @@
 > in 4.11 und in der Historie. Im Projektordner liegt **keine Vorlaufdatei** mehr.
 
 ```
-Plan-Version : 2.78 · Stand 2026-08-08
+Plan-Version : 2.79 · Stand 2026-08-08
 Codestand    : Plan 2.78 · ui 0.20.2 · P1
                (Die Planversion, gegen die der CODE gebaut ist. Sie steht auch
                in ui.js als PLAN und wird von einer Assertion damit verglichen.
@@ -119,8 +119,11 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                Verkaufsentscheidungen in **1a**.
                ✅ **P0 ist am Gerät geprüft und ABGENOMMEN (2026-08-08)** —
                mit `'voll'` im Kopf erscheint der Testbalken und alles ist
-               gesperrt. **P1 ist GEBAUT und GELIEFERT (2026-08-08)**,
-               Abnahme steht aus — Ergebnis in **5.3**.
+               gesperrt.
+               ✅ **P1 ist am Gerät geprüft und ABGENOMMEN (2026-08-08)**,
+               einschließlich der Nachträge P1b und P1c — Ergebnis in **5.3**.
+               **Die Auslieferungsform ist damit gesichert:** vor dem Zippen
+               ist nur der Kopf der HTML anzufassen, nicht das Skript.
                ⚠️ **P0 (2026-08-08): DIE EDITIONSWEICHE WAR FALSCH HERUM.**
                `ui.js` fragte `(DT_EDITION === 'test') ? 'test' : 'full'` —
                alles, was nicht exakt `'test'` war, wurde zur **Vollversion**.
@@ -1784,7 +1787,7 @@ nicht die Datei.**
 | **N12** ✅ | **Edition/Registrierung/Impressum** *(gebaut und geliefert 2026-08-07, Abnahme offen — Ergebnis in 5.1-10)* | Testbalken, Aktivierungsdialog beim Erststart (Name + Schlüssel, **keine Formatprüfung**), „Vollversion · lizenziert für <Name>", **10-s-Long-Press** = Reset, Info-ⓘ mit Impressum. |
 | **★** | **LAUNCH-CHECKPOINT** | **Ab hier verkaufsfähig.** Dieter entscheidet: weiterbauen oder veröffentlichen. |
 | **P0** ✅ | **Editionsweiche berichtigt** *(geliefert 2026-08-08 — 5.4)* |
-| **P1** ✅ | **Hinweis „folgt in einem Update“ + Kontaktangaben** *(geliefert 2026-08-08 — 5.3)* |
+| **P1** ✅ | **Hinweis „folgt in einem Update“ + Kontaktangaben** *(ABGENOMMEN 2026-08-08 — 5.3)* |
 | **P2** ⬅ | **Neuordnung von Plandatei und Historie** *(nächster Bau — 5.3)* |
 | **N13** | **Ermüdung — Rechenkern** | `ermuedung.js`: Wöhlerlinie m=3/5, γ_Mf, Miner, Kollektive + Rechenweg. **Hier Dieter nach seinen Praxis-Kerbfällen fragen.** |
 | **N14** | **Kerbfallkatalog** | `kerbfall.js` + SVG-Skizzen + Auswahl-UI mit Filter. Struktur vollständig, Füllung gestaffelt (Start 25–35 Details, je 2 Quellen), **ehrliche Lücken sichtbar**. Mehrere Etappen. |
@@ -3459,7 +3462,19 @@ Lieferung ist teurer als eine zusätzliche.
 
 ---
 
-#### P1 · Hinweis „folgt in einem Update" + Kontaktangaben — **GELIEFERT 2026-08-08**
+#### P1 · Hinweis „folgt in einem Update" + Kontaktangaben — **ABGENOMMEN 2026-08-08**
+
+> ✅ **AM GERÄT GEPRÜFT, alle vier Punkte:** der Zusatz „— folgt in einem Update“ steht
+> an Ermüdung und Verzug, nicht an den gebauten Bereichen · das Hinweisfenster kommt beim
+> ersten Anhaken und beim zweiten nicht wieder · Adresse und E-Mail im Info-Fenster sind
+> anklickbar · und **`DT_WEB` im HTML-Kopf schlägt an allen vier Orten durch** —
+> Fußzeile, Info-Fenster, Ausdruck, Word — **während ein leerer Wert auf den eingebauten
+> zurückfällt.** Damit ist die Auslieferungsform gesichert.
+>
+> Dieters Word-Blatt belegte nebenbei drei ältere Punkte: die Lizenzzeile aus N12, die
+> sauberen Kartenzeilen nach dem Verklebungsbefund vom Vortag, und
+> „Kohlenstoffäquivalente aus der Analyse“ als Zwischenüberschrift ohne angehängten
+> Doppelpunkt.
 
 > ✅ **GEBAUT UND GELIEFERT.** Alle drei Stufen umgesetzt, dazu die Kontaktangaben.
 > **Die volle Anschrift steht in KEINER Programmdatei mehr** — eine Assertion sucht sie
