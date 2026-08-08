@@ -2864,3 +2864,64 @@ laden, Dialog muss wieder da sein.
 (0.9.1-N12), `test_naht.js`, `dom_smoke_voll.js`.
 **Basislinie 3414 → 3417 Assertions · Smokes 1078/1039 → 1081/1039 · i18n-Parität 0.**
 **Baustein N12 ist damit abgenommen; der Launch-Checkpoint ist erreicht.**
+
+---
+
+## Aus dem Verkaufsentschluss (2026-08-07) — veröffentlichen, und was daraus folgt
+
+**Dieters Entscheidung:** Der Verkaufsstand geht so in den Verkauf, alles Weitere kommt als
+Update. *„Dann wird auch viel benutzt und Fehler fallen eher auf."*
+
+**Er hat recht, und dieser Tag ist der Beleg.** Drei echte Fehler wurden am 07.08. gefunden
+— das kaputte Druckbild, die verklebten Karten, das verwahrte „Später". **Keinen davon
+haben 3417 Assertions gefunden.** Alle drei kamen aus echter Benutzung. Ein Programm, das
+niemand benutzt, wird nicht besser; es wird nur größer.
+
+**Was beim Nachsehen auffiel.** Schaltet ein Käufer den Bereich *Ermüdung* ein, steht dort
+„Zugeschaltet. Der Ermüdungsnachweis wird in **Baustein N13** gerechnet." Für uns präzise,
+für einen Käufer bedeutungslos — er liest einen internen Bauplan und weiß nicht, ob das
+nächste Woche kommt oder nie. Daraus wurde P1.
+
+**Zum Hinweisfenster waren wir schnell einig, aber die Reihenfolge war die eigentliche
+Erkenntnis:** Ein Fenster erklärt eine Enttäuschung; **die Beschriftung verhindert sie.**
+Deshalb steht künftig schon am Haken „folgt in einem Update", und das Fenster ist nur die
+zweite Stufe — einmal je Bereich und Sitzung, denn was bei jedem Klick kommt, wird nach dem
+dritten Mal reflexhaft weggeklickt.
+
+**Zur Verbreitung gingen die Meinungen anfangs auseinander.** Dieters Rechnung: Weitergabe
+macht bekannt, und wer ernsthaft arbeitet, kommt später zurück. Das trägt — aber der
+Vertriebsweg sollte die **Testversion** sein, nicht die Raubkopie. Der Unterschied ist
+entscheidend: Eine weitergereichte Vollversion verbreitet Bekanntheit **und nimmt
+gleichzeitig den Kaufgrund weg**; die Testversion verbreitet Bekanntheit **und schafft
+ihn** — sie rechnet alles vollständig samt Rechenweg am Bildschirm und gibt nur nichts
+heraus. Genau dafür wurde sie gebaut. Damit wird Weitergabe kein Verlust, sondern der
+Vertriebsweg.
+
+**Und die Werbung läuft ohnehin mit:** Impressum und Netzadresse stehen im Druckkopf, im
+PDF und im Word-Dokument. Ein weitergegebener Nachweis nennt auf fremden Schreibtischen
+Dieters Adresse; der Lizenzname hemmt die Weitergabe **und** sagt dem Empfänger, woher es
+kommt.
+
+**Zur Reihenfolge „erst verkaufen, dann Server" sind wir einer Meinung**, und der Satz, der
+sie begründet, steht jetzt in 1a: **Der Server schützt Umsatz, der existiert; das Update
+erzeugt ihn.** Eine kopierte Fassung altert — kein N13, keine korrigierten Preise, keine
+Fehlerbehebung. Dazu die Warnung, die nicht untergehen darf: Bei dutzenden Käufern stimmt
+die Rechnung, bei hunderten kippt sie, weil Kopien dann Käufer **ersetzen** statt sie zu
+gewinnen. Der Umschlagpunkt ist erkennbar — wenn Support-Anfragen von Leuten kommen, die
+nicht in der Digistore-Liste stehen.
+
+**Zur Neuordnung von Plandatei und Historie (P2).** Dieters Beobachtung, dass vieles
+verstreut ist und überlesen wird, ist an diesem Tag dreimal bestätigt worden — und alle
+drei waren **Findefehler, keine Denkfehler**: der Widerspruch zwischen 9.2 und 4.10c, das
+zweite `@media print` neben dem aus N5a, und der Platzhalter in `edition()`, den niemand
+ablöste. Verbindliche Regeln stehen heute an fünf Orten.
+
+**Die Gegenrede, die dazugehört:** Die Plandatei ist das Sicherheitsnetz. Jede Regel darin
+steht dort, weil einmal etwas schiefging. Eine Zeile beim Umräumen zu verlieren heißt, den
+Schutz zu verlieren, den sie erkauft hat — und man merkt es erst, wenn derselbe Fehler
+wiederkommt. Und was in die Historie wandert, wird beim Sitzungsstart nicht mehr gelesen:
+„Wir haben es in die Historie verschoben" darf nicht heimlich zu „niemand liest es mehr"
+werden. Deshalb die drei Bedingungen in 5.3: nichts Bindendes wandert · es wird gemessen
+statt gehofft · eigene Etappe ohne Code, mit identischen Zahlen vorher und nachher.
+
+**Nur Plandatei, kein Code. Basislinie unverändert: 3417 · 1081 · 1039.**

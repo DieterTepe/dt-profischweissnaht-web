@@ -15,12 +15,12 @@
 > Sie ist so geschrieben, dass ein **neuer Chat ohne Vorwissen** damit weiterarbeiten kann.
 > **Das WARUM steht in `Schweißnaht-Historie.md`** (Entscheidungslog + Changelog im
 > Volltext) — dort nachschlagen, bevor etwas geändert wird, das falsch aussieht.
-> Einstieg: **„weiter mit N13"** — davor der Reihenfolge in Kickoff-Punkt 5b folgen.
+> Einstieg: **„weiter mit P1"** — davor der Reihenfolge in Kickoff-Punkt 5b folgen.
 > `N6b_Vorlauf-Messwerte.md` ist nach der Abnahme **gelöscht worden** — der Inhalt steht
 > in 4.11 und in der Historie. Im Projektordner liegt **keine Vorlaufdatei** mehr.
 
 ```
-Plan-Version : 2.70 · Stand 2026-08-07
+Plan-Version : 2.71 · Stand 2026-08-07
 Codestand    : Plan 2.70 · ui 0.18.1 · N12
                (Die Planversion, gegen die der CODE gebaut ist. Sie steht auch
                in ui.js als PLAN und wird von einer Assertion damit verglichen.
@@ -112,8 +112,14 @@ Status       : N1 (Fundament), N2 (Nahtbild-Kern), N2b (Profileingabe),
                Druckfuß. Ergebnis in **5.1-10**, ui-Teil in **4.10f**.
                Damit sind **neun von zehn Bausteinen bis zum Verkaufsstand**
                fertig und der **LAUNCH-CHECKPOINT ist erreicht**.
-               → NÄCHSTER SCHRITT: Baustein **N13 (Ermüdung)** — Einstieg
-                 „weiter mit N13", **Umfang vor dem Bau abstimmen**;
+               **DER VERKAUFSSTAND WIRD VERÖFFENTLICHT** (Dieter,
+               2026-08-07). Daraus folgen zwei kleine Aufträge VOR N13:
+               **P1 (Hinweis „folgt in einem Update")** und **P2 (Neuordnung
+               von Plandatei und Historie)** — beide in **5.3**, dazu die
+               Verkaufsentscheidungen in **1a**.
+               → NÄCHSTER SCHRITT: **P1**, dann **P2**, dann Baustein
+                 **N13 (Ermüdung)** — Einstieg „weiter mit P1";
+                 **Umfang vor dem Bau abstimmen**;
                  Etappen und Festlegungen stehen in 5.2. Die **offene Frage
                  vor N13a** (woher die Spannungsschwingbreite kommt) ist dort
                  zu entscheiden.
@@ -188,7 +194,7 @@ welche Dateien zu überschreiben sind** → Dieter bestätigt am Handy → erst 
 Schritt. Danach Plan-Kopf (Version/Status/Basislinie) + Changelog pflegen.
 
 **5b) WIEDEREINSTIEG IN EINEM NEUEN CHAT — genau diese Reihenfolge:**
-Einstiegssatz von Dieter: **„weiter mit N13"**.
+Einstiegssatz von Dieter: **„weiter mit P1"**.
 1. Diese Datei komplett lesen (`Schweißnaht-1.md`, sie ist die alleinige Grundlage
    für das Bauen).
    **`Schweißnaht-Historie.md` NICHT vorab lesen** — sie enthält Entscheidungslog und
@@ -318,6 +324,55 @@ wird, notfalls mit 4-Stunden-Pause.
 | **Abdeckungsziel** | **75–80 %** der gängigen Praxis; Sonderfälle bewusst außen vor, aufgefangen über „eigener Wert" |
 | **Impressum** | Dieter Tepe · Mühlenstraße 2 · 48477 Dreierwalde · Dieter.Tepe@live.de · www.dt-profidreieck.de |
 | **Sonstiges** | Registrierung ohne Prüfung · 10-s-Long-Press auf die Marke = Reset · Info-ⓘ mit Impressum · GitHub Pages · Ausgaben oben in der Aktionsleiste |
+
+---
+
+### 1a Verkauf und Verbreitung *(entschieden 2026-08-07, vor der Veröffentlichung)*
+
+**Der Verkaufsstand geht in den Verkauf, bevor N13 gebaut wird.** Begründung von Dieter,
+und sie ist durch diesen Tag belegt: Die drei echten Fehler des 07.08. — kaputtes
+Druckbild, verklebte Karten, verwahrtes „Später" — hat **keine der 3417 Assertions**
+gefunden, sondern echte Benutzung. Ein Programm, das niemand benutzt, wird nicht besser.
+**Alles Weitere kommt als Update.**
+
+**DIE VERKAUFSSEITE DARF NUR VERSPRECHEN, WAS DRIN IST.** Das Programm nennt an dreizehn
+Stellen ehrlich, was es nicht prüft (2.4). Deutet die Verkaufsseite Ermüdung oder Verzug
+an, bricht das Versprechen genau dort, wo der Kunde zuerst hinschaut. Beworben wird:
+statischer Nachweis, Wärmeführung, Kosten/Zeit, ISO-2553-Symbole, Ausgaben — **nicht**
+Ermüdung, **nicht** Verzug.
+
+**Das Update wird kostenpflichtig** (Dieter): bei Digistore24 als eigener Update-Preis,
+Erstkäufer sind über die Käuferliste auffindbar. **Daraus folgt eine Sprachregel für den
+gesamten Programmtext:** nirgends „kostenlos", „gratis" oder etwas, das so klingt.
+**„Folgt in einem späteren Update"** ist neutral und trägt beide Wege. Das kostet jetzt
+nichts und erspart später eine Diskussion mit jemandem, der es anders verstanden hat.
+
+**Zur Weitergabe.** Der Lizenzname ist eine Hemmschwelle, kein Schutz (Plan 1), und das
+bleibt vorerst so. Dieters Rechnung: Verbreitung macht bekannt, und wer ernsthaft arbeitet,
+kommt später zurück. **Das trägt — aber der Vertriebsweg soll die TESTVERSION sein, nicht
+die Raubkopie.** Eine weitergereichte Vollversion verbreitet Bekanntheit *und nimmt den
+Kaufgrund weg*; die Testversion verbreitet Bekanntheit *und schafft ihn*: sie rechnet
+alles vollständig samt Rechenweg am Bildschirm und gibt nur nichts heraus. Genau dafür
+wurde sie gebaut. **Also: Testversion offen und ohne Hürde streuen, ausdrücklich zum
+Weitergeben gedacht.**
+
+**Jede Ausgabe wirbt bereits mit.** Impressum und `www.dt-profidreieck.de` stehen im
+Druckkopf, im PDF und im Word-Dokument. Ein weitergegebener Nachweis nennt auf fremden
+Schreibtischen deine Adresse — der Lizenzname wirkt dabei doppelt: er hemmt die Weitergabe
+**und** sagt dem Empfänger, woher es kommt.
+
+**Der stärkste Hebel ist das Update, nicht das Schloss.** Eine kopierte Fassung altert: kein
+N13, keine korrigierten Preise, keine Fehlerbehebung. Deshalb ist die Reihenfolge „erst
+verkaufen, dann Server" richtig — **der Server schützt Umsatz, der existiert; das Update
+erzeugt ihn.**
+
+> ⚠️ **DIESE ÜBERLEGUNG DARF SPÄTER NICHT ALS BEGRÜNDUNG DIENEN, DEN SERVER NIE ZU BAUEN.**
+> Bei dutzenden Käufern stimmt die Rechnung, bei hunderten kippt sie — dann ersetzen
+> Kopien Käufer, statt sie zu gewinnen. **Der Umschlagpunkt ist erkennbar:** wenn
+> Support-Anfragen von Leuten kommen, die nicht in der Digistore-Liste stehen.
+
+**Rückmeldungen aus dem Verkauf werden gesammelt** — zwischen zwei Sitzungen geht sonst
+verloren, was ein Käufer nebenbei erwähnt. Sie kommen beim Sitzungsstart auf den Tisch.
 
 ---
 
@@ -1673,7 +1728,9 @@ nicht die Datei.**
 | **N11** ✅ | **Ausgaben** *(ABGENOMMEN 2026-08-07 — Ergebnis in 5.1-9)* | `report.js`: `.dts` speichern/öffnen (**erst leeren, dann laden**, **Versionsstempel nach 5.1-8**, **nur Eingaben**, Lückenliste als Dokumentation), Druck/PDF, Word (.rtf), `guard()`-Gating. Aktionsleiste **oben**, Dateiname trägt Bezeichnung + Datum. **Jede Ausgabe trägt die Versionszeile** (3.6) — **dabei die Modulnamen an die Dateinamen angleichen UND die Modulkennungen mitwachsen lassen**, beide Merkposten in 3.6. |
 | **N12** ✅ | **Edition/Registrierung/Impressum** *(gebaut und geliefert 2026-08-07, Abnahme offen — Ergebnis in 5.1-10)* | Testbalken, Aktivierungsdialog beim Erststart (Name + Schlüssel, **keine Formatprüfung**), „Vollversion · lizenziert für <Name>", **10-s-Long-Press** = Reset, Info-ⓘ mit Impressum. |
 | **★** | **LAUNCH-CHECKPOINT** | **Ab hier verkaufsfähig.** Dieter entscheidet: weiterbauen oder veröffentlichen. |
-| **N13** ⬅ | **Ermüdung — Rechenkern** *(nächster Bau)* | `ermuedung.js`: Wöhlerlinie m=3/5, γ_Mf, Miner, Kollektive + Rechenweg. **Hier Dieter nach seinen Praxis-Kerbfällen fragen.** |
+| **P1** ⬅ | **Hinweis „folgt in einem Update“** *(nächster Bau — siehe 5.3)* |
+| **P2** | **Neuordnung von Plandatei und Historie** *(5.3)* |
+| **N13** | **Ermüdung — Rechenkern** | `ermuedung.js`: Wöhlerlinie m=3/5, γ_Mf, Miner, Kollektive + Rechenweg. **Hier Dieter nach seinen Praxis-Kerbfällen fragen.** |
 | **N14** | **Kerbfallkatalog** | `kerbfall.js` + SVG-Skizzen + Auswahl-UI mit Filter. Struktur vollständig, Füllung gestaffelt (Start 25–35 Details, je 2 Quellen), **ehrliche Lücken sichtbar**. Mehrere Etappen. |
 | **N15** | **Verzug & Schrumpfung** | `verzug.js` + Panel, klar als **Abschätzung** gekennzeichnet. |
 | **N16** | **Feinschliff + Build** | Presets ausbauen, Wissenstexte, Code-Audit, Bündelung + Obfuskierung (zwei Bündel, Unterschied nur `DT_EDITION`). **→ V1-Launch.** |
@@ -3342,6 +3399,99 @@ Lieferung ist teurer als eine zusätzliche.
 
 ---
 
+### 5.3 Zwei kleine Aufträge vor N13 *(abgestimmt 2026-08-07)*
+
+---
+
+#### P1 · Hinweis „folgt in einem Update" — **NÄCHSTER BAU**
+
+**Der Anlass.** Schaltet ein Käufer den Bereich *Ermüdung* ein, steht dort heute:
+„Zugeschaltet. Der Ermüdungsnachweis wird in **Baustein N13** gerechnet." Dasselbe beim
+Verzug mit N15. Für uns ist das präzise — **für einen Käufer ist „Baustein N13"
+bedeutungslos.** Er liest einen internen Bauplan und weiß nicht, ob das nächste Woche
+kommt oder nie.
+
+**Drei Stufen, in dieser Reihenfolge wichtig:**
+
+1. **Die Beschriftung sagt es VORHER.** Der Haken heißt künftig
+   „Ermüdung / Betriebsfestigkeit — **folgt in einem Update**", ebenso „Verzug &
+   Schrumpfung — folgt in einem Update". *Eine Beschriftung verhindert die Enttäuschung;
+   ein Fenster erklärt sie nur.* Das ist die wichtigste der drei Stufen.
+2. **Ein Hinweisfenster zum Wegklicken — aber NUR EINMAL JE BEREICH UND SITZUNG.**
+   Erscheint es bei jedem Haken, klickt man es nach dem dritten Mal reflexhaft weg, ohne zu
+   lesen — dann hat es das Gegenteil erreicht. Der Merker gilt **nur für die Sitzung** und
+   wird **nicht** im lokalen Speicher abgelegt (dieselbe Überlegung wie beim „Später" in
+   5.1-10: was sich dauerhaft merkt, muss einen auffindbaren Weg zurück haben).
+3. **Die Notiz unter dem Haken bleibt stehen**, umformuliert ohne Bausteinnamen.
+
+**SPRACHREGEL (aus 1a):** nirgends „kostenlos" oder „gratis" — das Update wird
+kostenpflichtig. **„Folgt in einem späteren Update"** trägt beide Wege.
+
+**Betrifft:** `ui.js` (ZUSATZ-Tabelle), `i18n_kern.js` (Texte dreisprachig), beide HTMLs
+(Fenster), `style.css`, dazu Assertions und DOM-Smoke.
+**Zu prüfen:** Beschriftung in allen drei Sprachen · Fenster erscheint beim ersten Haken ·
+beim zweiten Haken desselben Bereichs **nicht** mehr · nach Sprachwechsel bleibt der Merker
+· kein Bausteinname und kein „kostenlos" im Text · **Gegenprobe:** ohne Merker erscheint es
+zweimal, dann muss eine Prüfung rot werden.
+
+---
+
+#### P2 · Neuordnung von Plandatei und Historie
+
+**Der Anlass — belegt durch den 07.08.** Drei Fehler dieses Tages waren **Findefehler,
+keine Denkfehler**: 9.2 sagte „drei Module", 4.10c seit N11 „vier". In N11 entstand ein
+**zweites** `@media print` neben dem aus N5a, weil das erste an einer Stelle stand, an der
+nicht gesucht wurde. Und der Platzhalter in `edition()` wartete auf N12, ohne dass ihn
+jemand ablöste. **Verbindliche Regeln stehen heute an fünf Orten** — Kickoff, 3.x, 4.10c,
+9.1, 9.2 — und wer an einem nachsieht, übersieht die anderen vier.
+
+> ⚠️ **DAS IST DIE RISKANTESTE ARBEIT DES PROJEKTS.** Die Plandatei ist das
+> Sicherheitsnetz: Jede Regel darin steht dort, weil einmal etwas schiefging. Eine Zeile
+> beim Umräumen zu verlieren heißt, den Schutz zu verlieren, den sie erkauft hat — und man
+> merkt es erst, wenn derselbe Fehler wiederkommt.
+
+**DREI BEDINGUNGEN, ohne die nicht angefangen wird:**
+
+1. **NICHTS BINDENDES WANDERT.** In die Historie geht nur die *Begründung* — die
+   Geschichte, warum etwas so gebaut wurde. Jede *Regel*, die künftige Arbeit steuert,
+   bleibt. **Die Trennung ist die eigentliche Arbeit:** In 5.1-8 etwa steckt beides — die
+   Entscheidung zum Dateiformat bindet weiter, die Erzählung darum nicht.
+   ⚠️ Was in die Historie wandert, wird beim Sitzungsstart **nicht mehr gelesen**.
+   „Wir haben es in die Historie verschoben" darf nicht heimlich zu „niemand liest es
+   mehr" werden.
+2. **ES WIRD GEMESSEN, NICHT GEHOFFT.** Vorher wird jede regelhafte Zeile aus der Datei
+   gezogen; nachher wird geprüft, dass jede wiederzufinden ist — in der Plandatei oder,
+   wenn sie nur Begründung war, in der Historie. Aus „ich glaube, es ist alles da" wird
+   eine Zahl.
+3. **EIGENE ETAPPE, KEIN CODE.** Die drei Läufe müssen vorher und nachher **identische
+   Zahlen** melden. Das ist der Beweis, dass nur Text bewegt wurde. `Codestand` bleibt
+   stehen, nur `Plan-Version` wandert.
+
+**Die Struktur — ein Regelwerk statt fünf.** Sortiert wird danach, *wann* man etwas
+braucht:
+
+| Teil | Inhalt |
+|---|---|
+| **A · Vor dem Bau** | Status und Basislinie · Sitzungsablauf (Kickoff) · **ALLE verbindlichen Regeln an EINER Stelle**, thematisch: Arbeitsweise · Ehrlichkeit · Architektur · Prüfen · Liefern · **Wegweiser: was steht wo, auch in der Historie** |
+| **B · Das Produkt** | Eckdaten und Editionen · Verkauf (1a) · fachlicher Umfang und die ehrlichen Lücken · Produktentscheidungen (Dateiformat, Vorbelegungen, Zusatzbereiche) |
+| **C · Die Architektur** | Modulkarte und Ladereihenfolge · Schnittstellen · die Grenzen von `ui.js` |
+| **D · Der Bauplan** | Bausteintabelle · **nur der NÄCHSTE Auftrag** · Etappen und offene Entscheidungen |
+| **E · Dateistand** | Was liegt im Projektordner, was gehört auf GitHub |
+
+**Was in die Historie geht:** die Abschnitte „gelieferter Umfang" (5.1-1 … 5.1-10) als
+Erzählung, die älteren Changelog-Einträge, die Herleitung der fachlichen Grundlagen.
+**Was bleibt:** jede Regel, jede Schnittstelle, jede offene Entscheidung, die Liste 2.4,
+das Dateiformat, die Basislinie.
+
+**Der Wegweiser in Teil A ist Pflicht** — er nennt ausdrücklich, welche Fragen in der
+Historie beantwortet sind, damit niemand dort suchen muss, ohne zu wissen, dass es sie
+gibt.
+
+**Zeitpunkt:** nach P1, vor N13. Danach ist die Datei die Grundlage für alles Weitere —
+sie jetzt zu ordnen ist billiger als nach drei weiteren Bausteinen.
+
+---
+
 ## 6. Normfundament — Kurzreferenz
 
 > ⚠ **Die Detailwerte stehen in den fünf Recherchedateien (Abschnitt 8) — dort sind sie
@@ -4033,6 +4183,17 @@ will. Also: Vorschriften und Wegweiser bleiben hier, die Erzählung wandert.
   hat die Aktivierung verloren, ohne es zu merken. „Später" gilt deshalb nur für die
   laufende Sitzung. **Merke dir ein Wegklicken nur dann dauerhaft, wenn es einen zweiten,
   auffindbaren Weg zurück gibt.**
+- **Eine Beschriftung verhindert, ein Fenster erklärt nur** (2026-08-07, aus P1):
+  Wo eine Funktion noch nicht da ist, gehört das **an die Beschriftung**, damit der
+  Anwender es liest, BEVOR er klickt. Ein Hinweisfenster danach ist die zweite Stufe,
+  nicht die erste.
+- **Ein Hinweisfenster erscheint höchstens einmal je Sache und Sitzung**
+  (2026-08-07, aus P1): Kommt es bei jedem Klick, wird es nach dem dritten Mal reflexhaft
+  weggeklickt — dann hat es das Gegenteil erreicht.
+- **Interne Bausteinnamen gehören nicht in den Programmtext** (2026-08-07, aus P1):
+  „wird in Baustein N13 gerechnet" ist für uns präzise und für einen Käufer bedeutungslos.
+  Nach außen heißt es **„folgt in einem späteren Update"** — nie „kostenlos", nie „gratis",
+  weil das Update kostenpflichtig wird (1a).
 - **Token-Pause: 4 Stunden.**
 
 ---
@@ -4092,27 +4253,6 @@ Changelog — **die vollständige Fassung ab v1.0 steht in `Schweißnaht-Histori
 Hier stehen nur die letzten drei Einträge. Wer wissen will, wie eine Entscheidung
 zustande kam, findet die Kette dort — lückenlos ab der Erstfassung vom 2026-07-23.
 
-**v2.68 (2026-08-07):** **N11 endgültig abgeschlossen — keine Codeänderung.** Word
-öffnet die Datei nach dem Zeilenumbruch. Das Nahtbild blieb am Handy trotzdem
-unsichtbar; statt zu raten wurde das **PNG aus der gelieferten `.rtf` herausgelöst und
-angesehen** — es ist genau das Nahtbild des Winkelprofils, 640×480, gültig bis zum IEND.
-Die Datei hat 452 Zeilen, die längste 201 Zeichen, keine über 255. Ein
-Programmierkollege hat bestätigt, dass das Bild **am PC erscheint**.
-**Benannte Einschränkung, keine Lücke der Rechnung:** Die **Word-App unter Android**
-zeigt in RTF eingebettete Bilder nicht an — Handy und Tablet gleichermaßen. Der Text ist
-dort vollständig. **Wer auf einem mobilen Gerät ein Dokument mit Bild braucht, nimmt
-„Drucken / PDF"**; dieser Weg trägt das Bild überall. **Am Bildblock wird nichts
-geändert** — eine Änderung ohne Befund würde kaputtmachen, was nachweislich funktioniert.
-Neue Festlegung in 9.2: **Bevor an einer Ausgabe gebaut wird, wird das Erzeugnis
-auseinandergenommen.** **Damit ist Baustein N11 vollständig abgeschlossen; acht von zehn
-Bausteinen bis zum Verkaufsstand sind fertig.**
-**Code unverändert, `Codestand` bleibt 2.67.**
-**Basislinie unverändert: 3303 Assertions · Smokes 988 / 988 · i18n-Parität 0.**
-**Nächster Schritt: Baustein N12 (Edition, Registrierung, Impressum) — danach der
-Launch-Checkpoint. Einstieg: „weiter mit N12".**
-
-
-
 **v2.69 (2026-08-07):** **Baustein N12 gebaut und geliefert — und das gedruckte PDF hat
 vier Befunde gezeigt, von denen drei meine waren.** Dieter meldete eine leere erste Seite,
 eine Seite über der nächsten und ein halbiertes Wort. Das PDF wurde **vermessen**: Seite 1
@@ -4157,6 +4297,24 @@ einen zweiten, auffindbaren Weg zurück gibt.** Gegenprobe bestanden — verwahr
 i18n_kern 0.9.0 → 0.9.1-N12.**
 **Basislinie 3414 → 3417 Assertions · Smokes 1078/1039 → 1081/1039 · i18n-Parität 0.**
 **Nächster Schritt: Baustein N13 (Ermüdung). Einstieg: „weiter mit N13".**
+
+
+
+**v2.71 (2026-08-07):** **Der Verkaufsstand geht in den Verkauf — und daraus folgen zwei
+kleine Aufträge vor N13.** Nur Plandatei, kein Code; `Codestand` bleibt 2.70.
+Dieters Entscheidung, jetzt zu veröffentlichen, ist durch diesen Tag belegt: die drei
+echten Fehler des 07.08. hat **keine der 3417 Assertions** gefunden, sondern echte
+Benutzung. Neu ist **1a (Verkauf und Verbreitung)** mit den Festlegungen dazu — die
+Verkaufsseite darf nur versprechen, was drin ist; das Update wird kostenpflichtig, deshalb
+nirgends „kostenlos" im Programmtext; **der Vertriebsweg ist die TESTVERSION, nicht die
+Raubkopie** — sie verbreitet Bekanntheit und schafft den Kaufgrund, statt ihn wegzunehmen;
+und die Warnung, dass die Rechnung bei hunderten Käufern kippt und der Server dann fällig
+wird. Neu ist außerdem **5.3** mit **P1** (Hinweis „folgt in einem Update" — Beschriftung
+zuerst, Fenster einmal je Bereich und Sitzung, keine internen Bausteinnamen) und **P2**
+(Neuordnung von Plandatei und Historie, mit drei Bedingungen: nichts Bindendes wandert,
+es wird gemessen statt gehofft, eigene Etappe ohne Code). Drei neue Festlegungen in 9.2.
+**Basislinie unverändert: 3417 Assertions · Smokes 1081 / 1039 · i18n-Parität 0.**
+**Nächster Schritt: P1, dann P2, dann N13. Einstieg: „weiter mit P1".**
 
 
 ═══════════════════════════════════════════════════════════════════════════
