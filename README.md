@@ -1,44 +1,74 @@
 # DT-ProfiSchweissnaht – Schweißnahtberechnung
 
-Dieses Repository enthält die Web-Anwendung **DT-ProfiSchweissnaht** zur professionellen Schweißnahtberechnung im Stahlbau und Maschinenbau. Die Anwendung deckt Berechnungsverfahren nach aktuellen Normen wie **EN 1993-1-8 (Eurocode 3)** sowie die klassischen Ansätze nach **Roloff/Matek** ab.
+DT-ProfiSchweissnaht rechnet Schweißnähte nach EN 1993-1-8 (Eurocode 3) sowie
+nach den klassischen Ansätzen des Maschinenbaus. Jeder Rechenschritt wird mit
+allgemeiner Formel, eingesetzten Werten, Ergebnis und Quellenangabe angezeigt.
 
-## 🚀 Live-Versionen
+Der Aufbau folgt einem Grundsatz: Das Programm nennt an mehreren Stellen
+ausdrücklich, was es nicht prüft. Was es rechnet, ist damit nachvollziehbar
+begrenzt und belegt.
 
-Um die Anwendung direkt im Browser zu nutzen, stehen folgende Versionen über GitHub Pages zur Verfügung:
+Gedacht für Konstruktion, Stahlbau, Schweißaufsicht und für die Lehre.
 
-*   **[DT-ProfiSchweissnaht – Testversion](https://dietertepe.github.io/dt-profischweissnaht-web/DT-ProfiSchweissnaht_Testversion.html)**
-*   *[Hier optional den Link zur Hauptversion einfügen, falls vorhanden]*
+## Testversion
+
+**[DT-ProfiSchweissnaht Testversion starten](https://dietertepe.github.io/dt-profischweissnaht-web/DT-ProfiSchweissnaht_Testversion.html)**
+
+Läuft direkt im Browser, ohne Anmeldung und ohne Installation.
+Die Testversion rechnet in vollem Umfang. Gesperrt sind ausschließlich die
+Ausgaben: Speichern, Öffnen, Drucken und der Word-Bericht.
+
+Die Testversion darf weitergegeben werden – an Kollegen, an Auszubildende, ins
+Büro nebenan.
+
+## Vollversion
+
+Die Vollversion kostet **169 € einmalig**. Kein Abonnement, keine laufenden
+Kosten. Sie besteht aus einer einzelnen HTML-Datei, die offline läuft.
+
+**[Zur Produktseite: dt-profidreieck.de](https://dt-profidreieck.de/)**
+
+Dort finden sich auch die drei weiteren Programme: DT-ProfiDreieck
+(Dreiecksgeometrie mit DXF-Export), DT-ProfiSchraube (Schraubenverbindungen
+nach VDI 2230) und DT-ProfiPassung (Passungen nach ISO 286).
+
+## Funktionsumfang
+
+**Eingabe**
+
+- Grundeinstellungen, Werkstoffe und Stahlgüten mit den zugehörigen
+  Festigkeitswerten
+- Nahtart und Geometrie: Kehlnähte, Stumpfnähte und die zugehörigen
+  Nahtvorbereitungen
+- Einwirkungen und Teilsicherheitsbeiwerte nach der jeweiligen Norm
+- Schweißparameter und Wärmeführung mit Vorwärmtemperatur und Ermittlung der
+  Abkühlzeit t8/5 nach EN 1011-2
+
+**Rechnung und Ergebnis**
+
+- Nachweis der Naht nach EN 1993-1-8, wahlweise nach dem richtungsbezogenen
+  oder dem vereinfachten Verfahren
+- Nahtbild als maßstäbliche Grafik – es wird die tatsächliche Naht abgebildet,
+  nicht nur eine Nahtlänge angesetzt
+- Rechenweg mit Formel, eingesetzten Werten und Quellenangabe je Schritt
+- Offene Auflistung dessen, was das Programm nicht prüft
+- Wirtschaftlichkeit: Materialmenge, Schweißzeit und Drahtbedarf
+
+**Ausgabe (Vollversion)**
+
+- Bericht als Word-Dokument (.rtf)
+- Druck und PDF
+- Speichern und Laden im programmeigenen Datensatzformat
+
+## Technisches
+
+Eine einzelne HTML-Datei. Keine Installation, kein Konto, keine
+Administratorrechte. Alle Berechnungen laufen im Browser auf dem eigenen Gerät;
+es werden keine Daten an Server übertragen. Läuft dadurch auch ohne
+Internetverbindung – in der Halle, auf dem Tablet an der Maschine.
 
 ---
 
-## 🛠️ Funktionsumfang
-
-Die Oberfläche ist modular aufgebaut und ermöglicht eine lückenlose Verfolgung des gesamten Berechnungsprozesses:
-
-1. **Eingabe & Konfiguration**
-    * **Grundeinstellungen & Werkstoffe:** Schnelle Auswahl von Festigkeitswerten und Stahlgüten.
-    * **Nahtart & Geometrie:** Definition von Kehlnähten, Stumpfnähten und spezifischen Nahtvorbereitungen.
-    * **Lasten & Beiwerte:** Eingabe von mechanischen Einwirkungen und Anpassung normspezifischer Sicherheitsbeiwerte.
-    * **Schweißparameter & Wärmeführung:** Integration von Vorwärmtemperaturen und Ermittlung der t8/5-Abkühlzeit nach **EN 1011-2**.
-
-2. **Ergebnisse & Auswertung**
-    * **Visuelles Nahtbild:** Dynamische Generierung von interaktiven Grafiken im SVG-Format.
-    * **Detaillierter Rechenweg:** Transparente Aufschlüsselung der Formeln zur einfachen Überprüfung der Nachweise.
-    * **Wirtschaftlichkeit:** Integriertes Modul zur Berechnung von Materialmengen, Schweißzeiten und Drahtbedarf.
-
-3. **Dokumentation & Export**
-    * Erstellung von professionellen Berichten als **PDF-Druck**, **Word-Dokument (.rtf)** oder im anwendungseigenen **Datensatz-Format (.dts)**.
-
----
-
-## 🔍 Hinweise zur Suchmaschinen-Indexierung (SEO)
-
-Falls die Webseiten (insbesondere die Testversion) nicht direkt in den Suchergebnissen von Google auftauchen, liegt dies meist an den technischen Eigenheiten von Single-Page-Apps auf GitHub Pages. 
-
-### Maßnahmen zur Indexierung:
-*   **Interne Verlinkung:** Durch die Listung der URLs in dieser `README.md` wird der Googlebot bei der Überprüfung des Repositorys direkt auf die HTML-Seiten geleitet.
-*   **Search Console:** Es wird empfohlen, das genaue URL-Präfix in der [Google Search Console](https://search.google.com/search-console/about) zu hinterlegen und eine `sitemap.xml` im `root`-Verzeichnis dieses Projekts zu platzieren.
-
----
-
-*Hinweis: Die Berechnungen erfolgen ohne Gewähr. Vor einer produktiven Nutzung im konstruktiven Ingenieurbau sind die Ergebnisse stets gegen die Originalnormen zu prüfen.*
+*Die Ergebnisse sind ohne Gewähr. Vor der Verwendung im konstruktiven
+Ingenieurbau sind sie gegen die Originalnormen zu prüfen. Die fachliche
+Verantwortung bleibt beim Anwender.*
