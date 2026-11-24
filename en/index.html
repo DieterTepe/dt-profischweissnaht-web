@@ -90,6 +90,10 @@
           "availability": "https://schema.org/InStock",
           "url": "https://www.checkout-ds24.com/product/722975"
         }
+      ],
+      "featureList": [
+        "Example: round tube under torsion – circular fillet weld to EN 1993-1-8",
+        "Recalculate the example yourself"
       ]
     }
   ]
@@ -216,6 +220,12 @@
     .langs { display:inline-flex; gap:4px; margin-left:14px; }
     .langs a { text-decoration:none; font-size:.8rem; font-weight:800; padding:3px 8px; border-radius:999px; border:1px solid var(--line); color:var(--muted); }
     .langs a[aria-current="page"] { background:var(--cyan); border-color:var(--cyan); color:#062128; }
+    .task-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .task { padding: 22px; border: 1px solid var(--line); border-radius: 17px; background: rgba(255,255,255,.035); }
+    .task p { color: var(--muted); font-size: .96rem; }
+    .task-f { font-size: 1.05rem; margin: 8px 0 0; overflow-wrap: anywhere; }
+    .task-cta { margin-top: 22px; }
+    @media (max-width: 780px) { .task-grid { grid-template-columns: 1fr; } }
 
     :root { --cyan: #f08a3e; --cyan-dark: #a8430a; }
     .primary { background: linear-gradient(135deg, #f08a3e, #a8430a); color:#fff; box-shadow:none; }
@@ -298,6 +308,32 @@
       </div>
     </section>
 
+    <section class="content" id="aufgaben">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="eyebrow">Worked example</div>
+          <h2>Weld calculation for a tube under torsion</h2>
+          <p class="muted">A typical case in machine and steel construction: a tube welded all round to a plate is twisted. This is how DT-ProfiSchweissnaht checks the circular weld.</p>
+        </div>
+        <div class="task-grid">
+          <article class="task" id="rohr-torsion">
+            <h3>Example: round tube under torsion – circular fillet weld to EN 1993-1-8</h3>
+            <p>Round tube Ø 114.3 × 6 mm welded to a plate, fillet weld all round with throat a = 4 mm, S235, torque T = 9 kNm. Under torsion the shear stress runs along the weld (τ<sub>∥</sub>); the outer edge of the weld governs.</p>
+            <div class="formula task-f">W<sub>t</sub> = I<sub>p</sub> / r<sub>max</sub> = 79,408 mm³</div>
+            <div class="formula task-f">τ<sub>∥</sub> = T / W<sub>t</sub> = 9,000,000 / 79,408 = 113.3 N/mm²</div>
+            <div class="formula task-f">σ<sub>v</sub> = √3 · τ<sub>∥</sub> = 196.3 N/mm² ≤ 360 N/mm²</div>
+            <div class="formula task-f">η = 196.3 / 360 = 0.55 ✓</div>
+          </article>
+          <article class="task" id="selbst-rechnen">
+            <h3>Recalculate the example yourself</h3>
+            <p>In the free version, choose “Circular tube 114.3×6 on plate, circular weld, torsion 9 kNm” under “Load example” and press “Calculate”. The calculation path shows all 36 steps with checks. With “Design (throat sought)” the program determines the required throat thickness instead. A classic mechanical-engineering variant (Roloff/Matek) with 6 kNm is included as well.</p>
+            <div class="formula task-f">R<sub>d</sub> = f<sub>u</sub> / (β<sub>w</sub> · γ<sub>M2</sub>) = 360 / (0.80 · 1.25)</div>
+          </article>
+        </div>
+        <div class="actions task-cta"><a class="button primary" href="https://dietertepe.github.io/dt-profischweissnaht-web/DT-ProfiSchweissnaht_Testversion.html?lang=en">Recalculate the example in the free version →</a></div>
+      </div>
+    </section>
+
     <section class="content">
       <div class="wrap split">
         <div>
@@ -353,6 +389,10 @@
           <details>
             <summary>Which welds are supported?</summary>
             <p>Fillet welds and butt welds with the matching weld preparations; the weld layout is drawn to scale.</p>
+          </details>
+          <details>
+            <summary>Can I calculate a tube weld under torsion?</summary>
+            <p>Yes. For round tubes the program checks the circular weld all round using the polar moment of area and searches for the maximum stress at 72 points along the weld. A ready-made example (round tube 114.3 × 6 mm, torque 9 kNm) can be loaded directly.</p>
           </details>
           <details>
             <summary>What does the program not check?</summary>

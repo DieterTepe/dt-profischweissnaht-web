@@ -90,6 +90,10 @@
           "availability": "https://schema.org/InStock",
           "url": "https://www.checkout-ds24.com/product/722975"
         }
+      ],
+      "featureList": [
+        "Beispiel: Rundrohr unter Torsion – Kreisnaht nach EN 1993-1-8",
+        "So rechnen Sie das Beispiel selbst nach"
       ]
     }
   ]
@@ -216,6 +220,12 @@
     .langs { display:inline-flex; gap:4px; margin-left:14px; }
     .langs a { text-decoration:none; font-size:.8rem; font-weight:800; padding:3px 8px; border-radius:999px; border:1px solid var(--line); color:var(--muted); }
     .langs a[aria-current="page"] { background:var(--cyan); border-color:var(--cyan); color:#062128; }
+    .task-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .task { padding: 22px; border: 1px solid var(--line); border-radius: 17px; background: rgba(255,255,255,.035); }
+    .task p { color: var(--muted); font-size: .96rem; }
+    .task-f { font-size: 1.05rem; margin: 8px 0 0; overflow-wrap: anywhere; }
+    .task-cta { margin-top: 22px; }
+    @media (max-width: 780px) { .task-grid { grid-template-columns: 1fr; } }
 
     :root { --cyan: #f08a3e; --cyan-dark: #a8430a; }
     .primary { background: linear-gradient(135deg, #f08a3e, #a8430a); color:#fff; box-shadow:none; }
@@ -298,6 +308,32 @@
       </div>
     </section>
 
+    <section class="content" id="aufgaben">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="eyebrow">Rechenbeispiel</div>
+          <h2>Schweißnahtberechnung am Rohr unter Torsion</h2>
+          <p class="muted">Ein typischer Fall aus Maschinen- und Stahlbau: Ein Rohr ist rundum an eine Platte geschweißt und wird verdreht. So prüft DT-ProfiSchweissnaht die Kreisnaht.</p>
+        </div>
+        <div class="task-grid">
+          <article class="task" id="rohr-torsion">
+            <h3>Beispiel: Rundrohr unter Torsion – Kreisnaht nach EN 1993-1-8</h3>
+            <p>Rundrohr Ø 114,3 × 6 mm auf eine Platte geschweißt, umlaufende Kehlnaht a = 4 mm, S235, Torsionsmoment T = 9 kNm. Bei Torsion läuft die Schubspannung entlang der Naht (τ<sub>∥</sub>); maßgebend ist der äußere Rand der Naht.</p>
+            <div class="formula task-f">W<sub>t</sub> = I<sub>p</sub> / r<sub>max</sub> = 79.408 mm³</div>
+            <div class="formula task-f">τ<sub>∥</sub> = T / W<sub>t</sub> = 9.000.000 / 79.408 = 113,3 N/mm²</div>
+            <div class="formula task-f">σ<sub>v</sub> = √3 · τ<sub>∥</sub> = 196,3 N/mm² ≤ 360 N/mm²</div>
+            <div class="formula task-f">η = 196,3 / 360 = 0,55 ✓</div>
+          </article>
+          <article class="task" id="selbst-rechnen">
+            <h3>So rechnen Sie das Beispiel selbst nach</h3>
+            <p>In der Testversion unter „Beispiel laden“ den Eintrag „Rundrohr 114,3×6 auf Platte, Kreisnaht, Torsion 9 kNm“ wählen und „Berechnen“ drücken. Der Rechenweg zeigt alle 36 Schritte mit Proben. Mit „Auslegung (a-Maß gesucht)“ ermittelt das Programm stattdessen das nötige a-Maß. Für den klassischen Maschinenbau (Roloff/Matek) gibt es dasselbe Rohr mit 6 kNm.</p>
+            <div class="formula task-f">R<sub>d</sub> = f<sub>u</sub> / (β<sub>w</sub> · γ<sub>M2</sub>) = 360 / (0,80 · 1,25)</div>
+          </article>
+        </div>
+        <div class="actions task-cta"><a class="button primary" href="https://dietertepe.github.io/dt-profischweissnaht-web/DT-ProfiSchweissnaht_Testversion.html">Beispiel in der Testversion nachrechnen →</a></div>
+      </div>
+    </section>
+
     <section class="content">
       <div class="wrap split">
         <div>
@@ -353,6 +389,10 @@
           <details>
             <summary>Welche Nähte werden unterstützt?</summary>
             <p>Kehlnähte und Stumpfnähte mit den zugehörigen Nahtvorbereitungen; das Nahtbild wird maßstäblich gezeichnet.</p>
+          </details>
+          <details>
+            <summary>Kann ich eine Rohrnaht unter Torsion berechnen?</summary>
+            <p>Ja. Für Rundrohre rechnet das Programm die umlaufende Kreisnaht mit dem polaren Flächenmoment und sucht das Spannungsmaximum an 72 Punkten entlang der Naht. Ein fertiges Beispiel (Rundrohr 114,3 × 6 mm, Torsion 9 kNm) lässt sich direkt laden.</p>
           </details>
           <details>
             <summary>Was prüft das Programm nicht?</summary>
