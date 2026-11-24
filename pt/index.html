@@ -90,6 +90,10 @@
           "availability": "https://schema.org/InStock",
           "url": "https://www.checkout-ds24.com/product/722975"
         }
+      ],
+      "featureList": [
+        "Exemplo: tubo redondo sob torção – solda de filete circular conforme EN 1993-1-8",
+        "Refaça o exemplo você mesmo"
       ]
     }
   ]
@@ -216,6 +220,12 @@
     .langs { display:inline-flex; gap:4px; margin-left:14px; }
     .langs a { text-decoration:none; font-size:.8rem; font-weight:800; padding:3px 8px; border-radius:999px; border:1px solid var(--line); color:var(--muted); }
     .langs a[aria-current="page"] { background:var(--cyan); border-color:var(--cyan); color:#062128; }
+    .task-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .task { padding: 22px; border: 1px solid var(--line); border-radius: 17px; background: rgba(255,255,255,.035); }
+    .task p { color: var(--muted); font-size: .96rem; }
+    .task-f { font-size: 1.05rem; margin: 8px 0 0; overflow-wrap: anywhere; }
+    .task-cta { margin-top: 22px; }
+    @media (max-width: 780px) { .task-grid { grid-template-columns: 1fr; } }
 
     :root { --cyan: #f08a3e; --cyan-dark: #a8430a; }
     .primary { background: linear-gradient(135deg, #f08a3e, #a8430a); color:#fff; box-shadow:none; }
@@ -298,6 +308,32 @@
       </div>
     </section>
 
+    <section class="content" id="aufgaben">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="eyebrow">Exemplo de cálculo</div>
+          <h2>Cálculo de solda em tubo sob torção</h2>
+          <p class="muted">Um caso típico na construção mecânica e metálica: um tubo soldado em todo o contorno a uma chapa é submetido a torção. Veja como o DT-ProfiSchweissnaht verifica o cordão circular.</p>
+        </div>
+        <div class="task-grid">
+          <article class="task" id="rohr-torsion">
+            <h3>Exemplo: tubo redondo sob torção – solda de filete circular conforme EN 1993-1-8</h3>
+            <p>Tubo redondo Ø 114,3 × 6 mm soldado a uma chapa, solda de filete em todo o contorno com garganta a = 4 mm, S235, momento de torção T = 9 kNm. Na torção, a tensão de cisalhamento corre ao longo do cordão (τ<sub>∥</sub>); a borda externa do cordão é determinante.</p>
+            <div class="formula task-f">W<sub>t</sub> = I<sub>p</sub> / r<sub>max</sub> = 79.408 mm³</div>
+            <div class="formula task-f">τ<sub>∥</sub> = T / W<sub>t</sub> = 9.000.000 / 79.408 = 113,3 N/mm²</div>
+            <div class="formula task-f">σ<sub>v</sub> = √3 · τ<sub>∥</sub> = 196,3 N/mm² ≤ 360 N/mm²</div>
+            <div class="formula task-f">η = 196,3 / 360 = 0,55 ✓</div>
+          </article>
+          <article class="task" id="selbst-rechnen">
+            <h3>Refaça o exemplo você mesmo</h3>
+            <p>Na versão de teste, escolha “Tubo redondo 114,3×6 sobre chapa, cordão circular, torção 9 kNm” em “Carregar exemplo” e clique em “Calcular”. A memória de cálculo mostra todos os 36 passos com verificações. Com “Dimensionamento (garganta procurada)”, o programa determina a garganta necessária. Também há uma variante clássica da construção mecânica (Roloff/Matek) com 6 kNm.</p>
+            <div class="formula task-f">R<sub>d</sub> = f<sub>u</sub> / (β<sub>w</sub> · γ<sub>M2</sub>) = 360 / (0,80 · 1,25)</div>
+          </article>
+        </div>
+        <div class="actions task-cta"><a class="button primary" href="https://dietertepe.github.io/dt-profischweissnaht-web/DT-ProfiSchweissnaht_Testversion.html?lang=pt">Refazer o exemplo na versão de teste →</a></div>
+      </div>
+    </section>
+
     <section class="content">
       <div class="wrap split">
         <div>
@@ -353,6 +389,10 @@
           <details>
             <summary>Quais soldas são suportadas?</summary>
             <p>Soldas de filete e de topo com os respectivos chanfros; a geometria do cordão é desenhada em escala.</p>
+          </details>
+          <details>
+            <summary>Posso calcular a solda de um tubo sob torção?</summary>
+            <p>Sim. Para tubos redondos, o programa verifica o cordão circular com o momento polar de inércia e procura a tensão máxima em 72 pontos ao longo do cordão. Um exemplo pronto (tubo redondo 114,3 × 6 mm, torção 9 kNm) pode ser carregado diretamente.</p>
           </details>
           <details>
             <summary>O que o programa não verifica?</summary>
